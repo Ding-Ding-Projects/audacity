@@ -12,3 +12,8 @@
 *.ttl text=auto
 *.aps text=auto
 *.trig text=auto
+*.ttf binary
+*.otf binary
+*.woff2 binary
+*.png binary
+*.webp binary
