@@ -2,7 +2,7 @@
    type scale, shape scale, and motion tokens. */
 :root {
   --md-font-display: "Fraunces", Georgia, "Noto Serif HK", serif;
-  --md-font-body: "Atkinson Hyperlegible Next", "Noto Sans HK", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --md-font-body: "Noto Sans HK", "Segoe UI", system-ui, -apple-system, sans-serif;
 
   /* Type scale (M3) */
   --md-type-display-large: 700 57px/64px var(--md-font-display);

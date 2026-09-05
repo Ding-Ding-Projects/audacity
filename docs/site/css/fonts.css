@@ -1,11 +1,11 @@
-/* Vendored variable fonts, if present (see site/fetch-fonts.sh and
-   site/fonts/README.md). When the files are absent the browser silently
-   skips these @font-face rules and the system font stack in tokens.css
-   applies instead — there is no runtime network fetch either way. */
+/* Vendored variable fonts (see site/fetch-fonts.sh and site/fonts/README.md).
+   No runtime network fetch: the files ship with the site. If a file is
+   missing the browser falls back to the system stack in tokens.css. */
 @font-face {
-  font-family: "Atkinson Hyperlegible Next";
-  src: local("Atkinson Hyperlegible Next"), url("../fonts/NotoSansHK-Variable.ttf") format("truetype");
-  font-weight: 100 900;
+  font-family: "Roboto Flex";
+  src: url("../fonts/RobotoFlex-Variable.ttf") format("truetype");
+  font-weight: 100 1000;
+  font-stretch: 25% 151%;
   font-display: swap;
 }
 @font-face {

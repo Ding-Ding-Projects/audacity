@@ -9,19 +9,19 @@ DEST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/fonts"
 mkdir -p "$DEST"
 
 # Pinned to a specific commit of google/fonts so the bytes are reproducible.
-COMMIT="a0d69dd2ea7990a5c542d6ed57a9ea9fdf76b5d7"
+COMMIT="5e35378e6bda803962ee6fd257e444a7d459660d"
 BASE="https://raw.githubusercontent.com/google/fonts/${COMMIT}"
 
 declare -A FILES=(
-  ["ofl/robotoflex/RobotoFlex%5Bslnt%2Cwdth%2Cwght%2CGRAD%2CXOPQ%2CXTRA%2CYOPQ%2CYTAS%2CYTDE%2CYTFI%2CYTLC%2CYTUC%5D.ttf"]="RobotoFlex-Variable.ttf"
+  ["ofl/robotoflex/RobotoFlex%5BGRAD%2CXOPQ%2CXTRA%2CYOPQ%2CYTAS%2CYTDE%2CYTFI%2CYTLC%2CYTUC%2Copsz%2Cslnt%2Cwdth%2Cwght%5D.ttf"]="RobotoFlex-Variable.ttf"
   ["ofl/notosanshk/NotoSansHK%5Bwght%5D.ttf"]="NotoSansHK-Variable.ttf"
 )
 
 # sha256sums must be filled in once the bytes are known; verification is
 # mandatory, not optional. If a hash is not yet pinned, the file is rejected.
 declare -A SHA256=(
-  ["RobotoFlex-Variable.ttf"]=""
-  ["NotoSansHK-Variable.ttf"]=""
+  ["RobotoFlex-Variable.ttf"]="9b523f7d82593df0107173849ebb8c817471a1df4b4fb2c3cbf40cfd810c8281"
+  ["NotoSansHK-Variable.ttf"]="76098ee78ec234cd4f8c950742b3f766fea2f8b43d5180d901048f4fc86c6849"
 )
 
 fail=0
