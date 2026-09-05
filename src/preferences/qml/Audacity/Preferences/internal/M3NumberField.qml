@@ -49,10 +49,11 @@ Item {
     signal valueEditingFinished(var newValue)
 
     implicitHeight: field.implicitHeight
-    implicitWidth: 152
+    implicitWidth: 120
 
-    //! Compact stepper buttons, so the field still reads at narrow widths.
-    readonly property real stepperSize: 28
+    //! The stepper is a narrow vertical pair, so the value keeps most of the
+    //! width even in the compact effect and export layouts.
+    readonly property real stepperSize: 24
 
     function formatted(value) {
         var text = Number(value).toFixed(root.decimals);
@@ -134,7 +135,7 @@ Item {
         }
     }
 
-    Row {
+    Column {
         id: stepper
 
         anchors.right: parent.right
@@ -146,24 +147,24 @@ Item {
             width: root.stepperSize
             height: root.stepperSize
 
-            icon: IconCode.MINUS
+            icon: IconCode.SMALL_ARROW_UP
             variant: "standard"
-            enabled: root.enabled && !root.readOnly && root.canDecrease
-            accessibleName: qsTrc("global", "Decrease") + " " + root.accessibleName
+            enabled: root.enabled && !root.readOnly && root.canIncrease
+            accessibleName: qsTrc("global", "Increase") + " " + root.accessibleName
 
-            onClicked: root.decrement()
+            onClicked: root.increment()
         }
 
         M3IconButton {
             width: root.stepperSize
             height: root.stepperSize
 
-            icon: IconCode.PLUS
+            icon: IconCode.SMALL_ARROW_DOWN
             variant: "standard"
-            enabled: root.enabled && !root.readOnly && root.canIncrease
-            accessibleName: qsTrc("global", "Increase") + " " + root.accessibleName
+            enabled: root.enabled && !root.readOnly && root.canDecrease
+            accessibleName: qsTrc("global", "Decrease") + " " + root.accessibleName
 
-            onClicked: root.increment()
+            onClicked: root.decrement()
         }
     }
 }
