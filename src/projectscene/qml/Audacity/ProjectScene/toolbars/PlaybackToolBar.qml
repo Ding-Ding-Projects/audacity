@@ -283,7 +283,6 @@ Item {
                 meterStyle: Boolean(itemData) ? itemData.meterStyle : PlaybackMeterStyle.Default
 
                 icon: Boolean(itemData) ? itemData.icon : IconCode.NONE
-                iconFont: ui.theme.iconsFont
 
                 toolTipTitle: Boolean(itemData) ? itemData.title : ""
                 toolTipDescription: Boolean(itemData) ? itemData.description : ""

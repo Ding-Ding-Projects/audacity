@@ -237,6 +237,11 @@ ListItemBlank {
             }
         }
 
+        // FlatButton is kept here on purpose: the grip relies on
+        // mouseArea.drag.target/axis/minimumY/maximumY to reorder the row by
+        // dragging, and on accentButton plus a custom iconColor to show the
+        // reorder state while dragging. Neither M3Button nor M3IconButton
+        // exposes a drag-capable mouse area or that reorder styling yet.
         FlatButton {
             id: gripButton
 
@@ -312,11 +317,13 @@ ListItemBlank {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: effectNameButton
 
             enabled: item && item.isAvailable
             opacity: 1 // Force opacity to 1 even when disabled to ensure text stays sufficiently legible.
+
+            variant: "text"
 
             navigation.panel: root.innerNavigationPanel
             navigation.order: bypassButton.navigation.order + 1
@@ -328,20 +335,7 @@ ListItemBlank {
             Layout.fillHeight: true
             Layout.preferredWidth: 148
 
-            backgroundItem: RealtimeEffectListItemButtonBackground {
-                mouseArea: effectNameButton.mouseArea
-                navigationCtrl: effectNameButton.navigation
-            }
-
-            StyledTextLabel {
-                id: trackNameLabel
-                anchors.fill: parent
-                anchors.leftMargin: 6
-                anchors.rightMargin: 6
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                text: root.item ? root.item.effectName() : ""
-            }
+            text: root.item ? root.item.effectName() : ""
 
             onClicked: {
                 // Request navigation activation of the effect panel so that
@@ -357,7 +351,7 @@ ListItemBlank {
             }
         }
 
-        FlatButton {
+        M3IconButton {
             id: chooseEffectDropdown
 
             navigation.panel: root.innerNavigationPanel
@@ -370,10 +364,7 @@ ListItemBlank {
             Layout.preferredWidth: height
 
             icon: IconCode.SMALL_ARROW_DOWN
-            backgroundItem: RealtimeEffectListItemButtonBackground {
-                mouseArea: chooseEffectDropdown.mouseArea
-                navigationCtrl: chooseEffectDropdown.navigation
-            }
+            variant: "standard"
 
             RealtimeEffectListItemMenuModel {
                 id: menuModel

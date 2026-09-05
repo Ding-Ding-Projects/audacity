@@ -88,6 +88,16 @@ bool AppearanceOverrides::hasProperty(const QString& elementId, const QString& p
     return getProperty(elementId, property, state).isValid();
 }
 
+QVariant AppearanceOverrides::resolve(const QString& elementId, const QString& state, const QString& property,
+                                      const QVariant& fallback) const
+{
+    if (elementId.isEmpty()) {
+        return fallback;
+    }
+    QVariant value = getProperty(elementId, property, state);
+    return value.isValid() ? value : fallback;
+}
+
 void AppearanceOverrides::resetProperty(const QString& elementId, const QString& property, const QString& state)
 {
     QVariantMap element = m_elements.value(elementId).toMap();

@@ -18,6 +18,10 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   opens the application data folder, and a local offline authenticator with
   an in-process rendered QR code and RFC 6238 codes, all reachable from a
   new Personalize preferences page
+- The per element appearance overrides now actually render: Material 3
+  buttons read their container colour, content colour and corner radius
+  through the same overrides store the editor writes to, live, without the
+  shared component library depending on the personalize module
 - Toolkit module: a local model manager for the Ollama HTTP API (health,
   installed models, catalog browsing, hardware fit verdicts, a batch pull
   cart with no payment concept, streaming chat, allowlisted harness

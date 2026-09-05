@@ -32,6 +32,24 @@ FocusScope {
     property string text: ""
     property int icon: IconCode.NONE
 
+    // Identifies this element to the personalize appearance overrides store.
+    // Left empty (the default) this button ignores overrides entirely, so the
+    // uicomponents module never has to import or link the personalize
+    // module: it only reads a global that personalize registers into this
+    // same Audacity.M3 namespace when that module is present.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        // Referencing appearanceRevision makes every use below reevaluate
+        // when the matching override changes.
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
     // One of "filled", "tonal", "outlined", "text" or "elevated".
     property string variant: "filled"
 
@@ -67,7 +85,7 @@ FocusScope {
     implicitHeight: M3.density.apply(40)
     implicitWidth: Math.max(root.minWidth, contentRow.implicitWidth + root.horizontalPadding * 2)
 
-    readonly property color containerColor: {
+    readonly property color defaultContainerColor: {
         if (!root.enabled) {
             return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         }
@@ -84,7 +102,9 @@ FocusScope {
         }
     }
 
-    readonly property color contentColor: {
+    readonly property color containerColor: root.m3Appearance("containerColor", root.defaultContainerColor)
+
+    readonly property color defaultContentColor: {
         if (!root.enabled) {
             return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
@@ -100,11 +120,24 @@ FocusScope {
         }
     }
 
+    readonly property color contentColor: root.m3Appearance("contentColor", root.defaultContentColor)
+
     readonly property int elevationLevel: {
         if (root.variant !== "elevated" || !root.enabled) {
             return 0
         }
         return mouseArea.containsPress ? 1 : (mouseArea.containsMouse ? 2 : 1)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
     }
 
     NavigationControl {
@@ -132,7 +165,7 @@ FocusScope {
         id: background
 
         anchors.fill: parent
-        radius: M3.density.apply(40) / 2
+        radius: root.m3Appearance("radius", M3.density.apply(40) / 2)
         color: root.containerColor
         border.width: root.variant === "outlined" ? 1 : 0
         border.color: root.enabled ? M3.color.outline : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)

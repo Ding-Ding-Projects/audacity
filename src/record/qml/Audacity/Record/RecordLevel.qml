@@ -7,12 +7,14 @@ import QtQuick.Layouts 1.15
 import Muse.UiComponents
 import Muse.Ui 1.0
 
+import Audacity.M3
+
 import Audacity.Record 1.0
 import Audacity.Playback 1.0
 
 import "internal"
 
-FlatButton {
+M3IconButton {
     id: root
 
     property alias volumeLevel: popup.volumeLevel
@@ -24,6 +26,8 @@ FlatButton {
     property alias rightCurrentRMS: popup.rightCurrentRMS
 
     property int meterStyle: PlaybackMeterStyle.Default
+
+    property real backgroundRadius: M3.shape.full
 
     property NavigationPanel navigationPanel: null
     property int navigationOrder: 0
@@ -37,17 +41,10 @@ FlatButton {
     signal isMicMeteringOnChangeRequested(bool enable)
     signal isPopupOpened(bool opened)
 
-    accentButton: popup.isOpened
-
-    iconFont: ui.theme.toolbarIconsFont
+    variant: popup.isOpened ? "filled" : "standard"
 
     navigation.panel: navigationPanel
-    navigation.name: text
     navigation.order: navigationOrder
-    isClickOnKeyNavTriggered: false
-    navigation.onTriggered: {
-        togglePopupOpened()
-    }
 
     mouseArea.acceptedButtons: Qt.LeftButton | Qt.RightButton
 
@@ -59,7 +56,7 @@ FlatButton {
         }
     }
 
-    onClicked: function (mouse) {
+    onClicked: {
         togglePopupOpened()
     }
 

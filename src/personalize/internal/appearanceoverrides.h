@@ -37,6 +37,10 @@ public:
     Q_INVOKABLE QVariant getProperty(const QString& elementId, const QString& property, const QString& state = QString()) const;
     Q_INVOKABLE bool hasProperty(const QString& elementId, const QString& property, const QString& state = QString()) const;
 
+    //! Convenience for a Material 3 component: returns the stored override
+    //! for elementId/property/state, or fallback when none was set.
+    Q_INVOKABLE QVariant resolve(const QString& elementId, const QString& state, const QString& property, const QVariant& fallback) const;
+
     Q_INVOKABLE void resetProperty(const QString& elementId, const QString& property, const QString& state = QString());
     Q_INVOKABLE void resetElement(const QString& elementId);
     Q_INVOKABLE void resetAll();

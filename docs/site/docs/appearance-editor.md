@@ -25,13 +25,48 @@ Overrides are stored in a single JSON file under the application's user data
 directory, in a `personalize` subdirectory, as `appearance-overrides.json`.
 The rainbow speed level is stored in the same file.
 
+## Rendering the overrides
+
+`AppearanceOverrides` is a QML singleton owned by the personalize module and
+registered into both the `Audacity.Personalize` namespace (where the editor
+lives) and the `Audacity.M3` namespace, as the same instance. Registering it
+into the M3 namespace as well means a Material 3 component can read the
+store without the shared uicomponents module having to import or link
+against personalize: a component only has to check whether the global
+`AppearanceOverrides` identifier resolves at all, which it does only when
+the personalize module is loaded.
+
+A component that wants to be overridable exposes a settable `elementId`
+property, defaulting to an empty string (no overrides applied). When
+`elementId` is set, it resolves each overridable property through
+`AppearanceOverrides.resolve(elementId, state, property, fallback)`, using
+the token derived default as the fallback, and reacts live to
+`AppearanceOverrides.elementChanged` for that same element id.
+
+`M3Button` and `M3IconButton` currently resolve their container colour,
+content colour (`M3Button` only) and corner radius this way. The remaining
+components named in the appearance editor's own description (`M3Card`,
+`M3TextField`, `M3Switch`, `M3Checkbox`, `M3Slider`, `M3Chip`, `M3ListItem`,
+`M3TopAppBar`, `M3Tabs`/`M3Tab`, `M3Dialog`, `M3Menu`) do not read
+`AppearanceOverrides` yet, and typography, elevation and opacity overrides
+are not read by any component yet either. Setting one of those properties in
+the editor still stores it (nothing is lost), it is simply not rendered
+until the matching component gains the same `elementId` plus resolve wiring.
+
+`PersonalizableItem` already carries the `elementId` it was given through to
+the appearance editor popover it opens; wiring a wrapped M3 element's own
+`elementId` to the same value as its enclosing `PersonalizableItem` is what
+makes "Edit appearance..." on that element edit the overrides that element
+actually reads.
+
 ## Failure modes
 
 A property this small editor does not yet have a control for stays visible in
 the source data if it was set another way, and is simply not editable from
 this surface; the editor says so rather than pretending the property does
-not exist. Nothing here is applied unless the element that owns it actually
-reads `AppearanceOverrides`.
+not exist. An override is only applied once the specific component reading
+it has been wired up as described above; see that section for exactly which
+components and properties currently render.
 
 ## Security considerations
 

@@ -37,10 +37,25 @@ void PersonalizeModule::registerResources()
 
 void PersonalizeModule::registerUiTypes()
 {
+    // The overrides store is registered under both the Audacity.Personalize
+    // module (where the editor popover lives) and the Audacity.M3 module
+    // (where every Material 3 component resolves its own overrides), so the
+    // same store backs both without the uicomponents module having to import
+    // or link against personalize. The two registrations share one instance,
+    // owned by C++ rather than by either QML engine slot, so it is never
+    // destroyed twice.
+    auto appearanceOverridesCreator = [](QQmlEngine*, QJSEngine*) -> QObject* {
+        static AppearanceOverrides* instance = []() {
+            auto* overrides = new AppearanceOverrides();
+            QQmlEngine::setObjectOwnership(overrides, QQmlEngine::CppOwnership);
+            return overrides;
+        }();
+        return instance;
+    };
     qmlRegisterSingletonType<AppearanceOverrides>("Audacity.Personalize", 1, 0, "AppearanceOverrides",
-                                                  [](QQmlEngine*, QJSEngine*) -> QObject* {
-        return new AppearanceOverrides();
-    });
+                                                  appearanceOverridesCreator);
+    qmlRegisterSingletonType<AppearanceOverrides>("Audacity.M3", 1, 0, "AppearanceOverrides",
+                                                  appearanceOverridesCreator);
     qmlRegisterSingletonType<DisplayNameSettings>("Audacity.Personalize", 1, 0, "DisplayNameSettings",
                                                   [](QQmlEngine*, QJSEngine*) -> QObject* {
         return new DisplayNameSettings();

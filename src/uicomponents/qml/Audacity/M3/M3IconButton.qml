@@ -30,6 +30,30 @@ FocusScope {
     // One of "standard", "filled", "tonal" or "outlined".
     property string variant: "standard"
 
+    // See M3Button.elementId: identifies this element to the personalize
+    // appearance overrides store without creating a hard dependency on it.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     property bool checkable: false
     property bool checked: false
 
@@ -47,7 +71,7 @@ FocusScope {
     implicitWidth: M3.density.apply(40)
     implicitHeight: M3.density.apply(40)
 
-    readonly property color containerColor: {
+    readonly property color defaultContainerColor: {
         if (!root.enabled) {
             return root.variant === "standard" || root.variant === "outlined" ? "transparent" : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         }
@@ -62,6 +86,8 @@ FocusScope {
             return "transparent"
         }
     }
+
+    readonly property color containerColor: root.m3Appearance("containerColor", root.defaultContainerColor)
 
     readonly property color contentColor: {
         if (!root.enabled) {
@@ -112,7 +138,7 @@ FocusScope {
         id: background
 
         anchors.fill: parent
-        radius: width / 2
+        radius: root.m3Appearance("radius", width / 2)
         color: root.containerColor
         border.width: root.variant === "outlined" && !root.checked ? 1 : 0
         border.color: M3.color.outline
