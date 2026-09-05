@@ -58,7 +58,7 @@ Item {
 
         onTriggered: {
             if (navCtrl.enabled) {
-                root.clicked()
+                root.clicked();
             }
         }
     }
@@ -154,18 +154,18 @@ Item {
 
         onContainsMouseChanged: {
             if (mouseArea.containsMouse) {
-                ui.tooltip.show(root, prv.toolTipText)
+                ui.tooltip.show(root, prv.toolTipText);
             } else {
-                ui.tooltip.hide(root)
+                ui.tooltip.hide(root);
             }
         }
 
         onPressed: {
-            ui.tooltip.hide(root, true)
+            ui.tooltip.hide(root, true);
         }
 
         onClicked: {
-            root.clicked()
+            root.clicked();
         }
     }
 }

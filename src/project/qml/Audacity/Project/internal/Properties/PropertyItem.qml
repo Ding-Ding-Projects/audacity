@@ -73,12 +73,12 @@ RowLayout {
         navigation.column: prv.navigationStartIndex
         navigation.onActiveChanged: {
             if (navigation.active) {
-                root.scrollIntoViewRequested()
+                root.scrollIntoViewRequested();
             }
         }
 
         onTextEdited: function (newValue) {
-            root.propertyName = newValue
+            root.propertyName = newValue;
         }
     }
 
@@ -95,12 +95,12 @@ RowLayout {
         accessibleName: root.propertyName + " " + currentText
         navigation.onActiveChanged: {
             if (navigation.active && !root.isFileInfoPanelProperty) {
-                root.scrollIntoViewRequested()
+                root.scrollIntoViewRequested();
             }
         }
 
         onTextEdited: function (newValue) {
-            root.propertyValue = newValue
+            root.propertyValue = newValue;
         }
     }
 

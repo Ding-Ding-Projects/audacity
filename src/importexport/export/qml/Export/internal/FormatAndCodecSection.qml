@@ -73,7 +73,7 @@ Rectangle {
                 navigation.row: 0
 
                 onClicked: {
-                    ffmpegPrefModel.fetchAllFormats()
+                    ffmpegPrefModel.fetchAllFormats();
                 }
             }
 
@@ -108,12 +108,12 @@ Rectangle {
                         navigation.accessible.row: index
                         navigation.onActiveChanged: {
                             if (formatItem.navigation.active) {
-                                formatItem.scrollIntoView()
+                                formatItem.scrollIntoView();
                             }
                         }
 
                         onClicked: {
-                            ffmpegPrefModel.setFFmpegFormat(modelData)
+                            ffmpegPrefModel.setFFmpegFormat(modelData);
                         }
 
                         StyledTextLabel {
@@ -151,7 +151,7 @@ Rectangle {
                 navigation.row: 0
 
                 onClicked: {
-                    ffmpegPrefModel.fetchAllCodecs()
+                    ffmpegPrefModel.fetchAllCodecs();
                 }
             }
 
@@ -186,12 +186,12 @@ Rectangle {
                         navigation.accessible.row: index
                         navigation.onActiveChanged: {
                             if (codecItem.navigation.active) {
-                                codecItem.scrollIntoView()
+                                codecItem.scrollIntoView();
                             }
                         }
 
                         onClicked: {
-                            ffmpegPrefModel.setFFmpegCodec(modelData)
+                            ffmpegPrefModel.setFFmpegCodec(modelData);
                         }
 
                         StyledTextLabel {

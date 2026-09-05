@@ -120,7 +120,7 @@ BuiltinEffectBase {
                             maxValue: truncateSilence.thresholdMax()
 
                             onValueEdited: function (newValue) {
-                                truncateSilence.thresholdValue = newValue
+                                truncateSilence.thresholdValue = newValue;
                             }
                         }
                     }
@@ -152,7 +152,7 @@ BuiltinEffectBase {
                             maxValue: truncateSilence.minimumMax()
 
                             onValueEdited: function (newValue) {
-                                truncateSilence.minimumValue = newValue
+                                truncateSilence.minimumValue = newValue;
                             }
                         }
                     }
@@ -201,7 +201,7 @@ BuiltinEffectBase {
 
                         model: truncateSilence.actionModel()
 
-                        delegate: RoundedRadioButton {
+                        delegate: M3RadioButton {
                             text: modelData.text
                             checked: truncateSilence.actionIndex === modelData.value
 
@@ -209,7 +209,7 @@ BuiltinEffectBase {
                             navigation.order: index
 
                             onToggled: {
-                                truncateSilence.actionIndex = modelData.value
+                                truncateSilence.actionIndex = modelData.value;
                             }
                         }
                     }
@@ -243,9 +243,9 @@ BuiltinEffectBase {
 
                             onValueEdited: function (newValue) {
                                 if (truncateSilence.actionIndex === 0) {
-                                    truncateSilence.truncateValue = newValue
+                                    truncateSilence.truncateValue = newValue;
                                 } else {
-                                    truncateSilence.compressValue = newValue
+                                    truncateSilence.compressValue = newValue;
                                 }
                             }
                         }
@@ -263,10 +263,10 @@ BuiltinEffectBase {
                         checked: truncateSilence.independentValue
 
                         onToggled: {
-                            truncateSilence.independentValue = checked
+                            truncateSilence.independentValue = checked;
                             independentCheckbox.checked = Qt.binding(function () {
-                                return truncateSilence.independentValue
-                            })
+                                return truncateSilence.independentValue;
+                            });
                         }
                     }
                 }

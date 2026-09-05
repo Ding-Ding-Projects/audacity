@@ -25,10 +25,10 @@ SpectrogramBaseSection {
         checked: settingsModel.spectralSelectionEnabled
 
         onToggled: {
-            settingsModel.spectralSelectionEnabled = !settingsModel.spectralSelectionEnabled
+            settingsModel.spectralSelectionEnabled = !settingsModel.spectralSelectionEnabled;
             m3Switch5.checked = Qt.binding(function () {
-                return settingsModel.spectralSelectionEnabled
-            })
+                return settingsModel.spectralSelectionEnabled;
+            });
         }
 
         navigation.panel: root.navigation

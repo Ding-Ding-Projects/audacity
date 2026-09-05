@@ -73,10 +73,10 @@ BuiltinEffectBase {
                     checked: filterCurveEq.linFreqScale
 
                     onToggled: {
-                        filterCurveEq.linFreqScale = !filterCurveEq.linFreqScale
+                        filterCurveEq.linFreqScale = !filterCurveEq.linFreqScale;
                         linFreqScaleCheckBox.checked = Qt.binding(function () {
-                            return filterCurveEq.linFreqScale
-                        })
+                            return filterCurveEq.linFreqScale;
+                        });
                     }
                 }
 
@@ -93,10 +93,10 @@ BuiltinEffectBase {
                     checked: filterCurveEq.gridlinesVisible
 
                     onToggled: {
-                        filterCurveEq.gridlinesVisible = !filterCurveEq.gridlinesVisible
+                        filterCurveEq.gridlinesVisible = !filterCurveEq.gridlinesVisible;
                         showGridlinesCheckBox.checked = Qt.binding(function () {
-                            return filterCurveEq.gridlinesVisible
-                        })
+                            return filterCurveEq.gridlinesVisible;
+                        });
                     }
                 }
             }
@@ -215,17 +215,17 @@ BuiltinEffectBase {
             }
 
             yTicks: (function () {
-                    const result = []
-                    const span = filterCurveEq.dbMax - filterCurveEq.dbMin
+                    const result = [];
+                    const span = filterCurveEq.dbMax - filterCurveEq.dbMin;
                     if (span <= 0)
-                        return result
+                        return result;
                     for (let i = filterCurveEq.dbMin; i <= filterCurveEq.dbMax; i += 6) {
                         result.push({
                             label: String(i),
                             position: (i - filterCurveEq.dbMin) / span
-                        })
+                        });
                     }
-                    return result
+                    return result;
                 })()
 
             Item {
@@ -282,64 +282,64 @@ BuiltinEffectBase {
                     yAxisInverse: false
 
                     Component.onCompleted: {
-                        curve.init()
+                        curve.init();
                     }
 
                     function activePointFreq() {
-                        const norm = curve.width > 0 ? (curve.activePointX / curve.width) : 0
+                        const norm = curve.width > 0 ? (curve.activePointX / curve.width) : 0;
                         if (filterCurveEq.linFreqScale) {
-                            return filterCurveEq.loFreq + norm * (filterCurveEq.hiFreq - filterCurveEq.loFreq)
+                            return filterCurveEq.loFreq + norm * (filterCurveEq.hiFreq - filterCurveEq.loFreq);
                         }
-                        const loLog = Math.log(filterCurveEq.loFreq) / Math.LN10
-                        const hiLog = Math.log(filterCurveEq.hiFreq) / Math.LN10
-                        return Math.pow(10, norm * (hiLog - loLog) + loLog)
+                        const loLog = Math.log(filterCurveEq.loFreq) / Math.LN10;
+                        const hiLog = Math.log(filterCurveEq.hiFreq) / Math.LN10;
+                        return Math.pow(10, norm * (hiLog - loLog) + loLog);
                     }
 
                     onPointMoved: function (index, x, y, completed) {
-                        filterCurveEq.curveModel.setPoint(index, x, y, completed)
-                        tooltip.gain = y
-                        tooltip.freq = curve.activePointFreq()
-                        tooltip.show(true)
-                        curve.isDragging = !completed
+                        filterCurveEq.curveModel.setPoint(index, x, y, completed);
+                        tooltip.gain = y;
+                        tooltip.freq = curve.activePointFreq();
+                        tooltip.show(true);
+                        curve.isDragging = !completed;
                     }
 
                     onPointAdded: function (x, y, completed) {
-                        filterCurveEq.curveModel.addPoint(x, y, completed)
-                        curve.isDragging = !completed
+                        filterCurveEq.curveModel.addPoint(x, y, completed);
+                        curve.isDragging = !completed;
                     }
 
                     onPointRemoved: function (index, completed) {
-                        filterCurveEq.curveModel.removePoint(index, completed)
+                        filterCurveEq.curveModel.removePoint(index, completed);
                         if (completed) {
-                            curve.isDragging = false
+                            curve.isDragging = false;
                         }
                     }
 
                     onDragCancelled: {
-                        filterCurveEq.curveModel.cancelDrag()
-                        tooltip.hide(true)
+                        filterCurveEq.curveModel.cancelDrag();
+                        tooltip.hide(true);
                         // Defer so the closeOnEscape binding keeps the dialog open during the same Esc dispatch.
                         Qt.callLater(function () {
-                            curve.isDragging = false
-                        })
+                            curve.isDragging = false;
+                        });
                     }
 
                     onInteractionFinished: function () {
                         if (!curve.hasActivePoint) {
-                            tooltip.hide(true)
+                            tooltip.hide(true);
                         }
-                        curve.isDragging = false
+                        curve.isDragging = false;
                     }
 
                     onActivePointChanged: {
                         if (curve.hasActivePoint) {
-                            fake.x = curve.activePointX
-                            fake.y = curve.activePointY - (curve.standardPointStyle.centerRadius + 2)
-                            tooltip.gain = curve.activePointValue
-                            tooltip.freq = curve.activePointFreq()
-                            tooltip.show(true)
+                            fake.x = curve.activePointX;
+                            fake.y = curve.activePointY - (curve.standardPointStyle.centerRadius + 2);
+                            tooltip.gain = curve.activePointValue;
+                            tooltip.freq = curve.activePointFreq();
+                            tooltip.show(true);
                         } else {
-                            tooltip.hide(true)
+                            tooltip.hide(true);
                         }
                     }
 

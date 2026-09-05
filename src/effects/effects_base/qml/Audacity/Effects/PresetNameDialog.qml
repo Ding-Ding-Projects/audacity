@@ -22,14 +22,14 @@ StyledDialogView {
     readonly property string invalidReason: {
         if (/[\/\\]/.test(trimmedName)) {
             //: %1 is a forward slash, %2 is a backslash; neither character is allowed in a preset name.
-            return qsTrc("effects", "Preset name cannot contain %1 or %2").arg("/").arg("\\")
+            return qsTrc("effects", "Preset name cannot contain %1 or %2").arg("/").arg("\\");
         }
-        return ""
+        return "";
     }
     readonly property bool isValid: trimmedName.length > 0 && invalidReason === ""
 
     Component.onCompleted: {
-        Qt.callLater(input.forceActiveFocus)
+        Qt.callLater(input.forceActiveFocus);
     }
 
     NavigationPanel {
@@ -45,13 +45,13 @@ StyledDialogView {
 
         function submit() {
             if (!root.isValid) {
-                return
+                return;
             }
             root.ret = {
                 errcode: 0,
                 value: root.trimmedName
-            }
-            root.hide()
+            };
+            root.hide();
         }
     }
 
@@ -109,7 +109,7 @@ StyledDialogView {
             minWidth: 80
 
             onClicked: {
-                root.reject()
+                root.reject();
             }
         }
 
@@ -122,7 +122,7 @@ StyledDialogView {
             enabled: root.isValid
 
             onClicked: {
-                prv.submit()
+                prv.submit();
             }
         }
     }

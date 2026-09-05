@@ -41,11 +41,11 @@ StyledDialogView {
     objectName: "NewProjectDialog"
 
     function onDone() {
-        var result = {}
+        var result = {};
 
         if (newProjectModel.createProject(result)) {
-            root.activateParentOnClose = false
-            root.accept()
+            root.activateParentOnClose = false;
+            root.accept();
         }
     }
 
@@ -118,7 +118,7 @@ StyledDialogView {
                 buttonId: ButtonBoxModel.CustomButton + 1
 
                 onClicked: {
-                    root.reject()
+                    root.reject();
                 }
             }
 
@@ -129,7 +129,7 @@ StyledDialogView {
                 visible: pagesStack.currentIndex > 0
 
                 onClicked: {
-                    pagesStack.currentIndex--
+                    pagesStack.currentIndex--;
                 }
             }
 
@@ -141,7 +141,7 @@ StyledDialogView {
                 enabled: chooseInstrumentsAndTemplatePage.hasSelection
 
                 onClicked: {
-                    pagesStack.currentIndex++
+                    pagesStack.currentIndex++;
                 }
             }
 
@@ -152,7 +152,7 @@ StyledDialogView {
                 accentButton: true
 
                 onClicked: {
-                    root.onDone()
+                    root.onDone();
                 }
             }
         }

@@ -75,11 +75,11 @@ Item {
             onCreateNewProjectRequested: root.createNewProjectRequested()
 
             onOpenProjectRequested: function (projectPath, displayName) {
-                root.openProjectRequested(projectPath, displayName)
+                root.openProjectRequested(projectPath, displayName);
             }
 
             onOpenCloudProjectRequested: function (projectId) {
-                root.openCloudProjectRequested(projectId)
+                root.openCloudProjectRequested(projectId);
             }
         }
     }
@@ -119,11 +119,11 @@ Item {
             onCreateNewProjectRequested: root.createNewProjectRequested()
 
             onOpenProjectRequested: function (projectPath, displayName) {
-                root.openProjectRequested(projectPath, displayName)
+                root.openProjectRequested(projectPath, displayName);
             }
 
             onOpenCloudProjectRequested: function (projectId) {
-                root.openCloudProjectRequested(projectId)
+                root.openCloudProjectRequested(projectId);
             }
 
             columns: [
@@ -184,7 +184,7 @@ Item {
 
                                     onActiveChanged: function (active) {
                                         if (active) {
-                                            listItem.scrollIntoView()
+                                            listItem.scrollIntoView();
                                         }
                                     }
                                 }
@@ -226,8 +226,8 @@ Item {
 
                                         onActiveChanged: function (active) {
                                             if (active) {
-                                                listItem.scrollIntoView()
-                                                listItem.scrollColumnIntoView(remainingColumnIndex)
+                                                listItem.scrollIntoView();
+                                                listItem.scrollColumnIntoView(remainingColumnIndex);
                                             }
                                         }
                                     }
@@ -262,8 +262,8 @@ Item {
 
                                 onActiveChanged: function (active) {
                                     if (active) {
-                                        listItem.scrollIntoView()
-                                        listItem.scrollColumnIntoView(remainingColumnIndex)
+                                        listItem.scrollIntoView();
+                                        listItem.scrollColumnIntoView(remainingColumnIndex);
                                     }
                                 }
                             }
@@ -299,8 +299,8 @@ Item {
 
                                 onActiveChanged: function (active) {
                                     if (active) {
-                                        listItem.scrollIntoView()
-                                        listItem.scrollColumnIntoView(remainingColumnIndex)
+                                        listItem.scrollIntoView();
+                                        listItem.scrollColumnIntoView(remainingColumnIndex);
                                     }
                                 }
                             }
@@ -334,18 +334,18 @@ Item {
                             menuModel: item.contextMenuModel
 
                             onHandleMenuItem: function (itemId) {
-                                Qt.callLater(item.contextMenuModel.handleMenuItem, itemId)
+                                Qt.callLater(item.contextMenuModel.handleMenuItem, itemId);
                             }
 
                             Component.onCompleted: {
                                 if (menuModel != null) {
-                                    menuModel.load()
+                                    menuModel.load();
                                 }
                             }
 
                             onMenuModelChanged: {
                                 if (menuModel != null) {
-                                    menuModel.load()
+                                    menuModel.load();
                                 }
                             }
 
@@ -369,13 +369,13 @@ Item {
 
                                     onActiveChanged: function (active) {
                                         if (active) {
-                                            listItem.scrollIntoView()
-                                            listItem.scrollColumnIntoView(remainingColumnIndex)
+                                            listItem.scrollIntoView();
+                                            listItem.scrollColumnIntoView(remainingColumnIndex);
                                         }
                                     }
 
                                     onTriggered: {
-                                        menuButton.clicked(null)
+                                        menuButton.clicked(null);
                                     }
                                 }
                             }

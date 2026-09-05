@@ -31,11 +31,11 @@ BaseSection {
         closeGapBehavior: editPreferencesModel.closeGapBehavior
 
         onNewDeleteBehaviorRequested: function (deleteBehavior) {
-            editPreferencesModel.setDeleteBehavior(deleteBehavior)
+            editPreferencesModel.setDeleteBehavior(deleteBehavior);
         }
 
         onNewCloseGapBehaviorRequested: function (closeGapBehavior) {
-            editPreferencesModel.setCloseGapBehavior(closeGapBehavior)
+            editPreferencesModel.setCloseGapBehavior(closeGapBehavior);
         }
     }
 }

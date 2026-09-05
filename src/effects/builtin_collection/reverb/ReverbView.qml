@@ -44,7 +44,7 @@ BuiltinEffectBase {
     }
 
     function newParameterValueRequested(key, value) {
-        reverb.setParam(key, value)
+        reverb.setParam(key, value);
     }
 
     RowLayout {
@@ -90,7 +90,7 @@ BuiltinEffectBase {
                     radius: 24
 
                     onNewValueRequested: function (key, newValue) {
-                        newParameterValueRequested(key, newValue)
+                        newParameterValueRequested(key, newValue);
                     }
 
                     onCommitRequested: reverb.commitSettings()
@@ -108,7 +108,7 @@ BuiltinEffectBase {
                     radius: 24
 
                     onNewValueRequested: function (key, newValue) {
-                        newParameterValueRequested(key, newValue)
+                        newParameterValueRequested(key, newValue);
                     }
 
                     onCommitRequested: reverb.commitSettings()
@@ -126,7 +126,7 @@ BuiltinEffectBase {
                     radius: 24
 
                     onNewValueRequested: function (key, newValue) {
-                        newParameterValueRequested(key, newValue)
+                        newParameterValueRequested(key, newValue);
                     }
 
                     onCommitRequested: reverb.commitSettings()
@@ -160,8 +160,8 @@ BuiltinEffectBase {
                 parameter: reverb.paramsList["HfDamping"]
 
                 onNewValueRequested: function (key, newValue) {
-                    newParameterValueRequested(key, newValue)
-                    hfDampingKnob.value = newValue
+                    newParameterValueRequested(key, newValue);
+                    hfDampingKnob.value = newValue;
                 }
 
                 onCommitRequested: reverb.commitSettings()
@@ -178,8 +178,8 @@ BuiltinEffectBase {
                 parameter: reverb.paramsList["Reverberance"]
 
                 onNewValueRequested: function (key, newValue) {
-                    newParameterValueRequested(key, newValue)
-                    reverberanceKnob.value = newValue
+                    newParameterValueRequested(key, newValue);
+                    reverberanceKnob.value = newValue;
                 }
 
                 onCommitRequested: reverb.commitSettings()
@@ -196,8 +196,8 @@ BuiltinEffectBase {
                 parameter: reverb.paramsList["ToneLow"]
 
                 onNewValueRequested: function (key, newValue) {
-                    newParameterValueRequested(key, newValue)
-                    toneLowKnob.value = newValue
+                    newParameterValueRequested(key, newValue);
+                    toneLowKnob.value = newValue;
                 }
 
                 onCommitRequested: reverb.commitSettings()
@@ -214,8 +214,8 @@ BuiltinEffectBase {
                 parameter: reverb.paramsList["ToneHigh"]
 
                 onNewValueRequested: function (key, newValue) {
-                    newParameterValueRequested(key, newValue)
-                    toneHighKnob.value = newValue
+                    newParameterValueRequested(key, newValue);
+                    toneHighKnob.value = newValue;
                 }
 
                 onCommitRequested: reverb.commitSettings()
@@ -236,8 +236,8 @@ BuiltinEffectBase {
                 parameter: reverb.paramsList["WetGain"]
 
                 onNewValueRequested: function (key, newValue) {
-                    newParameterValueRequested(key, newValue)
-                    wetGainKnob.value = newValue
+                    newParameterValueRequested(key, newValue);
+                    wetGainKnob.value = newValue;
                 }
 
                 onCommitRequested: reverb.commitSettings()
@@ -254,8 +254,8 @@ BuiltinEffectBase {
                 parameter: reverb.paramsList["DryGain"]
 
                 onNewValueRequested: function (key, newValue) {
-                    newParameterValueRequested(key, newValue)
-                    dryGainKnob.value = newValue
+                    newParameterValueRequested(key, newValue);
+                    dryGainKnob.value = newValue;
                 }
 
                 onCommitRequested: reverb.commitSettings()
@@ -270,11 +270,11 @@ BuiltinEffectBase {
                 text: qsTrc("effects/reverb", "Wet only")
                 checked: reverb.wetOnly
                 onToggled: function () {
-                    reverb.wetOnly = !reverb.wetOnly
-                    reverb.commitSettings()
+                    reverb.wetOnly = !reverb.wetOnly;
+                    reverb.commitSettings();
                     wetOnly.checked = Qt.binding(function () {
-                        return reverb.wetOnly
-                    })
+                        return reverb.wetOnly;
+                    });
                 }
             }
 

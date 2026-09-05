@@ -58,7 +58,7 @@ BuiltinEffectBase {
                 step: paulstretch.stretchFactorStep
 
                 onValueEdited: function (newValue) {
-                    paulstretch.amount = newValue
+                    paulstretch.amount = newValue;
                 }
             }
         }
@@ -90,7 +90,7 @@ BuiltinEffectBase {
                 step: paulstretch.timeResolutionStep
 
                 onValueEdited: function (newValue) {
-                    paulstretch.timeResolution = newValue
+                    paulstretch.timeResolution = newValue;
                 }
             }
         }

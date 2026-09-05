@@ -33,45 +33,45 @@ Rectangle {
         property bool vendorUiFailed: false
         property AbstractMenuModel activeMenuModel: null
         property var viewModel: {
-            var viewModel = Lv2ViewModelFactory.createModel(root, root.instanceId, root.effectState)
+            var viewModel = Lv2ViewModelFactory.createModel(root, root.instanceId, root.effectState);
             viewModel.onExternalUiClosed.connect(function () {
-                window.close()
-            })
+                window.close();
+            });
             viewModel.onVendorUiFailed.connect(function () {
-                prv.vendorUiFailed = true
-                root.vendorUiFailed()
-            })
-            return viewModel
+                prv.vendorUiFailed = true;
+                root.vendorUiFailed();
+            });
+            return viewModel;
         }
     }
 
     Component.onCompleted: {
-        prv.viewModel.init()
+        prv.viewModel.init();
 
         if (!prv.vendorUiFailed) {
-            Qt.callLater(presetsBarModel.load)
+            Qt.callLater(presetsBarModel.load);
         }
     }
 
     Component.onDestruction: {
-        prv.viewModel.deinit()
+        prv.viewModel.deinit();
     }
 
     function startPreview() {
-        prv.viewModel.startPreview()
+        prv.viewModel.startPreview();
     }
 
     function stopPreview() {
-        prv.viewModel.stopPreview()
+        prv.viewModel.stopPreview();
     }
 
     function manage(parent) {
-        var px = parent.x
-        var py = parent.y + parent.height
-        var pos = mapFromItem(parent, px, py)
+        var px = parent.x;
+        var py = parent.y + parent.height;
+        var pos = mapFromItem(parent, px, py);
 
-        prv.activeMenuModel = presetsBarModel.presetContextMenu()
-        menuLoader.show(pos, prv.activeMenuModel)
+        prv.activeMenuModel = presetsBarModel.presetContextMenu();
+        menuLoader.show(pos, prv.activeMenuModel);
     }
 
     EffectPresetsBarModel {
@@ -84,7 +84,7 @@ Rectangle {
 
         onHandleMenuItem: function (itemId) {
             if (prv.activeMenuModel) {
-                prv.activeMenuModel.handleMenuItem(itemId)
+                prv.activeMenuModel.handleMenuItem(itemId);
             }
         }
     }

@@ -33,10 +33,10 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.exportPreferencesModel.askExportLocationType = checked
+            root.exportPreferencesModel.askExportLocationType = checked;
             m3Switch4.checked = Qt.binding(function () {
-                return root.exportPreferencesModel.askExportLocationType
-            })
+                return root.exportPreferencesModel.askExportLocationType;
+            });
         }
     }
 }

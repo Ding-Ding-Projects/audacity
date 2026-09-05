@@ -55,10 +55,10 @@ FlatButton {
     }
 
     mouseArea.onPressAndHold: {
-        continuousTimer.running = true
+        continuousTimer.running = true;
     }
     mouseArea.onReleased: {
-        continuousTimer.running = false
+        continuousTimer.running = false;
     }
 
     Timer {
@@ -68,7 +68,7 @@ FlatButton {
         repeat: true
 
         onTriggered: {
-            root.clicked(null)
+            root.clicked(null);
         }
     }
 }

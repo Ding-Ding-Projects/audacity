@@ -35,7 +35,7 @@ Item {
 
     property alias searchEnabled: searchField.visible
     property alias searchText: searchField.searchText
-    property alias searching: searchField.hasText
+    readonly property bool searching: searchField.searchText !== ""
 
     property alias navigationPanel: view.navigation
 
@@ -44,7 +44,7 @@ Item {
     signal doubleClicked(var index)
 
     function clearSearch() {
-        searchField.clear()
+        searchField.clear();
     }
 
     StyledTextLabel {
@@ -55,8 +55,9 @@ Item {
         font: M3.typography.titleSmall
     }
 
-    SearchField {
+    M3SearchBar {
         id: searchField
+        showRegexBuilder: true
 
         anchors.top: title.bottom
         anchors.topMargin: 16
@@ -105,11 +106,11 @@ Item {
             }
 
             onClicked: {
-                root.titleClicked(model.index)
+                root.titleClicked(model.index);
             }
 
             onDoubleClicked: {
-                root.doubleClicked(model.index)
+                root.doubleClicked(model.index);
             }
         }
     }

@@ -50,7 +50,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.importLayoutChangeRequested(checked)
+            root.importLayoutChangeRequested(checked);
         }
     }
 
@@ -65,7 +65,7 @@ BaseSection {
         navigation.row: 1
 
         onToggled: {
-            root.importBreaksChangeRequested(checked)
+            root.importBreaksChangeRequested(checked);
         }
     }
 
@@ -80,7 +80,7 @@ BaseSection {
         navigation.row: 2
 
         onToggled: {
-            root.useDefaultFontChangeRequested(checked)
+            root.useDefaultFontChangeRequested(checked);
         }
     }
 }

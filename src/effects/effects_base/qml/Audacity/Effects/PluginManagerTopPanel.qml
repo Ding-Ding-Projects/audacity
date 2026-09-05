@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import Muse.UiComponents
 import Audacity.UiComponents
 import Audacity.Effects
+import Audacity.M3
 
 Item {
     id: root
@@ -17,40 +18,40 @@ Item {
         name: "PluginManagerTopPanel"
         direction: NavigationPanel.Horizontal
         accessible.role: MUAccessible.ComboBox
-        accessible.name: showModel.label + ", " + typeModel.label + ", " + categoryModel.label + ", " + statusModel.label + ", " + searchField.accessible.name
+        accessible.name: showModel.label + ", " + typeModel.label + ", " + categoryModel.label + ", " + statusModel.label + ", " + searchField.accessibleName
     }
 
     signal searchTextChanged(string newText)
 
     function focusOnFirst() {
-        dropdownsRepeater.itemAt(0).navigation.requestActive()
+        dropdownsRepeater.itemAt(0).navigation.requestActive();
     }
 
     function readInfo() {
-        accessibleInfo.ignored = false
-        accessibleInfo.focused = true
+        accessibleInfo.ignored = false;
+        accessibleInfo.focused = true;
     }
 
     AccessibleItem {
         id: accessibleInfo
         visualItem: root
         role: MUAccessible.ComboBox
-        name: showModel.label + ", " + typeModel.label + ", " + categoryModel.label + ", " + statusModel.label + ", " + searchField.accessible.name
+        name: showModel.label + ", " + typeModel.label + ", " + categoryModel.label + ", " + statusModel.label + ", " + searchField.accessibleName
     }
 
     Component.onCompleted: {
         tableViewModel.enabledDisabledSelectedIndex = Qt.binding(function () {
-            return showModel.selectedIndex
-        })
+            return showModel.selectedIndex;
+        });
         tableViewModel.effectFamilySelectedIndex = Qt.binding(function () {
-            return typeModel.selectedIndex
-        })
+            return typeModel.selectedIndex;
+        });
         tableViewModel.effectTypeSelectedIndex = Qt.binding(function () {
-            return categoryModel.selectedIndex
-        })
+            return categoryModel.selectedIndex;
+        });
         tableViewModel.statusSelectedIndex = Qt.binding(function () {
-            return statusModel.selectedIndex
-        })
+            return statusModel.selectedIndex;
+        });
     }
 
     DropdownOptionsModel {
@@ -104,17 +105,18 @@ Item {
 
                 Component.onCompleted: {
                     // Don't know why `navigation.order: index` doesn't work here
-                    navigation.order = index
+                    navigation.order = index;
                 }
 
                 onHandleMenuItem: function (itemId) {
-                    modelData.select(itemId)
+                    modelData.select(itemId);
                 }
             }
         }
 
-        SearchField {
+        M3SearchBar {
             id: searchField
+            showRegexBuilder: true
 
             Layout.fillWidth: true
             Layout.preferredHeight: root.contentHeight
@@ -123,10 +125,8 @@ Item {
             navigation.panel: root.navigationPanel
             navigation.order: dropdownsRepeater.count
 
-            inputField.activeFocusOnPress: true
-
             onSearchTextChanged: {
-                root.searchTextChanged(searchField.searchText)
+                root.searchTextChanged(searchField.searchText);
             }
         }
     }

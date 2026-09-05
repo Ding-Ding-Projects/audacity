@@ -78,7 +78,7 @@ BaseSection {
                 navigation.row: 0
 
                 onToggled: {
-                    editPreferencesModel.setStereoHeightsPref(AsymmetricStereoHeights.ALWAYS)
+                    editPreferencesModel.setStereoHeightsPref(AsymmetricStereoHeights.ALWAYS);
                 }
             }
 
@@ -93,7 +93,7 @@ BaseSection {
                 navigation.row: 1
 
                 onToggled: {
-                    editPreferencesModel.setStereoHeightsPref(AsymmetricStereoHeights.WORKSPACE_DEPENDENT)
+                    editPreferencesModel.setStereoHeightsPref(AsymmetricStereoHeights.WORKSPACE_DEPENDENT);
                 }
             }
 
@@ -119,7 +119,7 @@ BaseSection {
                 navigation.row: 3
 
                 onToggled: {
-                    editPreferencesModel.setStereoHeightsPref(AsymmetricStereoHeights.NEVER)
+                    editPreferencesModel.setStereoHeightsPref(AsymmetricStereoHeights.NEVER);
                 }
             }
         }

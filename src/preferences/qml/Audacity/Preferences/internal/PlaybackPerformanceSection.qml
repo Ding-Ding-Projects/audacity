@@ -32,7 +32,7 @@ BaseSection {
         navigation.row: 0
 
         onValueEdited: function (newIndex, newValue) {
-            playbackPreferencesModel.setPlaybackQuality(newIndex)
+            playbackPreferencesModel.setPlaybackQuality(newIndex);
         }
     }
 
@@ -48,7 +48,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newIndex, newValue) {
-            playbackPreferencesModel.setDithering(newIndex)
+            playbackPreferencesModel.setDithering(newIndex);
         }
     }
 }

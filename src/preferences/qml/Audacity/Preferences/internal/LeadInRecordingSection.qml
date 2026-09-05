@@ -39,7 +39,7 @@ BaseSection {
         navigation.row: 0
 
         onValueEdited: function (newValue) {
-            recordingPreferencesModel.setLeadInTimeDuration(newValue)
+            recordingPreferencesModel.setLeadInTimeDuration(newValue);
         }
     }
 
@@ -64,7 +64,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newValue) {
-            recordingPreferencesModel.setCrossfadeDuration(newValue)
+            recordingPreferencesModel.setCrossfadeDuration(newValue);
         }
     }
 }

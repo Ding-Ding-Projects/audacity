@@ -34,10 +34,10 @@ BaseSection {
             navigation.order: 1
 
             onToggled: {
-                recordingPreferencesModel.isInputMonitoringOn = checked
+                recordingPreferencesModel.isInputMonitoringOn = checked;
                 inputMonitoringCheckBox.checked = Qt.binding(function () {
-                    return recordingPreferencesModel.isInputMonitoringOn
-                })
+                    return recordingPreferencesModel.isInputMonitoringOn;
+                });
             }
         }
 
@@ -55,10 +55,10 @@ BaseSection {
             navigation.order: 2
 
             onToggled: {
-                recordingPreferencesModel.isMicMeteringOn = checked
+                recordingPreferencesModel.isMicMeteringOn = checked;
                 micMeteringCheckBox.checked = Qt.binding(function () {
-                    return recordingPreferencesModel.isMicMeteringOn
-                })
+                    return recordingPreferencesModel.isMicMeteringOn;
+                });
             }
         }
     }

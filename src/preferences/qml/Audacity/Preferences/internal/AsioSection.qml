@@ -36,10 +36,10 @@ BaseSection {
             navigation.column: 0
 
             onToggled: {
-                apiModel.setAsioUseDeviceSampleRate(checked)
+                apiModel.setAsioUseDeviceSampleRate(checked);
                 m3Switch3.checked = Qt.binding(function () {
-                    return apiModel.asioUseDeviceSampleRate
-                })
+                    return apiModel.asioUseDeviceSampleRate;
+                });
             }
         }
 
@@ -53,7 +53,7 @@ BaseSection {
             navigation.column: 1
 
             onClicked: {
-                apiModel.showAsioControlPanel()
+                apiModel.showAsioControlPanel();
             }
         }
     }

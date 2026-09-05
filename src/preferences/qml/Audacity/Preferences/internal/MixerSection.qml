@@ -49,7 +49,7 @@ BaseSection {
         navigation.panel: root.navigation
 
         onToggled: {
-            root.muteHiddenInstrumentsChangeRequested(checked)
+            root.muteHiddenInstrumentsChangeRequested(checked);
         }
     }
 }

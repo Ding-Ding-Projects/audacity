@@ -27,46 +27,46 @@ Item {
     signal commitRequested
 
     function effectiveStepSize() {
-        const visibleStep = (knob.to - knob.from) / 50
-        const parameterStep = Number(parameter["step"])
+        const visibleStep = (knob.to - knob.from) / 50;
+        const parameterStep = Number(parameter["step"]);
 
         if (isFinite(parameterStep) && parameterStep > 0) {
-            return Math.max(visibleStep, parameterStep)
+            return Math.max(visibleStep, parameterStep);
         }
 
-        return visibleStep
+        return visibleStep;
     }
 
     function precisionStepSize() {
-        const parameterStep = Number(parameter["step"])
+        const parameterStep = Number(parameter["step"]);
 
         if (isFinite(parameterStep) && parameterStep > 0) {
-            return parameterStep
+            return parameterStep;
         }
 
-        return knob.stepSize
+        return knob.stepSize;
     }
 
     function normalizedValue(value) {
-        return Number(value.toFixed(textEdit.decimals))
+        return Number(value.toFixed(textEdit.decimals));
     }
 
     function activateNumericInput(initialText) {
         if (!textEdit.activeFocus) {
-            textEdit.forceActiveFocus()
+            textEdit.forceActiveFocus();
         }
         if (initialText !== undefined && initialText !== "") {
-            textEdit.currentText = initialText
+            textEdit.currentText = initialText;
         }
     }
 
     onParameterChanged: {
         if (parameter) {
-            knob.from = parameter["min"]
-            knob.to = parameter["max"]
-            warper.value = parameter["value"]
-            knob.stepSize = effectiveStepSize()
-            textEdit.measureUnitsSymbol = parameter["unit"] || ""
+            knob.from = parameter["min"];
+            knob.to = parameter["max"];
+            warper.value = parameter["value"];
+            knob.stepSize = effectiveStepSize();
+            textEdit.measureUnitsSymbol = parameter["unit"] || "";
         }
     }
 
@@ -77,7 +77,7 @@ Item {
         max: knob.to
 
         onValueChanged: {
-            root.newValueRequested(root.parameter["key"], root.normalizedValue(warper.value))
+            root.newValueRequested(root.parameter["key"], root.normalizedValue(warper.value));
         }
     }
 
@@ -107,15 +107,15 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             onNewValueRequested: function (value) {
-                warper.warpedValue = value
+                warper.warpedValue = value;
             }
 
             mouseArea.onDoubleClicked: function () {
-                root.newValueRequested(root.parameter["key"], root.defaultValue)
+                root.newValueRequested(root.parameter["key"], root.defaultValue);
             }
 
             mouseArea.onReleased: function () {
-                root.commitRequested()
+                root.commitRequested();
             }
         }
 
@@ -124,11 +124,11 @@ Item {
 
             function onNavigationEvent(event) {
                 if (event.type !== NavigationEvent.Trigger) {
-                    return
+                    return;
                 }
 
-                root.activateNumericInput()
-                event.accepted = true
+                root.activateNumericInput();
+                event.accepted = true;
             }
         }
 
@@ -153,21 +153,21 @@ Item {
             minValue: knob.from
             maxValue: knob.to
             decimals: {
-                let s = root.precisionStepSize().toString()
+                let s = root.precisionStepSize().toString();
                 if (s.indexOf('.') >= 0)
-                    return s.split('.')[1].length
-                return 0
+                    return s.split('.')[1].length;
+                return 0;
             }
             step: root.precisionStepSize()
 
             currentValue: +warper.value.toFixed(decimals)
 
             onValueEdited: function (value) {
-                root.newValueRequested(root.parameter["key"], root.normalizedValue(value))
+                root.newValueRequested(root.parameter["key"], root.normalizedValue(value));
             }
 
             onValueEditingFinished: function (value) {
-                root.commitRequested()
+                root.commitRequested();
             }
         }
     }

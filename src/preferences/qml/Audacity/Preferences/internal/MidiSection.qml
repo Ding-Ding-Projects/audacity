@@ -51,7 +51,7 @@ BaseSection {
         navigation.row: 0
 
         onValueEdited: function (newIndex, newValue) {
-            root.currentShortestNoteChangeRequested(newValue)
+            root.currentShortestNoteChangeRequested(newValue);
         }
     }
 }

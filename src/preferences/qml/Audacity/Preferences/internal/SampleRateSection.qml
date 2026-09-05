@@ -56,7 +56,7 @@ BaseSection {
             navigation.column: 0
 
             onValueEdited: function (newIndex, newValue) {
-                apiModel.defaultSampleRateSelected(newValue)
+                apiModel.defaultSampleRateSelected(newValue);
             }
         }
 
@@ -76,7 +76,7 @@ BaseSection {
             navigation.column: 1
 
             onValueEdited: function (newIndex, newValue) {
-                apiModel.defaultSampleFormatSelected(newValue)
+                apiModel.defaultSampleFormatSelected(newValue);
             }
         }
     }
@@ -101,7 +101,7 @@ BaseSection {
             navigation.column: 0
 
             onValueEdited: function (newValue) {
-                apiModel.defaultSampleRateValueSelected(newValue)
+                apiModel.defaultSampleRateValueSelected(newValue);
             }
         }
     }

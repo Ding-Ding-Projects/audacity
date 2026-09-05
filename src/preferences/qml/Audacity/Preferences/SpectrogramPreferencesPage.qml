@@ -31,7 +31,7 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 1
 
             onActiveFocusRequested: function (rect) {
-                root.ensureContentVisibleRequested(rect)
+                root.ensureContentVisibleRequested(rect);
             }
         }
 
@@ -44,7 +44,7 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 2
 
             onActiveFocusRequested: function (rect) {
-                root.ensureContentVisibleRequested(rect)
+                root.ensureContentVisibleRequested(rect);
             }
         }
 
@@ -57,7 +57,7 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 3
 
             onActiveFocusRequested: function (rect) {
-                root.ensureContentVisibleRequested(rect)
+                root.ensureContentVisibleRequested(rect);
             }
         }
 
@@ -70,7 +70,7 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 4
 
             onActiveFocusRequested: function (rect) {
-                root.ensureContentVisibleRequested(rect)
+                root.ensureContentVisibleRequested(rect);
             }
         }
     }

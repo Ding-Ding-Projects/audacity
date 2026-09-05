@@ -18,14 +18,14 @@ Rectangle {
     color: M3.color.surface
 
     function init() {
-        root.builtinEffectModel.init()
+        root.builtinEffectModel.init();
     }
 
     function startPreview() {
-        root.builtinEffectModel.startPreview()
+        root.builtinEffectModel.startPreview();
     }
 
     function stopPreview() {
-        root.builtinEffectModel.stopPreview()
+        root.builtinEffectModel.stopPreview();
     }
 }

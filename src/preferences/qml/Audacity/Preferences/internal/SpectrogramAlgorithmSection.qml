@@ -44,7 +44,7 @@ SpectrogramBaseSection {
             spacing: root.narrowSpacing
 
             onValueEdited: function (index, value) {
-                controlCurrentIndex = index
+                controlCurrentIndex = index;
             }
         }
     }

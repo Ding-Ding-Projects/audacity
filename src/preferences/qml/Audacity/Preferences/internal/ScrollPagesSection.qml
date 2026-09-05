@@ -58,12 +58,10 @@ BaseSection {
             }
         ]
 
-        delegate: RoundedRadioButton {
-            leftPadding: 0
-            spacing: 6
-
+        delegate: M3RadioButton {
             property string title: modelData["title"]
 
+            text: title
             checked: root.orientation === modelData["value"]
 
             navigation.name: "ScrollPagesOrientationButton"
@@ -71,13 +69,8 @@ BaseSection {
             navigation.row: model.index
             navigation.accessible.name: title
 
-            StyledTextLabel {
-                text: title
-                horizontalAlignment: Text.AlignLeft
-            }
-
             onToggled: {
-                root.orientationChangeRequested(modelData["value"])
+                root.orientationChangeRequested(modelData["value"]);
             }
         }
     }
@@ -93,7 +86,7 @@ BaseSection {
         navigation.row: radioButtonList.model.length
 
         onToggled: {
-            root.limitScrollAreaChangeRequested(checked)
+            root.limitScrollAreaChangeRequested(checked);
         }
     }
 }

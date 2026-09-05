@@ -101,6 +101,10 @@ Item {
                 AccessibleItem {
                     id: accessibleInfo
 
+                    //! NOTE Menu items stay ignored until they are highlighted,
+                    //! which is what the previous button delegate did.
+                    ignored: true
+
                     accessibleParent: panelAccessibleInfo
                     visualItem: radioButtonDelegate
                     role: MUAccessible.Button

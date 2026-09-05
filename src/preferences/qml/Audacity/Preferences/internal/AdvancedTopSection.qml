@@ -52,7 +52,7 @@ BaseSection {
             navigation.column: 0
 
             onClicked: {
-                root.resetToDefaultRequested()
+                root.resetToDefaultRequested();
             }
         }
 
@@ -61,14 +61,15 @@ BaseSection {
             Layout.fillHeight: true
         }
 
-        SearchField {
+        M3SearchBar {
             id: searchField
+            showRegexBuilder: true
 
             Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: 160
 
             //: Search advanced preferences
-            hint: qsTrc("preferences", "Search advanced")
+            placeholder: qsTrc("preferences", "Search advanced")
 
             navigation.name: "SearchAdvancedField"
             navigation.panel: root.navigation

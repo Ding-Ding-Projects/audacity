@@ -14,10 +14,10 @@ Column {
     property alias measureUnitsSymbol: incrementalPropertyControl.measureUnitsSymbol
     property double step: {
         if (decimals <= 0) {
-            return 1
+            return 1;
         }
-        const val = "0." + "0".repeat(decimals - 1) + "1"
-        return parseFloat(val)
+        const val = "0." + "0".repeat(decimals - 1) + "1";
+        return parseFloat(val);
     }
 
     property var navigationPanel: null
@@ -54,7 +54,7 @@ Column {
 
             onMoved: {
                 if (root.value !== slider.value) {
-                    root.newValueRequested(slider.value)
+                    root.newValueRequested(slider.value);
                 }
             }
         }
@@ -76,9 +76,9 @@ Column {
             currentValue: (slider.value).toFixed(decimals)
 
             onValueEdited: function (newValue) {
-                newValue = +(newValue.toFixed(decimals))
+                newValue = +(newValue.toFixed(decimals));
                 if (newValue !== root.value) {
-                    root.newValueRequested(newValue)
+                    root.newValueRequested(newValue);
                 }
             }
         }

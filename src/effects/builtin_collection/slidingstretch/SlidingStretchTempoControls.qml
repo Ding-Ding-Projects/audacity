@@ -14,7 +14,7 @@ Row {
     spacing: 16
 
     Component.onCompleted: {
-        tempo.init()
+        tempo.init();
     }
 
     M3Slider {
@@ -30,7 +30,7 @@ Row {
         stepSize: tempo.step
         value: tempo.value
         onValueChanged: {
-            tempo.value = value
+            tempo.value = value;
         }
     }
 
@@ -48,7 +48,7 @@ Row {
         measureUnitsSymbol: tempo.unit
         currentValue: tempo.value
         onValueEdited: function (newValue) {
-            tempo.value = newValue
+            tempo.value = newValue;
         }
     }
 }

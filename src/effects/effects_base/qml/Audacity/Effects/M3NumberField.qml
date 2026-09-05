@@ -49,43 +49,60 @@ Item {
     signal valueEditingFinished(var newValue)
 
     implicitHeight: field.implicitHeight
-    implicitWidth: 176
+    implicitWidth: 152
+
+    //! Compact stepper buttons, so the field still reads at narrow widths.
+    readonly property real stepperSize: 28
 
     function formatted(value) {
-        var text = Number(value).toFixed(root.decimals)
-        return root.measureUnitsSymbol !== "" ? text + " " + root.measureUnitsSymbol : text
+        var text = Number(value).toFixed(root.decimals);
+        return root.measureUnitsSymbol !== "" ? text + " " + root.measureUnitsSymbol : text;
     }
 
     function clampValue(value) {
         if (root.wrap) {
             if (value > root.maxValue) {
-                return root.minValue
+                return root.minValue;
             }
             if (value < root.minValue) {
-                return root.maxValue
+                return root.maxValue;
             }
-            return value
+            return value;
         }
-        return Math.max(root.minValue, Math.min(root.maxValue, value))
+        return Math.max(root.minValue, Math.min(root.maxValue, value));
     }
 
     function commit(value) {
-        var next = root.clampValue(value)
-        root.currentValue = next
-        root.valueEdited(next)
-        root.valueEditingFinished(next)
+        var next = root.clampValue(value);
+        root.currentValue = next;
+        root.syncText();
+        root.valueEdited(next);
+        root.valueEditingFinished(next);
     }
 
+    //! The field owns its own text once the user types into it, so the
+    //! displayed value is pushed rather than bound.
+    function syncText() {
+        var text = root.formatted(root.currentValue);
+        if (field.currentText !== text) {
+            field.currentText = text;
+        }
+    }
+
+    onCurrentValueChanged: root.syncText()
+
+    Component.onCompleted: root.syncText()
+
     function increment() {
-        root.commit(root.currentValue + root.step)
+        root.commit(root.currentValue + root.step);
     }
 
     function decrement() {
-        root.commit(root.currentValue - root.step)
+        root.commit(root.currentValue - root.step);
     }
 
     function forceActiveFocus() {
-        field.forceActiveFocus()
+        field.forceActiveFocus();
     }
 
     M3TextField {
@@ -93,7 +110,7 @@ Item {
 
         anchors.left: parent.left
         anchors.right: stepper.left
-        anchors.rightMargin: 4
+        anchors.rightMargin: 2
         anchors.verticalCenter: parent.verticalCenter
 
         variant: "outlined"
@@ -102,24 +119,18 @@ Item {
         readOnly: root.readOnly
         accessibleName: root.accessibleName + " " + root.formatted(root.currentValue)
 
-        currentText: root.formatted(root.currentValue)
-
         textInput.inputMethodHints: Qt.ImhFormattedNumbersOnly
 
-        onTextEdited: function (text) {
-            var parsed = parseFloat(String(text).replace(",", "."))
-            if (!isNaN(parsed)) {
-                root.currentValue = root.clampValue(parsed)
-                root.valueEdited(root.currentValue)
-            }
-        }
-
         onTextEditingFinished: function (text) {
-            var parsed = parseFloat(String(text).replace(",", "."))
-            var next = isNaN(parsed) ? root.currentValue : root.clampValue(parsed)
-            root.currentValue = next
-            field.currentText = root.formatted(next)
-            root.valueEditingFinished(next)
+            var parsed = parseFloat(String(text).replace(",", "."));
+            var next = isNaN(parsed) ? root.currentValue : root.clampValue(parsed);
+            var changed = next !== root.currentValue;
+            root.currentValue = next;
+            root.syncText();
+            if (changed) {
+                root.valueEdited(next);
+            }
+            root.valueEditingFinished(next);
         }
     }
 
@@ -132,6 +143,9 @@ Item {
         spacing: 0
 
         M3IconButton {
+            width: root.stepperSize
+            height: root.stepperSize
+
             icon: IconCode.MINUS
             variant: "standard"
             enabled: root.enabled && !root.readOnly && root.canDecrease
@@ -141,6 +155,9 @@ Item {
         }
 
         M3IconButton {
+            width: root.stepperSize
+            height: root.stepperSize
+
             icon: IconCode.PLUS
             variant: "standard"
             enabled: root.enabled && !root.readOnly && root.canIncrease

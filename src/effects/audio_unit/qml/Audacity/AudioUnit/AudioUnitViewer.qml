@@ -37,41 +37,41 @@ Rectangle {
     implicitHeight: view.implicitHeight
 
     Component.onCompleted: {
-        model.init()
-        view.init()
-        Qt.callLater(presetsBarModel.load)
+        model.init();
+        view.init();
+        Qt.callLater(presetsBarModel.load);
     }
 
     Component.onDestruction: {
-        model.deinit()
+        model.deinit();
     }
 
     // Reload the view when UI mode changes
     Connections {
         target: presetsBarModel
         function onUseVendorUIChanged() {
-            view.reload()
+            view.reload();
         }
     }
 
     function startPreview() {
-        model.startPreview()
+        model.startPreview();
     }
 
     function stopPreview() {
-        model.stopPreview()
+        model.stopPreview();
     }
 
     function reload() {
-        view.reload()
+        view.reload();
     }
 
     function manage(parent) {
-        var px = parent.x
-        var py = parent.y + parent.height
-        var pos = mapFromItem(parent, px, py)
+        var px = parent.x;
+        var py = parent.y + parent.height;
+        var pos = mapFromItem(parent, px, py);
 
-        menuLoader.show(pos, presetsBarModel.presetContextMenu())
+        menuLoader.show(pos, presetsBarModel.presetContextMenu());
     }
 
     EffectPresetsBarModel {
@@ -83,7 +83,7 @@ Rectangle {
         id: menuLoader
 
         onHandleMenuItem: function (itemId) {
-            presetsBarModel.presetContextMenu().handleMenuItem(itemId)
+            presetsBarModel.presetContextMenu().handleMenuItem(itemId);
         }
     }
 

@@ -35,7 +35,7 @@ BaseSection {
         navigation.row: 0
 
         onValueEdited: function (newValue) {
-            playbackPreferencesModel.setShortSkip(newValue)
+            playbackPreferencesModel.setShortSkip(newValue);
         }
     }
 
@@ -55,7 +55,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newValue) {
-            playbackPreferencesModel.setLongSkip(newValue)
+            playbackPreferencesModel.setLongSkip(newValue);
         }
     }
 }

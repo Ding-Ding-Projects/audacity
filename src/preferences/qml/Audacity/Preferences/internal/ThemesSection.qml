@@ -66,7 +66,7 @@ BaseSection {
             navigationRow: 0
 
             onThemeChangeRequested: function (newThemeCode) {
-                root.themeChangeRequested(newThemeCode)
+                root.themeChangeRequested(newThemeCode);
             }
         }
 
@@ -86,7 +86,7 @@ BaseSection {
                 navigation.column: 0
 
                 onToggled: {
-                    root.setFollowSystemThemeRequested(checked)
+                    root.setFollowSystemThemeRequested(checked);
                 }
             }
 
@@ -104,10 +104,10 @@ BaseSection {
                 navigation.column: 0
 
                 onToggled: {
-                    root.highContrastChangeRequested(checked)
+                    root.highContrastChangeRequested(checked);
                     m3Switch6.checked = Qt.binding(function () {
-                        return root.highContrastEnabled
-                    })
+                        return root.highContrastEnabled;
+                    });
                 }
             }
         }
@@ -125,12 +125,12 @@ BaseSection {
         navigation.order: root.navigation.order + 1
 
         onAccentColorChangeRequested: function (newColorIndex) {
-            root.accentColorChangeRequested(newColorIndex)
+            root.accentColorChangeRequested(newColorIndex);
         }
 
         onFocusChanged: {
             if (activeFocus) {
-                root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
             }
         }
     }

@@ -42,7 +42,7 @@ Row {
 
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
@@ -72,7 +72,7 @@ Row {
         sampleSize: 30
 
         onAccentColorChangeRequested: function (newColorIndex) {
-            root.accentColorChangeRequested(newColorIndex)
+            root.accentColorChangeRequested(newColorIndex);
         }
     }
 }

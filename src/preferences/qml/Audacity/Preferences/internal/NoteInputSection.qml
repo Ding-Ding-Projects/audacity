@@ -54,7 +54,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.advanceToNextNoteChangeRequested(checked)
+            root.advanceToNextNoteChangeRequested(checked);
         }
     }
 
@@ -69,7 +69,7 @@ BaseSection {
         navigation.row: 1
 
         onToggled: {
-            root.colorNotesChangeRequested(checked)
+            root.colorNotesChangeRequested(checked);
         }
     }
 
@@ -84,7 +84,7 @@ BaseSection {
         navigation.row: 2
 
         onToggled: {
-            root.warnGuitarBendsChangeRequested(checked)
+            root.warnGuitarBendsChangeRequested(checked);
         }
     }
 
@@ -103,7 +103,7 @@ BaseSection {
         navigation.row: 3
 
         onValueEdited: function (newValue) {
-            root.delayBetweenNotesChangeRequested(newValue)
+            root.delayBetweenNotesChangeRequested(newValue);
         }
     }
 }

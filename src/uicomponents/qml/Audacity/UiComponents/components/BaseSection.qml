@@ -19,6 +19,10 @@ Column {
     width: parent.width
     spacing: 8
 
+    //! Reported so that the section keeps its content width when it sits in a
+    //! layout that sizes its children by their implicit width.
+    implicitWidth: Math.max(titleLabel.implicitWidth, sectionContent.implicitWidth + 2 * card.padding)
+
     property alias title: titleLabel.text
     property int columnWidth: 208
     property int columnSpacing: 12
@@ -34,7 +38,7 @@ Column {
 
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
@@ -48,8 +52,10 @@ Column {
     }
 
     M3Card {
-        width: parent.width
-        height: sectionContent.height + 2 * padding
+        id: card
+
+        width: Math.max(root.width, root.implicitWidth)
+        height: sectionContent.height + 2 * card.padding
 
         variant: "filled"
         padding: 16
@@ -57,7 +63,7 @@ Column {
         Column {
             id: sectionContent
 
-            width: parent.width
+            width: card.width - 2 * card.padding
             spacing: root.rowSpacing
         }
     }

@@ -28,13 +28,13 @@ Item {
 
     Repeater {
         model: {
-            let lines = []
-            let start = Math.ceil(root.min / 6) * 6
-            let end = Math.floor(root.max / 6) * 6
+            let lines = [];
+            let start = Math.ceil(root.min / 6) * 6;
+            let end = Math.floor(root.max / 6) * 6;
             for (let v = start; v <= end; v += 6) {
-                lines.push(v)
+                lines.push(v);
             }
-            return lines
+            return lines;
         }
 
         delegate: Item {

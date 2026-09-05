@@ -54,7 +54,7 @@ BuiltinEffectBase {
             navigation.order: 0
 
             onValueEdited: function (newIndex, newValue) {
-                noise.type = newIndex
+                noise.type = newIndex;
             }
         }
 
@@ -74,7 +74,7 @@ BuiltinEffectBase {
 
             onValueEdited: function (newValue) {
                 if (noise.amplitude !== newValue) {
-                    noise.amplitude = newValue
+                    noise.amplitude = newValue;
                 }
             }
         }
@@ -113,7 +113,7 @@ BuiltinEffectBase {
                 navigation.order: amplitudeControl.navigation.order + 1
 
                 onValueChanged: {
-                    noise.duration = timecode.value
+                    noise.duration = timecode.value;
                 }
             }
         }

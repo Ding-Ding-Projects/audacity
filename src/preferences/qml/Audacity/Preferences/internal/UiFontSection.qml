@@ -49,7 +49,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newIndex, newValue) {
-            root.fontChangeRequested(newIndex)
+            root.fontChangeRequested(newIndex);
         }
     }
 
@@ -71,7 +71,7 @@ BaseSection {
         navigation.row: 2
 
         onValueEdited: function (newValue) {
-            root.bodyTextSizeChangeRequested(newValue)
+            root.bodyTextSizeChangeRequested(newValue);
         }
     }
 }

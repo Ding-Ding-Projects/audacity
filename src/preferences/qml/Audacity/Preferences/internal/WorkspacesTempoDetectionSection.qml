@@ -23,7 +23,7 @@ BaseSection {
     }
 
     Component.onCompleted: {
-        workspacesModel.load()
+        workspacesModel.load();
     }
 
     ColumnLayout {
@@ -63,9 +63,9 @@ BaseSection {
 
                 onClicked: {
                     if (checked) {
-                        musicPreferencesModel.removeFromTempoDetectionWorkspaces(model.name)
+                        musicPreferencesModel.removeFromTempoDetectionWorkspaces(model.name);
                     } else {
-                        musicPreferencesModel.appendToTempoDetectionWorkspaces(model.name)
+                        musicPreferencesModel.appendToTempoDetectionWorkspaces(model.name);
                     }
                 }
             }

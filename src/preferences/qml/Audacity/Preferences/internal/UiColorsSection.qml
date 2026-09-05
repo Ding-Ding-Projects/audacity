@@ -81,18 +81,18 @@ BaseSection {
                     horizontalAlignment: Text.AlignLeft
                 }
 
-                ColorPicker {
-                    width: 112
-                    color: modelData["colorRole"]
+                M3ColorPicker {
+                    id: colorPicker
 
-                    navigation.name: titleLabel.text
-                    navigation.panel: root.navigation
-                    navigation.row: index / grid.columns
-                    navigation.column: index % grid.columns
-                    navigation.accessible.name: titleLabel.text
+                    width: root.columnWidth
 
-                    onNewColorSelected: function (newColor) {
-                        root.colorChangeRequested(newColor, modelData.typeRole)
+                    selection: String(modelData["colorRole"])
+                    allowRainbow: false
+
+                    navigationPanel: root.navigation
+
+                    onAccepted: {
+                        root.colorChangeRequested(colorPicker.currentColor, modelData.typeRole);
                     }
                 }
             }

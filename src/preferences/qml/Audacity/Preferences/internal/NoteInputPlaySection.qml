@@ -51,7 +51,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.playNotesWhenEditingChangeRequested(checked)
+            root.playNotesWhenEditingChangeRequested(checked);
         }
     }
 
@@ -73,7 +73,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newValue) {
-            root.notePlayDurationChangeRequested(newValue)
+            root.notePlayDurationChangeRequested(newValue);
         }
     }
 
@@ -90,7 +90,7 @@ BaseSection {
         navigation.row: 2
 
         onToggled: {
-            root.playChordWhenEditingChangeRequested(checked)
+            root.playChordWhenEditingChangeRequested(checked);
         }
     }
 
@@ -107,7 +107,7 @@ BaseSection {
         navigation.row: 3
 
         onToggled: {
-            root.playChordSymbolWhenEditingChangeRequested(checked)
+            root.playChordSymbolWhenEditingChangeRequested(checked);
         }
     }
 }

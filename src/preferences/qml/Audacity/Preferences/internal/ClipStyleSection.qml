@@ -62,7 +62,7 @@ BaseSection {
                 source: "qrc:/resources/Colorful.svg"
 
                 onClicked: {
-                    root.clipStyleChangeRequested(ClipStyle.COLORFUL)
+                    root.clipStyleChangeRequested(ClipStyle.COLORFUL);
                 }
             }
 
@@ -76,7 +76,7 @@ BaseSection {
                 navigation.row: 0
 
                 onToggled: {
-                    root.clipStyleChangeRequested(ClipStyle.COLORFUL)
+                    root.clipStyleChangeRequested(ClipStyle.COLORFUL);
                 }
             }
         }
@@ -93,7 +93,7 @@ BaseSection {
                 source: "qrc:/resources/Classic.svg"
 
                 onClicked: {
-                    root.clipStyleChangeRequested(ClipStyle.CLASSIC)
+                    root.clipStyleChangeRequested(ClipStyle.CLASSIC);
                 }
             }
 
@@ -107,7 +107,7 @@ BaseSection {
                 navigation.row: 1
 
                 onToggled: {
-                    root.clipStyleChangeRequested(ClipStyle.CLASSIC)
+                    root.clipStyleChangeRequested(ClipStyle.CLASSIC);
                 }
             }
         }

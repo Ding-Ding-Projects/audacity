@@ -23,11 +23,11 @@ StyledDialogView {
     Component.onDestruction: tableViewModel.aboutToDestroy()
 
     onNavigationActivateRequested: {
-        topPanel.focusOnFirst()
+        topPanel.focusOnFirst();
     }
 
     onAccessibilityActivateRequested: {
-        topPanel.readInfo()
+        topPanel.readInfo();
     }
 
     property PluginManagerTableViewModel tableViewModel: PluginManagerTableViewModel {}
@@ -48,7 +48,7 @@ StyledDialogView {
             navigationPanel.order: 1
 
             onSearchTextChanged: function (newText) {
-                root.tableViewModel.setSearchText(newText)
+                root.tableViewModel.setSearchText(newText);
             }
         }
 
@@ -93,7 +93,7 @@ StyledDialogView {
                 text: qsTrc("effects", "Rescan plugins")
 
                 onClicked: {
-                    root.tableViewModel.rescanPlugins()
+                    root.tableViewModel.rescanPlugins();
                 }
             }
 
@@ -110,10 +110,10 @@ StyledDialogView {
                 checked: root.tableViewModel.alsoRescanBrokenPlugins
 
                 onToggled: {
-                    root.tableViewModel.alsoRescanBrokenPlugins = checked
+                    root.tableViewModel.alsoRescanBrokenPlugins = checked;
                     alsoRescanBrokenPluginsCheckBox.checked = Qt.binding(function () {
-                        return root.tableViewModel.alsoRescanBrokenPlugins
-                    })
+                        return root.tableViewModel.alsoRescanBrokenPlugins;
+                    });
                 }
             }
 
@@ -136,8 +136,8 @@ StyledDialogView {
                 text: qsTrc("effects", "OK")
 
                 onClicked: {
-                    root.tableViewModel.accept()
-                    root.accept()
+                    root.tableViewModel.accept();
+                    root.accept();
                 }
             }
 
@@ -155,7 +155,7 @@ StyledDialogView {
                 text: qsTrc("effects", "Cancel")
 
                 onClicked: {
-                    root.reject()
+                    root.reject();
                 }
             }
         }

@@ -27,19 +27,19 @@ EffectStyledDialogView {
     openPolicies: DialogView.OpenOnContentReady
     isContentReady: {
         if (viewerModel.viewerComponentType !== ViewerComponentType.Generated) {
-            return true
+            return true;
         }
 
-        return viewerLoader.item ? viewerLoader.item.isContentReady : false
+        return viewerLoader.item ? viewerLoader.item.isContentReady : false;
     }
 
     contentWidth: Math.max(viewerLoader.width + prv.viewMargins * 2, prv.minimumWidth)
     contentHeight: {
-        let height = 0
-        height += prv.showTopPanel ? topPanel.height : prv.viewMargins
-        height += viewerLoader.height
-        height += prv.viewMargins
-        return height
+        let height = 0;
+        height += prv.showTopPanel ? topPanel.height : prv.viewMargins;
+        height += viewerLoader.height;
+        height += prv.viewMargins;
+        return height;
     }
 
     QtObject {
@@ -55,15 +55,15 @@ EffectStyledDialogView {
     }
 
     Component.onCompleted: {
-        viewerModel.load()
-        loadViewer()
+        viewerModel.load();
+        loadViewer();
     }
 
     // Listen to UI mode changes from the presets bar menu
     Connections {
         target: presetsBar.presetsBarModel
         function onUseVendorUIChanged() {
-            viewerModel.refreshUIMode()
+            viewerModel.refreshUIMode();
         }
     }
 
@@ -72,9 +72,9 @@ EffectStyledDialogView {
         function onViewerComponentTypeChanged() {
             // For Audio Units, reload the view instead of switching components
             if (viewerModel.viewerComponentType === ViewerComponentType.AudioUnit && prv.viewer) {
-                prv.viewer.reload()
+                prv.viewer.reload();
             } else {
-                loadViewer()
+                loadViewer();
             }
         }
     }
@@ -82,22 +82,22 @@ EffectStyledDialogView {
     function loadViewer() {
         switch (viewerModel.viewerComponentType) {
         case ViewerComponentType.AudioUnit:
-            viewerLoader.sourceComponent = audioUnitViewerComponent
-            break
+            viewerLoader.sourceComponent = audioUnitViewerComponent;
+            break;
         case ViewerComponentType.Lv2:
-            viewerLoader.sourceComponent = lv2ViewerComponent
-            break
+            viewerLoader.sourceComponent = lv2ViewerComponent;
+            break;
         case ViewerComponentType.Vst:
-            viewerLoader.sourceComponent = vstViewerComponent
-            break
+            viewerLoader.sourceComponent = vstViewerComponent;
+            break;
         case ViewerComponentType.Builtin:
-            viewerLoader.sourceComponent = builtinViewerComponent
-            break
+            viewerLoader.sourceComponent = builtinViewerComponent;
+            break;
         case ViewerComponentType.Generated:
-            viewerLoader.sourceComponent = generatedViewerComponent
-            break
+            viewerLoader.sourceComponent = generatedViewerComponent;
+            break;
         default:
-            viewerLoader.sourceComponent = null
+            viewerLoader.sourceComponent = null;
         }
     }
 
@@ -125,7 +125,7 @@ EffectStyledDialogView {
             title: root.title
 
             onVendorUiFailed: {
-                Qt.callLater(viewerModel.notifyVendorUiFailed)
+                Qt.callLater(viewerModel.notifyVendorUiFailed);
             }
         }
     }

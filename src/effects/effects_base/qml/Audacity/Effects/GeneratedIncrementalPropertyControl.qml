@@ -30,28 +30,28 @@ M3NumberField {
 
     onActiveFocusChanged: {
         if (activeFocus && !isEditing) {
-            isEditing = true
-            gestureStarted()
+            isEditing = true;
+            gestureStarted();
         } else if (!activeFocus && isEditing) {
-            isEditing = false
-            gestureEnded()
+            isEditing = false;
+            gestureEnded();
         }
     }
 
     onValueEdited: function (newValue) {
         if (newValue === lastCommittedValue) {
-            return
+            return;
         }
-        lastCommittedValue = newValue
+        lastCommittedValue = newValue;
 
         if (!isEditing) {
-            isEditing = true
-            gestureStarted()
+            isEditing = true;
+            gestureStarted();
         }
-        valueCommitted(newValue)
+        valueCommitted(newValue);
         if (!activeFocus && isEditing) {
-            isEditing = false
-            gestureEnded()
+            isEditing = false;
+            gestureEnded();
         }
     }
 }

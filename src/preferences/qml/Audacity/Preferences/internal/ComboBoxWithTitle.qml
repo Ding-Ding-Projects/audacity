@@ -50,18 +50,18 @@ Column {
     spacing: 6
 
     function indexOfValue(value) {
-        var items = comboBox.model
+        var items = comboBox.model;
         if (!items) {
-            return -1
+            return -1;
         }
         for (var i = 0; i < items.length; ++i) {
-            var item = items[i]
-            var candidate = (typeof item === "object" && item !== null) ? item[comboBox.valueRole] : item
+            var item = items[i];
+            var candidate = (typeof item === "object" && item !== null) ? item[comboBox.valueRole] : item;
             if (candidate === value) {
-                return i
+                return i;
             }
         }
-        return -1
+        return -1;
     }
 
     StyledTextLabel {
@@ -84,7 +84,7 @@ Column {
         navigation.accessible.name: root.title + " " + currentText
 
         onActivated: function (index, value) {
-            root.valueEdited(index, value)
+            root.valueEdited(index, value);
         }
     }
 }

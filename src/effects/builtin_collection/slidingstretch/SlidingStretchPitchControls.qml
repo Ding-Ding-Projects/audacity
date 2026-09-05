@@ -17,8 +17,8 @@ Column {
     spacing: 16
 
     Component.onCompleted: {
-        pitchSemitones.init()
-        pitchPct.init()
+        pitchSemitones.init();
+        pitchPct.init();
     }
 
     RowLayout {
@@ -49,8 +49,8 @@ Column {
             measureUnitsSymbol: "" // "semitones" is too long. The label already indicates the unit.
             currentValue: pitchSemitones.value
             onValueEdited: function (newValue) {
-                pitchSemitones.value = newValue
-                pitchPct.value = root.viewModel.semitonesToPct(newValue)
+                pitchSemitones.value = newValue;
+                pitchPct.value = root.viewModel.semitonesToPct(newValue);
             }
         }
     }
@@ -78,8 +78,8 @@ Column {
                 stepSize: pitchPct.step
                 value: pitchPct.value
                 onValueChanged: {
-                    pitchPct.value = value
-                    pitchSemitones.value = root.viewModel.pctToSemitones(value)
+                    pitchPct.value = value;
+                    pitchSemitones.value = root.viewModel.pctToSemitones(value);
                 }
 
                 navigation.panel: root.navPanel
@@ -102,8 +102,8 @@ Column {
                 measureUnitsSymbol: pitchPct.unit
                 currentValue: pitchPct.value
                 onValueEdited: function (newValue) {
-                    pitchPct.value = newValue
-                    pitchSemitones.value = root.viewModel.pctToSemitones(newValue)
+                    pitchPct.value = newValue;
+                    pitchSemitones.value = root.viewModel.pctToSemitones(newValue);
                 }
             }
         }

@@ -37,11 +37,11 @@ BaseSection {
             pasteInsertBehavior: editPreferencesModel.pasteInsertBehavior
 
             onNewPasteBehaviorRequested: function (pasteBehavior) {
-                editPreferencesModel.setPasteBehavior(pasteBehavior)
+                editPreferencesModel.setPasteBehavior(pasteBehavior);
             }
 
             onNewPasteInsertBehaviorRequested: function (pasteInsertBehavior) {
-                editPreferencesModel.setPasteInsertBehavior(pasteInsertBehavior)
+                editPreferencesModel.setPasteInsertBehavior(pasteInsertBehavior);
             }
         }
 
@@ -65,16 +65,16 @@ BaseSection {
                 navigation.row: 0
 
                 onToggled: {
-                    editPreferencesModel.setPasteAsNewClip(checked)
+                    editPreferencesModel.setPasteAsNewClip(checked);
                     checkboxAlwaysPasteAsNew.checked = Qt.binding(function () {
-                        return editPreferencesModel.pasteAsNewClip
-                    })
+                        return editPreferencesModel.pasteAsNewClip;
+                    });
                 }
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.forceActiveFocus()
+                    root.forceActiveFocus();
                 }
             }
         }

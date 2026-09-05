@@ -31,46 +31,46 @@ Item {
         property bool isPainting: false
 
         function mouseIsOver(item) {
-            const p = mouseArea.mapToItem(item, mouseArea.mouseX, mouseArea.mouseY)
-            return p.x >= 0 && p.x <= item.width && p.y >= 0 && p.y <= item.height
+            const p = mouseArea.mapToItem(item, mouseArea.mouseX, mouseArea.mouseY);
+            return p.x >= 0 && p.x <= item.width && p.y >= 0 && p.y <= item.height;
         }
 
         function faderUnderMouse() {
             for (let i = 0; i < repeater.count; ++i) {
-                const f = repeater.itemAt(i).getFader()
+                const f = repeater.itemAt(i).getFader();
                 if (prv.mouseIsOver(f)) {
-                    return f
+                    return f;
                 }
             }
-            return null
+            return null;
         }
 
         function moveTooltip(fader) {
             if (prv.tooltipFader === fader) {
-                return
+                return;
             }
-            prv.tooltipFader = fader
+            prv.tooltipFader = fader;
             if (!fader) {
-                sharedEqTooltip.hide(true)
-                return
+                sharedEqTooltip.hide(true);
+                return;
             }
 
-            sharedEqTooltip.parent = fader.handle
+            sharedEqTooltip.parent = fader.handle;
             if (sharedEqTooltip.isOpened) {
-                sharedEqTooltip.repositionWindowIfNeed()
+                sharedEqTooltip.repositionWindowIfNeed();
             } else {
-                sharedEqTooltip.show(true)
+                sharedEqTooltip.show(true);
             }
         }
 
         function updateFader(fader) {
             if (!fader) {
-                return
+                return;
             }
 
-            const p = mouseArea.mapToItem(fader, mouseArea.mouseX, mouseArea.mouseY)
-            const newValue = fader.min + (fader.max - fader.min) * (1 - p.y / fader.height)
-            fader.requestNewValue(Math.min(Math.max(newValue, fader.min), fader.max))
+            const p = mouseArea.mapToItem(fader, mouseArea.mouseX, mouseArea.mouseY);
+            const newValue = fader.min + (fader.max - fader.min) * (1 - p.y / fader.height);
+            fader.requestNewValue(Math.min(Math.max(newValue, fader.min), fader.max));
         }
     }
 
@@ -103,59 +103,59 @@ Item {
 
         onPressed: function (mouse) {
             if (mouse.button !== Qt.LeftButton) {
-                return
+                return;
             }
-            prv.isPainting = false
-            prv.lastPaintingFader = null
-            prv.tooltipFader = null
-            const fader = prv.faderUnderMouse()
-            prv.pressedFader = fader
-            prv.updateFader(fader)
+            prv.isPainting = false;
+            prv.lastPaintingFader = null;
+            prv.tooltipFader = null;
+            const fader = prv.faderUnderMouse();
+            prv.pressedFader = fader;
+            prv.updateFader(fader);
             if (fader) {
-                fader.showTooltip()
+                fader.showTooltip();
             }
         }
 
         onPositionChanged: function (mouse) {
             if (!(mouse.buttons & Qt.LeftButton)) {
-                return
+                return;
             }
 
-            const fader = prv.faderUnderMouse()
+            const fader = prv.faderUnderMouse();
 
             if (!prv.isPainting) {
-                prv.isPainting = fader && fader !== prv.pressedFader
+                prv.isPainting = fader && fader !== prv.pressedFader;
                 if (prv.isPainting && prv.pressedFader) {
-                    prv.pressedFader.hideTooltip()
+                    prv.pressedFader.hideTooltip();
                 }
             }
 
             if (!prv.isPainting) {
-                prv.updateFader(prv.pressedFader)
+                prv.updateFader(prv.pressedFader);
             } else {
                 if (fader) {
-                    prv.lastPaintingFader = fader
+                    prv.lastPaintingFader = fader;
                 }
-                const targetFader = fader || prv.lastPaintingFader
-                prv.moveTooltip(targetFader)
-                prv.updateFader(targetFader)
+                const targetFader = fader || prv.lastPaintingFader;
+                prv.moveTooltip(targetFader);
+                prv.updateFader(targetFader);
             }
         }
 
         onReleased: function (mouse) {
-            prv.moveTooltip(null)
+            prv.moveTooltip(null);
             if (prv.pressedFader && !prv.isPainting && !prv.mouseIsOver(prv.pressedFader.handle)) {
-                prv.pressedFader.hideTooltip()
+                prv.pressedFader.hideTooltip();
             }
         }
 
         onDoubleClicked: function (mouse) {
             if (mouse.button !== Qt.LeftButton) {
-                return
+                return;
             }
-            const fader = prv.faderUnderMouse()
+            const fader = prv.faderUnderMouse();
             if (fader) {
-                fader.requestNewValue(0)
+                fader.requestNewValue(0);
             }
         }
     }
@@ -177,7 +177,7 @@ Item {
                 spacing: prv.labelBottomMargin
 
                 function getFader() {
-                    return fader
+                    return fader;
                 }
 
                 StyledTextLabel {
@@ -207,7 +207,7 @@ Item {
                     value: model.dbGain
 
                     function requestNewValue(newValue) {
-                        model.dbGain = newValue
+                        model.dbGain = newValue;
                     }
                 }
             }

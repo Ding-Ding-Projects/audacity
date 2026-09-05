@@ -144,7 +144,7 @@ ColumnLayout {
                         Loader {
                             width: parent.width
 
-                            readonly property bool hasSubtitle: modelData.subtitle && modelData.subtitle.length > 0
+                            readonly property bool hasSubtitle: Boolean(modelData.subtitle) && modelData.subtitle.length > 0
 
                             sourceComponent: hasSubtitle ? titleWithSubtitle : titleOnly
 

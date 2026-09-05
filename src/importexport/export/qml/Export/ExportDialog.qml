@@ -31,14 +31,14 @@ StyledDialogView {
     property int labelColumnWidth: 140
 
     onNavigationActivateRequested: {
-        typeDropdown.navigation.requestActive()
+        typeDropdown.navigation.requestActive();
     }
 
     ExportPreferencesModel {
         id: exportPreferencesModel
 
         onExportCompleted: {
-            root.accept()
+            root.accept();
         }
     }
 
@@ -51,9 +51,9 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        exportPreferencesModel.init()
-        ffmpegPrefModel.init()
-        dynamicOptionsModel.init()
+        exportPreferencesModel.init();
+        ffmpegPrefModel.init();
+        dynamicOptionsModel.init();
     }
 
     ColumnLayout {
@@ -63,8 +63,8 @@ StyledDialogView {
 
         onImplicitHeightChanged: {
             Qt.callLater(function () {
-                root.contentHeight = implicitHeight
-            })
+                root.contentHeight = implicitHeight;
+            });
         }
 
         ColumnLayout {
@@ -99,15 +99,15 @@ StyledDialogView {
                     M3Dropdown {
                         id: typeDropdown
                         function indexOfValue(value) {
-                            var items = typeDropdown.model
+                            var items = typeDropdown.model;
                             for (var i = 0; i < items.length; ++i) {
-                                var item = items[i]
-                                var candidate = (typeof item === "object" && item !== null) ? item[typeDropdown.valueRole] : item
+                                var item = items[i];
+                                var candidate = (typeof item === "object" && item !== null) ? item[typeDropdown.valueRole] : item;
                                 if (candidate === value) {
-                                    return i
+                                    return i;
                                 }
                             }
-                            return -1
+                            return -1;
                         }
 
                         Layout.preferredWidth: root.dropdownWidth
@@ -124,7 +124,7 @@ StyledDialogView {
                         navigation.accessible.name: typeLabel.text + ": " + currentText
 
                         onActivated: function (index, value) {
-                            exportPreferencesModel.setCurrentProcess(value)
+                            exportPreferencesModel.setCurrentProcess(value);
                         }
                     }
                 }
@@ -171,7 +171,7 @@ StyledDialogView {
                         navigation.accessible.name: filenameLabel.text + ": " + currentText
 
                         onTextEdited: function (newTextValue) {
-                            exportPreferencesModel.setFilename(newTextValue)
+                            exportPreferencesModel.setFilename(newTextValue);
                         }
                     }
                 }
@@ -217,7 +217,7 @@ StyledDialogView {
                             navigation.accessible.name: folderLabel.text + ": " + currentText
 
                             onTextEditingFinished: function (newTextValue) {
-                                exportPreferencesModel.setFilePickerPath(newTextValue)
+                                exportPreferencesModel.setFilePickerPath(newTextValue);
                             }
                         }
 
@@ -233,9 +233,9 @@ StyledDialogView {
                             navigation.order: dirField.navigation.order + 1
 
                             onClicked: {
-                                var selectedFile = dirPickerModel.selectAny()
+                                var selectedFile = dirPickerModel.selectAny();
                                 if (Boolean(selectedFile)) {
-                                    exportPreferencesModel.setFileDialogPath(selectedFile)
+                                    exportPreferencesModel.setFileDialogPath(selectedFile);
                                 }
                             }
                         }
@@ -258,15 +258,15 @@ StyledDialogView {
                     M3Dropdown {
                         id: formatDropdown
                         function indexOfValue(value) {
-                            var items = formatDropdown.model
+                            var items = formatDropdown.model;
                             for (var i = 0; i < items.length; ++i) {
-                                var item = items[i]
-                                var candidate = (typeof item === "object" && item !== null) ? item[formatDropdown.valueRole] : item
+                                var item = items[i];
+                                var candidate = (typeof item === "object" && item !== null) ? item[formatDropdown.valueRole] : item;
                                 if (candidate === value) {
-                                    return i
+                                    return i;
                                 }
                             }
-                            return -1
+                            return -1;
                         }
 
                         Layout.preferredWidth: root.smallDropdownWidth
@@ -283,7 +283,7 @@ StyledDialogView {
                         navigation.accessible.name: formatLabel.text + ": " + currentText
 
                         onActivated: function (index, value) {
-                            exportPreferencesModel.setCurrentFormat(value)
+                            exportPreferencesModel.setCurrentFormat(value);
                         }
                     }
                 }
@@ -343,7 +343,7 @@ StyledDialogView {
                                 navigation.order: channelsGroup.navigationOrderStart
 
                                 onToggled: {
-                                    exportPreferencesModel.setExportChannelsType(ExportChannels.MONO)
+                                    exportPreferencesModel.setExportChannelsType(ExportChannels.MONO);
                                 }
                             }
 
@@ -359,7 +359,7 @@ StyledDialogView {
                                 navigation.order: monoBtn.navigation.order + 1
 
                                 onToggled: {
-                                    exportPreferencesModel.setExportChannelsType(ExportChannels.STEREO)
+                                    exportPreferencesModel.setExportChannelsType(ExportChannels.STEREO);
                                 }
                             }
 
@@ -375,7 +375,7 @@ StyledDialogView {
                                 navigation.order: stereoBtn.navigation.order + 1
 
                                 onToggled: {
-                                    exportPreferencesModel.setExportChannelsType(ExportChannels.CUSTOM)
+                                    exportPreferencesModel.setExportChannelsType(ExportChannels.CUSTOM);
                                 }
                             }
                         }
@@ -401,7 +401,7 @@ StyledDialogView {
                         navigation.order: customBtn.navigation.order + 1
 
                         onClicked: {
-                            exportPreferencesModel.openCustomMappingDialog()
+                            exportPreferencesModel.openCustomMappingDialog();
                         }
                     }
                 }
@@ -422,15 +422,15 @@ StyledDialogView {
                     M3Dropdown {
                         id: sampleRateDropdown
                         function indexOfValue(value) {
-                            var items = sampleRateDropdown.model
+                            var items = sampleRateDropdown.model;
                             for (var i = 0; i < items.length; ++i) {
-                                var item = items[i]
-                                var candidate = (typeof item === "object" && item !== null) ? item[sampleRateDropdown.valueRole] : item
+                                var item = items[i];
+                                var candidate = (typeof item === "object" && item !== null) ? item[sampleRateDropdown.valueRole] : item;
                                 if (candidate === value) {
-                                    return i
+                                    return i;
                                 }
                             }
-                            return -1
+                            return -1;
                         }
 
                         Layout.preferredWidth: root.smallDropdownWidth
@@ -447,7 +447,7 @@ StyledDialogView {
                         navigation.accessible.name: formatLabel.text + ": " + currentText
 
                         onActivated: function (index, value) {
-                            exportPreferencesModel.setExportSampleRate(value)
+                            exportPreferencesModel.setExportSampleRate(value);
                         }
                     }
                 }
@@ -474,7 +474,7 @@ StyledDialogView {
                             navigation.order: sampleRateDropdown.navigation.order + 1
 
                             onClicked: {
-                                exportPreferencesModel.openCustomFFmpegDialog()
+                                exportPreferencesModel.openCustomFFmpegDialog();
                             }
                         }
                     }
@@ -577,13 +577,13 @@ StyledDialogView {
                                 sourceComponent: {
                                     switch (type) {
                                     case ExportOptionType.TypeEnum:
-                                        return enumComp
+                                        return enumComp;
                                     case ExportOptionType.TypeBool:
-                                        return boolComp
+                                        return boolComp;
                                     case ExportOptionType.TypeRange:
-                                        return rangeComp
+                                        return rangeComp;
                                     case ExportOptionType.TypeString:
-                                        return strComp
+                                        return strComp;
                                     }
                                 }
 
@@ -633,10 +633,10 @@ StyledDialogView {
                         navigation.accessible.name: text
 
                         onToggled: {
-                            exportPreferencesModel.trimBlankSpace = !exportPreferencesModel.trimBlankSpace
+                            exportPreferencesModel.trimBlankSpace = !exportPreferencesModel.trimBlankSpace;
                             trimBlankSpaceCheckBox.checked = Qt.binding(function () {
-                                return exportPreferencesModel.trimBlankSpace
-                            })
+                                return exportPreferencesModel.trimBlankSpace;
+                            });
                         }
                     }
                 }
@@ -671,7 +671,7 @@ StyledDialogView {
                 navigation.order: 1
 
                 onClicked: {
-                    exportPreferencesModel.openMetadataDialog()
+                    exportPreferencesModel.openMetadataDialog();
                 }
             }
 
@@ -689,9 +689,9 @@ StyledDialogView {
                 navigation.order: 2
 
                 onClicked: {
-                    exportPreferencesModel.cancel()
-                    exportPreferencesModel.setExportSampleRate("")
-                    root.reject()
+                    exportPreferencesModel.cancel();
+                    exportPreferencesModel.setExportSampleRate("");
+                    root.reject();
                 }
             }
 
@@ -707,8 +707,8 @@ StyledDialogView {
 
                 onClicked: {
                     if (exportPreferencesModel.verifyExportPossible()) {
-                        exportPreferencesModel.apply()
-                        exportPreferencesModel.exportData()
+                        exportPreferencesModel.apply();
+                        exportPreferencesModel.exportData();
                     }
                 }
             }
@@ -730,7 +730,7 @@ StyledDialogView {
             navigation.accessible.name: option.title + " " + currentText
 
             onActivated: function (index, value) {
-                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), option.values[index], ExportOptionType.ValueRole)
+                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), option.values[index], ExportOptionType.ValueRole);
             }
         }
     }
@@ -748,10 +748,10 @@ StyledDialogView {
             navigation.accessible.name: option.title
 
             onToggled: {
-                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), !checked, ExportOptionType.ValueRole)
+                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), !checked, ExportOptionType.ValueRole);
                 m3Switch1.checked = Qt.binding(function () {
-                    return Boolean(option.value)
-                })
+                    return Boolean(option.value);
+                });
             }
         }
     }
@@ -804,7 +804,7 @@ StyledDialogView {
             navigation.accessible.name: option.title + " " + currentValue
 
             onValueEdited: function (newValue) {
-                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), newValue, ExportOptionType.ValueRole)
+                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), newValue, ExportOptionType.ValueRole);
             }
         }
     }

@@ -71,7 +71,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Language")
 
                     onTextEdited: function (newTextValue) {
-                        ffmpegPrefModel.setLanguage(newTextValue)
+                        ffmpegPrefModel.setLanguage(newTextValue);
                     }
                 }
             }
@@ -98,7 +98,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Tag")
 
                     onTextEdited: function (newTextValue) {
-                        ffmpegPrefModel.setTag(newTextValue)
+                        ffmpegPrefModel.setTag(newTextValue);
                     }
                 }
             }
@@ -129,7 +129,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Quality %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setQuality(newValue)
+                        ffmpegPrefModel.setQuality(newValue);
                     }
                 }
             }
@@ -161,7 +161,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Cutoff %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setCutoff(newValue)
+                        ffmpegPrefModel.setCutoff(newValue);
                     }
                 }
             }
@@ -204,7 +204,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Bit rate %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setBitrate(newValue)
+                        ffmpegPrefModel.setBitrate(newValue);
                     }
 
                     // TODO: add tooltips
@@ -240,7 +240,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Sample rate %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setSampleRate(newValue)
+                        ffmpegPrefModel.setSampleRate(newValue);
                     }
                 }
             }
@@ -256,15 +256,15 @@ ColumnLayout {
 
                 M3Dropdown {
                     function indexOfValue(value) {
-                        var items = model
+                        var items = model;
                         for (var i = 0; i < items.length; ++i) {
-                            var item = items[i]
-                            var candidate = (typeof item === "object" && item !== null) ? item[valueRole] : item
+                            var item = items[i];
+                            var candidate = (typeof item === "object" && item !== null) ? item[valueRole] : item;
                             if (candidate === value) {
-                                return i
+                                return i;
                             }
                         }
-                        return -1
+                        return -1;
                     }
                     width: root.controlWidth
 
@@ -277,7 +277,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Profile %1").arg(currentText)
 
                     onActivated: function (index, value) {
-                        ffmpegPrefModel.setProfile(value)
+                        ffmpegPrefModel.setProfile(value);
                     }
                 }
             }
@@ -296,10 +296,10 @@ ColumnLayout {
             checked: ffmpegPrefModel.bitReservoir
 
             onToggled: {
-                ffmpegPrefModel.setBitReservoir(checked)
+                ffmpegPrefModel.setBitReservoir(checked);
                 bitReservoirCheckbox.checked = Qt.binding(function () {
-                    return ffmpegPrefModel.bitReservoir
-                })
+                    return ffmpegPrefModel.bitReservoir;
+                });
             }
         }
 
@@ -314,10 +314,10 @@ ColumnLayout {
             checked: ffmpegPrefModel.vbl
 
             onToggled: {
-                ffmpegPrefModel.setVbl(checked)
+                ffmpegPrefModel.setVbl(checked);
                 vblCheckbox.checked = Qt.binding(function () {
-                    return ffmpegPrefModel.vbl
-                })
+                    return ffmpegPrefModel.vbl;
+                });
             }
         }
     }

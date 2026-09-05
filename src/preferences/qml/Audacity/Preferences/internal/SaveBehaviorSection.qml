@@ -34,7 +34,7 @@ BaseSection {
             navigation.row: 0
 
             onToggled: {
-                root.exportPreferencesModel.setSaveBehavior(SaveBehavior.AlwaysAsk)
+                root.exportPreferencesModel.setSaveBehavior(SaveBehavior.AlwaysAsk);
             }
         }
 
@@ -47,7 +47,7 @@ BaseSection {
             navigation.row: 1
 
             onToggled: {
-                root.exportPreferencesModel.setSaveBehavior(SaveBehavior.AlwaysSaveToCloud)
+                root.exportPreferencesModel.setSaveBehavior(SaveBehavior.AlwaysSaveToCloud);
             }
         }
 
@@ -60,7 +60,7 @@ BaseSection {
             navigation.row: 2
 
             onToggled: {
-                root.exportPreferencesModel.setSaveBehavior(SaveBehavior.AlwaysSaveToComputer)
+                root.exportPreferencesModel.setSaveBehavior(SaveBehavior.AlwaysSaveToComputer);
             }
         }
     }

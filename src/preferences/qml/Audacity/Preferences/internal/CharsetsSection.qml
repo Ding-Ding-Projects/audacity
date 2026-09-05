@@ -47,7 +47,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newIndex, newValue) {
-            root.overtureCharsetChangeRequested(newValue)
+            root.overtureCharsetChangeRequested(newValue);
         }
     }
 }

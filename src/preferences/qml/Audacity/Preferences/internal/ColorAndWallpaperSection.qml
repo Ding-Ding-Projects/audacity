@@ -36,7 +36,7 @@ BaseSection {
     property alias wallpaperDialogTitle: wallpaperPicker.dialogTitle
 
     property bool useColor: true
-    property alias color: colorPicker.color
+    property alias color: colorPicker.selection
 
     property alias wallpaperPath: wallpaperPicker.path
     property alias wallpapersDir: wallpaperPicker.dir
@@ -70,24 +70,22 @@ BaseSection {
             navigation.column: 0
 
             onToggled: {
-                root.useColorChangeRequested(true)
+                root.useColorChangeRequested(true);
             }
         }
 
-        ColorPicker {
+        M3ColorPicker {
             id: colorPicker
 
-            width: 112
+            width: root.columnWidth
 
             enabled: root.useColor
+            allowRainbow: false
 
-            navigation.name: "ColorBox"
-            navigation.panel: root.navigation
-            navigation.row: 0
-            navigation.column: 1
+            navigationPanel: root.navigation
 
-            onNewColorSelected: function (newColor) {
-                root.colorChangeRequested(newColor)
+            onAccepted: {
+                root.colorChangeRequested(colorPicker.currentColor);
             }
         }
 
@@ -103,7 +101,7 @@ BaseSection {
             navigation.column: 0
 
             onToggled: {
-                root.useColorChangeRequested(false)
+                root.useColorChangeRequested(false);
             }
         }
 
@@ -118,7 +116,7 @@ BaseSection {
             navigationColumnOrderStart: 1
 
             onPathEdited: function (newPath) {
-                root.wallpaperPathChangeRequested(newPath)
+                root.wallpaperPathChangeRequested(newPath);
             }
         }
     }

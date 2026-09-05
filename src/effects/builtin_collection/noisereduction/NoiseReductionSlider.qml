@@ -20,9 +20,9 @@ Row {
     signal newValueRequested(double newValue)
 
     onValueChanged: {
-        const newValue = root.value.toFixed(textControl.decimals)
+        const newValue = root.value.toFixed(textControl.decimals);
         if (root.value !== newValue) {
-            newValueRequested(newValue)
+            newValueRequested(newValue);
         }
     }
 
@@ -40,9 +40,9 @@ Row {
 
         value: root.value
         onMoved: {
-            const newValue = slider.value.toFixed(textControl.decimals)
+            const newValue = slider.value.toFixed(textControl.decimals);
             if (root.value !== newValue) {
-                newValueRequested(newValue)
+                newValueRequested(newValue);
             }
         }
     }
@@ -63,7 +63,7 @@ Row {
         currentValue: root.value
         onValueEdited: function (newValue) {
             if (root.value !== newValue) {
-                newValueRequested(newValue)
+                newValueRequested(newValue);
             }
         }
     }

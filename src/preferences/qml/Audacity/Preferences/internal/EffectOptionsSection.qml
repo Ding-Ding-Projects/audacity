@@ -39,7 +39,7 @@ BaseSection {
                 navigation.row: 0
 
                 onToggled: {
-                    pluginPreferencesModel.setEffectMenuOrganization(0)
+                    pluginPreferencesModel.setEffectMenuOrganization(0);
                 }
             }
 
@@ -52,7 +52,7 @@ BaseSection {
                 navigation.row: 1
 
                 onToggled: {
-                    pluginPreferencesModel.setEffectMenuOrganization(1)
+                    pluginPreferencesModel.setEffectMenuOrganization(1);
                 }
             }
         }

@@ -56,11 +56,11 @@ BuiltinEffectBase {
             navigation.order: 0
 
             onValueChanged: {
-                silence.duration = timecode.value
+                silence.duration = timecode.value;
             }
 
             onCurrentFormatChanged: {
-                silence.durationFormat = timecode.currentFormatStr
+                silence.durationFormat = timecode.currentFormatStr;
             }
         }
     }

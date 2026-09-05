@@ -50,10 +50,10 @@ RowLayout {
         navigation.accessible.name: root.toggleAccessibleName
 
         onToggled: function (isOn) {
-            root.isOptionEnableChangeRequested(isOn)
+            root.isOptionEnableChangeRequested(isOn);
             optionCheckBox.checked = Qt.binding(function () {
-                return root.isOptionEnabled
-            })
+                return root.isOptionEnabled;
+            });
         }
     }
 
@@ -66,7 +66,7 @@ RowLayout {
         enabled: root.allowOptionToggle ? root.isOptionEnabled : true
 
         function openMenu() {
-            menuLoader.toggleOpened(root.model)
+            menuLoader.toggleOpened(root.model);
         }
 
         NavigationControl {
@@ -83,12 +83,12 @@ RowLayout {
 
             onActiveChanged: {
                 if (!dropdown.activeFocus) {
-                    dropdown.forceActiveFocus()
+                    dropdown.forceActiveFocus();
                 }
             }
 
             onTriggered: {
-                dropdown.openMenu()
+                dropdown.openMenu();
             }
         }
 
@@ -129,22 +129,22 @@ RowLayout {
             hoverEnabled: dropdown.enabled
 
             onClicked: {
-                dropdown.openMenu()
+                dropdown.openMenu();
             }
 
             onPressed: {
-                ui.tooltip.hide(dropdown, true)
+                ui.tooltip.hide(dropdown, true);
             }
 
             onContainsMouseChanged: {
                 if (!labelItem.truncated || menuLoader.isMenuOpened) {
-                    return
+                    return;
                 }
 
                 if (mouseAreaItem.containsMouse) {
-                    ui.tooltip.show(dropdown, labelItem.text)
+                    ui.tooltip.show(dropdown, labelItem.text);
                 } else {
-                    ui.tooltip.hide(dropdown)
+                    ui.tooltip.hide(dropdown);
                 }
             }
         }
@@ -181,7 +181,7 @@ RowLayout {
             id: menuLoader
 
             onHandleMenuItem: function (itemId) {
-                root.handleMenuItem(itemId)
+                root.handleMenuItem(itemId);
             }
         }
     }

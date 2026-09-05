@@ -65,9 +65,12 @@ Page {
 
     ColumnLayout {
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: 24
+        anchors.rightMargin: 24
 
-        spacing: 24
+        spacing: 16
 
         ThemeSamplesList {
             id: themeSamplesList
@@ -136,6 +139,8 @@ Page {
             id: accentColorColumn
             visible: !model.highContrastEnabled
 
+            Layout.fillWidth: true
+
             height: childrenRect.height
 
             spacing: 6
@@ -151,8 +156,8 @@ Page {
             AccentColorsList {
                 id: accentColorsList
 
-                Layout.alignment: Qt.AlignCenter
-                Layout.preferredHeight: Math.max(implicitHeight, highContrastPreferencesHintLabel.implicitHeight)
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
 
                 colors: model.accentColors
                 currentColorIndex: model.currentAccentColorIndex

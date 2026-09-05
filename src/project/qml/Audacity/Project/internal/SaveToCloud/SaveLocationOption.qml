@@ -98,7 +98,7 @@ ColumnLayout {
                 variant: "filled"
 
                 onClicked: {
-                    root.buttonClicked()
+                    root.buttonClicked();
                 }
             }
         }

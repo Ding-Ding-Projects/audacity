@@ -93,10 +93,10 @@ BuiltinEffectBase {
 
                         text: qsTrc("effects/noisereduction", "Get noise profile")
                         onClicked: {
-                            noiseReduction.getNoiseProfile()
+                            noiseReduction.getNoiseProfile();
                             // The user has taken the profile of a small selection of noise.
                             // Close the dialog to make clearer that now, the audio to be processed must be selected.
-                            root.dialogView.reject()
+                            root.dialogView.reject();
                         }
                         height: 28
                     }
@@ -158,7 +158,7 @@ BuiltinEffectBase {
 
                         value: noiseReduction.reduction
                         onNewValueRequested: function (newValue) {
-                            noiseReduction.reduction = newValue
+                            noiseReduction.reduction = newValue;
                         }
                         //: Abbreviation of decibels, used as a unit suffix
                         measureUnitsSymbol: qsTrc("global", "dB")
@@ -190,7 +190,7 @@ BuiltinEffectBase {
 
                         value: noiseReduction.sensitivity
                         onNewValueRequested: function (newValue) {
-                            noiseReduction.sensitivity = newValue
+                            noiseReduction.sensitivity = newValue;
                         }
                         from: noiseReduction.sensitivityMin
                         to: noiseReduction.sensitivityMax
@@ -220,7 +220,7 @@ BuiltinEffectBase {
 
                         value: noiseReduction.frequencySmoothingBands
                         onNewValueRequested: function (newValue) {
-                            noiseReduction.frequencySmoothingBands = newValue
+                            noiseReduction.frequencySmoothingBands = newValue;
                         }
                         measureUnitsSymbol: qsTrc("effects/noisereduction", "bands")
                         from: noiseReduction.frequencySmoothingBandsMin
@@ -271,7 +271,7 @@ BuiltinEffectBase {
                                 text: qsTrc("effects/noisereduction", "Audio with noise removed")
 
                                 onToggled: {
-                                    noiseReduction.reductionMode = 0
+                                    noiseReduction.reductionMode = 0;
                                 }
                             }
 
@@ -286,7 +286,7 @@ BuiltinEffectBase {
                                 text: qsTrc("effects/noisereduction", "Noise only")
 
                                 onToggled: {
-                                    noiseReduction.reductionMode = 1
+                                    noiseReduction.reductionMode = 1;
                                 }
                             }
                         }

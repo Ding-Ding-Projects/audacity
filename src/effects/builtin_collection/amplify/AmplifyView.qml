@@ -26,7 +26,7 @@ BuiltinEffectBase {
     }
 
     Component.onCompleted: {
-        amplify.newPeakValue = 0
+        amplify.newPeakValue = 0;
     }
 
     Column {
@@ -53,7 +53,7 @@ BuiltinEffectBase {
             step: amplify.ampStep
 
             onNewValueRequested: function (newValue) {
-                amplify.ampValue = newValue
+                amplify.ampValue = newValue;
             }
         }
 
@@ -74,7 +74,7 @@ BuiltinEffectBase {
             step: amplify.newPeakStep
 
             onNewValueRequested: function (newValue) {
-                amplify.newPeakValue = newValue
+                amplify.newPeakValue = newValue;
             }
         }
 
@@ -88,10 +88,10 @@ BuiltinEffectBase {
             checked: amplify.canClip
 
             onToggled: {
-                amplify.canClip = checked
+                amplify.canClip = checked;
                 canClipCheckbox.checked = Qt.binding(function () {
-                    return amplify.canClip
-                })
+                    return amplify.canClip;
+                });
             }
         }
     }

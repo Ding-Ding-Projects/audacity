@@ -34,7 +34,7 @@ StyledDialogView {
     title: model.dialogTitle
 
     contentWidth: 560
-    contentHeight: 442
+    contentHeight: 620
 
     modal: true
     frameless: true
@@ -107,7 +107,7 @@ StyledDialogView {
             id: pageLoader
 
             Layout.fillWidth: true
-            Layout.preferredHeight: 366
+            Layout.preferredHeight: 544
 
             Connections {
                 target: model

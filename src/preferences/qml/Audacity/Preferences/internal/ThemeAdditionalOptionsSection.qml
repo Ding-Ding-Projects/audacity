@@ -45,7 +45,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.scoreInversionEnableChangeRequested(checked)
+            root.scoreInversionEnableChangeRequested(checked);
         }
     }
 
@@ -58,7 +58,7 @@ BaseSection {
         navigation.row: 1
 
         onClicked: {
-            root.resetThemeToDefaultRequested()
+            root.resetThemeToDefaultRequested();
         }
     }
 }

@@ -61,7 +61,7 @@ Item {
     property int navigationColumnEnd: navigationColumnStart + root.count
 
     property real sampleSize: 20
-    readonly property real totalSampleSize: sampleSize + 12
+    readonly property real totalSampleSize: sampleSize + 10
 
     property real spacing: 6
 
@@ -70,125 +70,148 @@ Item {
     // Emitted with the colour chosen in the picker, as a hexadecimal string.
     signal seedColorChangeRequested(string seedColor)
 
-    implicitWidth: swatchRow.implicitWidth
-    implicitHeight: Math.max(root.totalSampleSize, swatchRow.implicitHeight)
+    implicitWidth: root.count * root.totalSampleSize + Math.max(0, root.count - 1) * root.spacing + (root.showCustom ? customButton.implicitWidth + root.spacing : 0)
+    implicitHeight: root.totalSampleSize
 
-    Row {
-        id: swatchRow
+    // The swatches stay on one line and scroll sideways so that the row never
+    // runs past its host.
+    Flickable {
+        id: swatchArea
 
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.right: root.showCustom ? customButton.left : parent.right
+        anchors.rightMargin: root.showCustom ? root.spacing : 0
+        anchors.verticalCenter: parent.verticalCenter
 
-        spacing: root.spacing
+        height: root.totalSampleSize
+        contentWidth: swatchRow.width
+        contentHeight: height
+        clip: true
+        flickableDirection: Flickable.HorizontalFlick
+        boundsBehavior: Flickable.StopAtBounds
 
-        Repeater {
-            model: root.colors
+        Row {
+            id: swatchRow
 
-            delegate: Item {
-                id: swatch
+            height: root.totalSampleSize
 
-                required property int index
-                required property var modelData
+            spacing: root.spacing
 
-                readonly property bool selected: root.currentColorIndex === swatch.index
+            Repeater {
+                model: root.colors
 
-                width: root.totalSampleSize
-                height: root.totalSampleSize
+                delegate: Item {
+                    id: swatch
 
-                NavigationControl {
-                    id: navCtrl
+                    required property int index
+                    required property var modelData
 
-                    name: "AccentColorButton"
-                    panel: root.navigationPanel
-                    row: root.navigationRow
-                    column: root.navigationColumnStart + swatch.index
-                    enabled: root.enabled && root.visible
+                    readonly property bool selected: root.currentColorIndex === swatch.index
 
-                    accessible.role: MUAccessible.RadioButton
-                    accessible.name: Utils.accessibleColorDescription(swatch.modelData)
-                    accessible.checked: swatch.selected
-                    accessible.visualItem: ring
+                    width: root.totalSampleSize
+                    height: root.totalSampleSize
 
-                    onTriggered: {
-                        root.accentColorChangeRequested(swatch.index);
-                    }
-                }
+                    NavigationControl {
+                        id: navCtrl
 
-                Rectangle {
-                    id: ring
+                        name: "AccentColorButton"
+                        panel: root.navigationPanel
+                        row: root.navigationRow
+                        column: root.navigationColumnStart + swatch.index
+                        enabled: root.enabled && root.visible
 
-                    anchors.fill: parent
+                        accessible.role: MUAccessible.RadioButton
+                        accessible.name: Utils.accessibleColorDescription(swatch.modelData)
+                        accessible.checked: swatch.selected
+                        accessible.visualItem: ring
 
-                    color: "transparent"
-                    radius: width / 2
-                    border.width: swatch.selected ? 2 : 0
-                    border.color: M3.color.primary
-
-                    Behavior on border.width {
-                        NumberAnimation {
-                            duration: M3.motion.short3
-                            easing: M3.motion.standard
+                        onTriggered: {
+                            root.accentColorChangeRequested(swatch.index);
                         }
                     }
-                }
 
-                M3StateLayer {
-                    anchors.fill: parent
-                    radius: width / 2
-                    color: M3.color.onSurface
-                    hovered: mouseArea.containsMouse
-                    pressed: mouseArea.containsPress
-                    focused: navCtrl.highlight
-                }
+                    Rectangle {
+                        id: ring
 
-                M3FocusRing {
-                    anchors.fill: parent
-                    shapeRadius: width / 2
-                    visible: navCtrl.highlight
-                }
+                        anchors.fill: parent
 
-                Rectangle {
-                    anchors.centerIn: parent
+                        color: "transparent"
+                        radius: width / 2
+                        border.width: swatch.selected ? 2 : 0
+                        border.color: M3.color.primary
 
-                    width: root.sampleSize
-                    height: width
-                    radius: width / 2
+                        Behavior on border.width {
+                            NumberAnimation {
+                                duration: M3.motion.short3
+                                easing: M3.motion.standard
+                            }
+                        }
+                    }
 
-                    border.color: M3.color.outlineVariant
-                    border.width: 1
+                    M3StateLayer {
+                        anchors.fill: parent
+                        radius: width / 2
+                        color: M3.color.onSurface
+                        hovered: mouseArea.containsMouse
+                        pressed: mouseArea.containsPress
+                        focused: navCtrl.highlight
+                    }
 
-                    //! NOTE The swatch shows the seed colour itself, so it is
-                    //! data rather than a Material 3 role.
-                    color: swatch.modelData
-                }
+                    M3FocusRing {
+                        anchors.fill: parent
+                        shapeRadius: width / 2
+                        visible: navCtrl.highlight
+                    }
 
-                MouseArea {
-                    id: mouseArea
+                    Rectangle {
+                        anchors.centerIn: parent
 
-                    anchors.fill: parent
-                    hoverEnabled: true
+                        width: root.sampleSize
+                        height: width
+                        radius: width / 2
 
-                    onClicked: {
-                        root.accentColorChangeRequested(swatch.index);
+                        border.color: M3.color.outlineVariant
+                        border.width: 1
+
+                        //! NOTE The swatch shows the seed colour itself, so it is
+                        //! data rather than a Material 3 role.
+                        color: swatch.modelData
+                    }
+
+                    MouseArea {
+                        id: mouseArea
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onClicked: {
+                            root.accentColorChangeRequested(swatch.index);
+                        }
                     }
                 }
             }
         }
+    }
 
-        M3Button {
-            anchors.verticalCenter: parent.verticalCenter
+    M3Button {
+        id: customButton
 
-            visible: root.showCustom
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
 
-            variant: "text"
-            text: qsTrc("appshell/gettingstarted", "Custom")
+        height: root.totalSampleSize
 
-            navigation.panel: root.navigationPanel
-            navigation.row: root.navigationRow
-            navigation.column: root.navigationColumnEnd
+        visible: root.showCustom
 
-            onClicked: {
-                colorPickerPopup.open();
-            }
+        variant: "text"
+        text: qsTrc("appshell/gettingstarted", "Custom")
+
+        navigation.panel: root.navigationPanel
+        navigation.row: root.navigationRow
+        navigation.column: root.navigationColumnEnd
+
+        onClicked: {
+            colorPickerPopup.open();
         }
     }
 

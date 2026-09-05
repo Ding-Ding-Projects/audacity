@@ -49,13 +49,13 @@ FocusScope {
 
     Component.onCompleted: {
         if (root.contextMenuModel != null) {
-            root.contextMenuModel.load()
+            root.contextMenuModel.load();
         }
     }
 
     onContextMenuModelChanged: {
         if (root.contextMenuModel != null) {
-            root.contextMenuModel.load()
+            root.contextMenuModel.load();
         }
     }
 
@@ -69,7 +69,7 @@ FocusScope {
 
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
 
@@ -84,7 +84,7 @@ FocusScope {
         hoverEnabled: true
 
         onClicked: {
-            root.clicked()
+            root.clicked();
         }
     }
 
@@ -113,14 +113,14 @@ FocusScope {
 
                     sourceComponent: {
                         if (root.isCreateNew) {
-                            return addComp
+                            return addComp;
                         }
 
                         if (root.isNoResultsFound) {
-                            return noResultFoundComp
+                            return noResultFoundComp;
                         }
 
-                        return projectItemComp
+                        return projectItemComp;
                     }
 
                     layer.enabled: true
@@ -205,7 +205,7 @@ FocusScope {
                     menuModel: root.contextMenuModel
 
                     onHandleMenuItem: function (itemId) {
-                        Qt.callLater(root.contextMenuModel.handleMenuItem, itemId)
+                        Qt.callLater(root.contextMenuModel.handleMenuItem, itemId);
                     }
 
                     NavigationFocusBorder {
@@ -219,7 +219,7 @@ FocusScope {
                             accessible.role: MUAccessible.Button
 
                             onTriggered: {
-                                menuButton.clicked(null)
+                                menuButton.clicked(null);
                             }
                         }
                     }

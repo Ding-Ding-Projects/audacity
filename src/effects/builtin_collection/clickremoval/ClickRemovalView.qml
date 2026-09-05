@@ -47,7 +47,7 @@ BuiltinEffectBase {
             decimals: clickRemoval.thresholdDecimals
 
             onNewValueRequested: function (newValue) {
-                clickRemoval.thresholdValue = newValue
+                clickRemoval.thresholdValue = newValue;
             }
         }
 
@@ -67,7 +67,7 @@ BuiltinEffectBase {
             decimals: clickRemoval.widthDecimals
 
             onNewValueRequested: function (newValue) {
-                clickRemoval.widthValue = newValue
+                clickRemoval.widthValue = newValue;
             }
         }
     }

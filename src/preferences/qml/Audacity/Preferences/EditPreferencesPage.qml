@@ -18,7 +18,7 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        editPreferencesModel.init()
+        editPreferencesModel.init();
     }
 
     Column {
@@ -36,7 +36,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -54,7 +54,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -72,7 +72,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -89,7 +89,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -106,12 +106,12 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
 
             onAskBeforeConvertingChanged: {
-                editPreferencesModel.askBeforeConvertingToMonoOrStereo = askBeforeConverting
+                editPreferencesModel.askBeforeConvertingToMonoOrStereo = askBeforeConverting;
             }
         }
 
@@ -128,16 +128,16 @@ PreferencesPage {
             navigation.order: monoStereoConversionSection.navigationOrderEnd + 1
 
             onZoomPreset1ChangeRequested: function (preset) {
-                editPreferencesModel.setZoomPreset1(preset)
+                editPreferencesModel.setZoomPreset1(preset);
             }
 
             onZoomPreset2ChangeRequested: function (preset) {
-                editPreferencesModel.setZoomPreset2(preset)
+                editPreferencesModel.setZoomPreset2(preset);
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }

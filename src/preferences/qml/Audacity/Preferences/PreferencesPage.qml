@@ -48,14 +48,14 @@ Rectangle {
     signal hideRequested
 
     function apply() {
-        return true
+        return true;
     }
 
     function reset() {
     }
 
     function ensureContentVisibleRequested(contentRect) {
-        const overscroll = 60
+        const overscroll = 60;
 
         const {
             contentY,
@@ -63,21 +63,21 @@ Rectangle {
             topMargin,
             bottomMargin,
             contentHeight
-        } = flickable
+        } = flickable;
 
-        const visibleTop = contentY
-        const visibleBottom = contentY + height - topMargin - bottomMargin
+        const visibleTop = contentY;
+        const visibleBottom = contentY + height - topMargin - bottomMargin;
 
-        const itemTop = contentRect.y
-        const itemBottom = itemTop + contentRect.height
+        const itemTop = contentRect.y;
+        const itemBottom = itemTop + contentRect.height;
 
-        const maxY = contentHeight - height + topMargin + bottomMargin
-        const minY = -topMargin
+        const maxY = contentHeight - height + topMargin + bottomMargin;
+        const minY = -topMargin;
 
         if (itemBottom > visibleBottom) {
-            flickable.contentY = Math.min(itemBottom - height + topMargin + bottomMargin + overscroll, maxY)
+            flickable.contentY = Math.min(itemBottom - height + topMargin + bottomMargin + overscroll, maxY);
         } else if (itemTop < visibleTop) {
-            flickable.contentY = Math.max(itemTop - overscroll, minY)
+            flickable.contentY = Math.max(itemTop - overscroll, minY);
         }
     }
 

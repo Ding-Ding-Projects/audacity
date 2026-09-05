@@ -20,18 +20,18 @@ ListItemBlank {
     signal columnScrollRequested(real columnX, real columnWidth)
 
     function scrollColumnIntoView(remainingColumnIndex) {
-        var x = 0
+        var x = 0;
 
         if (remainingColumnIndex + 1 >= root.columns.length) {
-            return
+            return;
         }
 
         for (var i = 0; i < remainingColumnIndex; i++) {
-            x += root.columns[i + 1].width + root.columnSpacing
+            x += root.columns[i + 1].width + root.columnSpacing;
         }
 
-        var colWidth = root.columns[remainingColumnIndex + 1].width
-        root.columnScrollRequested(x, colWidth)
+        var colWidth = root.columns[remainingColumnIndex + 1].width;
+        root.columnScrollRequested(x, colWidth);
     }
 
     property real itemInset: 12
@@ -44,7 +44,7 @@ ListItemBlank {
     navigation.accessible.name: root.item.name ?? ""
     navigation.onActiveChanged: {
         if (navigation.active) {
-            root.scrollIntoView()
+            root.scrollIntoView();
         }
     }
 

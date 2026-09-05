@@ -50,7 +50,7 @@ BuiltinEffectBase {
                 model: normalizeLoudness.algorithmOptions
                 currentIndex: normalizeLoudness.useRmsAlgorithm ? 0 : 1
                 onActivated: function (index) {
-                    normalizeLoudness.useRmsAlgorithm = index === 0
+                    normalizeLoudness.useRmsAlgorithm = index === 0;
                 }
             }
 
@@ -76,9 +76,9 @@ BuiltinEffectBase {
                 currentValue: normalizeLoudness.useRmsAlgorithm ? normalizeLoudness.rmsTarget : normalizeLoudness.perceivedLoudnessTarget
                 onValueEdited: function (newValue) {
                     if (normalizeLoudness.useRmsAlgorithm) {
-                        normalizeLoudness.rmsTarget = newValue
+                        normalizeLoudness.rmsTarget = newValue;
                     } else {
-                        normalizeLoudness.perceivedLoudnessTarget = newValue
+                        normalizeLoudness.perceivedLoudnessTarget = newValue;
                     }
                 }
             }
@@ -95,10 +95,10 @@ BuiltinEffectBase {
 
                 checked: normalizeLoudness.normalizeStereoChannelsIndependently
                 onToggled: {
-                    normalizeLoudness.normalizeStereoChannelsIndependently = checked
+                    normalizeLoudness.normalizeStereoChannelsIndependently = checked;
                     independentStereoCheckbox.checked = Qt.binding(function () {
-                        return normalizeLoudness.normalizeStereoChannelsIndependently
-                    })
+                        return normalizeLoudness.normalizeStereoChannelsIndependently;
+                    });
                 }
             }
 
@@ -120,10 +120,10 @@ BuiltinEffectBase {
                 enabled: !normalizeLoudness.useRmsAlgorithm
                 checked: normalizeLoudness.useDualMono
                 onToggled: {
-                    normalizeLoudness.useDualMono = checked
+                    normalizeLoudness.useDualMono = checked;
                     dualMonoCheckbox.checked = Qt.binding(function () {
-                        return normalizeLoudness.useDualMono
-                    })
+                        return normalizeLoudness.useDualMono;
+                    });
                 }
             }
 

@@ -20,7 +20,7 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        exportPreferencesModel.init()
+        exportPreferencesModel.init();
     }
 
     Column {
@@ -37,7 +37,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -54,7 +54,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }

@@ -46,7 +46,7 @@ FocusScope {
         order: 3
         onActiveChanged: {
             if (navSec.active) {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
@@ -56,8 +56,8 @@ FocusScope {
     }
 
     Component.onCompleted: {
-        tabBar.currentIndex = projectsPageModel.tabIndex
-        tabBar.completed = true
+        tabBar.currentIndex = projectsPageModel.tabIndex;
+        tabBar.completed = true;
     }
 
     Rectangle {
@@ -98,15 +98,16 @@ FocusScope {
             horizontalAlignment: Text.AlignLeft
         }
 
-        SearchField {
+        M3SearchBar {
             id: searchField
+            showRegexBuilder: true
 
             Layout.preferredWidth: 220
 
             navigation.name: "Projects Search"
             navigation.panel: navSearchPanel
             navigation.order: 1
-            accessible.name: qsTrc("project", "Search recent projects")
+            accessibleName: qsTrc("project", "Search recent projects")
         }
     }
 
@@ -131,7 +132,7 @@ FocusScope {
 
             onCurrentIndexChanged: {
                 if (completed) {
-                    projectsPageModel.tabIndex = currentIndex
+                    projectsPageModel.tabIndex = currentIndex;
                 }
             }
 
@@ -146,7 +147,7 @@ FocusScope {
 
                 onNavigationEvent: function (event) {
                     if (event.type === NavigationEvent.AboutActive) {
-                        event.setData("controlName", tabBar.currentItem.navigation.name)
+                        event.setData("controlName", tabBar.currentItem.navigation.name);
                     }
                 }
             }
@@ -247,7 +248,7 @@ FocusScope {
                     navigation.accessible.name: modelData.title
 
                     onToggled: {
-                        projectsPageModel.viewType = modelData.value
+                        projectsPageModel.viewType = modelData.value;
                     }
                 }
             }
@@ -265,10 +266,10 @@ FocusScope {
 
         sourceComponent: {
             if (!tabBar.completed || tabBar.currentIndex < 0) {
-                return null
+                return null;
             }
 
-            return [newAndRecentComp, cloudProjectsComp, cloudAudioFilesComp][tabBar.currentIndex]
+            return [newAndRecentComp, cloudProjectsComp, cloudAudioFilesComp][tabBar.currentIndex];
         }
     }
 
@@ -288,15 +289,15 @@ FocusScope {
             navigationOrder: 4
 
             onCreateNewProjectRequested: {
-                projectsPageModel.createNewProject()
+                projectsPageModel.createNewProject();
             }
 
             onOpenProjectRequested: function (projectPath, displayName) {
-                Qt.callLater(projectsPageModel.openProject, projectPath, displayName)
+                Qt.callLater(projectsPageModel.openProject, projectPath, displayName);
             }
 
             onOpenCloudProjectRequested: function (projectId) {
-                Qt.callLater(projectsPageModel.openCloudProject, projectId)
+                Qt.callLater(projectsPageModel.openCloudProject, projectId);
             }
         }
     }
@@ -310,29 +311,29 @@ FocusScope {
 
             onLoaded: {
                 item.viewType = Qt.binding(function () {
-                    return projectsPageModel.viewType
-                })
+                    return projectsPageModel.viewType;
+                });
                 item.searchText = Qt.binding(function () {
-                    return searchField.searchText
-                })
+                    return searchField.searchText;
+                });
                 item.backgroundColor = Qt.binding(function () {
-                    return background.color
-                })
+                    return background.color;
+                });
                 item.sideMargin = Qt.binding(function () {
-                    return prv.sideMargin
-                })
-                item.navigationSection = navSec
-                item.navigationOrder = 5
+                    return prv.sideMargin;
+                });
+                item.navigationSection = navSec;
+                item.navigationOrder = 5;
                 item.openCloudProjectRequested.connect(function (projectId) {
-                    Qt.callLater(projectsPageModel.openCloudProject, projectId)
-                })
+                    Qt.callLater(projectsPageModel.openCloudProject, projectId);
+                });
             }
 
             Connections {
                 target: refreshButton
                 function onClicked() {
                     if (item)
-                        item.refresh()
+                        item.refresh();
                 }
             }
         }
@@ -347,29 +348,29 @@ FocusScope {
 
             onLoaded: {
                 item.viewType = Qt.binding(function () {
-                    return projectsPageModel.viewType
-                })
+                    return projectsPageModel.viewType;
+                });
                 item.searchText = Qt.binding(function () {
-                    return searchField.searchText
-                })
+                    return searchField.searchText;
+                });
                 item.backgroundColor = Qt.binding(function () {
-                    return background.color
-                })
+                    return background.color;
+                });
                 item.sideMargin = Qt.binding(function () {
-                    return prv.sideMargin
-                })
-                item.navigationSection = navSec
-                item.navigationOrder = 6
+                    return prv.sideMargin;
+                });
+                item.navigationSection = navSec;
+                item.navigationOrder = 6;
                 item.openCloudAudioFileRequested.connect(function (cloudItemId) {
-                    Qt.callLater(projectsPageModel.openCloudAudioFile, cloudItemId)
-                })
+                    Qt.callLater(projectsPageModel.openCloudAudioFile, cloudItemId);
+                });
             }
 
             Connections {
                 target: refreshButton
                 function onClicked() {
                     if (item)
-                        item.refresh()
+                        item.refresh();
                 }
             }
         }
@@ -418,7 +419,7 @@ FocusScope {
             text: qsTrc("project", "Project manager (online)")
 
             onClicked: {
-                projectsPageModel.openProjectManager()
+                projectsPageModel.openProjectManager();
             }
         }
 
@@ -438,7 +439,7 @@ FocusScope {
                 text: qsTrc("project", "New")
 
                 onClicked: {
-                    projectsPageModel.createNewProject()
+                    projectsPageModel.createNewProject();
                 }
             }
 
@@ -451,7 +452,7 @@ FocusScope {
                 text: qsTrc("project", "Open other…")
 
                 onClicked: {
-                    Qt.callLater(projectsPageModel.openOther)
+                    Qt.callLater(projectsPageModel.openOther);
                 }
             }
         }

@@ -28,16 +28,16 @@ Item {
     property alias playState: stopwatch.playState
     onPlayStateChanged: {
         if (playState === Stopwatch.Playing && prv.prevPlayState === Stopwatch.Stopped) {
-            timeline.clear()
+            timeline.clear();
             outputDbMeterModel.isClipping = false;
 
             // We happen to know that, when this statement is reached, AudioIO has "primed" the audio buffers,
             // meaning it already has processed several hundreds of milliseconds.
             // Hence there already is data available in the lock-free queue to be displayed,
             // and there is no need to wait for a timer's cycle.
-            timelineSourceModel.pullData()
+            timelineSourceModel.pullData();
         }
-        prv.prevPlayState = playState
+        prv.prevPlayState = playState;
     }
 
     height: rootColumn.height
@@ -49,43 +49,43 @@ Item {
         readonly property int meterSpacing: 4
 
         function dbToY(db) {
-            return db / root.dbMin * root.timelineHeight
+            return db / root.dbMin * root.timelineHeight;
         }
 
         readonly property var dbSteps: {
-            let arr = []
+            let arr = [];
             for (let v = 0; v >= root.dbMin; v -= root.dbStep) {
-                arr.push(v)
+                arr.push(v);
             }
-            return arr
+            return arr;
         }
         readonly property var timeSteps: {
-            const step = 0.5
-            let arr = []
+            const step = 0.5;
+            let arr = [];
             for (let t = -duration; t <= 0; t += step) {
-                arr.push(t)
+                arr.push(t);
             }
-            return arr
+            return arr;
         }
 
         property int prevPlayState: playState
     }
 
     Component.onCompleted: {
-        timelineSourceModel.init()
-        compressionDbMeterModel.init()
-        outputDbMeterModel.init()
-        showInputDbModel.init()
-        showOutputDbModel.init()
-        showCompressionDbModel.init()
+        timelineSourceModel.init();
+        compressionDbMeterModel.init();
+        outputDbMeterModel.init();
+        showInputDbModel.init();
+        showOutputDbModel.init();
+        showCompressionDbModel.init();
     }
 
     Stopwatch {
         id: stopwatch
 
         onTick: {
-            compressionDbMeterModel.update()
-            outputDbMeterModel.update()
+            compressionDbMeterModel.update();
+            outputDbMeterModel.update();
         }
     }
 
@@ -94,10 +94,10 @@ Item {
 
         instanceId: root.instanceId
         onNewSamples: function (samples) {
-            timeline.onNewSamples(samples)
+            timeline.onNewSamples(samples);
         }
         onNewDataSequence: function () {
-            timeline.clear()
+            timeline.clear();
         }
     }
 
@@ -152,8 +152,8 @@ Item {
                     text: modelData.text
                     checked: modelData.settingModel.value === 1
                     onClicked: {
-                        modelData.settingModel.value = modelData.settingModel.value === 1 ? 0 : 1
-                        modelData.settingModel.commitSettings()
+                        modelData.settingModel.value = modelData.settingModel.value === 1 ? 0 : 1;
+                        modelData.settingModel.commitSettings();
                     }
                 }
             }
@@ -251,8 +251,8 @@ Item {
 
                         isClipping: outputDbMeterModel.isClipping
                         onClicked: {
-                            outputDbMeterModel.isClipping = false
-                            outputDbMeterModel.reset()
+                            outputDbMeterModel.isClipping = false;
+                            outputDbMeterModel.reset();
                         }
                     }
 
@@ -291,7 +291,7 @@ Item {
                         dbMin: root.dbMin
                         areaColor: ui.theme.extra["dynamics_timeline_compression_db_color"]
                         onClicked: {
-                            compressionDbMeterModel.reset()
+                            compressionDbMeterModel.reset();
                         }
                     }
 
@@ -314,8 +314,8 @@ Item {
                         dbMin: root.dbMin
                         areaColor: ui.theme.extra["dynamics_timeline_data_fill_color"]
                         onClicked: {
-                            outputDbMeterModel.reset()
-                            outputDbMeterModel.isClipping = false
+                            outputDbMeterModel.reset();
+                            outputDbMeterModel.isClipping = false;
                         }
                     }
                 }

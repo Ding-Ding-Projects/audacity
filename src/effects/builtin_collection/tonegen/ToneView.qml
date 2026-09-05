@@ -62,7 +62,7 @@ BuiltinEffectBase {
             navigation.order: 0
 
             onValueEdited: function (newIndex, newValue) {
-                tone.waveform = newIndex
+                tone.waveform = newIndex;
             }
         }
 
@@ -85,7 +85,7 @@ BuiltinEffectBase {
 
             onValueEdited: function (newValue) {
                 if (tone.frequencyStart !== newValue) {
-                    tone.frequencyStart = newValue
+                    tone.frequencyStart = newValue;
                 }
             }
         }
@@ -109,7 +109,7 @@ BuiltinEffectBase {
 
             onValueEdited: function (newValue) {
                 if (tone.amplitudeStart !== newValue) {
-                    tone.amplitudeStart = newValue
+                    tone.amplitudeStart = newValue;
                 }
             }
         }
@@ -150,7 +150,7 @@ BuiltinEffectBase {
                 navigation.order: amplitudeControl.navigation.order + 1
 
                 onValueChanged: {
-                    tone.duration = timecode.value
+                    tone.duration = timecode.value;
                 }
             }
         }

@@ -35,15 +35,15 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        apiModel.load()
+        apiModel.load();
     }
 
     function apply() {
-        return apiModel.apply()
+        return apiModel.apply();
     }
 
     function reset() {
-        apiModel.reset()
+        apiModel.reset();
     }
 
     Column {
@@ -61,12 +61,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart
 
             onCurrentAudioApiIndexChangeRequested: function (newIndex) {
-                apiModel.currentAudioApiIndex = newIndex
+                apiModel.currentAudioApiIndex = newIndex;
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -86,7 +86,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -103,7 +103,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -120,7 +120,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
@@ -135,7 +135,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
                 }
             }
         }
