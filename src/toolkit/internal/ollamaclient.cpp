@@ -86,6 +86,43 @@ QString OllamaClient::version() const
     return m_version;
 }
 
+QVariantList OllamaClient::installedModels() const
+{
+    return m_installedModels;
+}
+
+QVariantList OllamaClient::wellKnownCatalog() const
+{
+    // Approximate blob sizes, hand entered from the model cards published
+    // for these tags. This list is intentionally small and static: it is
+    // not fetched, not paginated, and not claimed to be the exhaustive
+    // live catalog. It exists to give the catalog view real rows and a
+    // real hardware fit verdict to compute before a live catalog fetch
+    // with pagination and revision tracking is implemented.
+    struct Entry { const char* tag; qint64 approxBytes; };
+    static const Entry entries[] = {
+        { "llama3.2:1b", 1300LL * 1024 * 1024 },
+        { "llama3.2:3b", 2000LL * 1024 * 1024 },
+        { "llama3.1:8b", 4700LL * 1024 * 1024 },
+        { "llama3.1:70b", 40000LL * 1024 * 1024 },
+        { "mistral:7b", 4100LL * 1024 * 1024 },
+        { "qwen2.5:7b", 4700LL * 1024 * 1024 },
+        { "qwen2.5:14b", 9000LL * 1024 * 1024 },
+        { "phi3:mini", 2200LL * 1024 * 1024 },
+        { "gemma2:9b", 5400LL * 1024 * 1024 },
+        { "codellama:13b", 7400LL * 1024 * 1024 },
+    };
+
+    QVariantList list;
+    for (const Entry& entry : entries) {
+        QVariantMap item;
+        item[QStringLiteral("tag")] = QString::fromLatin1(entry.tag);
+        item[QStringLiteral("approxBytes")] = entry.approxBytes;
+        list << item;
+    }
+    return list;
+}
+
 QUrl OllamaClient::endpoint(const QString& path) const
 {
     return QUrl(QStringLiteral("http://") + m_host + path);
@@ -131,7 +168,9 @@ void OllamaClient::refreshInstalledModels()
         for (const QJsonValue& v : models) {
             list << v.toObject().toVariantMap();
         }
+        m_installedModels = list;
         emit installedModelsChanged(list);
+        emit installedModelsListChanged();
     });
 }
 

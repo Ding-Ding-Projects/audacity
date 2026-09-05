@@ -6,12 +6,12 @@
 * A reusable export surface any list model can open. Offers every coding
 * file format the export service supports (JSON, JSONL, YAML, TOML, XML,
 * CSV, TSV, Markdown, HTML, SQL) plus a store only ZIP archive, discloses
-* which fields a tabular format would drop before exporting, and writes
-* UTF-8 output through the C++ export service.
+* which fields the chosen format would drop before the destination is even
+* picked, and writes UTF-8 output through the C++ export service.
 *
 * API:
 *     opened, rows (list of objects), open(), close()
-*     exported(string filePath)
+*     exportSucceeded(string filePath), exportFailed(string filePath)
 */
 pragma ComponentBehavior: Bound
 
@@ -23,32 +23,31 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.M3
+import Audacity.Toolkit
 
 Item {
     id: root
 
     property bool opened: false
     property var rows: []
-
-    //! Format ids in exportservice.h order; kept in step with
-    //! exportFormatId()/exportFormatLabel() by name, not by index.
-    readonly property var formats: [
-        { id: "json", label: qsTrc("toolkit", "JSON") },
-        { id: "jsonl", label: qsTrc("toolkit", "JSON Lines (NDJSON)") },
-        { id: "yaml", label: qsTrc("toolkit", "YAML") },
-        { id: "toml", label: qsTrc("toolkit", "TOML") },
-        { id: "xml", label: qsTrc("toolkit", "XML") },
-        { id: "csv", label: qsTrc("toolkit", "CSV") },
-        { id: "tsv", label: qsTrc("toolkit", "TSV") },
-        { id: "markdown", label: qsTrc("toolkit", "Markdown") },
-        { id: "html", label: qsTrc("toolkit", "HTML") },
-        { id: "sql", label: qsTrc("toolkit", "SQL") },
-        { id: "zip", label: qsTrc("toolkit", "ZIP archive (store only; 7z is not available in this build)") }
-    ]
-
     property int selectedFormatIndex: 0
 
-    signal exported(string filePath)
+    signal exportSucceeded(string filePath)
+    signal exportFailed(string filePath)
+
+    ExportServiceWrapper {
+        id: exportService
+    }
+
+    readonly property var formatIds: exportService.formatIds()
+
+    readonly property string currentFormatId: root.formatIds.length > 0
+                                                ? root.formatIds[Math.min(root.selectedFormatIndex, root.formatIds.length - 1)]
+                                                : ""
+
+    readonly property var currentDroppedFields: root.currentFormatId.length > 0
+                                                 ? exportService.droppedFields(root.currentFormatId, root.rows)
+                                                 : []
 
     function open() {
         root.opened = true
@@ -79,12 +78,12 @@ Item {
             }
 
             Repeater {
-                model: root.formats
+                model: root.formatIds
 
                 delegate: RowLayout {
                     id: formatRow
 
-                    required property var modelData
+                    required property string modelData
                     required property int index
 
                     spacing: 8
@@ -95,18 +94,18 @@ Item {
                     }
 
                     StyledTextLabel {
-                        text: formatRow.modelData.label
+                        text: exportService.formatLabel(formatRow.modelData)
                     }
                 }
             }
 
             StyledTextLabel {
-                id: droppedFieldsLabel
-
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 color: M3.color.error
-                visible: text.length > 0
+                visible: root.currentDroppedFields.length > 0
+                text: qsTrc("toolkit", "This format cannot carry every field. Dropped on export: %1.")
+                      .arg(root.currentDroppedFields.join(", "))
             }
 
             RowLayout {
@@ -121,6 +120,7 @@ Item {
                 M3Button {
                     text: qsTrc("toolkit", "Choose destination and export")
                     variant: "filled"
+                    enabled: root.rows.length > 0
                     onClicked: saveDialog.open()
                 }
             }
@@ -132,13 +132,14 @@ Item {
 
         fileMode: FileDialog.SaveFile
         onAccepted: {
-            // The actual field encoding and file writing happens through
-            // the C++ ExportService via the host page, which owns the row
-            // model and therefore the concrete rows to hand across. This
-            // sheet only decides the format and destination and reports
-            // back through exported().
-            root.exported(saveDialog.selectedFile)
-            root.close()
+            const path = saveDialog.selectedFile.toString().replace(/^file:\/\//, "")
+            const ok = exportService.exportRows(root.currentFormatId, root.rows, path)
+            if (ok) {
+                root.exportSucceeded(path)
+                root.close()
+            } else {
+                root.exportFailed(path)
+            }
         }
     }
 }

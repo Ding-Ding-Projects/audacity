@@ -23,6 +23,7 @@ class OllamaClient : public QObject
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(bool reachable READ reachable NOTIFY reachableChanged)
     Q_PROPERTY(QString version READ version NOTIFY versionChanged)
+    Q_PROPERTY(QVariantList installedModels READ installedModels NOTIFY installedModelsListChanged)
 
 public:
     explicit OllamaClient(QObject* parent = nullptr);
@@ -31,6 +32,15 @@ public:
     void setHost(const QString& host);
     bool reachable() const;
     QString version() const;
+    QVariantList installedModels() const;
+
+    //! A small, hand-curated, offline list of well-known Ollama model
+    //! tags with an approximate blob size in bytes. This is NOT a claim
+    //! of the exhaustive live catalog: it exists so the catalog view has
+    //! real rows to show and a real fit verdict to compute even before a
+    //! live catalog fetch is implemented, and it is labelled as such in
+    //! the page.
+    Q_INVOKABLE QVariantList wellKnownCatalog() const;
 
     //! Returns true only when the host is loopback or a private network
     //! address (RFC 1918 / link-local / loopback). A public address is
@@ -48,6 +58,7 @@ signals:
     void reachableChanged();
     void versionChanged();
     void installedModelsChanged(const QVariantList& models);
+    void installedModelsListChanged();
     void pullProgress(const QString& modelTag, qint64 completedBytes, qint64 totalBytes, const QString& status);
     void pullFinished(const QString& modelTag, bool success, const QString& error);
     void chatToken(const QString& token, bool done);
@@ -61,6 +72,7 @@ private:
     QString m_host = QStringLiteral("127.0.0.1:11434");
     bool m_reachable = false;
     QString m_version;
+    QVariantList m_installedModels;
     QHash<QString, QNetworkReply*> m_activePulls;
 };
 }

@@ -12,6 +12,8 @@
 #include "internal/pullcartmodel.h"
 #include "internal/docsindex.h"
 #include "internal/externaleditorservice.h"
+#include "internal/hardwarefitservice.h"
+#include "internal/exportservicewrapper.h"
 
 using namespace au::toolkit;
 using namespace muse::modularity;
@@ -40,4 +42,6 @@ void ToolkitModule::registerUiTypes()
     qmlRegisterType<PullCartModel>("Audacity.Toolkit", 1, 0, "PullCartModel");
     qmlRegisterType<DocsIndex>("Audacity.Toolkit", 1, 0, "DocsIndex");
     qmlRegisterType<ExternalEditorService>("Audacity.Toolkit", 1, 0, "ExternalEditorService");
+    qmlRegisterType<HardwareFitService>("Audacity.Toolkit", 1, 0, "HardwareFitService");
+    qmlRegisterType<ExportServiceWrapper>("Audacity.Toolkit", 1, 0, "ExportServiceWrapper");
 }

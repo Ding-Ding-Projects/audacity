@@ -61,6 +61,10 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/internal/harnessprofile.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/exportservice.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/exportservice.h
+    ${CMAKE_CURRENT_LIST_DIR}/internal/exportservicewrapper.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/internal/exportservicewrapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/internal/hardwarefitservice.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/internal/hardwarefitservice.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/bulkselectionmodel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/bulkselectionmodel.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/pullcartmodel.cpp
