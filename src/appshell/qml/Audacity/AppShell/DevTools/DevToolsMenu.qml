@@ -64,8 +64,8 @@ ListView {
         navigation.row: listItem.index
 
         onClicked: {
-            radioButtonList.currentIndex = listItem.index
-            radioButtonList.selected(listItem.modelData["name"])
+            radioButtonList.currentIndex = listItem.index;
+            radioButtonList.selected(listItem.modelData["name"]);
         }
     }
 }

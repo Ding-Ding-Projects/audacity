@@ -44,35 +44,35 @@ DockPage {
     function setCurrentCentral(name) {
         switch (name) {
         case "settings":
-            root.central = settingsComp
-            break
+            root.central = settingsComp;
+            break;
         case "gallery":
-            root.central = galleryComp
-            break
+            root.central = galleryComp;
+            break;
         case "m3gallery":
-            root.central = m3GalleryComp
-            break
+            root.central = m3GalleryComp;
+            break;
         case "interactive":
-            root.central = interactiveComp
-            break
+            root.central = interactiveComp;
+            break;
         case "toastnotification":
-            root.central = toastNotificationComp
-            break
+            root.central = toastNotificationComp;
+            break;
         case "crashhandler":
-            root.central = crashhandlerComp
-            break
+            root.central = crashhandlerComp;
+            break;
         case "extensions":
-            root.central = extensionsComp
-            break
+            root.central = extensionsComp;
+            break;
         case "navigation":
-            root.central = keynavComp
-            break
+            root.central = keynavComp;
+            break;
         case "cloud":
-            root.central = cloudComp
-            break
+            root.central = cloudComp;
+            break;
         case "table":
-            root.central = tableComp
-            break
+            root.central = tableComp;
+            break;
         }
     }
 
@@ -140,7 +140,7 @@ DockPage {
                     ]
 
                     onSelected: function (name) {
-                        root.setCurrentCentral(name)
+                        root.setCurrentCentral(name);
                     }
                 }
             }

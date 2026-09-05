@@ -48,7 +48,7 @@ Page {
     }
 
     Component.onCompleted: {
-        model.load()
+        model.load();
     }
 
     // Page-level accessibility information
@@ -84,7 +84,7 @@ Page {
             navigationPanel.accessible.description: model.themeSelectionAccessibleDescription
 
             onThemeChangeRequested: function (newThemeCode) {
-                model.currentThemeCode = newThemeCode
+                model.currentThemeCode = newThemeCode;
             }
         }
 
@@ -110,7 +110,7 @@ Page {
                 navigation.accessible.description: model.followSystemThemeDescription
 
                 onClicked: {
-                    model.isFollowSystemTheme = !checked
+                    model.isFollowSystemTheme = !checked;
                 }
             }
 
@@ -127,7 +127,7 @@ Page {
                 navigation.accessible.description: model.enableHighContrastDescription
 
                 onClicked: {
-                    model.highContrastEnabled = !checked
+                    model.highContrastEnabled = !checked;
                 }
             }
         }
@@ -168,7 +168,7 @@ Page {
                 navigationPanel.accessible.description: model.accentColorDescription
 
                 onAccentColorChangeRequested: function (newColorIndex) {
-                    model.currentAccentColorIndex = newColorIndex
+                    model.currentAccentColorIndex = newColorIndex;
                 }
             }
         }

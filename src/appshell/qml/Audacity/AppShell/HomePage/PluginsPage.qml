@@ -51,17 +51,17 @@ FocusScope {
         order: 3
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
 
     onSectionChanged: {
         if (!Boolean(root.section)) {
-            return
+            return;
         }
 
-        tabBar.selectPage(root.section)
+        tabBar.selectPage(root.section);
     }
 
     Rectangle {
@@ -119,12 +119,12 @@ FocusScope {
                 navigation.order: 1
 
                 onSearchTextChanged: {
-                    categoryDropdown.selectedCategory = ""
+                    categoryDropdown.selectedCategory = "";
                 }
 
                 //! NOTE Hook for the regex builder, attached by the search lane.
                 onRegexBuilderRequested: {
-                    root.regexBuilderRequested()
+                    root.regexBuilderRequested();
                 }
             }
 
@@ -145,32 +145,32 @@ FocusScope {
                 currentIndex: 0
 
                 function initModel() {
-                    var categories = pluginsPage.categories()
+                    var categories = pluginsPage.categories();
                     var result = [];
 
                     //: The title of an option to display the plugins from all categories.
                     result.push({
                         "text": qsTrc("appshell", "All"),
                         "value": allCategoryValue
-                    })
+                    });
 
                     for (var i = 0; i < categories.length; ++i) {
-                        var category = categories[i]
+                        var category = categories[i];
                         result.push({
                             "text": category.title,
                             "value": category.code
-                        })
+                        });
                     }
 
-                    model = result
+                    model = result;
                 }
 
                 Component.onCompleted: {
-                    initModel()
+                    initModel();
                 }
 
                 onActivated: function (index, value) {
-                    currentIndex = index
+                    currentIndex = index;
                 }
             }
         }
@@ -189,7 +189,7 @@ FocusScope {
             navigation.order: 3
 
             onClicked: {
-                pluginsPage.reloadPlugins()
+                pluginsPage.reloadPlugins();
             }
         }
     }

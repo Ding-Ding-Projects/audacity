@@ -46,11 +46,11 @@ Item {
     signal selected(string uri)
 
     function select(uri) {
-        root.selected(uri)
+        root.selected(uri);
     }
 
     function focusOnFirst() {
-        navPanel.requestActive()
+        navPanel.requestActive();
     }
 
     MainToolBarModel {
@@ -58,7 +58,7 @@ Item {
     }
 
     Component.onCompleted: {
-        toolBarModel.load()
+        toolBarModel.load();
     }
 
     NavigationPanel {
@@ -99,7 +99,7 @@ Item {
                 navigation.column: tab.index
 
                 onClicked: {
-                    root.selected(tab.modelData.uri)
+                    root.selected(tab.modelData.uri);
                 }
             }
         }

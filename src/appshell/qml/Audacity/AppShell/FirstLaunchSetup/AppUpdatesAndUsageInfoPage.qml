@@ -55,21 +55,21 @@ Page {
     }
 
     onExtraButtonClicked: {
-        const disableUUID = false
-        model.setSendAnonymousUsageInfo(disableUUID)
+        const disableUUID = false;
+        model.setSendAnonymousUsageInfo(disableUUID);
     }
 
     onNextButtonClicked: {
-        const enableUUID = true
-        model.setSendAnonymousUsageInfo(enableUUID)
+        const enableUUID = true;
+        model.setSendAnonymousUsageInfo(enableUUID);
     }
 
     function readInfo() {
-        accessibleInfo.readInfo()
+        accessibleInfo.readInfo();
     }
 
     function resetFocus() {
-        accessibleInfo.resetFocus()
+        accessibleInfo.resetFocus();
     }
 
     AccessibleItem {
@@ -83,13 +83,13 @@ Page {
         name: qsTrc("appshell/gettingstarted", "UpdatesUsage. %1").arg(root.activeButtonTitle)
 
         function readInfo() {
-            accessibleInfo.ignored = false
-            accessibleInfo.focused = true
+            accessibleInfo.ignored = false;
+            accessibleInfo.focused = true;
         }
 
         function resetFocus() {
-            accessibleInfo.ignored = true
-            accessibleInfo.focused = false
+            accessibleInfo.ignored = true;
+            accessibleInfo.focused = false;
         }
     }
 
@@ -142,7 +142,7 @@ Page {
                     text: prv.updatesBodyText2
 
                     onLinkActivated: function (link) {
-                        api.launcher.open(prv.preferencesUrl)
+                        api.launcher.open(prv.preferencesUrl);
                     }
 
                     MouseArea {
@@ -196,7 +196,7 @@ Page {
                     text: prv.crashReportsBodyText2
 
                     onLinkActivated: function (link) {
-                        api.launcher.open(prv.preferencesUrl)
+                        api.launcher.open(prv.preferencesUrl);
                     }
 
                     MouseArea {
@@ -250,7 +250,7 @@ Page {
                     text: prv.usageInfoBodyText2
 
                     onLinkActivated: function (link) {
-                        api.launcher.open(prv.preferencesUrl)
+                        api.launcher.open(prv.preferencesUrl);
                     }
 
                     MouseArea {

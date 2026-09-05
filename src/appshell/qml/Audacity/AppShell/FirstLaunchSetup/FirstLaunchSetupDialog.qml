@@ -45,26 +45,26 @@ StyledDialogView {
     readonly property Page currentPage: pageLoader.item as Page
 
     function endSetup() {
-        model.finish()
-        root.accept()
+        model.finish();
+        root.accept();
     }
 
     function advanceToNextPage() {
         if (root.currentPage) {
-            root.currentPage.nextButtonClicked()
+            root.currentPage.nextButtonClicked();
         }
 
         if (model.canFinish) {
-            endSetup()
-            return
+            endSetup();
+            return;
         }
 
         if (Boolean(buttons.lastPressedButton)) {
-            buttons.lastPressedButton.navigation.accessible.ignored = true
+            buttons.lastPressedButton.navigation.accessible.ignored = true;
         }
 
-        pageLoader.item.resetFocus()
-        model.currentPageIndex++
+        pageLoader.item.resetFocus();
+        model.currentPageIndex++;
     }
 
     FirstLaunchSetupModel {
@@ -72,7 +72,7 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        model.load()
+        model.load();
     }
 
     Rectangle {
@@ -113,21 +113,21 @@ StyledDialogView {
                 target: model
 
                 function onCurrentPageChanged() {
-                    pageLoader.setSource(model.currentPage.url, model.currentPage.properties)
+                    pageLoader.setSource(model.currentPage.url, model.currentPage.properties);
                 }
             }
 
             onLoaded: {
-                item.navigationSection = root.navigationSection
-                item.activeButtonTitle = buttons.activeButton.text
+                item.navigationSection = root.navigationSection;
+                item.activeButtonTitle = buttons.activeButton.text;
 
                 if (item.navNextPageRequested) {
                     item.navNextPageRequested.connect(function () {
-                        advanceToNextPage()
-                    })
+                        advanceToNextPage();
+                    });
                 }
 
-                navigationActiveTimer.start()
+                navigationActiveTimer.start();
             }
 
             Timer {
@@ -137,9 +137,9 @@ StyledDialogView {
                 repeat: false
 
                 onTriggered: {
-                    buttons.activeButton.navigation.accessible.ignored = true
-                    buttons.activeButton.navigation.requestActive()
-                    pageLoader.item.readInfo()
+                    buttons.activeButton.navigation.accessible.ignored = true;
+                    buttons.activeButton.navigation.requestActive();
+                    pageLoader.item.readInfo();
                 }
             }
         }
@@ -177,11 +177,11 @@ StyledDialogView {
             property var lastPressedButton: null
             property var activeButton: {
                 if (Boolean(lastPressedButton) && lastPressedButton.visible === true) {
-                    return lastPressedButton
+                    return lastPressedButton;
                 } else if (nextStepButton.visible === true) {
-                    return nextStepButton
+                    return nextStepButton;
                 } else {
-                    return backButton
+                    return backButton;
                 }
             }
 
@@ -210,22 +210,22 @@ StyledDialogView {
                 navigation.column: 3
                 navigation.onActiveChanged: {
                     if (!navigation.active) {
-                        navigation.accessible.ignored = false
-                        navigation.accessible.focused = true
-                        pageLoader.item.resetFocus()
+                        navigation.accessible.ignored = false;
+                        navigation.accessible.focused = true;
+                        pageLoader.item.resetFocus();
                     }
                 }
 
                 onClicked: {
                     if (!enabled)
-                        return
+                        return;
                     if (Boolean(buttons.lastPressedButton)) {
-                        buttons.lastPressedButton.navigation.accessible.ignored = true
+                        buttons.lastPressedButton.navigation.accessible.ignored = true;
                     }
 
-                    buttons.lastPressedButton = backButton
-                    pageLoader.item.resetFocus()
-                    model.currentPageIndex--
+                    buttons.lastPressedButton = backButton;
+                    pageLoader.item.resetFocus();
+                    model.currentPageIndex--;
                 }
             }
 
@@ -248,12 +248,12 @@ StyledDialogView {
 
                 onClicked: {
                     if (root.currentPage) {
-                        root.currentPage.extraButtonClicked()
+                        root.currentPage.extraButtonClicked();
                     }
 
                     if (model.canFinish) {
-                        endSetup()
-                        return
+                        endSetup();
+                        return;
                     }
                 }
             }
@@ -272,14 +272,14 @@ StyledDialogView {
                 navigation.column: 2
                 navigation.onActiveChanged: {
                     if (!navigation.active) {
-                        navigation.accessible.ignored = false
-                        navigation.accessible.focused = true
-                        pageLoader.item.resetFocus()
+                        navigation.accessible.ignored = false;
+                        navigation.accessible.focused = true;
+                        pageLoader.item.resetFocus();
                     }
                 }
 
                 onClicked: {
-                    advanceToNextPage()
+                    advanceToNextPage();
                 }
             }
         }

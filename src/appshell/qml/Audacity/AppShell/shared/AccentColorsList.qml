@@ -50,7 +50,7 @@ Item {
 
         onNavigationEvent: function (event) {
             if (event.type === NavigationEvent.AboutActive) {
-                event.setData("controlIndex", [navigationRow, navigationColumnStart + root.currentColorIndex])
+                event.setData("controlIndex", [navigationRow, navigationColumnStart + root.currentColorIndex]);
             }
         }
     }
@@ -109,7 +109,7 @@ Item {
                     accessible.visualItem: ring
 
                     onTriggered: {
-                        root.accentColorChangeRequested(swatch.index)
+                        root.accentColorChangeRequested(swatch.index);
                     }
                 }
 
@@ -168,7 +168,7 @@ Item {
                     hoverEnabled: true
 
                     onClicked: {
-                        root.accentColorChangeRequested(swatch.index)
+                        root.accentColorChangeRequested(swatch.index);
                     }
                 }
             }
@@ -187,7 +187,7 @@ Item {
             navigation.column: root.navigationColumnEnd
 
             onClicked: {
-                colorPickerPopup.open()
+                colorPickerPopup.open();
             }
         }
     }
@@ -209,9 +209,9 @@ Item {
             navigationPanel: root.navigationPanel
 
             onAccepted: {
-                M3.seedColor = colorPicker.selection
-                root.seedColorChangeRequested(colorPicker.selection)
-                colorPickerPopup.close()
+                M3.seedColor = colorPicker.selection;
+                root.seedColorChangeRequested(colorPicker.selection);
+                colorPickerPopup.close();
             }
         }
     }

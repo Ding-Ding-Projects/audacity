@@ -56,15 +56,15 @@ Page {
 
         function onTriggered() {
             if (!canTrigger) {
-                return
+                return;
             }
 
-            root.isCreateAccountMode ? model.signUpWithEmail(emailInputField.currentText, passwordInputField.currentText) : model.signInWithEmail(emailInputField.currentText, passwordInputField.currentText)
+            root.isCreateAccountMode ? model.signUpWithEmail(emailInputField.currentText, passwordInputField.currentText) : model.signInWithEmail(emailInputField.currentText, passwordInputField.currentText);
         }
     }
 
     Component.onCompleted: {
-        model.init()
+        model.init();
     }
 
     SigninAudiocomPageModel {
@@ -72,7 +72,7 @@ Page {
 
         onAuthorizedChanged: {
             if (authorized) {
-                root.navNextPageRequested()
+                root.navNextPageRequested();
             }
         }
     }
@@ -110,7 +110,7 @@ Page {
             navigation.column: 0
 
             onClicked: {
-                model.signInWithSocial(prv.googleAuthProvider)
+                model.signInWithSocial(prv.googleAuthProvider);
             }
         }
 
@@ -179,9 +179,9 @@ Page {
 
                     function onAccepted() {
                         if (prv.canTrigger) {
-                            prv.onTriggered()
+                            prv.onTriggered();
                         } else {
-                            Qt.callLater(emailInputField.textInput.forceActiveFocus)
+                            Qt.callLater(emailInputField.textInput.forceActiveFocus);
                         }
                     }
                 }
@@ -231,7 +231,7 @@ Page {
                     navigation.accessible.name: qsTrc("appshell/gettingstarted", "Forgot password")
 
                     onNavigationTriggered: {
-                        Qt.openUrlExternally(prv.forgotPasswordUrl)
+                        Qt.openUrlExternally(prv.forgotPasswordUrl);
                     }
 
                     Text {
@@ -244,7 +244,7 @@ Page {
                         linkColor: M3.color.primary
 
                         onLinkActivated: function (link) {
-                            Qt.openUrlExternally(link)
+                            Qt.openUrlExternally(link);
                         }
                     }
                 }
@@ -280,9 +280,9 @@ Page {
 
                     function onAccepted() {
                         if (prv.canTrigger) {
-                            prv.onTriggered()
+                            prv.onTriggered();
                         } else {
-                            Qt.callLater(passwordInputField.textInput.forceActiveFocus)
+                            Qt.callLater(passwordInputField.textInput.forceActiveFocus);
                         }
                     }
                 }
@@ -325,17 +325,17 @@ Page {
 
                 text: {
                     if (root.isCreateAccountMode) {
-                        return prv.formButtonTextCreateAccount
+                        return prv.formButtonTextCreateAccount;
                     }
 
-                    return model.authInProgress ? prv.formButtonTextLoading : prv.formButtonTextSignIn
+                    return model.authInProgress ? prv.formButtonTextLoading : prv.formButtonTextSignIn;
                 }
 
                 navigation.name: "FormButton"
                 navigation.panel: actionsPanel
 
                 onClicked: {
-                    prv.onTriggered()
+                    prv.onTriggered();
                 }
             }
         }
@@ -374,7 +374,7 @@ Page {
                 navigation.accessible.name: root.isCreateAccountMode ? prv.signInLinkText : prv.createAccountLinkText
 
                 onNavigationTriggered: {
-                    root.isCreateAccountMode = !root.isCreateAccountMode
+                    root.isCreateAccountMode = !root.isCreateAccountMode;
                 }
 
                 Text {
@@ -391,7 +391,7 @@ Page {
                         cursorShape: Qt.PointingHandCursor
 
                         onClicked: {
-                            root.isCreateAccountMode = !root.isCreateAccountMode
+                            root.isCreateAccountMode = !root.isCreateAccountMode;
                         }
                     }
                 }

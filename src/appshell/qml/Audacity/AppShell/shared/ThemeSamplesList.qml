@@ -49,7 +49,7 @@ ListView {
 
         onNavigationEvent: function (event) {
             if (event.type === NavigationEvent.AboutActive) {
-                event.setData("controlIndex", [navigationRow, navigationColumnStart + root.currentIndex])
+                event.setData("controlIndex", [navigationRow, navigationColumnStart + root.currentIndex]);
             }
         }
     }
@@ -94,7 +94,7 @@ ListView {
             accessibleName: qsTrc("appshell/gettingstarted", "%1 theme").arg(sampleColumn.modelData.title)
 
             onClicked: {
-                root.themeChangeRequested(sampleColumn.modelData.codeKey)
+                root.themeChangeRequested(sampleColumn.modelData.codeKey);
             }
 
             ThemeSample {
@@ -103,7 +103,7 @@ ListView {
                 theme: sampleColumn.modelData
 
                 onClicked: {
-                    root.themeChangeRequested(sampleColumn.modelData.codeKey)
+                    root.themeChangeRequested(sampleColumn.modelData.codeKey);
                 }
             }
         }
@@ -122,16 +122,16 @@ ListView {
             navigation.accessible.name: qsTrc("appshell/gettingstarted", "%1 theme").arg(sampleColumn.modelData.title)
             navigation.accessible.description: {
                 //: %1 is the theme name (e.g. "Light", "Dark")
-                var desc = qsTrc("appshell/gettingstarted", "Select %1 theme").arg(sampleColumn.modelData.title)
+                var desc = qsTrc("appshell/gettingstarted", "Select %1 theme").arg(sampleColumn.modelData.title);
                 if (root.currentThemeCode === sampleColumn.modelData.codeKey) {
                     //: %1 is the base description with theme selection
-                    desc = qsTrc("appshell/gettingstarted", "%1. Currently selected").arg(desc)
+                    desc = qsTrc("appshell/gettingstarted", "%1. Currently selected").arg(desc);
                 }
-                return desc
+                return desc;
             }
 
             onToggled: {
-                root.themeChangeRequested(sampleColumn.modelData.codeKey)
+                root.themeChangeRequested(sampleColumn.modelData.codeKey);
             }
         }
     }

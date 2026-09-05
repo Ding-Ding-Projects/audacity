@@ -47,7 +47,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        toolBarModel.load()
+        toolBarModel.load();
     }
 
     ListView {
@@ -81,7 +81,7 @@ Rectangle {
             height: 40
 
             onClicked: {
-                toolBarModel.handleMenuItem(item.id)
+                toolBarModel.handleMenuItem(item.id);
             }
         }
     }

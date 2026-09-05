@@ -44,7 +44,7 @@ Item {
     signal selected(string name)
 
     readonly property var destinations: {
-        var items = []
+        var items = [];
 
         if (root.cloudEnabled) {
             items.push({
@@ -52,7 +52,7 @@ Item {
                 "title": qsTrc("appshell", "Cloud account"),
                 "text": qsTrc("appshell", "Cloud account"),
                 "icon": IconCode.ACCOUNT
-            })
+            });
         }
 
         items.push({
@@ -60,19 +60,19 @@ Item {
             "title": qsTrc("appshell", "Project"),
             "text": qsTrc("appshell", "Project"),
             "icon": IconCode.NEW_FILE
-        })
+        });
 
-        return items
+        return items;
     }
 
     function indexOfCurrent() {
         for (var i = 0; i < root.destinations.length; ++i) {
             if (root.destinations[i].name === root.currentPageName) {
-                return i
+                return i;
             }
         }
 
-        return 0
+        return 0;
     }
 
     NavigationSection {
@@ -113,7 +113,7 @@ Item {
         navigationPanel: navPanel
 
         onActivated: function (index) {
-            root.selected(root.destinations[index].name)
+            root.selected(root.destinations[index].name);
         }
     }
 
@@ -146,7 +146,7 @@ Item {
                 navigation.row: destination.index
 
                 onClicked: {
-                    root.selected(destination.modelData.name)
+                    root.selected(destination.modelData.name);
                 }
             }
         }

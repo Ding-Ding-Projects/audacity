@@ -24,13 +24,13 @@ Item {
 
         onActiveChanged: function (active) {
             if (active) {
-                firstButton.navigation.requestActive()
-                accessibleInfo.ignored = false
-                accessibleInfo.focused = true
+                firstButton.navigation.requestActive();
+                accessibleInfo.ignored = false;
+                accessibleInfo.focused = true;
             } else {
-                accessibleInfo.ignored = true
-                accessibleInfo.focused = false
-                firstButton.navigation.accessible.ignored = true
+                accessibleInfo.ignored = true;
+                accessibleInfo.focused = false;
+                firstButton.navigation.accessible.ignored = true;
             }
         }
     }
@@ -46,14 +46,14 @@ Item {
         visualItem: root
         role: MUAccessible.Button
         name: {
-            var msg = ""
+            var msg = "";
             if (Boolean(root.userIsAuthorized)) {
-                msg = "%1. %2. %3. %4".arg(root.cloudTitle).arg(root.userName).arg(root.userCollectionUrl).arg(firstButton.text)
+                msg = "%1. %2. %3. %4".arg(root.cloudTitle).arg(root.userName).arg(root.userCollectionUrl).arg(firstButton.text);
             } else {
-                msg = "%1. %2. %3".arg(root.cloudTitle).arg(qsTrc("cloud", "Not signed in")).arg(firstButton.text)
+                msg = "%1. %2. %3".arg(root.cloudTitle).arg(qsTrc("cloud", "Not signed in")).arg(firstButton.text);
             }
 
-            return msg
+            return msg;
         }
     }
 
@@ -150,16 +150,16 @@ Item {
                     navigation.accessible.ignored: true
                     navigation.onActiveChanged: {
                         if (!navigation.active) {
-                            navigation.accessible.ignored = false
-                            accessibleInfo.ignored = true
+                            navigation.accessible.ignored = false;
+                            accessibleInfo.ignored = true;
                         }
                     }
 
                     onClicked: {
                         if (Boolean(root.userIsAuthorized)) {
-                            root.myProfileRequested()
+                            root.myProfileRequested();
                         } else {
-                            root.signInRequested()
+                            root.signInRequested();
                         }
                     }
                 }
@@ -178,9 +178,9 @@ Item {
 
                     onClicked: {
                         if (Boolean(root.userIsAuthorized)) {
-                            root.signOutRequested()
+                            root.signOutRequested();
                         } else {
-                            root.createAccountRequested()
+                            root.createAccountRequested();
                         }
                     }
                 }

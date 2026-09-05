@@ -31,7 +31,7 @@ FocusScope {
     }
 
     Component.onCompleted: {
-        model.init()
+        model.init();
     }
 
     NavigationSection {
@@ -41,7 +41,7 @@ FocusScope {
         order: 3
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
@@ -84,19 +84,19 @@ FocusScope {
         userAvatarUrl: model.avatarPath
 
         onSignInRequested: {
-            model.openSignInDialog()
+            model.openSignInDialog();
         }
 
         onMyProfileRequested: {
-            model.openProfile()
+            model.openProfile();
         }
 
         onSignOutRequested: {
-            model.signOut()
+            model.signOut();
         }
 
         onCreateAccountRequested: {
-            model.openCreateAccountDialog()
+            model.openCreateAccountDialog();
         }
     }
 }

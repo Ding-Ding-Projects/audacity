@@ -50,8 +50,8 @@ ApplicationWindow {
     color: M3.color.surface
 
     Component.onCompleted: {
-        ui.rootItem = root.contentItem
-        titleProvider.load()
+        ui.rootItem = root.contentItem;
+        titleProvider.load();
     }
 
     MainWindowTitleProvider {
@@ -86,6 +86,6 @@ ApplicationWindow {
     ToastProvider {}
 
     function showMinimizedWithSavePreviousState() {
-        bridge.showMinimizedWithSavePreviousState()
+        bridge.showMinimizedWithSavePreviousState();
     }
 }

@@ -116,7 +116,7 @@ StyledDialogView {
                 navigation.panel: buttonsNavPanel
 
                 onClicked: {
-                    root.hide()
+                    root.hide();
                 }
             }
         }

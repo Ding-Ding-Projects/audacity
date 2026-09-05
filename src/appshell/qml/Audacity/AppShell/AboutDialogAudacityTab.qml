@@ -43,9 +43,9 @@ ColumnLayout {
             property int clickCount: 0
 
             onClicked: {
-                clickCount++
+                clickCount++;
                 if (clickCount % 3 === 0) {
-                    root.model.toggleDevMode()
+                    root.model.toggleDevMode();
                 }
             }
         }
@@ -206,17 +206,17 @@ ColumnLayout {
                             linkColor: M3.color.primary
 
                             text: modelData.credits.map(function (c) {
-                                let isRaw = c.raw && c.raw.length > 0
+                                let isRaw = c.raw && c.raw.length > 0;
                                 if (isRaw) {
-                                    return c.raw
+                                    return c.raw;
                                 }
 
-                                let isUrl = c.url && c.url.length > 0
+                                let isUrl = c.url && c.url.length > 0;
                                 if (isUrl) {
-                                    return '<a href="' + c.url + '">' + c.name + '</a>'
+                                    return '<a href="' + c.url + '">' + c.name + '</a>';
                                 }
 
-                                return c.role ? c.name + ", " + c.role : c.name
+                                return c.role ? c.name + ", " + c.role : c.name;
                             }).join("<br>")
                         }
                     }
@@ -230,8 +230,8 @@ ColumnLayout {
                     linkColor: M3.color.primary
 
                     text: {
-                        let websiteUrl = root.model.appUrl()
-                        return qsTrc("appshell/about", "Audacity website: %1").arg('<a href="' + websiteUrl.url + '">' + websiteUrl.displayName + '</a>')
+                        let websiteUrl = root.model.appUrl();
+                        return qsTrc("appshell/about", "Audacity website: %1").arg('<a href="' + websiteUrl.url + '">' + websiteUrl.displayName + '</a>');
                     }
                     font: M3.typography.bodyMedium
                 }

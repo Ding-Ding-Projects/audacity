@@ -55,7 +55,7 @@ StyledDialogView {
             M3Button {
                 text: "Cancel"
                 onClicked: {
-                    root.reject()
+                    root.reject();
                 }
             }
 
@@ -65,8 +65,8 @@ StyledDialogView {
                     root.ret = {
                         errcode: 0,
                         value: input.value
-                    }
-                    root.hide()
+                    };
+                    root.hide();
                 }
             }
         }
@@ -107,9 +107,9 @@ StyledDialogView {
                         checkable: true,
                         checked: false
                     }
-                ]
+                ];
 
-                menuLoader.toggleOpened(items, mouse.x, mouse.y)
+                menuLoader.toggleOpened(items, mouse.x, mouse.y);
             }
         }
 
@@ -117,7 +117,7 @@ StyledDialogView {
             id: menuLoader
 
             onHandleMenuItem: function (itemId) {
-                console.log("selected " + itemId)
+                console.log("selected " + itemId);
             }
         }
     }
