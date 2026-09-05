@@ -70,8 +70,8 @@ RowLayout {
             totalCount: articleRepeater.count
             destructiveActionLabel: qsTrc("toolkit", "Remove bookmark")
             onActionRequested: function (actionId, indexes) {
-                // The host page owns which articles are bookmarked; this
-                // only reports which rows were chosen.
+            // The host page owns which articles are bookmarked; this
+            // only reports which rows were chosen.
             }
         }
 

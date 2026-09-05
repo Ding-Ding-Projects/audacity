@@ -52,13 +52,13 @@ public:
     virtual ~IExportService() = default;
 
     virtual bool exportRowsToFile(ExportFormat format, const QVariantList& rows, const QString& filePath,
-                                   const QStringList& columnOrder = {}) = 0;
+                                  const QStringList& columnOrder = {}) = 0;
 };
 
 class ExportService : public IExportService
 {
 public:
     bool exportRowsToFile(ExportFormat format, const QVariantList& rows, const QString& filePath,
-                           const QStringList& columnOrder = {}) override;
+                          const QStringList& columnOrder = {}) override;
 };
 }

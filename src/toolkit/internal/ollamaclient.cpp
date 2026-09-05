@@ -33,7 +33,7 @@ void OllamaClient::setHost(const QString& host)
 
     if (!isAllowedHost(hostOnly)) {
         emit requestFailed(QStringLiteral("set host"),
-                            QStringLiteral("Only a loopback or private network address is allowed for the local model manager."));
+                           QStringLiteral("Only a loopback or private network address is allowed for the local model manager."));
         return;
     }
 
@@ -99,7 +99,10 @@ QVariantList OllamaClient::wellKnownCatalog() const
     // live catalog. It exists to give the catalog view real rows and a
     // real hardware fit verdict to compute before a live catalog fetch
     // with pagination and revision tracking is implemented.
-    struct Entry { const char* tag; qint64 approxBytes; };
+    struct Entry {
+        const char* tag;
+        qint64 approxBytes;
+    };
     static const Entry entries[] = {
         { "llama3.2:1b", 1300LL * 1024 * 1024 },
         { "llama3.2:3b", 2000LL * 1024 * 1024 },

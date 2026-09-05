@@ -72,7 +72,7 @@ QStringList ExportServiceWrapper::droppedFields(const QString& formatId, const Q
 }
 
 bool ExportServiceWrapper::exportRows(const QString& formatId, const QVariantList& rows, const QString& filePath,
-                                       const QString& archiveEntryName) const
+                                      const QString& archiveEntryName) const
 {
     const ExportFormat format = formatFromId(formatId);
 

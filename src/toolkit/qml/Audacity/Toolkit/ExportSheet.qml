@@ -41,13 +41,9 @@ Item {
 
     readonly property var formatIds: exportService.formatIds()
 
-    readonly property string currentFormatId: root.formatIds.length > 0
-                                                ? root.formatIds[Math.min(root.selectedFormatIndex, root.formatIds.length - 1)]
-                                                : ""
+    readonly property string currentFormatId: root.formatIds.length > 0 ? root.formatIds[Math.min(root.selectedFormatIndex, root.formatIds.length - 1)] : ""
 
-    readonly property var currentDroppedFields: root.currentFormatId.length > 0
-                                                 ? exportService.droppedFields(root.currentFormatId, root.rows)
-                                                 : []
+    readonly property var currentDroppedFields: root.currentFormatId.length > 0 ? exportService.droppedFields(root.currentFormatId, root.rows) : []
 
     function open() {
         root.opened = true
@@ -104,8 +100,7 @@ Item {
                 wrapMode: Text.WordWrap
                 color: M3.color.error
                 visible: root.currentDroppedFields.length > 0
-                text: qsTrc("toolkit", "This format cannot carry every field. Dropped on export: %1.")
-                      .arg(root.currentDroppedFields.join(", "))
+                text: qsTrc("toolkit", "This format cannot carry every field. Dropped on export: %1.").arg(root.currentDroppedFields.join(", "))
             }
 
             RowLayout {

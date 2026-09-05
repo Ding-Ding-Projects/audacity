@@ -43,12 +43,22 @@ Item {
         }
         onPullProgress: function (modelTag, completedBytes, totalBytes, status) {
             var rows = root.pullRows
-            rows[modelTag] = { completed: completedBytes, total: totalBytes, status: status, done: false }
+            rows[modelTag] = {
+                completed: completedBytes,
+                total: totalBytes,
+                status: status,
+                done: false
+            }
             root.pullRows = Object.assign({}, rows)
         }
         onPullFinished: function (modelTag, success, error) {
             var rows = root.pullRows
-            rows[modelTag] = { completed: 0, total: 0, status: success ? qsTrc("toolkit", "Done") : error, done: true }
+            rows[modelTag] = {
+                completed: 0,
+                total: 0,
+                status: success ? qsTrc("toolkit", "Done") : error,
+                done: true
+            }
             root.pullRows = Object.assign({}, rows)
             cart.removeModel(modelTag)
             if (success) {
@@ -130,12 +140,12 @@ Item {
                 font: M3.typography.headlineSmall
             }
 
-            Item { Layout.fillWidth: true }
+            Item {
+                Layout.fillWidth: true
+            }
 
             StyledTextLabel {
-                text: ollama.reachable
-                      ? qsTrc("toolkit", "Connected, version %1").arg(ollama.version)
-                      : qsTrc("toolkit", "Not connected")
+                text: ollama.reachable ? qsTrc("toolkit", "Connected, version %1").arg(ollama.version) : qsTrc("toolkit", "Not connected")
                 color: ollama.reachable ? M3.color.primary : M3.color.error
             }
 
@@ -154,8 +164,7 @@ Item {
 
             Layout.fillWidth: true
             visible: root.offline
-            message: qsTrc("toolkit",
-                            "The local model runtime is not reachable at %1. Install it and start it, then retry.").arg(ollama.host)
+            message: qsTrc("toolkit", "The local model runtime is not reachable at %1. Install it and start it, then retry.").arg(ollama.host)
             logsFolderPath: ""
 
             onRetryRequested: ollama.refreshHealth()
@@ -208,10 +217,10 @@ Item {
                     exportSheet.rows = rows
                     exportSheet.open()
                 }
-                // "destructive" bulk removal of an installed model would
-                // call an Ollama delete endpoint here; not implemented in
-                // this pass, so the button stays inert beyond reporting
-                // the selection.
+            // "destructive" bulk removal of an installed model would
+            // call an Ollama delete endpoint here; not implemented in
+            // this pass, so the button stays inert beyond reporting
+            // the selection.
             }
         }
 
@@ -237,9 +246,7 @@ Item {
 
         StyledTextLabel {
             visible: root.filteredInstalled.length === 0
-            text: ollama.reachable
-                  ? qsTrc("toolkit", "No installed models match this search.")
-                  : qsTrc("toolkit", "No installed models were found yet. Connect to the local runtime to list them.")
+            text: ollama.reachable ? qsTrc("toolkit", "No installed models match this search.") : qsTrc("toolkit", "No installed models were found yet. Connect to the local runtime to list them.")
             color: M3.color.onSurfaceVariant
         }
 
@@ -262,8 +269,7 @@ Item {
 
                 width: catalogList.width
                 headline: modelData.tag
-                supportingText: fitService.verdictFor(modelData.approxBytes) + " · "
-                                + qsTrc("toolkit", "~%1 GiB").arg((modelData.approxBytes / (1024 * 1024 * 1024)).toFixed(1))
+                supportingText: fitService.verdictFor(modelData.approxBytes) + " · " + qsTrc("toolkit", "~%1 GiB").arg((modelData.approxBytes / (1024 * 1024 * 1024)).toFixed(1))
                 trailingText: cart.contains(modelData.tag) ? qsTrc("toolkit", "In cart") : qsTrc("toolkit", "Add")
 
                 onClicked: {
@@ -283,8 +289,7 @@ Item {
 
         StyledTextLabel {
             visible: cart.items.length === 0
-            text: qsTrc("toolkit",
-                         "Add a catalog model to schedule a local download. Nothing here is bought or sold.")
+            text: qsTrc("toolkit", "Add a catalog model to schedule a local download. Nothing here is bought or sold.")
             color: M3.color.onSurfaceVariant
         }
 
@@ -307,10 +312,7 @@ Item {
                 }
 
                 StyledTextLabel {
-                    text: cartRow.progress
-                          ? (cartRow.progress.done ? cartRow.progress.status
-                                                    : qsTrc("toolkit", "%1 / %2 bytes").arg(cartRow.progress.completed).arg(cartRow.progress.total))
-                          : qsTrc("toolkit", "Queued")
+                    text: cartRow.progress ? (cartRow.progress.done ? cartRow.progress.status : qsTrc("toolkit", "%1 / %2 bytes").arg(cartRow.progress.completed).arg(cartRow.progress.total)) : qsTrc("toolkit", "Queued")
                     color: M3.color.onSurfaceVariant
                 }
 

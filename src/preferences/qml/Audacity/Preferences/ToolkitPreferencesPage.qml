@@ -29,8 +29,12 @@ PreferencesPage {
             Layout.fillWidth: true
 
             model: [
-                { "text": qsTrc("preferences", "Local model manager") },
-                { "text": qsTrc("preferences", "Documentation") }
+                {
+                    "text": qsTrc("preferences", "Local model manager")
+                },
+                {
+                    "text": qsTrc("preferences", "Documentation")
+                }
             ]
         }
 

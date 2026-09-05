@@ -262,7 +262,8 @@ QByteArray au::toolkit::renderExport(ExportFormat format, const QVariantList& ro
     }
     case ExportFormat::Html: {
         QStringList columns = columnOrderIn.isEmpty() ? flattenedColumnNames(rows) : columnOrderIn;
-        QString out = QStringLiteral("<!doctype html>\n<html><head><meta charset=\"utf-8\"><title>Export</title></head><body>\n<table>\n<thead><tr>");
+        QString out = QStringLiteral(
+            "<!doctype html>\n<html><head><meta charset=\"utf-8\"><title>Export</title></head><body>\n<table>\n<thead><tr>");
         for (const QString& col : columns) {
             out += QStringLiteral("<th>") + col + QStringLiteral("</th>");
         }
@@ -397,7 +398,7 @@ QByteArray au::toolkit::buildStoreZip(const QList<QPair<QString, QByteArray> >& 
 }
 
 bool ExportService::exportRowsToFile(ExportFormat format, const QVariantList& rows, const QString& filePath,
-                                      const QStringList& columnOrder)
+                                     const QStringList& columnOrder)
 {
     const QByteArray content = renderExport(format, rows, columnOrder);
     QFile file(filePath);

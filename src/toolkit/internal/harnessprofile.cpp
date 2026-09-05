@@ -37,7 +37,7 @@ QString au::toolkit::validateHarnessProfile(const HarnessProfile& profile)
 
     if (argumentLooksLikeShell(profile.executablePath)) {
         return QStringLiteral("The executable path looks like a shell command rather than a single program; "
-                               "pick the real executable file instead.");
+                              "pick the real executable file instead.");
     }
 
     for (const QString& arg : profile.arguments) {

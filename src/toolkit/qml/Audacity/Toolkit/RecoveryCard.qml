@@ -29,9 +29,9 @@ Rectangle {
     property string diagnosticText: ""
     property string logsFolderPath: ""
 
-    signal retryRequested()
-    signal openLogsRequested()
-    signal diagnosticCopied()
+    signal retryRequested
+    signal openLogsRequested
+    signal diagnosticCopied
 
     Accessible.role: Accessible.AlertMessage
     Accessible.name: message

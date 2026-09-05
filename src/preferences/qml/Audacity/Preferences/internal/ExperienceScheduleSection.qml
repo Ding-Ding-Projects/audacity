@@ -68,7 +68,7 @@ BaseSection {
                         accessibleName: qsTrc("preferences", "Scheduled change is on")
 
                         onToggled: function (checked) {
-                            scheduleListModel.setEnabled(scheduleRow.model.entryId, checked);
+                            scheduleListModel.setEnabled(scheduleRow.model.entryId, checked)
                         }
                     }
 
@@ -124,8 +124,8 @@ BaseSection {
 
                 onTextEditingFinished: function (text) {
                     if (root.settingsModel) {
-                        root.settingsModel.setHomeAssistantToken(text);
-                        haTokenField.currentText = "";
+                        root.settingsModel.setHomeAssistantToken(text)
+                        haTokenField.currentText = ""
                     }
                 }
             }
@@ -136,8 +136,8 @@ BaseSection {
                 enabled: root.settingsModel && root.settingsModel.homeAssistantTokenSet
 
                 onClicked: {
-                    root.settingsModel.setHomeAssistantToken("");
-                    haTokenField.currentText = "";
+                    root.settingsModel.setHomeAssistantToken("")
+                    haTokenField.currentText = ""
                 }
             }
         }

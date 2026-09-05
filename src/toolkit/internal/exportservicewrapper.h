@@ -34,6 +34,6 @@ public:
     //! JSON) becomes the single named entry inside a store-only ZIP
     //! archive; every other format writes filePath directly.
     Q_INVOKABLE bool exportRows(const QString& formatId, const QVariantList& rows, const QString& filePath,
-                                 const QString& archiveEntryName = QStringLiteral("export.json")) const;
+                                const QString& archiveEntryName = QStringLiteral("export.json")) const;
 };
 }

@@ -43,9 +43,7 @@ RowLayout {
     }
 
     StyledTextLabel {
-        text: selection.allMatchesSelected
-              ? qsTrc("toolkit", "%1 selected (every match)").arg(selection.selectedCount)
-              : qsTrc("toolkit", "%1 selected").arg(selection.selectedCount)
+        text: selection.allMatchesSelected ? qsTrc("toolkit", "%1 selected (every match)").arg(selection.selectedCount) : qsTrc("toolkit", "%1 selected").arg(selection.selectedCount)
     }
 
     M3Button {
@@ -73,7 +71,9 @@ RowLayout {
         onClicked: selection.clearSelection()
     }
 
-    Item { Layout.fillWidth: true }
+    Item {
+        Layout.fillWidth: true
+    }
 
     M3Button {
         text: qsTrc("toolkit", "Export selected")

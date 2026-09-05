@@ -137,17 +137,23 @@ DockWindow {
                 {
                     "title": qsTrc("appshell", "Home"),
                     "section": qsTrc("appshell", "Window"),
-                    "payload": { "uri": "audacity://home" }
+                    "payload": {
+                        "uri": "audacity://home"
+                    }
                 },
                 {
                     "title": qsTrc("appshell", "Tracks"),
                     "section": qsTrc("appshell", "Window"),
-                    "payload": { "uri": "audacity://project" }
+                    "payload": {
+                        "uri": "audacity://project"
+                    }
                 },
                 {
                     "title": qsTrc("appshell", "Publish"),
                     "section": qsTrc("appshell", "Window"),
-                    "payload": { "uri": "audacity://publish" }
+                    "payload": {
+                        "uri": "audacity://publish"
+                    }
                 }
             ])
         }

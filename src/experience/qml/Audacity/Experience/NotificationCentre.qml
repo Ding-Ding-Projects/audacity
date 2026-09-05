@@ -70,9 +70,9 @@ M3SideSheet {
                 accessibleName: qsTrc("experience", "Export the notifications shown here as JSON, copied to the clipboard")
 
                 onClicked: {
-                    exportClipboard.text = historyModel.exportJson();
-                    exportClipboard.selectAll();
-                    exportClipboard.copy();
+                    exportClipboard.text = historyModel.exportJson()
+                    exportClipboard.selectAll()
+                    exportClipboard.copy()
                 }
             }
         }

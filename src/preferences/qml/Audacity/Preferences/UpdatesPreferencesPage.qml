@@ -53,8 +53,7 @@ PreferencesPage {
             font: M3.type.bodyMedium
             color: M3.color.onSurfaceVariant
             visible: updateModel.state === root.stateNotApplicable
-            text: qsTrc("preferences",
-                        "Automatic updates are not applicable on this platform. Material Audacity is packaged with Squirrel.Windows, a Windows only installer, so this build must be replaced by hand.")
+            text: qsTrc("preferences", "Automatic updates are not applicable on this platform. Material Audacity is packaged with Squirrel.Windows, a Windows only installer, so this build must be replaced by hand.")
         }
 
         Column {
@@ -78,8 +77,7 @@ PreferencesPage {
                 wrapMode: Text.WordWrap
                 font: M3.type.bodySmall
                 color: M3.color.onSurfaceVariant
-                text: qsTrc("preferences",
-                            "This build is unsigned. A check downloads a small release feed over HTTPS and compares its hash, and never claims to verify a signature.")
+                text: qsTrc("preferences", "This build is unsigned. A check downloads a small release feed over HTTPS and compares its hash, and never claims to verify a signature.")
             }
 
             StyledTextLabel {
@@ -92,8 +90,7 @@ PreferencesPage {
 
             StyledTextLabel {
                 width: parent.width
-                text: qsTrc("preferences", "Check interval: every %1 hours")
-                      .arg(updateModel.checkIntervalHours)
+                text: qsTrc("preferences", "Check interval: every %1 hours").arg(updateModel.checkIntervalHours)
                 font: M3.type.bodySmall
                 color: M3.color.onSurfaceVariant
             }
@@ -118,16 +115,13 @@ PreferencesPage {
                 width: parent.width
                 wrapMode: Text.WordWrap
                 visible: updateModel.state === root.stateReady
-                text: qsTrc("preferences", "Version %1 is downloaded, verified and ready to install.")
-                      .arg(updateModel.availableVersion)
+                text: qsTrc("preferences", "Version %1 is downloaded, verified and ready to install.").arg(updateModel.availableVersion)
                 font: M3.type.bodySmall
                 color: M3.color.primary
             }
 
             M3Button {
-                text: updateModel.state === root.stateChecking
-                      ? qsTrc("preferences", "Checking…")
-                      : qsTrc("preferences", "Check for updates")
+                text: updateModel.state === root.stateChecking ? qsTrc("preferences", "Checking…") : qsTrc("preferences", "Check for updates")
                 variant: "outlined"
                 enabled: updateModel.state !== root.stateChecking
                 onClicked: updateModel.checkForUpdate()
