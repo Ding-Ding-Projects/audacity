@@ -44,6 +44,18 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   preferences page; unsigned by design, verified only against the release
   feed's own hash
 
+### Changed
+
+- Replaced the legacy FlatButton with M3Button or M3IconButton across the
+  get effects dialog, the effect card, the track effects panel, the track
+  ruler and spectrogram ruler zoom popups, the label editor top panel, the
+  clip item accessibility select button, the playback level meter, the
+  playback meter panel, the loop in/out dialog, the delete behaviour
+  onboarding dialogs, the spectrogram settings dialog and the Nyquist prompt
+- Gave the muse StyledTableView, PageIndicator and AccountAvatar Material
+  Design 3 colour roles instead of raw theme colours, through a new patch in
+  the muse overlay
+
 ## 4.0.0-material.1 - 2026-09-05
 
 The first Material Design 3 preview of Audacity 4.

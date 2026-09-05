@@ -171,6 +171,21 @@ search field gained a regular expression builder action and a
 signal with its own `RegexBuilderSheet`, so the shortcut search has the same
 regular expression builder as every other search surface in the application.
 
+### Table view, page indicator and account avatar
+
+`StyledTableView`, `PageIndicator` and `AccountAvatar` are muse components
+with no product level replacement: a table view, a dot row for a paged
+carousel and a cloud account picture. Rather than reimplement them, patch
+`0010-m3-list-table-and-avatar` replaces their raw theme colours
+(`backgroundPrimaryColor`, `backgroundSecondaryColor`, `strokeColor`,
+`fontPrimaryColor`) with the `M3Roles` singleton, the same bridge patch
+`0001-m3-roles-singleton` already gives every other overlay patch. The table
+background and header fills use `surface` and `surfaceContainer`, its rules
+and borders use `outlineVariant`, the page indicator dot uses `primary` with
+a clearer contrast between the current and other pages, and the avatar
+placeholder background and border use `surfaceContainer` and
+`outlineVariant`.
+
 ## Reusable primitives
 
 | Component | Public API | Purpose |
