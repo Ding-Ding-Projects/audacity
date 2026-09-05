@@ -80,21 +80,30 @@ void UiComponentsModule::onPreInit(const muse::IApplication::RunMode& mode)
     /*
      * Make Roboto Flex the default user interface font.
      *
-     * The framework picks the platform font in UiConfiguration::init. Rather
-     * than change the framework, Audacity replaces the default value here.
-     * Every module runs onPreInit before any module runs onInit, so the
-     * framework reads this value instead of the platform one. A family the
-     * user chose themselves is stored as a user value and still wins over
-     * this default, so nobody's preference is overwritten.
+     * The framework picks the platform font in UiConfiguration::init, which
+     * runs from the framework's own onPreInit, before this one. Rather than
+     * change the framework, Audacity replaces the default here and, when the
+     * stored family is still the framework default, replaces the current
+     * value as well so the running theme picks the new family up. A family
+     * the user chose themselves differs from the framework default and is
+     * left alone, so nobody's preference is overwritten.
      */
     static const muse::Settings::Key UI_FONT_FAMILY_KEY("ui", "ui/theme/fontFamily");
     static const QString M3_FONT_FAMILY("Roboto Flex");
 
-    if (QFontDatabase::hasFamily(M3_FONT_FAMILY)) {
-        muse::settings()->setDefaultValue(UI_FONT_FAMILY_KEY,
-                                          muse::Val(M3_FONT_FAMILY.toStdString()));
-    } else {
+    if (!QFontDatabase::hasFamily(M3_FONT_FAMILY)) {
         LOGW() << "Roboto Flex is not available, keeping the platform user interface font";
+        return;
+    }
+
+    const std::string current = muse::settings()->value(UI_FONT_FAMILY_KEY).toString();
+    const std::string frameworkDefault = muse::settings()->defaultValue(UI_FONT_FAMILY_KEY).toString();
+    const muse::Val m3Font(M3_FONT_FAMILY.toStdString());
+
+    muse::settings()->setDefaultValue(UI_FONT_FAMILY_KEY, m3Font);
+
+    if (current == frameworkDefault) {
+        muse::settings()->setSharedValue(UI_FONT_FAMILY_KEY, m3Font);
     }
 }
 
