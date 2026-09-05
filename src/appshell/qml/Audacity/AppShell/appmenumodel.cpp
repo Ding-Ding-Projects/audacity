@@ -509,6 +509,9 @@ MenuItem* AppMenuModel::makeHelpMenu()
         makeMenuItem("revert-factory")
     };
 
+    helpItems.push_front(makeSeparator());
+    helpItems.push_front(makeMenuItem("check-squirrel-update"));
+
     if (updateConfiguration()->isAppUpdatable()) {
         helpItems.push_front(makeSeparator());
         helpItems.push_front(makeMenuItem("check-update"));

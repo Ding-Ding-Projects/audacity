@@ -5,8 +5,11 @@
 
 #include "framework/global/modularity/ioc.h"
 
+#include "ui/iuiactionsregister.h"
+
 #include "internal/squirrelupdateconfiguration.h"
 #include "internal/squirrelupdateservice.h"
+#include "internal/squirrelupdateuiactions.h"
 
 namespace au::squirrelupdate {
 static const std::string mname("squirrelupdate");
@@ -41,5 +44,27 @@ void SquirrelUpdateModule::onInit(const muse::IApplication::RunMode& mode)
     }
 
     m_service->init();
+}
+
+muse::modularity::IContextSetup* SquirrelUpdateModule::newContext(const muse::modularity::ContextPtr& ctx) const
+{
+    return new SquirrelUpdateContext(ctx);
+}
+
+void SquirrelUpdateContext::registerExports()
+{
+    m_uiActions = std::make_shared<SquirrelUpdateUiActions>();
+}
+
+void SquirrelUpdateContext::onInit(const muse::IApplication::RunMode& mode)
+{
+    if (mode != muse::IApplication::RunMode::GuiApp) {
+        return;
+    }
+
+    auto actionsRegister = ioc()->resolve<muse::ui::IUiActionsRegister>(mname);
+    if (actionsRegister) {
+        actionsRegister->reg(m_uiActions);
+    }
 }
 }

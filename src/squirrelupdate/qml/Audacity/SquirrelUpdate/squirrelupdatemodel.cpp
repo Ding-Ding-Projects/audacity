@@ -34,24 +34,6 @@ bool SquirrelUpdateModel::isWindows() const
 #endif
 }
 
-UpdateBannerState SquirrelUpdateModel::computeState(bool isWindowsPlatform, bool isSupportedPlatform, bool checking,
-                                                    bool available, bool lastErrorPresent)
-{
-    if (!isWindowsPlatform || !isSupportedPlatform) {
-        return UpdateBannerState::NotApplicable;
-    }
-    if (checking) {
-        return UpdateBannerState::Checking;
-    }
-    if (available) {
-        return UpdateBannerState::Ready;
-    }
-    if (lastErrorPresent) {
-        return UpdateBannerState::Failed;
-    }
-    return UpdateBannerState::NoUpdate;
-}
-
 bool SquirrelUpdateModel::isSupported() const
 {
     return service()->isSupported();
@@ -59,7 +41,11 @@ bool SquirrelUpdateModel::isSupported() const
 
 int SquirrelUpdateModel::state() const
 {
-    const UpdateBannerState computed = computeState(
+    if (demoBannerForced()) {
+        return static_cast<int>(UpdateBannerState::Ready);
+    }
+
+    const UpdateBannerState computed = computeUpdateBannerState(
         isWindows(),
         service()->isSupported(),
         service()->isChecking(),
@@ -76,6 +62,9 @@ QString SquirrelUpdateModel::installedVersion() const
 
 QString SquirrelUpdateModel::availableVersion() const
 {
+    if (demoBannerForced() && service()->availableUpdate().version.isEmpty()) {
+        return QStringLiteral("4.1.0-demo");
+    }
     return service()->availableUpdate().version;
 }
 
@@ -86,7 +75,12 @@ QString SquirrelUpdateModel::lastError() const
 
 bool SquirrelUpdateModel::bannerVisible() const
 {
-    return service()->availableUpdate().available;
+    return service()->availableUpdate().available || demoBannerForced();
+}
+
+bool SquirrelUpdateModel::demoBannerForced() const
+{
+    return qEnvironmentVariableIntValue("AU_SQUIRREL_DEMO_BANNER") != 0;
 }
 
 QString SquirrelUpdateModel::lastCheckDisplay() const

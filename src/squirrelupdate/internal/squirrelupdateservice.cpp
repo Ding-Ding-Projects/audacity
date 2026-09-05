@@ -36,6 +36,8 @@ SquirrelUpdateService::~SquirrelUpdateService() = default;
 
 void SquirrelUpdateService::init()
 {
+    dispatcher()->reg(this, "check-squirrel-update", this, &SquirrelUpdateService::checkForUpdate);
+
 #ifdef Q_OS_WIN
     if (!isSupported()) {
         LOGI() << "Not a Squirrel.Windows installation, the feed checker stays off";

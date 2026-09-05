@@ -31,8 +31,7 @@ M3Card {
     width: 400
     implicitHeight: layout.implicitHeight + root.padding * 2
 
-    accessibleName: qsTrc("squirrelupdate", "Update ready. %1")
-                    .arg(model ? model.availableVersion : "")
+    accessibleName: qsTrc("squirrelupdate", "Update ready. %1").arg(model ? model.availableVersion : "")
 
     Column {
         id: layout
@@ -44,8 +43,7 @@ M3Card {
             font: M3.type.titleSmall
             color: M3.color.onSurface
             wrapMode: Text.WordWrap
-            text: qsTrc("squirrelupdate", "Material Audacity %1 is ready to install")
-                  .arg(model ? model.availableVersion : "")
+            text: qsTrc("squirrelupdate", "Material Audacity %1 is ready to install").arg(model ? model.availableVersion : "")
         }
 
         StyledTextLabel {
@@ -53,8 +51,7 @@ M3Card {
             font: M3.type.bodySmall
             color: M3.color.onSurfaceVariant
             wrapMode: Text.WordWrap
-            text: qsTrc("squirrelupdate",
-                        "This build is unsigned. No signature is checked, only the file's own hash from the release feed.")
+            text: qsTrc("squirrelupdate", "This build is unsigned. No signature is checked, only the file's own hash from the release feed.")
         }
 
         Row {

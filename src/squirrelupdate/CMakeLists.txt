@@ -10,6 +10,8 @@ target_sources(squirrelupdate PRIVATE
     squirrelupdatetypes.h
     isquirrelupdateconfiguration.h
     isquirrelupdateservice.h
+    updatebannerstate.cpp
+    updatebannerstate.h
 
     internal/packageverifier.cpp
     internal/packageverifier.h
@@ -21,9 +23,11 @@ target_sources(squirrelupdate PRIVATE
     internal/squirrelupdateconfiguration.h
     internal/squirrelupdateservice.cpp
     internal/squirrelupdateservice.h
+    internal/squirrelupdateuiactions.cpp
+    internal/squirrelupdateuiactions.h
 )
 
-target_link_libraries(squirrelupdate PRIVATE muse::network)
+target_link_libraries(squirrelupdate PRIVATE muse::network muse::actions muse::ui)
 
 add_subdirectory(qml/Audacity/SquirrelUpdate)
 

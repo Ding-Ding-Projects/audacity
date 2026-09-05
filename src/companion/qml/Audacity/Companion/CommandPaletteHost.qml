@@ -44,6 +44,14 @@ Item {
         }
     }
 
+    // The window that owns this host knows its own pages and does not have to
+    // wait for the palette to be open to report them: it can call this the
+    // moment it is ready. Each row needs a title and a uri; subtitle and
+    // section are optional.
+    function setContextRows(rows) {
+        companionModel.setContextRows(rows)
+    }
+
     function close() {
         if (paletteLoader.item !== null) {
             paletteLoader.item.close()

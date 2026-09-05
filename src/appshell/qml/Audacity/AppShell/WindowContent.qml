@@ -30,6 +30,7 @@ import Muse.UiComponents
 import Audacity.AppShell
 import Audacity.Companion
 import Audacity.Experience
+import Audacity.SquirrelUpdate
 
 DockWindow {
     id: root
@@ -128,6 +129,28 @@ DockWindow {
         id: commandPaletteHost
 
         z: 1000
+
+        Component.onCompleted: {
+            // The window's own pages, so the palette can teleport straight to
+            // one without waiting for the tab strip to say what it holds.
+            commandPaletteHost.setContextRows([
+                {
+                    "title": qsTrc("appshell", "Home"),
+                    "section": qsTrc("appshell", "Window"),
+                    "payload": { "uri": "audacity://home" }
+                },
+                {
+                    "title": qsTrc("appshell", "Tracks"),
+                    "section": qsTrc("appshell", "Window"),
+                    "payload": { "uri": "audacity://project" }
+                },
+                {
+                    "title": qsTrc("appshell", "Publish"),
+                    "section": qsTrc("appshell", "Window"),
+                    "payload": { "uri": "audacity://publish" }
+                }
+            ])
+        }
     }
 
     // The companion surfaces: language, funny level and attention support
@@ -139,5 +162,29 @@ DockWindow {
 
         anchors.fill: parent
         z: 900
+    }
+
+    // The unsigned Squirrel.Windows update banner. It stays hidden until a
+    // package has downloaded and verified, then sits in the bottom right
+    // corner without interrupting whatever the user is doing. Setting
+    // AU_SQUIRREL_DEMO_BANNER=1 forces it visible for screenshots and manual
+    // review, with a made up version so no real network access is needed.
+    SquirrelUpdateModel {
+        id: squirrelUpdateModel
+
+        Component.onCompleted: squirrelUpdateModel.load()
+    }
+
+    UpdateBanner {
+        id: squirrelUpdateBanner
+
+        model: squirrelUpdateModel
+
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 16
+        z: 950
+
+        visible: squirrelUpdateModel.bannerVisible
     }
 }

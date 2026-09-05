@@ -144,18 +144,56 @@ coreutils available the whole file can be checked at once with
    including the `Update.exe` inside the package, is signed.
 8. Writes `SHA256SUMS` next to the artifacts.
 
-### Known limitation: shortcuts
+### Shortcuts: the root launcher
 
-Squirrel creates Start Menu and desktop shortcuts for executables located at the
-root of the package payload. Material Audacity installs its executable in
-`bin\`, because the application resolves its resource directories relative to
-that layout. The default `Preserve` layout therefore produces a correct,
-updatable installation whose shortcut has to be created against
-`%LocalAppData%\Audacity\app-<version>\bin\Audacity4.exe`. The script accepts
-`-Layout Flat` for experimentation, but `Flat` is not the supported layout
-because it breaks resource resolution. Changing the install layout so that the
-executable sits at the package root is tracked as follow up work in the
-application build, not in the packaging script.
+Squirrel creates Start Menu and desktop shortcuts only for executables located
+at the root of the package payload. Material Audacity installs its real
+executable in `bin\`, because the application resolves its resource
+directories relative to that layout, and moving it to the package root would
+break resource resolution. `package_squirrel.ps1` solves this the way
+Squirrel itself recommends: a tiny native launcher,
+`buildscripts/packaging/Windows/Squirrel/launcher/MaterialAudacity.c`, is
+compiled and placed at the payload root during packaging (see
+`New-ShortcutLauncher` in the script). Squirrel creates the Start Menu and
+desktop shortcuts against this launcher, which finds and starts
+`bin\Audacity4.exe`, forwards its full command line and waits for it to exit
+with the same code.
+
+The launcher deliberately carries no `SquirrelAwareVersion` resource. An
+executable that declares itself Squirrel aware is expected to handle the
+`--squirrel-install`, `--squirrel-updated`, `--squirrel-obsolete` and
+`--squirrel-uninstall` events itself, and Squirrel then skips its own default
+shortcut management for that package. Staying Squirrel unaware is what makes
+Squirrel create and remove the shortcuts automatically on install, update and
+uninstall, which is the behaviour this project wants. As a defensive measure,
+`src/app/main.cpp` still recognises these arguments (plus
+`--squirrel-firstrun`) at the very top of `main()` and exits immediately
+without opening a window, so that a future change to the packaging decision
+above cannot make an install or uninstall stall on a flashed open window.
+
+The `-Layout Flat` option lifts the application to the package root instead
+and needs no launcher, but it is not the supported layout because it breaks
+resource resolution; it exists only for local experimentation. `-SkipLauncher`
+skips building the launcher entirely, which also skips shortcut creation, and
+is for local experimentation only.
+
+`package_squirrel.ps1` verifies the launcher itself: it must be unsigned
+(code signing is permanently prohibited everywhere in this project) and it
+must be present inside the full `.nupkg` that ships, or the script fails
+rather than shipping a package with no Start Menu entry.
+
+## Automatic updates
+
+The installed application checks the feed's `RELEASES` file in the
+background and offers a non-blocking restart once a package has downloaded
+and verified against that file's own SHA1 and size, exactly as this document
+already requires "every installed user-facing app" to do. See
+`docs/features/automatic-updates.md` for the full behaviour, states and
+verification. The default feed points at
+`https://github.com/Ding-Ding-Projects/audacity/releases/latest/download/RELEASES`,
+which is the same `RELEASES` file `package_squirrel.ps1` publishes as part of
+every release's artifacts. The checker never claims signature verification;
+it is an integrity check against the feed's own hash only.
 
 ## Release notes
 

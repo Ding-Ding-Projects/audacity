@@ -10,6 +10,7 @@
 namespace au::squirrelupdate {
 class SquirrelUpdateConfiguration;
 class SquirrelUpdateService;
+class SquirrelUpdateUiActions;
 
 //! Registers the Squirrel.Windows update checker.
 //!
@@ -28,8 +29,26 @@ public:
     void registerUiTypes() override;
     void onInit(const muse::IApplication::RunMode& mode) override;
 
+    muse::modularity::IContextSetup* newContext(const muse::modularity::ContextPtr& ctx) const override;
+
 private:
     std::shared_ptr<SquirrelUpdateConfiguration> m_configuration;
     std::shared_ptr<SquirrelUpdateService> m_service;
+};
+
+//! Registers the "check-squirrel-update" action so the Help menu and the
+//! shortcut table can reach it. Lives in the module context, the same place
+//! the command palette action is registered from in the companion module.
+class SquirrelUpdateContext : public muse::modularity::IContextSetup
+{
+public:
+    SquirrelUpdateContext(const muse::modularity::ContextPtr& ctx)
+        : muse::modularity::IContextSetup(ctx) {}
+
+    void registerExports() override;
+    void onInit(const muse::IApplication::RunMode& mode) override;
+
+private:
+    std::shared_ptr<SquirrelUpdateUiActions> m_uiActions;
 };
 }
