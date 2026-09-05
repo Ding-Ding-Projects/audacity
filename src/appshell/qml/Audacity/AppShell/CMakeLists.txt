@@ -49,6 +49,7 @@ qt_add_qml_module(appshell_qml
         DevTools/DevToolsPage.qml
         DevTools/Extensions/ExtensionsListView.qml
         DevTools/Gallery/GeneralComponentsGallery.qml
+        DevTools/Gallery/M3ComponentsGallery.qml
         DevTools/Interactive/InteractiveTests.qml
         DevTools/Interactive/SampleDialog.qml
         DevTools/KeyNav/KeyNavExample.qml

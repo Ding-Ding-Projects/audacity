@@ -3,6 +3,7 @@
  */
 
 #include <QApplication>
+#include <QFontDatabase>
 #include <QStyleHints>
 #include <QTextCodec>
 
@@ -26,6 +27,32 @@
 static void app_init_qrc()
 {
     Q_INIT_RESOURCE(app);
+    Q_INIT_RESOURCE(fonts);
+}
+
+/*
+ * Register the user interface fonts that ship with the application.
+ *
+ * Roboto Flex carries the Material Design 3 type scale. Noto Sans HK is the
+ * fallback that keeps Chinese, Japanese and Korean text readable in the same
+ * interface. Both are loaded before the application starts so that the theme
+ * can name them straight away. The uicomponents module makes Roboto Flex the
+ * default user interface font once the framework has started, see
+ * src/uicomponents/uicomponentsmodule.cpp.
+ */
+static void app_register_fonts()
+{
+    static const char* fontPaths[] = {
+        ":/fonts/RobotoFlex.ttf",
+        ":/fonts/NotoSansHK.ttf"
+    };
+
+    for (const char* path : fontPaths) {
+        if (QFontDatabase::addApplicationFont(QString::fromLatin1(path)) < 0) {
+            LOGW() << "Could not register the bundled font " << path
+                   << ", falling back to the system font stack";
+        }
+    }
 }
 
 #ifndef MU_BUILD_CRASHPAD_CLIENT
@@ -65,6 +92,7 @@ int main(int argc, char** argv)
     // Setup global Qt application variables
     // ====================================================
     app_init_qrc();
+    app_register_fonts();
 
     qputenv("QT_STYLE_OVERRIDE", "Fusion");
     qputenv("QML_DISABLE_DISK_CACHE", "true");

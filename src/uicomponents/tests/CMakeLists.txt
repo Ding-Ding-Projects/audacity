@@ -6,6 +6,7 @@ set(MODULE_TEST uicomponents_tests)
 
 set(MODULE_TEST_SRC
     ${CMAKE_CURRENT_LIST_DIR}/timecodemodel_tests.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/m3theme_tests.cpp
 )
 
 set(MODULE_TEST_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/..)

@@ -47,6 +47,9 @@ DockPage {
         case "gallery":
             root.central = galleryComp
             break
+        case "m3gallery":
+            root.central = m3GalleryComp
+            break
         case "interactive":
             root.central = interactiveComp
             break
@@ -101,6 +104,10 @@ DockPage {
                             "title": "UI Gallery"
                         },
                         {
+                            "name": "m3gallery",
+                            "title": "M3 Gallery"
+                        },
+                        {
                             "name": "interactive",
                             "title": "Interactive"
                         },
@@ -150,6 +157,12 @@ DockPage {
         id: galleryComp
 
         GeneralComponentsGallery {}
+    }
+
+    Component {
+        id: m3GalleryComp
+
+        M3ComponentsGallery {}
     }
 
     Component {

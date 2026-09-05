@@ -25,6 +25,11 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/components/tablesortfilterproxymodel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/components/tablesortfilterproxymodel.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/components/m3hct.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/components/m3hct.h
+    ${CMAKE_CURRENT_LIST_DIR}/components/m3themeprovider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/components/m3themeprovider.h
+
     ${CMAKE_CURRENT_LIST_DIR}/components/internal/numeric/numericviewmodel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/components/internal/numeric/numericviewmodel.h
     ${CMAKE_CURRENT_LIST_DIR}/components/internal/numeric/timecodeformatter.cpp

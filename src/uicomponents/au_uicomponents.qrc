@@ -19,5 +19,48 @@
         <file>qml/Audacity/UiComponents/components/StyledGroupBox.qml</file>
         <file>qml/Audacity/UiComponents/components/GridPlot.qml</file>
         <file>qml/Audacity/UiComponents/components/ValueTooltip.qml</file>
+        <file>qml/Audacity/M3/qmldir</file>
+        <file>qml/Audacity/M3/M3Badge.qml</file>
+        <file>qml/Audacity/M3/M3BottomSheet.qml</file>
+        <file>qml/Audacity/M3/M3Button.qml</file>
+        <file>qml/Audacity/M3/M3Card.qml</file>
+        <file>qml/Audacity/M3/M3Checkbox.qml</file>
+        <file>qml/Audacity/M3/M3Chip.qml</file>
+        <file>qml/Audacity/M3/M3CircularProgress.qml</file>
+        <file>qml/Audacity/M3/M3ColorPicker.qml</file>
+        <file>qml/Audacity/M3/M3DatePicker.qml</file>
+        <file>qml/Audacity/M3/M3Dialog.qml</file>
+        <file>qml/Audacity/M3/M3Divider.qml</file>
+        <file>qml/Audacity/M3/M3Dropdown.qml</file>
+        <file>qml/Audacity/M3/M3Elevation.qml</file>
+        <file>qml/Audacity/M3/M3FAB.qml</file>
+        <file>qml/Audacity/M3/M3FocusRing.qml</file>
+        <file>qml/Audacity/M3/M3IconButton.qml</file>
+        <file>qml/Audacity/M3/M3LinearProgress.qml</file>
+        <file>qml/Audacity/M3/M3ListItem.qml</file>
+        <file>qml/Audacity/M3/M3Menu.qml</file>
+        <file>qml/Audacity/M3/M3MenuItem.qml</file>
+        <file>qml/Audacity/M3/M3NavigationDrawer.qml</file>
+        <file>qml/Audacity/M3/M3NavigationRail.qml</file>
+        <file>qml/Audacity/M3/M3RadioButton.qml</file>
+        <file>qml/Audacity/M3/M3RangeSlider.qml</file>
+        <file>qml/Audacity/M3/M3Ripple.qml</file>
+        <file>qml/Audacity/M3/M3SearchBar.qml</file>
+        <file>qml/Audacity/M3/M3SegmentedButton.qml</file>
+        <file>qml/Audacity/M3/M3SideSheet.qml</file>
+        <file>qml/Audacity/M3/M3Slider.qml</file>
+        <file>qml/Audacity/M3/M3Snackbar.qml</file>
+        <file>qml/Audacity/M3/M3SnackbarHost.qml</file>
+        <file>qml/Audacity/M3/M3StateLayer.qml</file>
+        <file>qml/Audacity/M3/M3Surface.qml</file>
+        <file>qml/Audacity/M3/M3Switch.qml</file>
+        <file>qml/Audacity/M3/M3Tab.qml</file>
+        <file>qml/Audacity/M3/M3Tabs.qml</file>
+        <file>qml/Audacity/M3/M3TextField.qml</file>
+        <file>qml/Audacity/M3/M3TimePicker.qml</file>
+        <file>qml/Audacity/M3/M3Tooltip.qml</file>
+        <file>qml/Audacity/M3/M3TopAppBar.qml</file>
+        <file>qml/Audacity/M3/internal/M3ToolTipHandler.qml</file>
+        <file>qml/Audacity/M3/internal/M3ColorFormats.js</file>
     </qresource>
 </RCC>

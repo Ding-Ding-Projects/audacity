@@ -1,0 +1,235 @@
+import QtQuick.tooling 1.2
+
+// Hand written type description for the Material 3 token engine that
+// src/uicomponents/uicomponentsmodule.cpp registers into Audacity.M3.
+// It exists so that qmllint and QML tooling can resolve the M3 singleton.
+// It is not read by the QML engine at run time.
+Module {
+    Component {
+        name: "au::uicomponents::M3ColorTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3ColorTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "primary"; type: "QColor"; isReadonly: true }
+        Property { name: "onPrimary"; type: "QColor"; isReadonly: true }
+        Property { name: "primaryContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "onPrimaryContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "inversePrimary"; type: "QColor"; isReadonly: true }
+        Property { name: "primaryFixed"; type: "QColor"; isReadonly: true }
+        Property { name: "primaryFixedDim"; type: "QColor"; isReadonly: true }
+        Property { name: "onPrimaryFixed"; type: "QColor"; isReadonly: true }
+        Property { name: "onPrimaryFixedVariant"; type: "QColor"; isReadonly: true }
+        Property { name: "secondary"; type: "QColor"; isReadonly: true }
+        Property { name: "onSecondary"; type: "QColor"; isReadonly: true }
+        Property { name: "secondaryContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "onSecondaryContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "secondaryFixed"; type: "QColor"; isReadonly: true }
+        Property { name: "secondaryFixedDim"; type: "QColor"; isReadonly: true }
+        Property { name: "onSecondaryFixed"; type: "QColor"; isReadonly: true }
+        Property { name: "onSecondaryFixedVariant"; type: "QColor"; isReadonly: true }
+        Property { name: "tertiary"; type: "QColor"; isReadonly: true }
+        Property { name: "onTertiary"; type: "QColor"; isReadonly: true }
+        Property { name: "tertiaryContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "onTertiaryContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "tertiaryFixed"; type: "QColor"; isReadonly: true }
+        Property { name: "tertiaryFixedDim"; type: "QColor"; isReadonly: true }
+        Property { name: "onTertiaryFixed"; type: "QColor"; isReadonly: true }
+        Property { name: "onTertiaryFixedVariant"; type: "QColor"; isReadonly: true }
+        Property { name: "error"; type: "QColor"; isReadonly: true }
+        Property { name: "onError"; type: "QColor"; isReadonly: true }
+        Property { name: "errorContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "onErrorContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "background"; type: "QColor"; isReadonly: true }
+        Property { name: "onBackground"; type: "QColor"; isReadonly: true }
+        Property { name: "surface"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceDim"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceBright"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceContainerLowest"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceContainerLow"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceContainer"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceContainerHigh"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceContainerHighest"; type: "QColor"; isReadonly: true }
+        Property { name: "onSurface"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceVariant"; type: "QColor"; isReadonly: true }
+        Property { name: "onSurfaceVariant"; type: "QColor"; isReadonly: true }
+        Property { name: "outline"; type: "QColor"; isReadonly: true }
+        Property { name: "outlineVariant"; type: "QColor"; isReadonly: true }
+        Property { name: "inverseSurface"; type: "QColor"; isReadonly: true }
+        Property { name: "inverseOnSurface"; type: "QColor"; isReadonly: true }
+        Property { name: "surfaceTint"; type: "QColor"; isReadonly: true }
+        Property { name: "scrim"; type: "QColor"; isReadonly: true }
+        Property { name: "shadow"; type: "QColor"; isReadonly: true }
+        Method { name: "role"; type: "QColor"; Parameter { name: "name"; type: "string" } }
+        Method { name: "roleNames"; type: "QStringList" }
+    }
+    Component {
+        name: "au::uicomponents::M3TypographyTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3TypographyTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "displayLarge"; type: "QFont"; isReadonly: true }
+        Property { name: "displayLargeLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "displayLargeLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "displayMedium"; type: "QFont"; isReadonly: true }
+        Property { name: "displayMediumLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "displayMediumLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "displaySmall"; type: "QFont"; isReadonly: true }
+        Property { name: "displaySmallLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "displaySmallLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "headlineLarge"; type: "QFont"; isReadonly: true }
+        Property { name: "headlineLargeLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "headlineLargeLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "headlineMedium"; type: "QFont"; isReadonly: true }
+        Property { name: "headlineMediumLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "headlineMediumLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "headlineSmall"; type: "QFont"; isReadonly: true }
+        Property { name: "headlineSmallLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "headlineSmallLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "titleLarge"; type: "QFont"; isReadonly: true }
+        Property { name: "titleLargeLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "titleLargeLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "titleMedium"; type: "QFont"; isReadonly: true }
+        Property { name: "titleMediumLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "titleMediumLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "titleSmall"; type: "QFont"; isReadonly: true }
+        Property { name: "titleSmallLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "titleSmallLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "bodyLarge"; type: "QFont"; isReadonly: true }
+        Property { name: "bodyLargeLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "bodyLargeLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "bodyMedium"; type: "QFont"; isReadonly: true }
+        Property { name: "bodyMediumLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "bodyMediumLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "bodySmall"; type: "QFont"; isReadonly: true }
+        Property { name: "bodySmallLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "bodySmallLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "labelLarge"; type: "QFont"; isReadonly: true }
+        Property { name: "labelLargeLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "labelLargeLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "labelMedium"; type: "QFont"; isReadonly: true }
+        Property { name: "labelMediumLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "labelMediumLetterSpacing"; type: "double"; isReadonly: true }
+        Property { name: "labelSmall"; type: "QFont"; isReadonly: true }
+        Property { name: "labelSmallLineHeight"; type: "double"; isReadonly: true }
+        Property { name: "labelSmallLetterSpacing"; type: "double"; isReadonly: true }
+        Method { name: "font"; type: "QFont"; Parameter { name: "role"; type: "string" } }
+        Method { name: "lineHeight"; type: "double"; Parameter { name: "role"; type: "string" } }
+        Method { name: "letterSpacing"; type: "double"; Parameter { name: "role"; type: "string" } }
+        Method { name: "roleNames"; type: "QStringList" }
+    }
+    Component {
+        name: "au::uicomponents::M3ShapeTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3ShapeTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "none"; type: "double"; isReadonly: true }
+        Property { name: "extraSmall"; type: "double"; isReadonly: true }
+        Property { name: "small"; type: "double"; isReadonly: true }
+        Property { name: "medium"; type: "double"; isReadonly: true }
+        Property { name: "large"; type: "double"; isReadonly: true }
+        Property { name: "extraLarge"; type: "double"; isReadonly: true }
+        Property { name: "full"; type: "double"; isReadonly: true }
+    }
+    Component {
+        name: "au::uicomponents::M3MotionTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3MotionTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "reducedMotion"; type: "bool"; isReadonly: true }
+        Property { name: "short1"; type: "int"; isReadonly: true }
+        Property { name: "short2"; type: "int"; isReadonly: true }
+        Property { name: "short3"; type: "int"; isReadonly: true }
+        Property { name: "short4"; type: "int"; isReadonly: true }
+        Property { name: "medium1"; type: "int"; isReadonly: true }
+        Property { name: "medium2"; type: "int"; isReadonly: true }
+        Property { name: "medium3"; type: "int"; isReadonly: true }
+        Property { name: "medium4"; type: "int"; isReadonly: true }
+        Property { name: "long1"; type: "int"; isReadonly: true }
+        Property { name: "long2"; type: "int"; isReadonly: true }
+        Property { name: "long3"; type: "int"; isReadonly: true }
+        Property { name: "long4"; type: "int"; isReadonly: true }
+        Property { name: "extraLong1"; type: "int"; isReadonly: true }
+        Property { name: "extraLong2"; type: "int"; isReadonly: true }
+        Property { name: "extraLong3"; type: "int"; isReadonly: true }
+        Property { name: "extraLong4"; type: "int"; isReadonly: true }
+        Property { name: "standard"; type: "QEasingCurve"; isReadonly: true }
+        Property { name: "standardBezier"; type: "QVariantList"; isReadonly: true }
+        Property { name: "standardAccelerate"; type: "QEasingCurve"; isReadonly: true }
+        Property { name: "standardAccelerateBezier"; type: "QVariantList"; isReadonly: true }
+        Property { name: "standardDecelerate"; type: "QEasingCurve"; isReadonly: true }
+        Property { name: "standardDecelerateBezier"; type: "QVariantList"; isReadonly: true }
+        Property { name: "emphasized"; type: "QEasingCurve"; isReadonly: true }
+        Property { name: "emphasizedBezier"; type: "QVariantList"; isReadonly: true }
+        Property { name: "emphasizedAccelerate"; type: "QEasingCurve"; isReadonly: true }
+        Property { name: "emphasizedAccelerateBezier"; type: "QVariantList"; isReadonly: true }
+        Property { name: "emphasizedDecelerate"; type: "QEasingCurve"; isReadonly: true }
+        Property { name: "emphasizedDecelerateBezier"; type: "QVariantList"; isReadonly: true }
+        Method { name: "travel"; type: "double"; Parameter { name: "distance"; type: "double" } }
+    }
+    Component {
+        name: "au::uicomponents::M3StateLayerTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3StateLayerTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "hover"; type: "double"; isReadonly: true }
+        Property { name: "focus"; type: "double"; isReadonly: true }
+        Property { name: "pressed"; type: "double"; isReadonly: true }
+        Property { name: "dragged"; type: "double"; isReadonly: true }
+        Property { name: "disabledContent"; type: "double"; isReadonly: true }
+        Property { name: "disabledContainer"; type: "double"; isReadonly: true }
+    }
+    Component {
+        name: "au::uicomponents::M3ElevationTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3ElevationTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "level0"; type: "double"; isReadonly: true }
+        Property { name: "level1"; type: "double"; isReadonly: true }
+        Property { name: "level2"; type: "double"; isReadonly: true }
+        Property { name: "level3"; type: "double"; isReadonly: true }
+        Property { name: "level4"; type: "double"; isReadonly: true }
+        Property { name: "level5"; type: "double"; isReadonly: true }
+        Method { name: "dp"; type: "double"; Parameter { name: "level"; type: "int" } }
+        Method { name: "keyBlur"; type: "double"; Parameter { name: "level"; type: "int" } }
+        Method { name: "keyOffset"; type: "double"; Parameter { name: "level"; type: "int" } }
+        Method { name: "ambientBlur"; type: "double"; Parameter { name: "level"; type: "int" } }
+        Method { name: "tintOpacity"; type: "double"; Parameter { name: "level"; type: "int" } }
+    }
+    Component {
+        name: "au::uicomponents::M3DensityTokens"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3DensityTokens 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property { name: "level"; type: "int"; isReadonly: true }
+        Property { name: "step"; type: "double"; isReadonly: true }
+        Property { name: "offset"; type: "double"; isReadonly: true }
+        Method { name: "apply"; type: "double"; Parameter { name: "baseHeight"; type: "double" } }
+    }
+    Component {
+        name: "au::uicomponents::M3ThemeProvider"
+        prototype: "QObject"
+        exports: ["Audacity.M3/M3 1.0"]
+        exportMetaObjectRevisions: [256]
+        isSingleton: true
+        Property { name: "color"; type: "au::uicomponents::M3ColorTokens"; isPointer: true; isReadonly: true }
+        Property { name: "typography"; type: "au::uicomponents::M3TypographyTokens"; isPointer: true; isReadonly: true }
+        Property { name: "shape"; type: "au::uicomponents::M3ShapeTokens"; isPointer: true; isReadonly: true }
+        Property { name: "motion"; type: "au::uicomponents::M3MotionTokens"; isPointer: true; isReadonly: true }
+        Property { name: "stateLayer"; type: "au::uicomponents::M3StateLayerTokens"; isPointer: true; isReadonly: true }
+        Property { name: "elevation"; type: "au::uicomponents::M3ElevationTokens"; isPointer: true; isReadonly: true }
+        Property { name: "density"; type: "au::uicomponents::M3DensityTokens"; isPointer: true; isReadonly: true }
+        Property { name: "seedColor"; type: "QColor" }
+        Property { name: "variant"; type: "string" }
+        Property { name: "variants"; type: "QStringList"; isReadonly: true }
+        Property { name: "isDark"; type: "bool"; isReadonly: true }
+        Property { name: "isHighContrast"; type: "bool"; isReadonly: true }
+        Property { name: "schemeName"; type: "string"; isReadonly: true }
+        Property { name: "focusIndicatorThickness"; type: "double"; isReadonly: true }
+        Property { name: "focusIndicatorOffset"; type: "double"; isReadonly: true }
+        Method { name: "blend"; type: "QColor"; Parameter { name: "over"; type: "QColor" } Parameter { name: "base"; type: "QColor" } Parameter { name: "opacity"; type: "double" } }
+        Method { name: "surfaceAt"; type: "QColor"; Parameter { name: "elevationLevel"; type: "int" } }
+        Method { name: "contrastRatio"; type: "double"; Parameter { name: "a"; type: "QColor" } Parameter { name: "b"; type: "QColor" } }
+        Method { name: "captureRoute"; type: "string" }
+        Signal { name: "themeChanged" }
+    }
+}

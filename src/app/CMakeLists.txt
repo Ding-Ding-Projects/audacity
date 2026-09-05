@@ -181,6 +181,8 @@ endif()
 # Resources
 ###########################################
 qt_add_resources(APP_RCC_SOURCES app.qrc)
+# Material Design 3 user interface fonts, see buildscripts/tools/fetch_fonts.py
+qt_add_resources(APP_RCC_SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../share/fonts/fonts.qrc)
 
 ###########################################
 # Executable declaration
