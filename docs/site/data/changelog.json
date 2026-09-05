@@ -1,9 +1,263 @@
 [
   {
     "date": "2026-09-05",
-    "sha": "16f2713979809abe7308b4e1e0d487afeece84f2",
-    "shaDisplay": "16f2713979809abe7308b4e1e0d487afeece84f2",
-    "summary": "Documentation site scaffold",
-    "detail": "Added the public Material 3 documentation site for Material Audacity under docs/site, including the HCT color engine, regex builder workbench, command palette, settings, and downloads/changelog pages."
+    "version": "4.0.0-material.1",
+    "section": "Added",
+    "sha": "9e500daf17c1f55f928c92d84090a335be253c97",
+    "shaDisplay": "9e500daf17",
+    "summary": "Material 3 token engine, component library, fonts and gallery",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Added",
+    "sha": "19f306a603814df386ef9cb06286b6dc189f13ce",
+    "shaDisplay": "19f306a603",
+    "summary": "Material 3 project scene, toolbars, track headers, clips and history panel",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Added",
+    "sha": "bacb4d8352ab18fcda449d11abad44565ad68aae",
+    "shaDisplay": "bacb4d8352",
+    "summary": "Material 3 app shell, title bar, home, about and first-launch setup",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Added",
+    "sha": "6d0a79e10f249053590f8653476263f16cd848d7",
+    "shaDisplay": "6d0a79e10f",
+    "summary": "Material 3 preferences, effects, project and export dialogs",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Changed",
+    "sha": "637ff6ff2cefdc7668d457babd5a567fac6914f4",
+    "shaDisplay": "637ff6ff2c",
+    "summary": "Apply the repository uncrustify formatting to the M3 engine sources",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Changed",
+    "sha": "5fbb2e37da8054761cb844b0c6429d1d2c3c925a",
+    "shaDisplay": "5fbb2e37da",
+    "summary": "Apply qmlformat to the Material 3 component library and project scene",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Changed",
+    "sha": "f757d45efc71d0f16c935bd4d5bbd4f22ee6ee06",
+    "shaDisplay": "f757d45efc",
+    "summary": "Apply the repository qmlformat profile to every module",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Changed",
+    "sha": "1a55c8f68579671085b015cc3a5184620d857d44",
+    "shaDisplay": "1a55c8f685",
+    "summary": "Merge remote-tracking branch 'origin/master' into claude/audacity-material-design-3-ui-voxy2f",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Build and release",
+    "sha": "567fe4e6f5735ef608fd87e37ccca06840be34de",
+    "shaDisplay": "567fe4e6f5",
+    "summary": "Apply a Material 3 patch overlay to the muse framework at configure time",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Build and release",
+    "sha": "f96c2d9c2f984654864ff717d808aa6fc032172c",
+    "shaDisplay": "f96c2d9c2f",
+    "summary": "Mark font and image files as binary in .gitattributes",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Build and release",
+    "sha": "fbb9a12230c1e77d4d7c228f45dc91daa55f7ddd",
+    "shaDisplay": "fbb9a12230",
+    "summary": "Replace WiX with unsigned Squirrel.Windows packaging and add release workflows",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Build and release",
+    "sha": "bd5ab56db7dc582aa7d9fb4ac4b50cc96d59aee4",
+    "shaDisplay": "bd5ab56db7",
+    "summary": "Let the Pages workflow enable GitHub Pages on first run",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Build and release",
+    "sha": "e5bce1839b7023e0e7e41d8c29f559ea302dc1a6",
+    "shaDisplay": "e5bce1839b",
+    "summary": "Wait for Squirrel.exe and surface its log during releasify",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Build and release",
+    "sha": "0a5af7b198eec2737ffeef5f3facb8dedadd7670",
+    "shaDisplay": "0a5af7b198",
+    "summary": "Wait for Squirrel.exe and surface its log during releasify",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Documentation",
+    "sha": "ddea8d276f4ce203fd8c4f69118f02e1412285f9",
+    "shaDisplay": "ddea8d276f",
+    "summary": "Add the Material Audacity documentation site under docs/site",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Documentation",
+    "sha": "436004d91b35d0c63677b89a13e148bd41b1c1a5",
+    "shaDisplay": "436004d91b",
+    "summary": "Vendor Roboto Flex and Noto Sans HK with pinned hashes",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Documentation",
+    "sha": "310c9d8cd5ecd6a2531ac3e04cb9c67c43e7fcbe",
+    "shaDisplay": "310c9d8cd5",
+    "summary": "Store font files as exact binary blobs",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Documentation",
+    "sha": "908687b6b84db5165bcd4f1d4ea3eb320d1f3c67",
+    "shaDisplay": "908687b6b8",
+    "summary": "Add Phase 1 Linux smoke captures",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Translations",
+    "sha": "951be087b0ceb48d53692eda8082ef012a09bd55",
+    "shaDisplay": "951be087b0",
+    "summary": "L10n: add the Cantonese (Hong Kong) translation baseline and coverage check",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Translations",
+    "sha": "3fd6465ecb266e20761f065a7e2862a02cdc16fb",
+    "shaDisplay": "3fd6465ecb",
+    "summary": "L10n: translate the remaining Cantonese (Hong Kong) strings",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "0e2cdb8bbaec7de9fc26b1f47ae7cd1f101b095c",
+    "shaDisplay": "0e2cdb8bba",
+    "summary": "Preservation snapshot of the Material 3 token engine and component library",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "95b3ce30bacf18b8c470b5dc2336ba0555fb7a39",
+    "shaDisplay": "95b3ce30ba",
+    "summary": "Preservation snapshot of the Windows packaging rework",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "3ada230ba6c3c1a4ca4e28fccd0c97051027e53a",
+    "shaDisplay": "3ada230ba6",
+    "summary": "Preservation snapshot of in-flight lane work",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "cdd5a2f024fb4a73979f1d94caead63d9e13689a",
+    "shaDisplay": "cdd5a2f024",
+    "summary": "Preservation snapshot of font registration work",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "5f4957700931553e77664ed3cf36df8dee6b043a",
+    "shaDisplay": "5f49577009",
+    "summary": "Preservation snapshot of lanes B, C and D in flight",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "38c0b9c33d67cd23b6dc5dc6faa2563ad1344b80",
+    "shaDisplay": "38c0b9c33d",
+    "summary": "Preservation snapshot of lanes B and D in flight",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "a6429f6c262c127024330ca9a1b54befcb17911f",
+    "shaDisplay": "a6429f6c26",
+    "summary": "Preservation snapshot of lanes B and D in flight",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "08148d36decb42c04780b64342072be2174e7539",
+    "shaDisplay": "08148d36de",
+    "summary": "Preservation snapshot of lanes B and D in flight",
+    "detail": ""
+  },
+  {
+    "date": "2026-09-05",
+    "version": "4.0.0-material.1",
+    "section": "Work in progress snapshots",
+    "sha": "3bf4884ba7317de85cdc5aef3174d311e9dd0b6b",
+    "shaDisplay": "3bf4884ba7",
+    "summary": "Preservation snapshot of lane D in flight",
+    "detail": ""
   }
 ]
