@@ -55,6 +55,15 @@ QColor M3ColorTokens::role(const QString& name) const
     return m_scheme.value(name, QColor());
 }
 
+QVariantMap M3ColorTokens::roles() const
+{
+    QVariantMap map;
+    for (auto it = m_scheme.cbegin(); it != m_scheme.cend(); ++it) {
+        map.insert(it.key(), it.value());
+    }
+    return map;
+}
+
 QStringList M3ColorTokens::roleNames() const
 {
     QStringList names = m_scheme.keys();
@@ -468,6 +477,31 @@ qreal M3ThemeProvider::contrastRatio(const QColor& a, const QColor& b) const
 QString M3ThemeProvider::captureRoute() const
 {
     return QString::fromLocal8Bit(qgetenv("AU_M3_GALLERY_ROUTE"));
+}
+
+bool M3ThemeProvider::applyScheme(const QString& name)
+{
+    static const Settings::Key CURRENT_THEME_CODE_KEY("ui", "ui/application/currentThemeCode");
+
+    std::string code;
+    if (name == QLatin1String("light")) {
+        code = muse::ui::LIGHT_THEME_CODE;
+    } else if (name == QLatin1String("dark")) {
+        code = muse::ui::DARK_THEME_CODE;
+    } else if (name == QLatin1String("high_contrast_white")) {
+        code = muse::ui::HIGH_CONTRAST_WHITE_THEME_CODE;
+    } else if (name == QLatin1String("high_contrast_black")) {
+        code = muse::ui::HIGH_CONTRAST_BLACK_THEME_CODE;
+    } else {
+        return false;
+    }
+
+    if (uiConfiguration()->currentTheme().codeKey == code) {
+        return true;
+    }
+
+    settings()->setSharedValue(CURRENT_THEME_CODE_KEY, muse::Val(code));
+    return true;
 }
 
 bool M3ThemeProvider::detectReducedMotion()

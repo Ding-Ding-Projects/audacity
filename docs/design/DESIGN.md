@@ -71,7 +71,11 @@ Every Material 3 system colour role is available on `M3.color`, in camelCase:
   `scrim`, `shadow`.
 
 `M3.color.role("surfaceContainerHigh")` looks a role up by name and
-`M3.color.roleNames()` lists them, which is what the developer gallery uses.
+`M3.color.roleNames()` lists them. A method call is not a binding dependency,
+so a binding whose role name is chosen at run time must read the reactive map
+`M3.color.roles[name]` instead, which updates when the theme changes. The
+developer gallery uses `roleNames()` for its model and `roles` for its
+swatches.
 
 ### Contrast guarantee
 

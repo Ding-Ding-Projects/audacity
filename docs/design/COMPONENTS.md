@@ -13,13 +13,16 @@ repeated in the table below: `enabled`, `navigation` (an alias to its own
 `NavigationControl`), `accessibleName`, a state layer, a ripple, a three pixel
 focus ring and durations taken from `M3.motion`.
 
-See `DESIGN.md` for the tokens these components are built from.
+See `DESIGN.md` for the tokens these components are built from. When a binding
+needs a colour role whose name is only known at run time, read the reactive map
+`M3.color.roles[name]` rather than calling `M3.color.role(name)`, because a
+method call does not re-evaluate when the theme changes.
 
 ## Buttons and actions
 
 | Component | Public API | Replaces |
 | --- | --- | --- |
-| `M3Button` | `text`, `icon`, `variant` (`filled`, `tonal`, `outlined`, `text`, `elevated`), `loading`, `minWidth`, `toolTipTitle`, `toolTipDescription`, `toolTipShortcut`, `clicked()` | `FlatButton` |
+| `M3Button` | `text`, `icon`, `variant` (`filled`, `tonal`, `outlined`, `text`, `elevated`), `loading`, `minWidth`, `horizontalPadding`, `toolTipTitle`, `toolTipDescription`, `toolTipShortcut`, `clicked()` | `FlatButton` |
 | `M3IconButton` | `icon`, `variant` (`standard`, `filled`, `tonal`, `outlined`), `checkable`, `checked`, `clicked()`, `toggled(checked)` | `FlatButton` with an icon and no text |
 | `M3FAB` | `icon`, `text`, `size` (`small`, `regular`, `large`, `extended`), `variant` (`primary`, `secondary`, `tertiary`, `surface`), `lowered`, `clicked()` | `FlatButton` used as a primary accent action |
 | `M3SegmentedButton` | `model`, `currentIndex`, `multiSelect`, `checkedIndexes`, `navigationPanel`, `navigationRowStart`, `activated(index)` | `RadioButtonGroup` used as a toolbar selector |
@@ -37,7 +40,7 @@ See `DESIGN.md` for the tokens these components are built from.
 
 | Component | Public API | Replaces |
 | --- | --- | --- |
-| `M3Slider` | `value`, `from`, `to`, `stepSize`, `orientation`, `showTicks`, `showValueIndicator`, `valueText`, `moved()` | `StyledSlider` |
+| `M3Slider` | `value`, `from`, `to`, `stepSize`, `orientation`, `showTicks`, `showValueIndicator`, `valueText`, `setValue(value)`, `step(direction)`, `moved()` | `StyledSlider` |
 | `M3RangeSlider` | `first`, `second`, `from`, `to`, `stepSize`, `orientation`, `navigationPanel`, `moved()` | no direct muse equivalent |
 | `M3TextField` | `currentText`, `label`, `placeholder`, `supportingText`, `errorText`, `hasError`, `variant` (`filled`, `outlined`), `leadingIcon`, `trailingIcon`, `isPassword`, `readOnly`, `maximumLength`, `textEdited(text)`, `textEditingFinished(text)`, `trailingIconClicked()`, `clear()` | `TextInputField` |
 | `M3Dropdown` | `model`, `currentIndex`, `currentText`, `currentValue`, `textRole`, `valueRole`, `label`, `placeholder`, `activated(index, value)` | `StyledDropdown` |
@@ -143,8 +146,16 @@ AU_M3_GALLERY_ROUTE="<component>:<state>:<theme>:<scale>"
 ```
 
 for example `AU_M3_GALLERY_ROUTE="M3Button:hover:dark:1.5"`. The component part
-selects the gallery entry, the state part is recorded, the theme part is
-reported back next to the theme that was actually applied so a harness can
-assert it got what it asked for, and the scale part sets the preview scale. Any
-part may be left empty. The value is read once through
-`M3.captureRoute()`, so the route is stable for the life of the page.
+selects the gallery entry. The state part is recorded. The theme part switches
+the whole application to `light`, `dark`, `high_contrast_white` or
+`high_contrast_black` through `M3.applyScheme()`, and the gallery then reports
+the requested theme next to the one actually applied so a harness can assert it
+got what it asked for. The scale part sets the preview scale. Any part may be
+left empty, and an empty theme part leaves the user's own theme alone. The
+value is read once through `M3.captureRoute()`, so the route is stable for the
+life of the page.
+
+The gallery is reached by opening the DevTools page from the application's
+title bar and choosing "M3 Gallery" in its list. There is no command line
+switch for it; the route variable only chooses what the page shows once it is
+open.

@@ -92,8 +92,20 @@ class M3ColorTokens : public QObject
 public:
     explicit M3ColorTokens(QObject* parent = nullptr);
 
+    /*!
+     * Every role, keyed by its camelCase name.
+     *
+     * Use this from QML when the role is chosen at run time, for example
+     * \c {M3.color.roles[name]}. It notifies on a theme change, so bindings
+     * that read it stay correct, which a plain method call cannot do.
+     */
+    Q_PROPERTY(QVariantMap roles READ roles NOTIFY changed)
+
     //! Look up any role by its camelCase name. Returns an invalid colour if unknown.
+    //! Not reactive, so prefer the roles map in a binding.
     Q_INVOKABLE QColor role(const QString& name) const;
+
+    QVariantMap roles() const;
 
     //! All known role names, useful for the developer gallery.
     Q_INVOKABLE QStringList roleNames() const;
@@ -465,6 +477,17 @@ public:
      * cannot read the environment on its own, so it is surfaced here.
      */
     Q_INVOKABLE QString captureRoute() const;
+
+    /*!
+     * Switch the application to the theme a capture route asked for.
+     *
+     * \a name is one of light, dark, high_contrast_white or
+     * high_contrast_black. Anything else is ignored and false is returned, so
+     * a route with no theme part leaves the user's own theme alone. The
+     * scheme follows the framework theme, so this writes the framework
+     * setting rather than holding a scheme of its own.
+     */
+    Q_INVOKABLE bool applyScheme(const QString& name);
 
 signals:
     void themeChanged();

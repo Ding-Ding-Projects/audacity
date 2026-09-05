@@ -129,6 +129,10 @@ Rectangle {
         if (root.routeComponent !== "") {
             root.selectByName(root.routeComponent)
         }
+
+        if (root.routeTheme !== "") {
+            M3.applyScheme(root.routeTheme)
+        }
     }
 
     RowLayout {
@@ -1145,7 +1149,7 @@ Rectangle {
                         width: 160
                         height: 56
                         radius: M3.shape.extraSmall
-                        color: M3.color.role(swatch.modelData)
+                        color: M3.color.roles[swatch.modelData]
                         border.width: 1
                         border.color: M3.color.outlineVariant
 
@@ -1157,7 +1161,7 @@ Rectangle {
                             text: swatch.modelData
                             font: M3.typography.labelSmall
                             color: M3.contrastRatio(M3.color.onSurface,
-                                                    M3.color.role(swatch.modelData)) >= 4.5
+                                                    M3.color.roles[swatch.modelData]) >= 4.5
                                    ? M3.color.onSurface : M3.color.surface
                         }
                     }

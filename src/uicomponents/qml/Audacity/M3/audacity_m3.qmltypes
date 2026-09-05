@@ -59,6 +59,7 @@ Module {
         Property { name: "surfaceTint"; type: "QColor"; isReadonly: true }
         Property { name: "scrim"; type: "QColor"; isReadonly: true }
         Property { name: "shadow"; type: "QColor"; isReadonly: true }
+        Property { name: "roles"; type: "QVariantMap"; isReadonly: true }
         Method { name: "role"; type: "QColor"; Parameter { name: "name"; type: "string" } }
         Method { name: "roleNames"; type: "QStringList" }
     }
@@ -230,6 +231,7 @@ Module {
         Method { name: "surfaceAt"; type: "QColor"; Parameter { name: "elevationLevel"; type: "int" } }
         Method { name: "contrastRatio"; type: "double"; Parameter { name: "a"; type: "QColor" } Parameter { name: "b"; type: "QColor" } }
         Method { name: "captureRoute"; type: "string" }
+        Method { name: "applyScheme"; type: "bool"; Parameter { name: "name"; type: "string" } }
         Signal { name: "themeChanged" }
     }
 }
