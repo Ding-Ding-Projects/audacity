@@ -198,7 +198,7 @@ Item {
         }
     }
 
-    M3MenuLoader {
+    StyledMenuLoader {
         id: menuLoader
 
         property string menuId: ""

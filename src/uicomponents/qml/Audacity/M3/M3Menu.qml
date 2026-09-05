@@ -40,10 +40,6 @@ StyledPopupView {
 
     property NavigationPanel navigationPanel: null
 
-    // Exposed so a parent menu bar can find the deepest open submenu when
-    // computing the area currently covered by an open menu tree.
-    property alias subMenuLoader: subMenuLoader
-
     signal handleMenuItem(string itemId)
     signal regexBuilderRequested
 
@@ -158,11 +154,6 @@ StyledPopupView {
      */
     Loader {
         id: subMenuLoader
-
-        // Compatibility aliases so a hosting menu bar can walk a chain of
-        // open menus the same way it would with the muse StyledMenuLoader.
-        property alias isMenuOpened: subMenuLoader.active
-        property alias menu: subMenuLoader.item
 
         active: false
         source: "M3Menu.qml"

@@ -26,7 +26,6 @@ M3LinearProgress 1.0 M3LinearProgress.qml
 M3ListItem 1.0 M3ListItem.qml
 M3Menu 1.0 M3Menu.qml
 M3MenuItem 1.0 M3MenuItem.qml
-M3MenuLoader 1.0 M3MenuLoader.qml
 M3NavigationDrawer 1.0 M3NavigationDrawer.qml
 M3NavigationRail 1.0 M3NavigationRail.qml
 M3RadioButton 1.0 M3RadioButton.qml
