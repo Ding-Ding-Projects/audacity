@@ -317,9 +317,19 @@ if (-not $hasPrevious) {
     $releasifyArgs += "--no-delta"
 }
 
-& $squirrelExe @releasifyArgs
-if ($LASTEXITCODE -ne 0) {
-    throw "Squirrel --releasify failed with exit code $LASTEXITCODE"
+# Squirrel.exe is a Windows GUI subsystem executable. Invoking it with the call
+# operator returns immediately, before any output exists, so the process must be
+# awaited explicitly. Its diagnostics land in SquirrelSetup.log next to the tool.
+$squirrelLog = Join-Path (Split-Path -Parent $squirrelExe) "SquirrelSetup.log"
+if (Test-Path -LiteralPath $squirrelLog) { Remove-Item -LiteralPath $squirrelLog -Force }
+$releasifyProcess = Start-Process -FilePath $squirrelExe -ArgumentList $releasifyArgs -Wait -PassThru -NoNewWindow
+if (Test-Path -LiteralPath $squirrelLog) {
+    Write-Host "--- SquirrelSetup.log ---"
+    Get-Content -LiteralPath $squirrelLog | Select-Object -Last 80 | ForEach-Object { Write-Host $_ }
+    Write-Host "--- end of SquirrelSetup.log ---"
+}
+if ($releasifyProcess.ExitCode -ne 0) {
+    throw "Squirrel --releasify failed with exit code $($releasifyProcess.ExitCode)"
 }
 
 # ---------------------------------------------------------------------------
