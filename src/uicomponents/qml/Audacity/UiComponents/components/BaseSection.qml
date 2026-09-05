@@ -5,6 +5,7 @@
 * section content. The public API is unchanged from the original section.
 */
 import QtQuick
+import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
@@ -19,9 +20,9 @@ Column {
     width: parent.width
     spacing: 8
 
-    //! Reported so that the section keeps its content width when it sits in a
-    //! layout that sizes its children by their implicit width.
-    implicitWidth: Math.max(titleLabel.implicitWidth, sectionContent.implicitWidth + 2 * card.padding)
+    //! A Column reports no implicit width, so inside a layout the section
+    //! asks to fill the row instead. Ignored when the parent is not a layout.
+    Layout.fillWidth: true
 
     property alias title: titleLabel.text
     property int columnWidth: 208
@@ -54,7 +55,7 @@ Column {
     M3Card {
         id: card
 
-        width: Math.max(root.width, root.implicitWidth)
+        width: root.width
         height: sectionContent.height + 2 * card.padding
 
         variant: "filled"
