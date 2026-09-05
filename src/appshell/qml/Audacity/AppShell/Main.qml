@@ -19,15 +19,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+/*
+ * The default application window, used where no platform specific window is
+ * built.
+ */
 import QtQuick
 import QtQuick.Window
 
-import MuseScore.UiComponents
+import Muse.UiComponents
 
-import MuseScore.AppShell
+import Audacity.AppShell
 
 AppWindow {
     id: root
+
+    flags: Qt.Window | Qt.FramelessWindowHint
 
     function toggleMaximized() {
         if (root.visibility === Window.Maximized) {
@@ -44,18 +51,21 @@ AppWindow {
     }
 
     Component.onCompleted: {
-        framelessWindowModel.init(this)
+        framelessWindowModel.init()
+        window.init()
     }
 
-    AppTitleBar {
+    M3AppTitleBar {
         id: appTitleBar
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
-        height: 48
         title: root.title
+        windowVisibility: root.visibility
+        appWindow: root
+        handleWindowGestures: true
 
         onShowWindowMinimizedRequested: {
             root.showMinimized()

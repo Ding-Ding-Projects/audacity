@@ -1,4 +1,5 @@
 module Audacity.Effects
+M3NumberField 1.0 M3NumberField.qml
 BypassEffectButton 1.0 BypassEffectButton.qml
 EffectControlsDisablingOverlay 1.0 EffectControlsDisablingOverlay.qml
 EffectPresetsBar 1.0 EffectPresetsBar.qml

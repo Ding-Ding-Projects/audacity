@@ -73,10 +73,10 @@ qt_add_qml_module(appshell_qml
         HomePage/HomeMenu.qml
         HomePage/HomePage.qml
         HomePage/PluginsPage.qml
+        M3AppTitleBar.qml
         Main.qml
         Main.wasm.qml
         MainToolBar.qml
-        platform/AppButtonBackground.qml
         platform/AppMenuBar.qml
         platform/PlatformMenuBar.qml
         ProjectPage/ProjectPage.qml
@@ -122,7 +122,6 @@ if (OS_IS_MAC)
 elseif(OS_IS_WIN)
     qt_target_qml_sources(appshell_qml
         QML_FILES
-            platform/win/AppSystemButtons.qml
             platform/win/AppTitleBar.qml
             platform/win/Main.qml
     )

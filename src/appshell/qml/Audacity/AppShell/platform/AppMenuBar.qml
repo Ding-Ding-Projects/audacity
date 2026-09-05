@@ -23,6 +23,8 @@ import QtQuick 2.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+
+import Audacity.M3
 import Audacity.AppShell
 
 Item {
@@ -69,7 +71,7 @@ Item {
         Repeater {
             model: appMenuModel
 
-            delegate: FlatButton {
+            delegate: Item {
                 id: radioButtonDelegate
 
                 property var item: model ? model.item : null
@@ -91,15 +93,8 @@ Item {
 
                 property int viewIndex: index
 
-                buttonType: FlatButton.TextOnly
-                isNarrow: true
-                margins: 8
-                drawFocusBorderInsideRect: true
-
-                transparent: !isMenuOpened
-                accentButton: isMenuOpened
-
-                navigation.accessible.ignored: true
+                implicitWidth: textLabel.width + 24
+                implicitHeight: M3.density.apply(40)
 
                 visible: mapToItem(root, 0, 0).x + width < root.availableWidth
 
@@ -122,14 +117,50 @@ Item {
                     }
                 }
 
-                contentItem: StyledTextLabel {
+                Rectangle {
+                    id: background
+
+                    anchors.fill: parent
+                    anchors.topMargin: 4
+                    anchors.bottomMargin: 4
+
+                    radius: M3.shape.full
+                    color: radioButtonDelegate.isMenuOpened ? M3.color.secondaryContainer : "transparent"
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: M3.motion.short3
+                            easing: M3.motion.standard
+                        }
+                    }
+
+                    M3StateLayer {
+                        anchors.fill: parent
+                        radius: background.radius
+                        color: textLabel.color
+                        hovered: mouseArea.containsMouse
+                        pressed: mouseArea.containsPress
+                        focused: radioButtonDelegate.highlight
+                    }
+
+                    M3FocusRing {
+                        anchors.fill: parent
+                        shapeRadius: background.radius
+                        visible: radioButtonDelegate.highlight
+                    }
+                }
+
+                Text {
                     id: textLabel
+
+                    anchors.centerIn: parent
 
                     width: textMetrics.width
 
                     text: appMenuModel.isNavigationStarted ? radioButtonDelegate.titleWithMnemonicUnderline : radioButtonDelegate.title
                     textFormat: Text.RichText
-                    font: ui.theme.defaultFont
+                    font: M3.typography.labelLarge
+                    color: radioButtonDelegate.isMenuOpened ? M3.color.onSecondaryContainer : M3.color.onSurface
 
                     TextMetrics {
                         id: textMetrics
@@ -139,26 +170,25 @@ Item {
                     }
                 }
 
-                backgroundItem: AppButtonBackground {
-                    mouseArea: radioButtonDelegate.mouseArea
+                MouseArea {
+                    id: mouseArea
 
-                    highlight: radioButtonDelegate.highlight
+                    anchors.fill: parent
+                    hoverEnabled: true
 
-                    color: radioButtonDelegate.normalColor
-                }
+                    onContainsMouseChanged: {
+                        if (!mouseArea.containsMouse) {
+                            return
+                        }
 
-                mouseArea.onHoveredChanged: {
-                    if (!mouseArea.containsMouse) {
-                        return
+                        if (menuLoader.isMenuOpened && menuLoader.parent !== radioButtonDelegate) {
+                            appMenuModel.openMenu(radioButtonDelegate.menuId, true)
+                        }
                     }
 
-                    if (menuLoader.isMenuOpened && menuLoader.parent !== this) {
-                        appMenuModel.openMenu(radioButtonDelegate.menuId, true)
+                    onClicked: {
+                        appMenuModel.openMenu(radioButtonDelegate.menuId, false)
                     }
-                }
-
-                onClicked: {
-                    appMenuModel.openMenu(radioButtonDelegate.menuId, false)
                 }
             }
         }

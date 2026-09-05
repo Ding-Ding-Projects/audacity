@@ -19,20 +19,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+/*
+ * The Linux application window. The window is frameless so that the Material 3
+ * top app bar can carry the application menu, the title and the window
+ * controls.
+ */
 import QtQuick
+import QtQuick.Window
 
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.AppShell
+
 AppWindow {
     id: root
 
-    Loader {
-        id: appMenuBar
+    flags: Qt.Window | Qt.FramelessWindowHint
 
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+    function toggleMaximized() {
+        if (root.visibility === Window.Maximized) {
+            root.showNormal()
+        } else {
+            root.showMaximized()
+        }
     }
 
     Loader {
@@ -43,21 +54,43 @@ AppWindow {
         platformMenuBar.setSource("../PlatformMenuBar.qml")
         if (platformMenuBar.item.available) {
             platformMenuBar.item.load()
-            appMenuBar.active = 0
+            appTitleBar.showAppMenu = false
         } else {
-            appMenuBar.setSource("../AppMenuBar.qml", {
-                "appWindow": root
-            })
             platformMenuBar.active = 0
         }
 
         window.init()
     }
 
+    M3AppTitleBar {
+        id: appTitleBar
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        title: root.title
+        windowVisibility: root.visibility
+        appWindow: root
+        handleWindowGestures: true
+
+        onShowWindowMinimizedRequested: {
+            root.showMinimized()
+        }
+
+        onToggleWindowMaximizedRequested: {
+            root.toggleMaximized()
+        }
+
+        onCloseWindowRequested: {
+            root.close()
+        }
+    }
+
     WindowContent {
         id: window
 
-        anchors.top: appMenuBar.bottom
+        anchors.top: appTitleBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom

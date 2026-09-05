@@ -25,6 +25,8 @@ import QtQuick.Controls 2.15
 import Muse.Ui 1.0
 import Muse.Shortcuts 1.0
 
+import Audacity.M3
+
 import Audacity.AppShell 1.0
 import Muse.Toast 1.0
 
@@ -45,7 +47,7 @@ ApplicationWindow {
 
     visible: false
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     Component.onCompleted: {
         ui.rootItem = root.contentItem

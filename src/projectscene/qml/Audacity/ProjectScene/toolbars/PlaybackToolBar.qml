@@ -10,6 +10,7 @@ import Audacity.Playback 1.0
 import Audacity.Record 1.0
 import Audacity.ProjectScene 1.0
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 import "internal"
 
@@ -86,31 +87,26 @@ Item {
         Component {
             id: controlComp
 
-            StyledToolBarItem {
-                width: 28
+            M3ToolBarItem {
+                width: M3.density.apply(40)
                 height: width
 
-                backgroundRadius: 2
-
-                iconFont: ui.theme.iconsFont
-                iconColor: Boolean(itemData) ? itemData.iconColor : ui.theme.fontPrimaryColor
-                accentColor: Boolean(itemData) ? itemData.backgroundColor : ui.theme.buttonColor
-                accentButton: Boolean(itemData) ? itemData.selected : false
+                // data colour: the transport play and record hues
+                dataIconColor: Boolean(itemData) ? itemData.iconColor : "transparent"
+                dataContainerColor: Boolean(itemData) ? itemData.backgroundColor : "transparent"
+                dataSelected: Boolean(itemData) ? itemData.selected : false
             }
         }
 
         Component {
             id: projectControlComp
 
-            StyledToolBarItem {
-                width: 28
+            M3ToolBarItem {
+                width: M3.density.apply(40)
                 height: width
-
-                backgroundRadius: 2
-
-                iconFont: ui.theme.iconsFont
             }
         }
+
 
         Component {
             id: playbackLevelComp
@@ -123,7 +119,7 @@ Item {
                 width: Boolean(itemData) ? Math.max(288, Math.min(itemData.meterSize, view.maximumWidth)) : 288
                 height: 28
 
-                backgroundRadius: 2
+                backgroundRadius: M3.shape.small
 
                 volumeLevel: Boolean(itemData) ? itemData.level : 0
                 leftCurrentVolumePressure: Boolean(itemData) ? itemData.leftChannelPressure : -145
@@ -160,6 +156,12 @@ Item {
 
             Timecode {
                 property var itemData: null
+
+                backgroundLeftRadius: M3.shape.small
+                backgroundColor: M3.color.surfaceContainerHighest
+                textColor: M3.color.onSurface
+                border.width: 1
+                border.color: M3.color.outline
 
                 accessibleName: qsTrc("projectscene", "Playback position:")
 
@@ -200,6 +202,12 @@ Item {
             BPM {
                 property var itemData: null
 
+                backgroundLeftRadius: M3.shape.small
+                backgroundColor: M3.color.surfaceContainerHighest
+                textColor: M3.color.onSurface
+                border.width: 1
+                border.color: M3.color.outline
+
                 value: Boolean(itemData) ? itemData.currentValue : 0
 
                 enabled: Boolean(itemData) ? itemData.enabled : false
@@ -219,6 +227,12 @@ Item {
 
             TimeSignature {
                 property var itemData: null
+
+                backgroundLeftRadius: M3.shape.small
+                backgroundColor: M3.color.surfaceContainerHighest
+                textColor: M3.color.onSurface
+                border.width: 1
+                border.color: M3.color.outline
 
                 upper: Boolean(itemData) ? itemData.upper : 0
                 lower: Boolean(itemData) ? itemData.lower : 0
@@ -249,10 +263,10 @@ Item {
             RecordLevel {
                 property var itemData: null
 
-                width: 28
+                width: M3.density.apply(40)
                 height: width
 
-                backgroundRadius: 2
+                backgroundRadius: M3.shape.small
 
                 meterStyle: Boolean(itemData) ? itemData.meterStyle : PlaybackMeterStyle.Default
 
@@ -331,7 +345,7 @@ Item {
         }
     }
 
-    FlatButton {
+    M3IconButton {
         id: customizeButton
 
         anchors.right: parent.right
@@ -339,11 +353,10 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
 
-        width: 28
+        width: M3.density.apply(40)
         height: width
 
         icon: IconCode.SETTINGS_COG
-        iconFont: ui.theme.iconsFont
         //: Tooltip of the toolbar customization button
         toolTipTitle: qsTrc("projectscene", "Customize toolbar")
         toolTipDescription: qsTrc("projectscene", "Show/hide toolbar buttons")
@@ -353,6 +366,7 @@ Item {
         navigation.panel: root.navigationPanel
         navigation.order: 10000
         navigation.accessible.name: qsTrc("projectscene", "Customize toolbar")
+        accessibleName: qsTrc("projectscene", "Customize toolbar")
 
         onClicked: {
             customizePopup.toggleOpened()
