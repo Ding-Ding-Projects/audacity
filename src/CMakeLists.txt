@@ -47,6 +47,8 @@ add_subdirectory(spectrogram)
 
 add_subdirectory(experience)
 
+add_subdirectory(squirrelupdate)
+
 add_subdirectory(automation)
 
 add_subdirectory(extensions/native)
@@ -76,6 +78,8 @@ add_subdirectory(uicomponents)
 add_subdirectory(companion)
 
 add_subdirectory(chronicle)
+
+add_subdirectory(personalize)
 
 # Stubs
 add_subdirectory(stubs)

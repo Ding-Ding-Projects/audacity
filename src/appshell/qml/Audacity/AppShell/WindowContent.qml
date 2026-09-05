@@ -28,6 +28,8 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.AppShell
+import Audacity.Companion
+import Audacity.Experience
 
 DockWindow {
     id: root
@@ -119,4 +121,23 @@ DockWindow {
         },
         DevToolsPage {}
     ]
+
+    // The command palette overlay: Ctrl+Shift+F opens it from anywhere in the
+    // application. It stays inert and invisible until first opened.
+    CommandPaletteHost {
+        id: commandPaletteHost
+
+        z: 1000
+    }
+
+    // The companion surfaces: language, funny level and attention support
+    // settings feed a toast stack, a notification centre and the super
+    // confirmation gate that guards destructive actions everywhere else in
+    // the application.
+    ExperienceOverlay {
+        id: experienceOverlay
+
+        anchors.fill: parent
+        z: 900
+    }
 }

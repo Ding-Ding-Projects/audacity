@@ -38,4 +38,11 @@ QtObject {
             bridge.overlay.openNotificationCentre()
         }
     }
+
+    // Alias kept for call sites written against the documented name
+    // "SuperConfirmation.request(actionName, dataSummary, recoveryNote,
+    // invoker, onConfirmed)". Behaves exactly like confirmDestructive above.
+    function request(actionName, dataSummary, recoveryNote, invoker, onConfirmed) {
+        return bridge.confirmDestructive(actionName, dataSummary, recoveryNote, invoker, onConfirmed)
+    }
 }

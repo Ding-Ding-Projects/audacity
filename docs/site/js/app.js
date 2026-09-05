@@ -312,6 +312,13 @@
     { id: 'architecture', title: 'Architecture overview', file: 'docs/architecture.md' },
     { id: 'regex-builder', title: 'The regex builder', file: 'docs/regex-builder.md' },
     { id: 'command-palette', title: 'The command palette', file: 'docs/command-palette.md' },
+    { id: 'language-modes', title: 'Language modes', file: 'docs/language-modes.md' },
+    { id: 'funny-levels', title: 'Funny levels', file: 'docs/funny-levels.md' },
+    { id: 'attention-support-modes', title: 'Attention support modes', file: 'docs/attention-support-modes.md' },
+    { id: 'scheduled-settings', title: 'Scheduled settings', file: 'docs/scheduled-settings.md' },
+    { id: 'personal-vocabulary', title: 'Personal vocabulary', file: 'docs/personal-vocabulary.md' },
+    { id: 'notifications', title: 'Notifications', file: 'docs/notifications.md' },
+    { id: 'super-confirmation', title: 'Super confirmation', file: 'docs/super-confirmation.md' },
   ];
   const LS_TABS = 'ma.docTabs.v1';
   function loadTabState() {

@@ -89,6 +89,8 @@ option(AU_BUILD_TRACKEDIT_TESTS "Build trackedit tests" ${MUSE_ENABLE_UNIT_TESTS
 option(AU_BUILD_UICOMPONENTS_TESTS "Build uicomponents tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_COMPANION_TESTS "Build companion tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_CHRONICLE_TESTS "Build chronicle tests" ${MUSE_ENABLE_UNIT_TESTS})
+option(AU_BUILD_PERSONALIZE_TESTS "Build personalize tests" ${MUSE_ENABLE_UNIT_TESTS})
+option(AU_BUILD_SQUIRRELUPDATE_TESTS "Build squirrelupdate tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_USAGEINFO_MODULE "Build usage info module" ON)
 
 option(AU_MODULE_EFFECTS_VST "Build audacity vst module" ON)

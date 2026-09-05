@@ -6,6 +6,25 @@ this file is not present in the repository.
 
 The format follows Keep a Changelog and the project uses semantic versioning.
 
+## Unreleased
+
+### Added
+
+- Language mode setting with English, playful Hong Kong Cantonese and a
+  bilingual mode, applied live to the interface translator where the platform
+  allows it
+- Separate funny-level sliders for English and Cantonese message copy, and a
+  "Show emojis in dialogs and message boxes" toggle
+- Five independent attention support modes (focus, low stimulation, time
+  awareness, one thing at a time, momentum), off by default
+- Scheduled settings rules with local, HTTPS API and Home Assistant sources
+- A local personal vocabulary JSON upload with replace, clear and reset
+- A corner notification stack and notification centre with search, bulk
+  actions and export
+- A super confirmation gate for destructive actions, with two independent
+  keys, a full range slider and an emergency exit
+- A "Language and accessibility" preferences page collecting all of the above
+
 ## 4.0.0-material.1 - 2026-09-05
 
 The first Material Design 3 preview of Audacity 4.

@@ -3875,6 +3875,229 @@ This action 唔會 刪除 any of your 專案.</translation>
         <source>Accounts</source>
         <translation>帳戶</translation>
     </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceBridge.qml" line="1" />
+        <source>Clear history</source>
+        <translation>清除歷史記錄</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceBridge.qml" line="1" />
+        <source>Every undo step for this project is removed.</source>
+        <translation>呢個項目嘅每一步復原記錄都會冇晒。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceBridge.qml" line="1" />
+        <source>This cannot be undone.</source>
+        <translation>呢步做咗就冇得返轉頭。</translation>
+    </message>
+</context>
+<context>
+    <name>experience</name>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>%1 is complete.</source>
+        <translation>%1做完喇。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Change</source>
+        <translation>轉</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Clear list</source>
+        <translation>清空清單</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Clock and session length</source>
+        <translation>時鐘同呢節做咗幾耐</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Close</source>
+        <translation>閂</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Confirm: %1</source>
+        <translation>確認：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Days</source>
+        <translation>日子</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Dismiss</source>
+        <translation>收起</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Dismiss all</source>
+        <translation>全部收起</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Edit scheduled change</source>
+        <translation>編輯定時變更</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Emergency exit</source>
+        <translation>緊急離開</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Emergency exit, cancel %1</source>
+        <translation>緊急離開，取消%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Finished.</source>
+        <translation>搞掂。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Fri</source>
+        <translation>五</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Left key</source>
+        <translation>左邊鎖匙</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Left key, step 1 of 3</source>
+        <translation>左邊鎖匙，第 1 步，共 3 步</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Mon</source>
+        <translation>一</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>New scheduled change</source>
+        <translation>新增定時變更</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Nothing has been reported yet.</source>
+        <translation>而家未有任何記錄。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Nothing matches this search.</source>
+        <translation>搵唔到符合嘅嘢。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Notification centre</source>
+        <translation>通知中心</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>On screen</source>
+        <translation>畫面上</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Release control, step 2 of 3. Drag to the end to continue</source>
+        <translation>放手掣，第 2 步，共 3 步。拖到盡頭先繼續</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Right key</source>
+        <translation>右邊鎖匙</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Right key, step 1 of 3</source>
+        <translation>右邊鎖匙，第 1 步，共 3 步</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Sat</source>
+        <translation>六</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Save</source>
+        <translation>儲存</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Search notifications</source>
+        <translation>搜尋通知</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Session %1</source>
+        <translation>第%1節</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Setting</source>
+        <translation>設定</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Step 1. Turn both keys</source>
+        <translation>第 1 步：兩條鎖匙都要轉</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Step 2. Drag all the way to the right</source>
+        <translation>第 2 步：一直拖到最右邊</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Step 3. Carrying it out</source>
+        <translation>第 3 步：執行緊</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Step 3. Done</source>
+        <translation>第 3 步：完成</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Sun</source>
+        <translation>日</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Thu</source>
+        <translation>四</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Time of day</source>
+        <translation>一日入面嘅時間</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Tue</source>
+        <translation>二</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Value</source>
+        <translation>數值</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ExperienceOverlay.qml" line="1" />
+        <source>Wed</source>
+        <translation>三</translation>
+    </message>
 </context>
 <context>
     <name>appshell-menu-align</name>
@@ -18063,6 +18286,226 @@ It 唔會 be 載入咗.</translation>
         <location filename="../../src/preferences/qml/Audacity/Preferences/internal/SaveBehaviorSection.qml" line="55" />
         <source>Always save to computer</source>
         <translation>Always 儲存 to computer</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>Language mode</source>
+        <translation>語言模式</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>English</source>
+        <translation>英文</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>Cantonese (Hong Kong)</source>
+        <translation>廣東話（香港）</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>Bilingual</source>
+        <translation>雙語</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>Bilingual shows the English text and the Cantonese text together, separated by a slash.</source>
+        <translation>雙語模式會將英文同廣東話一齊顯示，用斜線隔開。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>Most of the interface changes straight away. Text that the operating system draws, and text that was already placed on screen, follows after a restart.</source>
+        <translation>介面大部分即刻轉，但作業系統自己畫嘅字，同已經喺畫面度嘅字，要重開先跟得上。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceLanguageSection.qml" line="1" />
+        <source>The Cantonese (Hong Kong) translation could not be found, so bilingual mode shows English only.</source>
+        <translation>搵唔到廣東話（香港）翻譯，所以雙語模式暫時淨係顯示英文。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>Tone</source>
+        <translation>語氣</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>English funny level</source>
+        <translation>英文抵死程度</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>English funny level, 1 is plain and 5 is most playful</source>
+        <translation>英文抵死程度，1 最正經，5 最搞笑</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>Cantonese funny level</source>
+        <translation>廣東話抵死程度</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>Cantonese funny level, 1 is plain and 5 is most playful</source>
+        <translation>廣東話抵死程度，1 最正經，5 最搞笑</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>These sliders change tone only; facts stay unchanged.</source>
+        <translation>呢啲滑桿淨係改語氣，內容事實一個字都唔會變。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>Emoji in dialogs and notifications</source>
+        <translation>對話框同通知入面嘅表情符號</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>Emoji appear in message bodies only, never in buttons, labels or names read out by a screen reader.</source>
+        <translation>表情符號淨係出現喺內文，唔會出現喺按鈕、標籤，或者屏幕閱讀器讀出嚟嘅名稱。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>Show an example notification</source>
+        <translation>顯示一個示範通知</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceToneSection.qml" line="1" />
+        <source>3 tracks were exported to project.wav.</source>
+        <translation>3 條軌道已經匯出到 project.wav。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Attention support</source>
+        <translation>專注支援</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Each of these works on its own, and they can be combined. They are off until you turn them on, and they never change what an action does.</source>
+        <translation>每一個都係獨立運作，可以夾埋用。未開之前係關嘅，開咗都唔會改變動作本身做啲乜。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Focus</source>
+        <translation>專注模式</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Focus. Dims the edges of the window so the work surface stands out</source>
+        <translation>專注模式：將視窗邊緣調暗，令工作範圍更突出</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Low stimulation</source>
+        <translation>低刺激模式</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Low stimulation. Turns off decorative motion and uses a calmer palette</source>
+        <translation>低刺激模式：關咗裝飾性動畫，用返個冷靜啲嘅顏色</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Low stimulation adds to the reduced motion setting in Appearance and never switches it off again on its own.</source>
+        <translation>低刺激模式會疊加喺「外觀」入面嘅減少動態設定之上，唔會自己攞返呢個設定去關。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Time awareness</source>
+        <translation>時間感知</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Time awareness. Shows the clock and how long this session has been running</source>
+        <translation>時間感知：顯示時鐘，同埋呢節做咗幾耐</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>One thing at a time</source>
+        <translation>一次一件事</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>One thing at a time. Pushes everything except the current task into the background</source>
+        <translation>一次一件事：除咗現時嘅工作之外，其他全部放去背景</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Momentum</source>
+        <translation>動力提示</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml" line="1" />
+        <source>Momentum. Acknowledges a finished action quietly</source>
+        <translation>動力提示：完成一個動作之後，靜靜哋畀個確認</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Scheduled changes</source>
+        <translation>定時變更</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Change a setting at a time of day, on the days you choose.</source>
+        <translation>喺你揀嘅日子同時間，自動轉一個設定。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Nothing is scheduled.</source>
+        <translation>而家未有排定任何嘢。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Add a scheduled change</source>
+        <translation>加一個定時變更</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Remove this scheduled change</source>
+        <translation>刪除呢個定時變更</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Scheduled change is on</source>
+        <translation>呢個定時變更已經開咗</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>Personal vocabulary</source>
+        <translation>個人用詞</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>Replace words in the interface with your own. The file stays on this computer and its contents are never written to the log.</source>
+        <translation>用你自己嘅字眼取代介面入面嘅字。檔案淨係留喺呢部電腦，內容永遠唔會寫入記錄。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>Choosing another file replaces the one in use. Up to 2000 terms and 256 KB.</source>
+        <translation>揀多一個檔案會取代而家用緊嗰個。最多 2000 個詞，256 KB 以內。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>Choose JSON file</source>
+        <translation>揀 JSON 檔案</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>No file chosen.</source>
+        <translation>未揀檔案。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>Loaded: %1 terms from %2</source>
+        <translation>已載入：%2 入面嘅 %1 個詞</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>That file could not be used: %1</source>
+        <translation>呢個檔案用唔到：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml" line="1" />
+        <source>Clear</source>
+        <translation>清除</translation>
     </message>
 </context>
 <context>

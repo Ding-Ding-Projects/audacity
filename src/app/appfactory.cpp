@@ -53,6 +53,7 @@
 #include "uicomponents/uicomponentsmodule.h"
 #include "chronicle/chroniclemodule.h"
 #include "companion/companionmodule.h"
+#include "personalize/personalizemodule.h"
 #include "effects/effects_base/effectsmodule.h"
 #include "effects/builtin/builtineffectsmodule.h"
 #include "effects/builtin_collection/builtineffectscollectionmodule.h"
@@ -170,6 +171,7 @@ std::shared_ptr<muse::IApplication> AppFactory::newGuiApp(const std::shared_ptr<
     app->addModule(new au::preferences::PreferencesModule());
     app->addModule(new au::uicomponents::UiComponentsModule());
     app->addModule(new au::companion::CompanionModule());
+    app->addModule(new au::personalize::PersonalizeModule());
     app->addModule(new au::extensions::AudacityExtensionsModule());
     app->addModule(new au::effects::AudioUnitEffectsModule());
     app->addModule(new au::effects::Lv2EffectsModule());

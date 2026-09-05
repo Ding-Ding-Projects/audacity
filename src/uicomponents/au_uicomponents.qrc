@@ -42,6 +42,7 @@
         <file>qml/Audacity/M3/M3ListItem.qml</file>
         <file>qml/Audacity/M3/M3Menu.qml</file>
         <file>qml/Audacity/M3/M3MenuItem.qml</file>
+        <file>qml/Audacity/M3/M3MenuLoader.qml</file>
         <file>qml/Audacity/M3/M3NavigationDrawer.qml</file>
         <file>qml/Audacity/M3/M3NavigationRail.qml</file>
         <file>qml/Audacity/M3/M3RadioButton.qml</file>

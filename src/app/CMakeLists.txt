@@ -165,6 +165,7 @@ add_to_link_if_exists(spectrogram)
 add_to_link_if_exists(usageinfo)
 add_to_link_if_exists(automation)
 add_to_link_if_exists(chronicle)
+add_to_link_if_exists(personalize)
 
 set (AUDACITY_APPEND_SRC)
 

@@ -222,7 +222,7 @@ void PreferencesModel::load(const QString& currentPageId)
 
         // makeItem("cloud", QT_TRANSLATE_NOOP("preferences", "Cloud"), IconCode::Code::CLOUD, ""),
 
-        makeItem("experience", QT_TRANSLATE_NOOP("preferences", "Companion"), IconCode::Code::GLOBE,
+        makeItem("experience", QT_TRANSLATE_NOOP("preferences", "Language and accessibility"), IconCode::Code::GLOBE,
                  "Preferences/ExperiencePreferencesPage.qml"),
 
         makeItem("shortcuts", QT_TRANSLATE_NOOP("preferences", "Shortcuts"), IconCode::Code::SHORTCUTS,

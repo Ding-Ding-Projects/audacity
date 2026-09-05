@@ -8,6 +8,7 @@
 #include <QTextCodec>
 
 #include <csignal>
+#include <cstring>
 
 #include "appfactory.h"
 #include "commandlineparser.h"
@@ -83,8 +84,50 @@ static void crashCallback(int signum)
 #include "winleaktracker.h"
 #endif
 
+/*
+ * Squirrel.Windows invokes the freshly installed executable once with one of
+ * these arguments right after install, update or uninstall, but only when the
+ * executable carries a SquirrelAwareVersion resource. The shipped launcher at
+ * the package root deliberately carries no such resource (see
+ * buildscripts/packaging/Windows/Squirrel/launcher/MaterialAudacity.c), so
+ * Squirrel manages the Start Menu and desktop shortcuts itself and never
+ * passes these arguments through. This check is a defensive early exit only:
+ * if that packaging decision ever changes, the application still recognises
+ * its own install lifecycle instead of opening a full window for it.
+ */
+static bool app_handle_squirrel_event(int argc, char** argv)
+{
+    if (argc < 2) {
+        return false;
+    }
+
+    static const char* squirrelEvents[] = {
+        "--squirrel-install",
+        "--squirrel-updated",
+        "--squirrel-obsolete",
+        "--squirrel-uninstall",
+        "--squirrel-firstrun"
+    };
+
+    for (const char* event : squirrelEvents) {
+        if (std::strcmp(argv[1], event) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int main(int argc, char** argv)
 {
+    if (app_handle_squirrel_event(argc, argv)) {
+        // Nothing to do beyond returning quickly: Squirrel already created or
+        // removed the shortcuts itself, because this executable is Squirrel
+        // unaware. Exiting immediately keeps the installer and uninstaller
+        // from waiting on a window that would otherwise flash open.
+        return 0;
+    }
+
 #ifndef MUSE_MODULE_DIAGNOSTICS_CRASHPAD_CLIENT
     signal(SIGSEGV, crashCallback);
     signal(SIGILL, crashCallback);
