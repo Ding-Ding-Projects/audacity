@@ -3,6 +3,8 @@ import Muse.Ui
 import Muse.UiComponents
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -86,7 +88,7 @@ Item {
 
                 width: 8
                 height: 1
-                color: ui.theme.fontSecondaryColor
+                color: M3.color.onSurfaceVariant
 
                 antialiasing: true
             }
@@ -146,7 +148,7 @@ Item {
 
                     width: 3
                     height: 1
-                    color: ui.theme.fontSecondaryColor
+                    color: M3.color.onSurfaceVariant
 
                     visible: modelData.value < 0
 

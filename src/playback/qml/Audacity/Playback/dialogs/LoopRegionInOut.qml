@@ -11,6 +11,8 @@ import Muse.UiComponents
 import Audacity.ProjectScene
 import Audacity.UiComponents
 
+import Audacity.M3
+
 StyledDialogView {
     id: root
 
@@ -71,13 +73,13 @@ StyledDialogView {
                 Layout.fillHeight: false
 
                 border: Border {
-                    color: ui.theme.strokeColor
+                    color: M3.color.outlineVariant
                     width: 1
                 }
 
                 arrowSpacing: -2
-                backgroundColor: ui.theme.backgroundSecondaryColor
-                textColor: ui.theme.fontPrimaryColor
+                backgroundColor: M3.color.surfaceContainer
+                textColor: M3.color.onSurface
 
                 value: start
                 mode: TimecodeModeSelector.Duration
@@ -117,13 +119,13 @@ StyledDialogView {
                 Layout.fillHeight: false
 
                 border: Border {
-                    color: ui.theme.strokeColor
+                    color: M3.color.outlineVariant
                     width: 1
                 }
 
                 arrowSpacing: -2
-                backgroundColor: ui.theme.backgroundSecondaryColor
-                textColor: ui.theme.fontPrimaryColor
+                backgroundColor: M3.color.surfaceContainer
+                textColor: M3.color.onSurface
 
                 value: end
                 mode: TimecodeModeSelector.Duration

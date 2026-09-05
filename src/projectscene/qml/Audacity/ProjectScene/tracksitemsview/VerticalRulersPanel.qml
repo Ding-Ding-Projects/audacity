@@ -7,6 +7,8 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -16,7 +18,7 @@ Rectangle {
     readonly property int listHeaderHeight: 2
 
     width: 32
-    color: ui.theme.backgroundQuarternaryColor
+    color: M3.color.inverseSurface
 
     visible: model.isVerticalRulersVisible
 
@@ -25,7 +27,7 @@ Rectangle {
 
         width: 1
         height: parent.height
-        color: ui.theme.strokeColor
+        color: M3.color.outlineVariant
         opacity: 0.1
     }
 
@@ -104,7 +106,7 @@ Rectangle {
                 id: waveComp
 
                 Rectangle {
-                    color: ui.theme.backgroundQuarternaryColor
+                    color: M3.color.inverseSurface
 
                     MouseArea {
                         id: mouseClickBlocker // to prevent clicks from reaching and modifying the viewport
@@ -119,7 +121,7 @@ Rectangle {
 
                         width: 1
                         height: parent.height
-                        color: ui.theme.strokeColor
+                        color: M3.color.outlineVariant
                         opacity: 0.1
                     }
 

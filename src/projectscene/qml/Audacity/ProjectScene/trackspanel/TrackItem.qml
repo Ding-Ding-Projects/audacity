@@ -9,6 +9,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.ProjectScene
+import Audacity.M3
 
 ListItemBlank {
     id: root
@@ -71,12 +72,14 @@ ListItemBlank {
     focusBorder.anchors.rightMargin: 24 + separatorLine.width
     focusBorder.anchors.bottomMargin: 2
 
-    background.color: root.isSelected ? ui.theme.extra["track_header_active_color"] : (hoverHandler.hovered ? ui.theme.extra["track_header_hover_color"] : ui.theme.extra["track_header_color"])
+    // Material 3 list item anatomy on a tonal surface: the selected header is a
+    // secondary container, the resting header a surface container.
+    background.color: root.isSelected ? M3.color.secondaryContainer : M3.color.surfaceContainer
 
     background.anchors.leftMargin: spacer.width
     background.anchors.rightMargin: -background.radius
     background.anchors.bottomMargin: bottomSeparator.thickness
-    background.radius: 4
+    background.radius: M3.shape.medium
 
     signal renameTrackRequested
     signal duplicateRequested
@@ -177,6 +180,7 @@ ListItemBlank {
 
                 StyledIconLabel {
                     iconCode: Boolean(root.item) ? root.item.icon : 0
+                    color: root.isSelected ? M3.color.onSecondaryContainer : M3.color.onSurfaceVariant
                 }
 
                 EditableLabel {
@@ -186,6 +190,7 @@ ListItemBlank {
                     Layout.fillWidth: true
 
                     text: Boolean(root.item) ? root.item.title : ""
+                    textColor: root.isSelected ? M3.color.onSecondaryContainer : M3.color.onSurface
 
                     navigation.panel: root.headerNavigationPanel
                     navigation.order: root.navigation.order + 1
@@ -233,7 +238,7 @@ ListItemBlank {
             anchors.right: rightSideContainer.left
             anchors.bottomMargin: bottomSeparator.thickness
             orientation: Qt.Vertical
-            color: ui.theme.extra["track_header_separator_color"]
+            color: M3.color.outlineVariant
         }
 
         Loader {
@@ -309,9 +314,9 @@ ListItemBlank {
 
         color: "transparent"
 
-        border.color: ui.theme.extra["focus_state_color"]
-        border.width: 2
+        border.color: M3.color.primary
+        border.width: M3.focusIndicatorThickness
 
-        radius: 6
+        radius: M3.shape.medium + M3.focusIndicatorOffset
     }
 }

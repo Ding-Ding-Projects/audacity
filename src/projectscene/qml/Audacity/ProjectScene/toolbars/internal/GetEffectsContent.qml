@@ -5,6 +5,8 @@ import QtQuick.Controls
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -26,7 +28,7 @@ Rectangle {
         readonly property int errorTextWidth: 400
     }
 
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surfaceContainer
 
     Connections {
         target: root.model
@@ -50,7 +52,7 @@ Rectangle {
         StyledTextLabel {
             Layout.alignment: Qt.AlignHCenter
             text: qsTrc("projectscene", "Please wait…")
-            font: ui.theme.largeBodyFont
+            font: M3.typography.bodyLarge
         }
     }
 
@@ -66,7 +68,7 @@ Rectangle {
             id: errorLabel
             Layout.alignment: Qt.AlignHCenter
             text: qsTrc("projectscene", "Connection error")
-            font: ui.theme.largeBodyBoldFont
+            font: M3.typography.titleMedium
         }
 
         StyledTextLabel {

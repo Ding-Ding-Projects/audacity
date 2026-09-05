@@ -8,12 +8,14 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 QtObject {
     readonly property color clippedColor: ui.theme.extra["meter_clipped_color"]
     readonly property color noClippedColor: ui.theme.extra["meter_background_color"]
-    readonly property color rmsColor: ui.theme.accentColor
+    readonly property color rmsColor: M3.color.primary
     readonly property color rmsOverlayColor: ui.theme.extra["meter_rms_overlay_color"]
-    readonly property color defaultColor: ui.theme.accentColor
+    readonly property color defaultColor: M3.color.primary
     readonly property color gradientColorGreen: ui.theme.extra["meter_gradient_green_color"]
     readonly property color gradientColorYellow: ui.theme.extra["meter_gradient_yellow_color"]
     readonly property color gradientColorRed: ui.theme.extra["meter_clipped_color"]

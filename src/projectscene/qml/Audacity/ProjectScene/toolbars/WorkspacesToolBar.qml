@@ -9,6 +9,7 @@ import Muse.UiComponents
 
 import Audacity.UiComponents
 import Audacity.ProjectScene
+import Audacity.M3
 
 import "internal"
 
@@ -21,7 +22,7 @@ StyledToolBarView {
     navigationPanel.accessible.name: qsTrc("projectscene", "Workspace selection")
 
     spacing: 0
-    rowHeight: 28
+    rowHeight: M3.density.apply(40)
 
     WorkspacesToolBarModel {
         id: workspacesModel
@@ -77,10 +78,9 @@ StyledToolBarView {
             Component {
                 id: buttonComp
 
-                StyledToolBarItem {
+                M3ToolBarItem {
                     itemData: loader.itemData
 
-                    icon: IconCode.WORKSPACE
                     enabled: true
 
                     navigation.panel: root.navigationPanel

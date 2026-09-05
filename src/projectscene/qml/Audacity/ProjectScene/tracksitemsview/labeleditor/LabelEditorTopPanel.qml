@@ -7,6 +7,8 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -56,7 +58,7 @@ Item {
             Layout.alignment: Qt.AlignLeft
 
             text: qsTrc("projectscene", "Labels")
-            font: ui.theme.largeBodyBoldFont
+            font: M3.typography.titleMedium
         }
 
         Item {

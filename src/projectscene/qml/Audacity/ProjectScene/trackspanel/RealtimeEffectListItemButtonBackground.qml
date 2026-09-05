@@ -3,16 +3,18 @@ import QtQuick
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
     property var mouseArea: null
     property NavigationControl navigationCtrl: null
 
-    color: ui.theme.backgroundPrimaryColor
-    radius: 3
+    color: M3.color.surface
+    radius: M3.shape.extraSmall
     border.width: 1
-    border.color: ui.theme.strokeColor
+    border.color: M3.color.outlineVariant
 
     NavigationFocusBorder {
         navigationCtrl: root.navigationCtrl
@@ -25,7 +27,7 @@ Rectangle {
 
             PropertyChanges {
                 target: root
-                color: ui.theme.buttonColor
+                color: M3.color.secondaryContainer
                 opacity: 0.4
             }
         },
@@ -35,7 +37,7 @@ Rectangle {
 
             PropertyChanges {
                 target: root
-                color: ui.theme.buttonColor
+                color: M3.color.secondaryContainer
                 opacity: 0.7
             }
         }

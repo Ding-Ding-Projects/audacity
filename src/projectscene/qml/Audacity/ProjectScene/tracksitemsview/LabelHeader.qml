@@ -3,6 +3,8 @@ import QtQuick
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -39,7 +41,7 @@ Rectangle {
     y: 0
 
     color: root.backgroundColor
-    radius: root.isPoint ? 2 : 0
+    radius: root.isPoint ? M3.shape.extraSmall / 2 : 0
 
     function edit() {
         titleLoader.edit()
@@ -241,7 +243,7 @@ Rectangle {
 
                 anchors.topMargin: 1
                 anchors.bottomMargin: 0
-                radius: 5
+                radius: M3.shape.extraSmall
             }
         }
     }

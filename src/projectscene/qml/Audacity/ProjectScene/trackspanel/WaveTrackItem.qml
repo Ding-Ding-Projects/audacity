@@ -9,6 +9,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.ProjectScene
+import Audacity.M3
 
 import "audio"
 
@@ -22,7 +23,8 @@ TrackItem {
 
             Behavior on opacity {
                 OpacityAnimator {
-                    duration: 100
+                    duration: M3.motion.short4
+                    easing: M3.motion.standard
                 }
             }
 
@@ -47,7 +49,8 @@ TrackItem {
                 visible: opacity !== 0
                 Behavior on opacity {
                     OpacityAnimator {
-                        duration: 100
+                        duration: M3.motion.short4
+                        easing: M3.motion.standard
                     }
                 }
 
@@ -97,18 +100,22 @@ TrackItem {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 24
+                Layout.preferredHeight: M3.density.apply(32)
+
+                variant: "outlined"
 
                 text: qsTrc("projectscene", "Effects")
+                accessibleName: qsTrc("projectscene", "Effects")
                 toolTipDescription: qsTrc("projectscene", "Opens effects panel")
 
                 opacity: topRow.visible && root.height > root.mapFromItem(this, 0, height + bottomSeparatorHeight).y ? 1 : 0
                 visible: opacity !== 0
                 Behavior on opacity {
                     OpacityAnimator {
-                        duration: 100
+                        duration: M3.motion.short4
+                        easing: M3.motion.standard
                     }
                 }
 
@@ -236,11 +243,14 @@ TrackItem {
         RowLayout {
             spacing: 4
 
-            FlatToggleButton {
+            M3IconButton {
                 id: muteButton
 
-                Layout.preferredWidth: 20
+                Layout.preferredWidth: M3.density.apply(32)
                 Layout.preferredHeight: Layout.preferredWidth
+
+                variant: "tonal"
+                checkable: true
 
                 icon: IconCode.MUTE
                 checked: Boolean(root.item) ? root.item.muted : false
@@ -248,21 +258,30 @@ TrackItem {
                 navigation.panel: root.headerNavigationPanel
                 navigation.order: root.headerTrailingControlsNavigationStart
                 //: Accessibility name of the mute button
-                navigation.accessible.name: qsTrc("projectscene", "Mute")
-                navigation.accessible.role: MUAccessible.CheckBox
+                accessibleName: qsTrc("projectscene", "Mute")
+                toolTipTitle: qsTrc("projectscene", "Mute")
 
-                onToggled: {
+                onToggled: function (isChecked) {
                     if (Boolean(root.item)) {
-                        root.item.muted = !checked
+                        root.item.muted = isChecked
                     }
+
+                    // The button flips its own state, so the binding to the
+                    // track model has to be put back.
+                    muteButton.checked = Qt.binding(function () {
+                        return Boolean(root.item) ? root.item.muted : false
+                    })
                 }
             }
 
-            FlatToggleButton {
+            M3IconButton {
                 id: soloButton
 
-                Layout.preferredWidth: 20
+                Layout.preferredWidth: M3.density.apply(32)
                 Layout.preferredHeight: Layout.preferredWidth
+
+                variant: "tonal"
+                checkable: true
 
                 icon: IconCode.SOLO
                 checked: Boolean(root.item) ? root.item.solo : false
@@ -270,13 +289,17 @@ TrackItem {
                 navigation.panel: root.headerNavigationPanel
                 navigation.order: muteButton.navigation.order + 1
                 //: Accessibility name of the solo button
-                navigation.accessible.name: qsTrc("projectscene", "Solo")
-                navigation.accessible.role: MUAccessible.CheckBox
+                accessibleName: qsTrc("projectscene", "Solo")
+                toolTipTitle: qsTrc("projectscene", "Solo")
 
-                onToggled: {
+                onToggled: function (isChecked) {
                     if (Boolean(root.item)) {
-                        root.item.solo = !checked
+                        root.item.solo = isChecked
                     }
+
+                    soloButton.checked = Qt.binding(function () {
+                        return Boolean(root.item) ? root.item.solo : false
+                    })
                 }
 
                 Component.onCompleted: {

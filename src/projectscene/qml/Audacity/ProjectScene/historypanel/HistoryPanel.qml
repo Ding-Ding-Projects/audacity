@@ -10,11 +10,17 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Item {
     id: root
 
     property alias navigationSection: navPanel.section
     property alias navigationOrderStart: navPanel.order
+
+    // The search field keeps the hook the regular expression builder connects
+    // to, so the panel joins the application wide search contract.
+    signal regexBuilderRequested()
 
     NavigationPanel {
         id: navPanel
@@ -23,71 +29,99 @@ Item {
         enabled: root.enabled && root.visible
     }
 
-    StyledListView {
-        id: listView
-        anchors.fill: parent
+    QtObject {
+        id: prv
 
-        model: HistoryPanelModel {
-            id: historyPanelModel
-        }
+        property string filterText: ""
 
-        currentIndex: historyPanelModel.currentIndex
-        scrollBarPolicy: ScrollBar.AlwaysOn
-
-        delegate: ListItemBlank {
-            id: listItem
-            isSelected: ListView.isCurrentItem
-
-            readonly property bool isRedoable: model.index > historyPanelModel.currentIndex
-
-            navigation.panel: navPanel
-            navigation.order: model.index
-            navigation.accessible.name: model.text
-            navigation.accessible.row: model.index
-
-            onClicked: {
-                historyPanelModel.undoRedoToIndex(model.index)
+        // A search term is used as a regular expression when it is one, and as
+        // plain text otherwise, so a typed bracket never empties the list.
+        function matches(text) {
+            if (prv.filterText === "") {
+                return true
             }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
+            try {
+                return new RegExp(prv.filterText, "i").test(text)
+            } catch (error) {
+                return String(text).toLowerCase()
+                        .indexOf(prv.filterText.toLowerCase()) !== -1
+            }
+        }
+    }
 
-                spacing: 6
+    ColumnLayout {
+        anchors.fill: parent
 
-                Item {
-                    implicitWidth: 16
-                    implicitHeight: checkMark.implicitHeight
+        spacing: 0
 
-                    StyledIconLabel {
-                        id: checkMark
-                        anchors.centerIn: parent
-                        iconCode: IconCode.TICK_RIGHT_ANGLE
-                        visible: listItem.ListView.isCurrentItem
-                    }
-                }
+        M3SearchBar {
+            id: searchBar
 
-                StyledTextLabel {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignLeft
+            Layout.fillWidth: true
+            Layout.margins: 12
 
-                    text: model.text
-                    font: {
-                        if (listItem.ListView.isCurrentItem) {
-                            return ui.theme.bodyBoldFont
-                        }
+            placeholder: qsTrc("projectscene", "Search history")
+            accessibleName: qsTrc("projectscene", "Search history")
 
-                        if (listItem.isRedoable) {
-                            return Qt.font(Object.assign({}, ui.theme.bodyFont, {
-                                italic: true
-                            }))
-                        }
+            showRegexBuilder: true
 
-                        return ui.theme.bodyFont
-                    }
+            navigation.panel: navPanel
+            navigation.order: -1
 
-                    opacity: listItem.isRedoable ? 0.7 : 1
+            onSearchTextChanged: {
+                prv.filterText = searchBar.searchText
+            }
+
+            onRegexBuilderRequested: {
+                root.regexBuilderRequested()
+            }
+        }
+
+        M3Divider {
+            Layout.fillWidth: true
+        }
+
+        StyledListView {
+            id: listView
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            model: HistoryPanelModel {
+                id: historyPanelModel
+            }
+
+            currentIndex: historyPanelModel.currentIndex
+            scrollBarPolicy: ScrollBar.AlwaysOn
+
+            delegate: M3ListItem {
+                id: listItem
+
+                required property int index
+                required property string text
+
+                readonly property bool isRedoable: listItem.index > historyPanelModel.currentIndex
+                readonly property bool isVisibleItem: prv.matches(listItem.text)
+
+                width: listView.width
+                height: listItem.isVisibleItem ? listItem.implicitHeight : 0
+                visible: listItem.isVisibleItem
+
+                headline: listItem.text
+                accessibleName: listItem.text
+
+                selected: listItem.index === historyPanelModel.currentIndex
+                leadingIcon: listItem.selected ? IconCode.TICK_RIGHT_ANGLE : IconCode.NONE
+
+                opacity: listItem.isRedoable ? 0.7 : 1
+
+                navigation.panel: navPanel
+                navigation.order: listItem.index
+                navigation.accessible.row: listItem.index
+
+                onClicked: {
+                    historyPanelModel.undoRedoToIndex(listItem.index)
                 }
             }
         }

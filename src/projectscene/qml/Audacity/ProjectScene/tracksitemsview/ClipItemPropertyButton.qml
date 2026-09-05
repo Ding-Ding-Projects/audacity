@@ -7,10 +7,12 @@ import Muse.GraphicalEffects
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 FlatButton {
     id: root
 
-    property color textColor: ui.theme.fontPrimaryColor
+    property color textColor: M3.color.onSurface
 
     anchors.verticalCenter: parent.verticalCenter
     height: 16

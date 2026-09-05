@@ -10,6 +10,8 @@ import Audacity.Playback
 import Audacity.Spectrogram
 import Audacity.Record
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -53,7 +55,7 @@ Rectangle {
         importDropArea.externalDropAreaDropped(drop)
     }
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     clip: true
 
@@ -245,7 +247,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         height: timelineHeader.height
         width: content.anchors.leftMargin
-        color: ui.theme.backgroundQuarternaryColor
+        color: M3.color.inverseSurface
     }
 
     Item {
@@ -277,7 +279,7 @@ Rectangle {
 
                 width: parent.width
 
-                color: ui.theme.strokeColor
+                color: M3.color.outlineVariant
             }
         }
 
@@ -382,7 +384,7 @@ Rectangle {
                 height: timeline.height
                 width: 1
 
-                color: ui.theme.fontPrimaryColor
+                color: M3.color.onSurface
             }
 
             Rectangle {
@@ -458,7 +460,7 @@ Rectangle {
             height: timeline.height
             width: tracksModel.isVerticalRulersVisible ? tracksModel.verticalRulerWidth : 0
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
 
             SeparatorLine {
                 anchors.left: parent.left
@@ -466,7 +468,7 @@ Rectangle {
 
                 width: parent.width
 
-                color: ui.theme.strokeColor
+                color: M3.color.outlineVariant
             }
 
             SeparatorLine {
@@ -477,7 +479,7 @@ Rectangle {
 
                 height: parent.height
 
-                color: ui.theme.strokeColor
+                color: M3.color.outlineVariant
             }
         }
     }

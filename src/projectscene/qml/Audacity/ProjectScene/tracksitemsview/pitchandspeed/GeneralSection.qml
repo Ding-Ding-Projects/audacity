@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Column {
     id: root
 
@@ -32,7 +34,7 @@ Column {
 
         text: qsTrc("projectscene", "General")
         horizontalAlignment: Text.AlignLeft
-        font: ui.theme.bodyBoldFont
+        font: M3.typography.titleSmall
     }
 
     CheckBox {

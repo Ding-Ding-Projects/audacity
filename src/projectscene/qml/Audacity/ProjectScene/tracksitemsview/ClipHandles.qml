@@ -5,6 +5,8 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -144,9 +146,9 @@ Item {
             NavigationFocusBorder {
                 navigationCtrl: leftTrimNavCtrl
 
-                radius: 5
+                radius: M3.shape.extraSmall
 
-                border.color: root.leftTrimActive ? "orange" : ui.theme.fontPrimaryColor
+                border.color: root.leftTrimActive ? M3.color.primary : M3.color.onSurface
             }
         }
 
@@ -302,9 +304,9 @@ Item {
             NavigationFocusBorder {
                 navigationCtrl: rightTrimNavCtrl
 
-                radius: 5
+                radius: M3.shape.extraSmall
 
-                border.color: root.rightTrimActive ? "orange" : ui.theme.fontPrimaryColor
+                border.color: root.rightTrimActive ? M3.color.primary : M3.color.onSurface
             }
         }
 
@@ -478,9 +480,9 @@ Item {
                 NavigationFocusBorder {
                     navigationCtrl: leftStretchNavCtrl
 
-                    radius: 5
+                    radius: M3.shape.extraSmall
 
-                    border.color: root.leftStretchActive ? "orange" : ui.theme.fontPrimaryColor
+                    border.color: root.leftStretchActive ? M3.color.primary : M3.color.onSurface
                 }
             }
         }
@@ -638,9 +640,9 @@ Item {
                     NavigationFocusBorder {
                         navigationCtrl: rightStretchNavCtrl
 
-                        radius: 5
+                        radius: M3.shape.extraSmall
 
-                        border.color: root.rightStretchActive ? "orange" : ui.theme.fontPrimaryColor
+                        border.color: root.rightStretchActive ? M3.color.primary : M3.color.onSurface
                     }
                 }
             }

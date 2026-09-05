@@ -225,34 +225,47 @@ Item {
         Component {
             id: playbackTimeSignatureComp
 
-            TimeSignature {
-                property var itemData: null
+            // The time signature control has no colour API of its own, so it
+            // sits inside Material 3 outlined field chrome.
+            Rectangle {
+                id: timeSignatureFrame
 
-                backgroundLeftRadius: M3.shape.small
-                backgroundColor: M3.color.surfaceContainerHighest
-                textColor: M3.color.onSurface
+                property var itemData: null
+                property alias navigation: timeSignature.navigation
+
+                width: timeSignature.implicitWidth + 8
+                height: timeSignature.height + 4
+
+                radius: M3.shape.small
+                color: M3.color.surfaceContainerHighest
                 border.width: 1
                 border.color: M3.color.outline
 
-                upper: Boolean(itemData) ? itemData.upper : 0
-                lower: Boolean(itemData) ? itemData.lower : 0
+                TimeSignature {
+                    id: timeSignature
 
-                enabled: Boolean(itemData) ? itemData.enabled : false
+                    anchors.centerIn: parent
 
-                onUpperChangeRequested: function (newValue) {
-                    if (!Boolean(itemData)) {
-                        return
+                    upper: Boolean(timeSignatureFrame.itemData) ? timeSignatureFrame.itemData.upper : 0
+                    lower: Boolean(timeSignatureFrame.itemData) ? timeSignatureFrame.itemData.lower : 0
+
+                    enabled: Boolean(timeSignatureFrame.itemData) ? timeSignatureFrame.itemData.enabled : false
+
+                    onUpperChangeRequested: function (newValue) {
+                        if (!Boolean(timeSignatureFrame.itemData)) {
+                            return
+                        }
+
+                        timeSignatureFrame.itemData.upper = newValue
                     }
 
-                    itemData.upper = newValue
-                }
+                    onLowerChangeRequested: function (newValue) {
+                        if (!Boolean(timeSignatureFrame.itemData)) {
+                            return
+                        }
 
-                onLowerChangeRequested: function (newValue) {
-                    if (!Boolean(itemData)) {
-                        return
+                        timeSignatureFrame.itemData.lower = newValue
                     }
-
-                    itemData.lower = newValue
                 }
             }
         }

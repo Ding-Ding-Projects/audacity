@@ -10,6 +10,8 @@ import Muse.Ui 1.0
 
 import Audacity.UiComponents 1.0
 
+import Audacity.M3
+
 StyledPopupView {
     id: root
 
@@ -65,7 +67,7 @@ StyledPopupView {
                 anchors.bottom: parent.bottom
                 width: uiModel.zoomBtnWidth
 
-                normalColor: ui.theme.buttonColor
+                normalColor: M3.color.secondaryContainer
                 icon: IconCode.ZOOM_IN
 
                 enabled: !isMaxZoom
@@ -82,7 +84,7 @@ StyledPopupView {
                 anchors.bottom: parent.bottom
                 width: uiModel.zoomBtnWidth
 
-                normalColor: ui.theme.buttonColor
+                normalColor: M3.color.secondaryContainer
                 icon: IconCode.ZOOM_OUT
 
                 enabled: !isMinZoom
@@ -99,7 +101,7 @@ StyledPopupView {
                 anchors.bottom: parent.bottom
                 width: uiModel.resetBtnWidth
 
-                normalColor: ui.theme.buttonColor
+                normalColor: M3.color.secondaryContainer
                 icon: IconCode.UNDO
 
                 orientation: Qt.Horizontal

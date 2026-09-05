@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -16,7 +18,7 @@ Rectangle {
             when: !isSelected && !isHovered
             PropertyChanges {
                 target: root
-                color: ui.theme.strokeColor
+                color: M3.color.outlineVariant
                 opacity: 1
             }
         },
@@ -25,7 +27,7 @@ Rectangle {
             when: !isSelected && isHovered
             PropertyChanges {
                 target: root
-                color: ui.theme.accentColor
+                color: M3.color.primary
                 opacity: 0.5
             }
         },
@@ -34,7 +36,7 @@ Rectangle {
             when: isSelected
             PropertyChanges {
                 target: root
-                color: ui.theme.accentColor
+                color: M3.color.primary
                 opacity: 1
             }
         }

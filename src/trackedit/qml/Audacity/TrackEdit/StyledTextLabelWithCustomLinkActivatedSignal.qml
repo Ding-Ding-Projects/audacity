@@ -21,23 +21,25 @@
  */
 import QtQuick 2.15
 
+import Audacity.M3
+
 Text {
     id: root
 
     readonly property bool isEmpty: text.length === 0
     property bool autoOpenLinks: true
 
-    color: ui.theme.fontPrimaryColor
-    linkColor: ui.theme.linkColor
-    opacity: root.enabled ? 1.0 : ui.theme.itemOpacityDisabled
+    color: M3.color.onSurface
+    linkColor: M3.color.primary
+    opacity: root.enabled ? 1.0 : M3.stateLayer.disabledContent
 
     elide: Text.ElideRight
     verticalAlignment: Text.AlignVCenter
     horizontalAlignment: Text.AlignHCenter
 
     font {
-        family: ui.theme.bodyFont.family
-        pixelSize: ui.theme.bodyFont.pixelSize
+        family: M3.typography.bodyMedium.family
+        pixelSize: M3.typography.bodyMedium.pixelSize
     }
 
     onLinkActivated: function (link) {

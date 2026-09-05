@@ -3,6 +3,8 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -35,7 +37,7 @@ Item {
             Rectangle {
                 width: 4
                 height: 1
-                color: Utils.colorWithAlpha(ui.theme.fontPrimaryColor, 0.5)
+                color: Utils.colorWithAlpha(M3.color.onSurfaceVariant, 0.5)
             }
         }
     }
@@ -62,7 +64,7 @@ Item {
                 Rectangle {
                     width: 4
                     height: 1
-                    color: ui.theme.fontPrimaryColor
+                    color: M3.color.onSurfaceVariant
                     anchors.verticalCenter: parent.verticalCenter
 
                     visible: modelData < 0
@@ -72,7 +74,7 @@ Item {
                 Text {
                     id: aLabel
                     text: root.meterModel.sampleToText(modelData)
-                    color: ui.theme.fontPrimaryColor
+                    color: M3.color.onSurfaceVariant
                     font.pixelSize: 10
                 }
             }

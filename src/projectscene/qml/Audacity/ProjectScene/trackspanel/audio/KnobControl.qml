@@ -7,6 +7,8 @@ import QtQuick.Controls 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Dial {
     id: root
 
@@ -55,9 +57,9 @@ Dial {
         readonly property real startAngle: -140 * (Math.PI / 180) - Math.PI / 2
         readonly property real endAngle: 140 * (Math.PI / 180) - Math.PI / 2
 
-        readonly property color valueArcColor: accentControl ? ui.theme.accentColor : Utils.colorWithAlpha(ui.theme.fontPrimaryColor, 0.3)
-        readonly property color outerArcColor: Utils.colorWithAlpha(ui.theme.buttonColor, 0.7)
-        readonly property color innerArcColor: Utils.colorWithAlpha(ui.theme.fontPrimaryColor, 0.5)
+        readonly property color valueArcColor: accentControl ? M3.color.primary : Utils.colorWithAlpha(M3.color.onSurface, 0.3)
+        readonly property color outerArcColor: Utils.colorWithAlpha(M3.color.secondaryContainer, 0.7)
+        readonly property color innerArcColor: Utils.colorWithAlpha(M3.color.onSurface, 0.5)
 
         readonly property real startValueArcAngle: root.isPanKnob ? 0 : -140
 
@@ -172,7 +174,7 @@ Dial {
         width: prv.handlerWidth
         radius: prv.handlerWidth / 2
 
-        color: ui.theme.fontPrimaryColor
+        color: M3.color.onSurface
         antialiasing: true
 
         transformOrigin: Item.Bottom

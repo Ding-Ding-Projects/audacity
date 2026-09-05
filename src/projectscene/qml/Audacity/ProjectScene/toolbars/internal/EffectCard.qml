@@ -6,6 +6,8 @@ import Muse.Ui
 import Muse.UiComponents
 import Muse.GraphicalEffects
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -43,9 +45,9 @@ Rectangle {
     height: prv.cardHeight
 
     radius: prv.borderRadius
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
     border.width: prv.borderWidth
-    border.color: ui.theme.strokeColor
+    border.color: M3.color.outlineVariant
 
     RowLayout {
         anchors.fill: parent
@@ -58,9 +60,9 @@ Rectangle {
             Layout.preferredWidth: prv.iconSize
             Layout.preferredHeight: prv.iconSize
             radius: prv.borderRadius
-            color: effectImage.status === Image.Ready ? "transparent" : ui.theme.backgroundSecondaryColor
+            color: effectImage.status === Image.Ready ? "transparent" : M3.color.surfaceContainer
             border.width: effectImage.status === Image.Ready ? 0 : prv.borderWidth
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
             clip: true
 
             Image {
@@ -82,7 +84,7 @@ Rectangle {
                 anchors.centerIn: parent
                 iconCode: IconCode.PLUGIN
                 font.pixelSize: prv.iconPlaceholderSize
-                color: ui.theme.fontPrimaryColor
+                color: M3.color.onSurface
                 visible: effectImage.status !== Image.Ready && effectImage.status !== Image.Loading
             }
 
@@ -103,7 +105,7 @@ Rectangle {
             StyledTextLabel {
                 Layout.fillWidth: true
                 text: root.title
-                font: ui.theme.largeBodyBoldFont
+                font: M3.typography.titleMedium
                 horizontalAlignment: Text.AlignLeft
                 maximumLineCount: 2
                 elide: Text.ElideRight
@@ -113,7 +115,7 @@ Rectangle {
             StyledTextLabel {
                 Layout.fillWidth: true
                 text: root.subtitle
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.Wrap
                 maximumLineCount: 2

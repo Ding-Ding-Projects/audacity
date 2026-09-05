@@ -11,6 +11,8 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -22,7 +24,7 @@ Rectangle {
     property int navigationOrderStart: 0
     readonly property int navigationOrderEnd: navigationOrderStart + effectList.count + 1
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     Component.onCompleted: {
         menuModel.init()
@@ -94,7 +96,7 @@ Rectangle {
         Rectangle {
             id: effectListContainer
             visible: prv.enabled
-            color: ui.theme.backgroundTertiaryColor
+            color: M3.color.surfaceContainerHigh
             Layout.preferredHeight: !effectList.empty * Math.min(effectList.implicitHeight, root.height - prv.addEffectButtonHeight - 2 * prv.addEffectButtonMargin - prv.headerHeight - separator.height)
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVTop
             Layout.fillWidth: true
@@ -164,8 +166,8 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
             wrapMode: Text.Wrap
-            font: ui.theme.bodyFont
-            color: ui.theme.fontPrimaryColor
+            font: M3.typography.bodyMedium
+            color: M3.color.onSurface
             leftPadding: 16
             rightPadding: 16
             elide: Text.ElideNone

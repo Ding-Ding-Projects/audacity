@@ -4,13 +4,15 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
     property alias context: timelineContext
     property alias ruler: timelineRuler
 
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surfaceContainer
 
     //! NOTE This element must be the same width as the track wave visible area.
     //! If this is different, then appropriate changes must be made.

@@ -6,6 +6,8 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -119,7 +121,7 @@ Item {
 
         navigationCtrl: navCtrl
 
-        border.color: ui.theme.fontPrimaryColor
+        border.color: M3.color.onSurface
         border.width: 2
         radius: 4
     }

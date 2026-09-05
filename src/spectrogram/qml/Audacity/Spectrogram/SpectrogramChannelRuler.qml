@@ -3,6 +3,8 @@ import QtQuick
 import Muse.UiComponents
 import Audacity.Spectrogram
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -25,8 +27,8 @@ Item {
 
     FontMetrics {
         id: fontMetrics
-        font.family: ui.theme.bodyFont.family
-        font.pixelSize: ui.theme.bodyFont.pixelSize
+        font.family: M3.typography.bodyMedium.family
+        font.pixelSize: M3.typography.bodyMedium.pixelSize
     }
 
     Row {
@@ -43,7 +45,7 @@ Item {
                     y: modelData.y - height / 2
                     width: prv.majorTickWidth
                     height: 1
-                    color: ui.theme.fontSecondaryColor
+                    color: M3.color.onSurfaceVariant
                     antialiasing: true
                 }
             }

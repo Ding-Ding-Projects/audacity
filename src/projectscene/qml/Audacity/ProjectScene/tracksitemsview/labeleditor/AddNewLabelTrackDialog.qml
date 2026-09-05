@@ -9,6 +9,8 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 StyledDialogView {
     id: root
 
@@ -64,7 +66,7 @@ StyledDialogView {
             Layout.topMargin: 16
 
             text: qsTrc("projectscene", "Label track name")
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
             horizontalAlignment: Text.AlignLeft
         }
 

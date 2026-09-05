@@ -6,6 +6,8 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 import Audacity.TrackEdit 1.0
 
+import Audacity.M3
+
 Column {
     id: root
 
@@ -26,7 +28,7 @@ Column {
         height: 113
 
         radius: 5
-        unaccentedBorderColor: addBorderToClipImageButton ? ui.theme.strokeColor : "transparent"
+        unaccentedBorderColor: addBorderToClipImageButton ? M3.color.outlineVariant : "transparent"
 
         onClicked: {
             root.toggled()

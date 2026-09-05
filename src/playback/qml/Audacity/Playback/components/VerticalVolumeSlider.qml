@@ -11,6 +11,8 @@ import Audacity.ProjectScene 1.0
 import Audacity.Playback 1.0
 import Audacity.UiComponents 1.0
 
+import Audacity.M3
+
 Slider {
     id: root
 
@@ -37,7 +39,7 @@ Slider {
     height: parent.height
     width: handleWidth
 
-    opacity: enabled ? 1.0 : ui.theme.itemOpacityDisabled
+    opacity: enabled ? 1.0 : M3.stateLayer.disabledContent
 
     property alias handleX: handleItem.x
     property alias handleY: handleItem.y
@@ -182,13 +184,13 @@ Slider {
             anchors.fill: parent
             radius: width / 2
             color: "transparent"
-            border.color: ui.theme.fontPrimaryColor
+            border.color: M3.color.onSurface
 
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: width / 2
-                color: ui.theme.backgroundPrimaryColor
+                color: M3.color.surface
                 opacity: 0.7
             }
         }

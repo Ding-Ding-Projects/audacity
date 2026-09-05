@@ -5,10 +5,18 @@ import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 FocusScope {
     id: root
 
     property string text
+
+    // The colour of the resting label, so a selected track header can put its
+    // title on the on-secondary-container role.
+    property color textColor: M3.color.onSurface
+
+    property font labelFont: M3.typography.titleSmall
 
     readonly property alias navigation: navCtrl
 
@@ -70,7 +78,8 @@ FocusScope {
 
         StyledTextLabel {
             text: root.text
-            font: ui.theme.bodyFont
+            font: root.labelFont
+            color: root.textColor
             horizontalAlignment: Text.AlignLeft
         }
     }

@@ -6,6 +6,8 @@ import QtQuick
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -18,7 +20,7 @@ Rectangle {
     y: 0
     height: parent.height / 2
 
-    color: ui.theme.accentColor
+    color: M3.color.primary
     opacity: active ? ui.theme.accentOpacityNormal : ui.theme.accentOpacityHover
 
     function updatePosition() {

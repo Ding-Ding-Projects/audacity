@@ -11,6 +11,8 @@ import Audacity.Spectrogram
 import Audacity.UiComponents
 import Audacity.Automation
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -111,7 +113,7 @@ Rectangle {
 
     property alias navigation: navCtrl
 
-    radius: 4
+    radius: M3.shape.extraSmall
     color: clipSelected ? clipSelectedColor : clipColor
     border.color: ui.theme.extra["black_color"]
     opacity: root.moveActive && (clipSelected || clipIntersectsSelection) ? 0.5 : isAudible ? 1.0 : 0.3
@@ -178,7 +180,7 @@ Rectangle {
         color: "transparent"
         border.width: root.enableContrastBorder ? 2 : 1
         border.color: ui.theme.extra["black_color"]
-        radius: root.enableContrastBorder ? 0 : 4
+        radius: root.enableContrastBorder ? 0 : M3.shape.extraSmall
         z: root.parent.z + 1
     }
 
@@ -187,9 +189,9 @@ Rectangle {
 
         navigationCtrl: navCtrl
 
-        border.color: ui.theme.fontPrimaryColor
+        border.color: M3.color.onSurface
         border.width: 2
-        radius: 4
+        radius: M3.shape.extraSmall
 
         visible: root.enableDefaultBorder
     }
@@ -201,7 +203,7 @@ Rectangle {
 
         border.color: ui.theme.extra["white_color"]
         border.width: 2
-        radius: 4
+        radius: M3.shape.extraSmall
 
         visible: root.enableContrastBorder
     }
@@ -670,6 +672,7 @@ Rectangle {
 
             StyledTextLabel {
                 id: titleLabel
+                font: M3.typography.labelMedium
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
@@ -699,7 +702,7 @@ Rectangle {
 
                     anchors.topMargin: 1
                     anchors.bottomMargin: 0
-                    radius: 5
+                    radius: M3.shape.extraSmall
                 }
             }
 

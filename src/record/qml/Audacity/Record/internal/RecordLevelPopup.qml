@@ -10,6 +10,8 @@ import Muse.Ui 1.0
 import Audacity.Record 1.0
 import Audacity.Playback 1.0
 
+import Audacity.M3
+
 StyledPopupView {
     id: root
 
@@ -92,9 +94,9 @@ StyledPopupView {
 
             height: prv.meterHeight
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
             border.width: 1
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
             radius: 2
 
             Item {
@@ -193,7 +195,7 @@ StyledPopupView {
 
             height: 8
 
-            color: ui.theme.backgroundPrimaryColor
+            color: M3.color.surface
 
             SeparatorLine {
                 anchors.verticalCenter: parent.verticalCenter

@@ -3,9 +3,13 @@
 */
 import QtQuick
 
+import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.ProjectScene
+import Audacity.M3
+
+import "internal"
 
 StyledToolBarView {
     id: root
@@ -13,8 +17,8 @@ StyledToolBarView {
     navigationPanel.name: "UndoRedoToolBar"
     navigationPanel.accessible.name: qsTrc("projectscene", "Undo and redo")
 
-    spacing: 0
-    rowHeight: 28
+    spacing: 2
+    rowHeight: M3.density.apply(40)
 
     model: UndoRedoToolBarModel {}
 
@@ -30,8 +34,8 @@ StyledToolBarView {
     Component {
         id: controlComp
 
-        StyledToolBarItem {
-            width: 30
+        M3ToolBarItem {
+            width: M3.density.apply(40)
             height: width
 
             navigation.panel: root.navigationPanel

@@ -10,6 +10,8 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene 1.0
 
+import Audacity.M3
+
 StyledPopupView {
     id: root
 
@@ -42,7 +44,7 @@ StyledPopupView {
 
             text: qsTrc("projectscene", "Customize toolbar")
             horizontalAlignment: Text.AlignLeft
-            font: ui.theme.largeBodyBoldFont
+            font: M3.typography.titleMedium
         }
 
         CustomiseView {

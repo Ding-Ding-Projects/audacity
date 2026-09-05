@@ -5,6 +5,8 @@ import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -17,7 +19,7 @@ Item {
     property bool showEffectsSection: false
 
     property int buttonWidth: 97
-    property int buttonHeight: 28
+    property int buttonHeight: M3.density.apply(40)
     property int buttonRightMargin: 8
     property int textLeftMargin: 12
 
@@ -61,7 +63,7 @@ Item {
             Layout.preferredWidth: root.effectsSectionWidth
             Layout.preferredHeight: root.height
 
-            color: ui.theme.backgroundPrimaryColor
+            color: M3.color.surfaceContainer
             border.color: "transparent"
             border.width: padding
             visible: root.showEffectsSection
@@ -71,6 +73,8 @@ Item {
                 padding: effectsTitleBar.padding
 
                 text: qsTrc("projectscene", "Realtime effects")
+                font: M3.typography.titleSmall
+                color: M3.color.onSurface
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
             }
@@ -86,7 +90,7 @@ Item {
 
                 color: effectsTitleBar.color
 
-                FlatButton {
+                M3IconButton {
                     id: closeEffectsSectionButton
 
                     anchors.centerIn: parent
@@ -99,11 +103,9 @@ Item {
 
                     //: Tooltip of the button that closes the panel
                     toolTipTitle: qsTrc("projectscene", "Close real-time effects panel")
+                    accessibleName: qsTrc("projectscene", "Close real-time effects panel")
 
-                    normalColor: ui.theme.backgroundPrimaryColor
-                    hoverHitColor: ui.theme.buttonColor
                     icon: IconCode.CLOSE_X_ROUNDED
-                    transparent: true
 
                     onClicked: {
                         root.effectsSectionCloseRequested()
@@ -117,7 +119,7 @@ Item {
         Rectangle {
             id: buttonContainer
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
 
             width: root.verticalPanelDefaultWidth
             Layout.fillWidth: true
@@ -137,9 +139,11 @@ Item {
                 anchors.verticalCenter: buttonContainer.verticalCenter
 
                 text: qsTrc("projectscene", "Tracks")
+                font: M3.typography.titleSmall
+                color: M3.color.onSurface
             }
 
-            FlatButton {
+            M3Button {
                 id: addNewTrackBtn
 
                 width: root.buttonWidth
@@ -153,16 +157,14 @@ Item {
                 navigation.panel: buttonContainer.navigation
                 navigation.order: 0
 
-                backgroundRadius: 3
-                normalColor: ui.theme.buttonColor
+                variant: "tonal"
 
                 text: qsTrc("projectscene", "Add track")
+                accessibleName: qsTrc("projectscene", "Add track")
 
                 enabled: true
 
                 icon: IconCode.PLUS
-
-                orientation: Qt.Horizontal
 
                 onClicked: {
                     if (addNewTrack.isOpened) {

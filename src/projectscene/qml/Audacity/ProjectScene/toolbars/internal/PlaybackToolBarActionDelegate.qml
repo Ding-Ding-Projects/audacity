@@ -7,6 +7,8 @@ import QtQuick.Layouts 1.12
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -41,7 +43,7 @@ Item {
             height: width
 
             iconCode: Boolean(root.item) ? root.item.icon : IconCode.NONE
-            color: Boolean(root.item) ? root.item.iconColor : ui.theme.fontPrimaryColor
+            color: Boolean(root.item) ? root.item.iconColor : M3.color.onSurface
         }
 
         StyledTextLabel {

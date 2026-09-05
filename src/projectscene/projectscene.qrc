@@ -44,6 +44,7 @@
         <file>qml/Audacity/ProjectScene/statusbar/SelectionStatus.qml</file>
         <file>qml/Audacity/ProjectScene/toolbars/PlaybackToolBar.qml</file>
         <file>qml/Audacity/ProjectScene/toolbars/internal/CustomiseView.qml</file>
+        <file>qml/Audacity/ProjectScene/toolbars/internal/M3ToolBarItem.qml</file>
         <file>qml/Audacity/ProjectScene/toolbars/internal/PlaybackToolBarActionDelegate.qml</file>
         <file>qml/Audacity/ProjectScene/toolbars/internal/PlaybackToolBarCustomisePopup.qml</file>
         <file>qml/Audacity/ProjectScene/tracksitemsview/ClipItemSmall.qml</file>

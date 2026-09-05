@@ -10,6 +10,8 @@ import Muse.UiComponents
 
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -57,7 +59,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: ui.theme.backgroundSecondaryColor
+        color: M3.color.surfaceContainer
     }
 
     RowLayout {
@@ -384,7 +386,7 @@ Item {
                         id: dropCursor
                         width: parent.width
                         height: 2
-                        color: ui.theme.accentColor
+                        color: M3.color.primary
                         visible: dragHandler.dropIndex >= 0
                         y: {
                             if (dragHandler.dropIndex >= 0 && dragHandler.dropIndex < view.count) {

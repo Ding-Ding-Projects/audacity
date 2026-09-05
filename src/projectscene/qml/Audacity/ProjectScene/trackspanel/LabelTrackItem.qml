@@ -6,6 +6,7 @@ import QtQuick
 import Muse.UiComponents
 
 import Audacity.ProjectScene
+import Audacity.M3
 
 TrackItem {
     id: root
@@ -13,17 +14,21 @@ TrackItem {
     signal addLabelToSelectionRequested
 
     extraControlsComponent: Component {
-        FlatButton {
+        M3Button {
             width: parent.width
-            height: 24
+            height: M3.density.apply(32)
+
+            variant: "outlined"
 
             text: qsTrc("projectscene", "Add label")
+            accessibleName: qsTrc("projectscene", "Add label")
 
             opacity: root.collapsed ? 0 : 1
             visible: opacity !== 0
             Behavior on opacity {
                 OpacityAnimator {
-                    duration: 100
+                    duration: M3.motion.short4
+                    easing: M3.motion.standard
                 }
             }
 

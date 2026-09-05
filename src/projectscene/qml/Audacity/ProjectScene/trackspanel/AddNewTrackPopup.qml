@@ -5,6 +5,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.ProjectScene
+import Audacity.M3
 
 StyledPopupView {
     id: root
@@ -12,6 +13,11 @@ StyledPopupView {
 
     contentWidth: trackTypeOpts.width
     contentHeight: trackTypeOpts.height
+
+    cornerRadius: M3.shape.large
+    elevationLevel: 2
+    backgroundColor: M3.surfaceAt(2)
+    borderColor: M3.color.outlineVariant
 
     property alias popupAnchorItem: root.anchorItem
 
@@ -59,20 +65,40 @@ StyledPopupView {
                 }
             ]
 
-            FlatButton {
+            M3Card {
                 Layout.preferredWidth: 80
                 Layout.preferredHeight: 72
                 Layout.fillHeight: true
                 Layout.margins: 2
 
+                variant: "outlined"
+                clickable: true
+
                 navigation.name: "TrackType" + index
                 navigation.panel: navPanel
                 navigation.column: index
+                navigation.accessible.name: modelData.text
 
-                accentButton: false
                 enabled: modelData.enabled
-                icon: modelData.icon
-                text: modelData.text
+
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 8
+
+                    StyledIconLabel {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        iconCode: modelData.icon
+                        color: M3.color.onSurface
+                    }
+
+                    StyledTextLabel {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: modelData.text
+                        font: M3.typography.labelLarge
+                        color: M3.color.onSurface
+                    }
+                }
+
                 onClicked: {
                     createTrack(modelData.type)
                     root.close()

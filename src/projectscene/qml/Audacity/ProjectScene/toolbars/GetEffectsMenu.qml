@@ -5,6 +5,8 @@ import QtQuick.Controls
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -27,7 +29,7 @@ Item {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: ui.theme.backgroundPrimaryColor
+        color: M3.color.surface
     }
 
     RadioButtonGroup {
@@ -51,8 +53,8 @@ Item {
             spacing: prv.spaceM
             leftPadding: prv.spaceL
 
-            normalStateFont: ui.theme.bodyFont
-            selectedStateFont: ui.theme.bodyBoldFont
+            normalStateFont: M3.typography.bodyMedium
+            selectedStateFont: M3.typography.titleSmall
 
             title: modelData
             checked: root.model ? (model.index === root.model.selectedCategoryIndex) : false

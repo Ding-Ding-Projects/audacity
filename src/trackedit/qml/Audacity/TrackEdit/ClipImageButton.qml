@@ -26,6 +26,8 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.GraphicalEffects
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -51,7 +53,7 @@ Rectangle {
         anchors.fill: parent
 
         color: "transparent"
-        border.color: mouseArea.containsMouse ? ui.theme.accentColor : root.unaccentedBorderColor
+        border.color: mouseArea.containsMouse ? M3.color.primary : root.unaccentedBorderColor
         border.width: 1
         radius: root.radius
     }

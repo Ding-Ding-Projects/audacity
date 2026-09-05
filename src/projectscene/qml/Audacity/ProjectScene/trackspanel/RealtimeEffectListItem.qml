@@ -8,6 +8,8 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.ProjectScene
 
+import Audacity.M3
+
 ListItemBlank {
     id: root
 
@@ -52,10 +54,10 @@ ListItemBlank {
 
     // Internal properties
     property int yOffset: 0
-    readonly property int animationDuration: 200
+    readonly property int animationDuration: M3.motion.short4
     property int itemHeight: listView ? height + listView.spacing : 0
 
-    height: 24
+    height: M3.density.apply(32)
     y: index * itemHeight + yOffset
     clip: false // should be true?
     background.color: "transparent"
@@ -247,8 +249,8 @@ ListItemBlank {
             transparent: !root.innerGripReorderActive
             hoverHitColor: normalColor
             accentButton: root.innerGripReorderActive
-            accentColor: ui.theme.accentColor
-            iconColor: root.innerGripReorderActive ? ui.theme.extra["white_color"] : ui.theme.fontPrimaryColor
+            accentColor: M3.color.primary
+            iconColor: root.innerGripReorderActive ? ui.theme.extra["white_color"] : M3.color.onSurface
             //: Tooltip of the drag handle used to reorder effects
             toolTipTitle: qsTrc("projectscene", "Reorder effect")
 

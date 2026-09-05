@@ -24,6 +24,8 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -34,7 +36,7 @@ Rectangle {
     color: baseColor
 
     border.width: ui.theme.borderWidth
-    border.color: ui.theme.strokeColor
+    border.color: M3.color.outlineVariant
 
     Rectangle {
         id: topBackground
@@ -52,8 +54,8 @@ Rectangle {
 
         color: "transparent"
 
-        border.color: ui.theme.fontPrimaryColor
-        border.width: ui.theme.navCtrlBorderWidth
+        border.color: M3.color.primary
+        border.width: M3.focusIndicatorThickness
         radius: Number(parent.radius) > 0 ? parent.radius : 0
     }
 
@@ -64,8 +66,8 @@ Rectangle {
 
             PropertyChanges {
                 target: topBackground
-                color: ui.theme.buttonColor
-                opacity: ui.theme.buttonOpacityHit
+                color: M3.color.onSurface
+                opacity: M3.stateLayer.pressed
             }
         },
         State {
@@ -74,8 +76,8 @@ Rectangle {
 
             PropertyChanges {
                 target: topBackground
-                color: ui.theme.buttonColor
-                opacity: ui.theme.buttonOpacityHover
+                color: M3.color.onSurface
+                opacity: M3.stateLayer.hover
             }
         }
     ]

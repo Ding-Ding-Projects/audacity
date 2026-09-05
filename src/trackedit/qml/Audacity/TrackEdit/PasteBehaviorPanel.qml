@@ -8,6 +8,8 @@ import Muse.UiComponents
 
 import Audacity.TrackEdit 1.0
 
+import Audacity.M3
+
 Column {
     id: root
 
@@ -65,8 +67,8 @@ Column {
         height: gapBehaviorColumn.implicitHeight
 
         radius: 4
-        color: parentBackgroundColor === ui.theme.backgroundPrimaryColor ? ui.theme.backgroundSecondaryColor : ui.theme.backgroundPrimaryColor
-        border.color: ui.theme.strokeColor
+        color: parentBackgroundColor === M3.color.surface ? M3.color.surfaceContainer : M3.color.surface
+        border.color: M3.color.outlineVariant
         border.width: 1
         visible: pasteBehaviorModel.userMustChoosePasteInsertBehavior
 

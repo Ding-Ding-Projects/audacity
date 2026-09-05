@@ -11,6 +11,8 @@ import Muse.UiComponents
 import Audacity.TrackEdit 1.0
 import Audacity.AppShell
 
+import Audacity.M3
+
 StyledDialogView {
     id: root
 
@@ -48,7 +50,7 @@ StyledDialogView {
 
             navigation: bodyPanel
 
-            parentBackgroundColor: ui.theme.backgroundPrimaryColor
+            parentBackgroundColor: M3.color.surface
             deleteBehavior: root.deleteBehavior
             closeGapBehavior: root.closeGapBehavior
 
