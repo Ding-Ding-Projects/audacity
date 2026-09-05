@@ -35,14 +35,13 @@ Item {
 
     property NavigationPanel navigationPanel: null
 
-    signal navigationIconTriggered()
+    signal navigationIconTriggered
 
     readonly property bool centered: root.size === "centerAligned"
     readonly property bool twoRow: root.size === "medium" || root.size === "large"
 
     readonly property real collapsedHeight: 64
-    readonly property real expandedHeight: root.size === "large" ? 152
-                                                                 : (root.size === "medium" ? 112 : 64)
+    readonly property real expandedHeight: root.size === "large" ? 152 : (root.size === "medium" ? 112 : 64)
 
     // 0 when fully expanded, 1 when fully collapsed.
     readonly property real collapseFraction: {
@@ -111,9 +110,7 @@ Item {
 
         // The two row sizes drop the headline to a second line and shrink it
         // back into the top row as the content scrolls.
-        font: root.twoRow && root.collapseFraction < 0.5
-              ? (root.size === "large" ? M3.typography.headlineMedium : M3.typography.headlineSmall)
-              : M3.typography.titleLarge
+        font: root.twoRow && root.collapseFraction < 0.5 ? (root.size === "large" ? M3.typography.headlineMedium : M3.typography.headlineSmall) : M3.typography.titleLarge
 
         horizontalAlignment: root.centered ? Text.AlignHCenter : Text.AlignLeft
 
@@ -122,20 +119,14 @@ Item {
          * keeps the headline on the centre line of the bar without needing a
          * horizontalCenter anchor next to the left and right anchors.
          */
-        readonly property real sideReserve: Math.max(navigationButton.visible ? navigationButton.width : 0,
-                                                     actionsRow.width)
+        readonly property real sideReserve: Math.max(navigationButton.visible ? navigationButton.width : 0, actionsRow.width)
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: root.centered
-                            ? titleLabel.sideReserve + 16
-                            : (navigationButton.visible ? navigationButton.width + 8 : 16)
+        anchors.leftMargin: root.centered ? titleLabel.sideReserve + 16 : (navigationButton.visible ? navigationButton.width + 8 : 16)
         anchors.rightMargin: root.centered ? titleLabel.sideReserve + 16 : actionsRow.width + 16
 
-        y: root.twoRow
-           ? (root.collapsedHeight - titleLabel.height) / 2
-             + (1.0 - root.collapseFraction) * (root.expandedHeight - root.collapsedHeight - 8)
-           : (root.collapsedHeight - titleLabel.height) / 2
+        y: root.twoRow ? (root.collapsedHeight - titleLabel.height) / 2 + (1.0 - root.collapseFraction) * (root.expandedHeight - root.collapsedHeight - 8) : (root.collapsedHeight - titleLabel.height) / 2
     }
 
     M3Divider {

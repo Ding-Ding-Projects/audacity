@@ -7,6 +7,8 @@ import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 RowLayout {
     id: root
 
@@ -33,10 +35,12 @@ RowLayout {
         Layout.alignment: Qt.AlignVCenter
 
         text: root.title
+        font: M3.typography.bodyMedium
+        color: M3.color.onSurface
         visible: text !== ""
     }
 
-    CheckBox {
+    M3Switch {
         id: optionCheckBox
 
         Layout.alignment: Qt.AlignVCenter
@@ -45,8 +49,11 @@ RowLayout {
         visible: root.allowOptionToggle
         navigation.accessible.name: root.toggleAccessibleName
 
-        onClicked: function () {
-            root.isOptionEnableChangeRequested(!optionCheckBox.checked)
+        onToggled: function (isOn) {
+            root.isOptionEnableChangeRequested(isOn)
+            optionCheckBox.checked = Qt.binding(function () {
+                return root.isOptionEnabled
+            })
         }
     }
 
@@ -94,10 +101,10 @@ RowLayout {
                 drawOutsideParent: !root.drawFocusBorderInsideRect
             }
 
-            color: ui.theme.textFieldColor
-            border.color: ui.theme.strokeColor
-            border.width: Math.max(ui.theme.borderWidth, 1)
-            radius: 3
+            color: M3.color.surfaceContainerHighest
+            border.color: M3.color.outline
+            border.width: 1
+            radius: M3.shape.extraSmall
         }
 
         StyledTextLabel {
@@ -109,6 +116,8 @@ RowLayout {
             anchors.verticalCenter: parent.verticalCenter
 
             text: root.current
+            font: M3.typography.bodyMedium
+            color: M3.color.onSurface
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.Wrap
             maximumLineCount: 1
@@ -155,7 +164,7 @@ RowLayout {
                 when: mouseAreaItem.containsMouse && !mouseAreaItem.pressed
                 PropertyChanges {
                     target: backgroundItem
-                    border.color: Utils.colorWithAlpha(ui.theme.accentColor, 0.6)
+                    border.color: Utils.colorWithAlpha(M3.color.primary, 0.6)
                 }
             },
             State {
@@ -163,7 +172,7 @@ RowLayout {
                 when: menuLoader.isMenuOpened
                 PropertyChanges {
                     target: backgroundItem
-                    border.color: ui.theme.accentColor
+                    border.color: M3.color.primary
                 }
             }
         ]

@@ -32,7 +32,7 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal clicked()
+    signal clicked
 
     readonly property bool marked: root.checked || root.indeterminate
 
@@ -91,16 +91,10 @@ FocusScope {
             radius: 2
             antialiasing: true
 
-            color: root.marked
-                   ? (root.enabled ? M3.color.primary
-                                   : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                             M3.color.onSurface.b, M3.stateLayer.disabledContainer))
-                   : "transparent"
+            color: root.marked ? (root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)) : "transparent"
 
             border.width: root.marked ? 0 : 2
-            border.color: root.enabled ? M3.color.onSurfaceVariant
-                                       : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                                 M3.color.onSurface.b, M3.stateLayer.disabledContent)
+            border.color: root.enabled ? M3.color.onSurfaceVariant : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
             Behavior on color {
                 ColorAnimation {
@@ -146,9 +140,7 @@ FocusScope {
         text: root.text
         visible: root.text !== ""
         font: M3.typography.bodyMedium
-        color: root.enabled ? M3.color.onSurface
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
     }
 
     MouseArea {
@@ -159,7 +151,7 @@ FocusScope {
         enabled: root.enabled
         cursorShape: Qt.PointingHandCursor
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x - boxArea.x, mouse.y - boxArea.y))
         }
 

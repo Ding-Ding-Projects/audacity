@@ -40,46 +40,58 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal clicked()
+    signal clicked
 
     readonly property bool extended: root.size === "extended"
 
     readonly property real diameter: {
         switch (root.size) {
-        case "small": return 40
-        case "large": return 96
-        default: return 56
+        case "small":
+            return 40
+        case "large":
+            return 96
+        default:
+            return 56
         }
     }
 
     readonly property real cornerRadius: {
         switch (root.size) {
-        case "small": return M3.shape.medium
-        case "large": return M3.shape.extraLarge
-        default: return M3.shape.large
+        case "small":
+            return M3.shape.medium
+        case "large":
+            return M3.shape.extraLarge
+        default:
+            return M3.shape.large
         }
     }
 
     implicitHeight: root.extended ? 56 : root.diameter
-    implicitWidth: root.extended
-                   ? Math.max(80, contentRow.implicitWidth + 32)
-                   : root.diameter
+    implicitWidth: root.extended ? Math.max(80, contentRow.implicitWidth + 32) : root.diameter
 
     readonly property color containerColor: {
         switch (root.variant) {
-        case "secondary": return M3.color.secondaryContainer
-        case "tertiary": return M3.color.tertiaryContainer
-        case "surface": return M3.surfaceAt(3)
-        default: return M3.color.primaryContainer
+        case "secondary":
+            return M3.color.secondaryContainer
+        case "tertiary":
+            return M3.color.tertiaryContainer
+        case "surface":
+            return M3.surfaceAt(3)
+        default:
+            return M3.color.primaryContainer
         }
     }
 
     readonly property color contentColor: {
         switch (root.variant) {
-        case "secondary": return M3.color.onSecondaryContainer
-        case "tertiary": return M3.color.onTertiaryContainer
-        case "surface": return M3.color.primary
-        default: return M3.color.onPrimaryContainer
+        case "secondary":
+            return M3.color.onSecondaryContainer
+        case "tertiary":
+            return M3.color.onTertiaryContainer
+        case "surface":
+            return M3.color.primary
+        default:
+            return M3.color.onPrimaryContainer
         }
     }
 
@@ -113,8 +125,7 @@ FocusScope {
 
         M3Elevation {
             anchors.fill: parent
-            level: root.lowered ? (mouseArea.containsMouse ? 2 : 1)
-                                : (mouseArea.containsMouse ? 4 : 3)
+            level: root.lowered ? (mouseArea.containsMouse ? 2 : 1) : (mouseArea.containsMouse ? 4 : 3)
             radius: background.radius
         }
 
@@ -172,7 +183,7 @@ FocusScope {
         enabled: root.enabled
         cursorShape: Qt.PointingHandCursor
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

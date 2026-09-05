@@ -46,7 +46,7 @@ FocusScope {
     property alias navigation: navCtrl
     property alias mouseArea: mouseArea
 
-    signal clicked()
+    signal clicked
 
     readonly property bool interactive: root.enabled && !root.loading
 
@@ -55,29 +55,34 @@ FocusScope {
 
     readonly property color containerColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b,
-                           M3.stateLayer.disabledContainer)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         }
         switch (root.variant) {
-        case "tonal": return M3.color.secondaryContainer
-        case "elevated": return M3.surfaceAt(1)
+        case "tonal":
+            return M3.color.secondaryContainer
+        case "elevated":
+            return M3.surfaceAt(1)
         case "outlined":
-        case "text": return "transparent"
-        default: return M3.color.primary
+        case "text":
+            return "transparent"
+        default:
+            return M3.color.primary
         }
     }
 
     readonly property color contentColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b,
-                           M3.stateLayer.disabledContent)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
         switch (root.variant) {
-        case "tonal": return M3.color.onSecondaryContainer
+        case "tonal":
+            return M3.color.onSecondaryContainer
         case "outlined":
         case "text":
-        case "elevated": return M3.color.primary
-        default: return M3.color.onPrimary
+        case "elevated":
+            return M3.color.primary
+        default:
+            return M3.color.onPrimary
         }
     }
 
@@ -116,9 +121,7 @@ FocusScope {
         radius: M3.density.apply(40) / 2
         color: root.containerColor
         border.width: root.variant === "outlined" ? 1 : 0
-        border.color: root.enabled ? M3.color.outline
-                                   : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                             M3.color.onSurface.b, M3.stateLayer.disabledContainer)
+        border.color: root.enabled ? M3.color.outline : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         antialiasing: true
 
         Behavior on color {
@@ -197,7 +200,7 @@ FocusScope {
         enabled: root.interactive
         cursorShape: Qt.PointingHandCursor
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

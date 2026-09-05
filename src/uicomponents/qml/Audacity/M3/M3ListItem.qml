@@ -43,7 +43,7 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal clicked()
+    signal clicked
 
     readonly property int lineCount: {
         var lines = 1
@@ -183,8 +183,7 @@ FocusScope {
         anchors.right: parent.right
         anchors.rightMargin: 16
         anchors.verticalCenter: parent.verticalCenter
-        width: Math.max(trailingLabel.visible ? trailingLabel.width : 0,
-                        trailingLoader.item ? trailingLoader.width : 0)
+        width: Math.max(trailingLabel.visible ? trailingLabel.width : 0, trailingLoader.item ? trailingLoader.width : 0)
         height: parent.height
 
         StyledTextLabel {
@@ -213,7 +212,7 @@ FocusScope {
         enabled: root.clickable && root.enabled
         z: -1
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

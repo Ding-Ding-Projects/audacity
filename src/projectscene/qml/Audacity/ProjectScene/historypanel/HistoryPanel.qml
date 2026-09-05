@@ -20,7 +20,7 @@ Item {
 
     // The search field keeps the hook the regular expression builder connects
     // to, so the panel joins the application wide search contract.
-    signal regexBuilderRequested()
+    signal regexBuilderRequested
 
     NavigationPanel {
         id: navPanel
@@ -44,8 +44,7 @@ Item {
             try {
                 return new RegExp(prv.filterText, "i").test(text)
             } catch (error) {
-                return String(text).toLowerCase()
-                        .indexOf(prv.filterText.toLowerCase()) !== -1
+                return String(text).toLowerCase().indexOf(prv.filterText.toLowerCase()) !== -1
             }
         }
     }

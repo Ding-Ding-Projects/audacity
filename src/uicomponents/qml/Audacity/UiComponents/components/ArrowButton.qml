@@ -6,16 +6,18 @@ import QtQuick
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 FlatButton {
     id: root
 
     property bool isDown: true
 
-    property real topRightRadius: 3
-    property real bottomRightRadius: 3
+    property real topRightRadius: M3.shape.extraSmall
+    property real bottomRightRadius: M3.shape.extraSmall
 
     icon: isDown ? IconCode.SMALL_ARROW_DOWN : IconCode.SMALL_ARROW_UP
-    iconColor: ui.theme.fontSecondaryColor
+    iconColor: M3.color.onSurfaceVariant
 
     backgroundItem: RoundedRectangle {
         id: background
@@ -23,7 +25,7 @@ FlatButton {
         topRightRadius: root.topRightRadius
         bottomRightRadius: root.bottomRightRadius
 
-        color: ui.theme.backgroundQuarternaryColor
+        color: M3.color.surfaceContainerHighest
 
         NavigationFocusBorder {
             navigationCtrl: root.navigation
@@ -37,7 +39,7 @@ FlatButton {
 
                 PropertyChanges {
                     target: background
-                    opacity: ui.theme.buttonOpacityHit
+                    opacity: 1 - M3.stateLayer.pressed
                 }
             },
             State {
@@ -46,7 +48,7 @@ FlatButton {
 
                 PropertyChanges {
                     target: background
-                    opacity: ui.theme.buttonOpacityHover
+                    opacity: 1 - M3.stateLayer.hover
                 }
             }
         ]

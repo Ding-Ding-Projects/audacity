@@ -52,19 +52,17 @@ FocusScope {
 
     signal textEdited(string text)
     signal textEditingFinished(string text)
-    signal trailingIconClicked()
+    signal trailingIconClicked
 
     readonly property bool filled: root.variant === "filled"
     readonly property bool floating: input.activeFocus || root.currentText !== ""
     readonly property bool showError: root.hasError || root.errorText !== ""
-    readonly property string helperText: root.showError && root.errorText !== ""
-                                         ? root.errorText : root.supportingText
+    readonly property string helperText: root.showError && root.errorText !== "" ? root.errorText : root.supportingText
 
     readonly property color accent: root.showError ? M3.color.error : M3.color.primary
     readonly property color labelColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                           M3.color.onSurface.b, M3.stateLayer.disabledContent)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
         if (root.showError) {
             return M3.color.error
@@ -105,11 +103,7 @@ FocusScope {
         height: M3.density.apply(56)
         antialiasing: true
 
-        color: root.filled
-               ? (root.enabled ? M3.color.surfaceContainerHighest
-                               : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                         M3.color.onSurface.b, 0.04))
-               : "transparent"
+        color: root.filled ? (root.enabled ? M3.color.surfaceContainerHighest : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, 0.04)) : "transparent"
 
         topLeftRadius: M3.shape.extraSmall
         topRightRadius: M3.shape.extraSmall
@@ -119,8 +113,7 @@ FocusScope {
         border.width: root.filled ? 0 : (input.activeFocus ? 2 : 1)
         border.color: {
             if (!root.enabled) {
-                return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                               M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
             }
             if (root.showError) {
                 return M3.color.error
@@ -151,11 +144,9 @@ FocusScope {
             height: input.activeFocus ? 2 : 1
             color: {
                 if (!root.enabled) {
-                    return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                   M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                    return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
                 }
-                return root.showError ? M3.color.error
-                                      : (input.activeFocus ? M3.color.primary : M3.color.onSurfaceVariant)
+                return root.showError ? M3.color.error : (input.activeFocus ? M3.color.primary : M3.color.onSurfaceVariant)
             }
         }
 
@@ -180,9 +171,7 @@ FocusScope {
             color: root.labelColor
             font: root.floating ? M3.typography.bodySmall : M3.typography.bodyLarge
 
-            y: root.floating
-               ? (root.filled ? 8 : -floatingLabel.height / 2)
-               : (box.height - floatingLabel.height) / 2
+            y: root.floating ? (root.filled ? 8 : -floatingLabel.height / 2) : (box.height - floatingLabel.height) / 2
 
             Behavior on y {
                 NumberAnimation {
@@ -220,9 +209,7 @@ FocusScope {
             echoMode: root.isPassword && !revealed.checked ? TextInput.Password : TextInput.Normal
             maximumLength: root.maximumLength > 0 ? root.maximumLength : 32767
 
-            color: root.enabled ? M3.color.onSurface
-                                : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                          M3.color.onSurface.b, M3.stateLayer.disabledContent)
+            color: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
             selectionColor: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.4)
             selectedTextColor: M3.color.onSurface
             font: M3.typography.bodyLarge
@@ -263,9 +250,7 @@ FocusScope {
             anchors.verticalCenter: parent.verticalCenter
 
             visible: root.isPassword || root.trailingIcon !== IconCode.NONE
-            icon: root.isPassword
-                  ? (revealed.checked ? IconCode.EYE_CLOSED : IconCode.EYE_OPEN)
-                  : root.trailingIcon
+            icon: root.isPassword ? (revealed.checked ? IconCode.EYE_CLOSED : IconCode.EYE_OPEN) : root.trailingIcon
             accessibleName: root.isPassword ? "Show password" : ""
 
             onClicked: {

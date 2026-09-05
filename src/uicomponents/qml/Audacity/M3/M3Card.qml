@@ -33,7 +33,7 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal clicked()
+    signal clicked
 
     implicitWidth: 280
     implicitHeight: contentContainer.childrenRect.height + root.padding * 2
@@ -70,9 +70,12 @@ FocusScope {
 
         color: {
             switch (root.variant) {
-            case "filled": return M3.color.surfaceContainerHighest
-            case "outlined": return M3.color.surface
-            default: return M3.surfaceAt(1)
+            case "filled":
+                return M3.color.surfaceContainerHighest
+            case "outlined":
+                return M3.color.surface
+            default:
+                return M3.surfaceAt(1)
             }
         }
 
@@ -81,8 +84,7 @@ FocusScope {
 
         M3Elevation {
             anchors.fill: parent
-            level: root.clickable && mouseArea.containsMouse
-                   ? root.restingElevation + 1 : root.restingElevation
+            level: root.clickable && mouseArea.containsMouse ? root.restingElevation + 1 : root.restingElevation
             radius: background.radius
         }
 
@@ -126,7 +128,7 @@ FocusScope {
         visible: root.clickable
         cursorShape: Qt.PointingHandCursor
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

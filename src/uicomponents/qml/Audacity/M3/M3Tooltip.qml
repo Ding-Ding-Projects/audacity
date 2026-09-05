@@ -35,8 +35,8 @@ Item {
     property string actionText: ""
     property string secondaryActionText: ""
 
-    signal actionTriggered()
-    signal secondaryActionTriggered()
+    signal actionTriggered
+    signal secondaryActionTriggered
 
     visible: false
     implicitWidth: container.implicitWidth

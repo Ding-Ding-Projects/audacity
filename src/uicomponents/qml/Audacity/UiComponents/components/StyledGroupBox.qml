@@ -8,16 +8,18 @@ import QtQuick.Controls 2.15
 import Muse.UiComponents
 import Muse.Ui 1.0
 
+import Audacity.M3
+
 Column {
     id: root
 
     property string title: ""
 
     property int titleSpacing: 4
-    property int margin: 12
+    property int margin: 16
     property int itemSpacing: 8
 
-    property int borderWidth: 1
+    property int borderWidth: 0
 
     property alias navPanel: meterStyleGroup.navigation
 
@@ -25,7 +27,7 @@ Column {
 
     property bool enabled: true
 
-    property color backgroundColor: ui.theme.backgroundSecondaryColor
+    property color backgroundColor: M3.color.surfaceContainerHighest
 
     property var model: null
 
@@ -37,6 +39,8 @@ Column {
         width: parent.width
 
         text: root.title
+        font: M3.typography.titleSmall
+        color: M3.color.onSurfaceVariant
         horizontalAlignment: Text.AlignLeft
     }
 
@@ -46,8 +50,8 @@ Column {
 
         color: root.backgroundColor
         border.width: root.borderWidth
-        border.color: ui.theme.strokeColor
-        radius: 2
+        border.color: M3.color.outlineVariant
+        radius: M3.shape.medium
 
         Item {
             anchors.fill: parent
@@ -63,7 +67,7 @@ Column {
 
                 model: root.model
 
-                delegate: RoundedRadioButton {
+                delegate: M3RadioButton {
                     id: meterStyleButton
                     text: modelData["label"]
                     checked: root.value == modelData["value"]

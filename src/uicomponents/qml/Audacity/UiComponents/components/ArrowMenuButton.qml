@@ -6,14 +6,16 @@ import QtQuick
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 MenuButton {
     id: root
 
-    property color backgroundColor: ui.theme.backgroundQuarternaryColor
+    property color backgroundColor: M3.color.surfaceContainerHighest
     property Border border: Border {}
 
     icon: IconCode.SMALL_ARROW_DOWN
-    iconColor: ui.theme.fontSecondaryColor
+    iconColor: M3.color.onSurfaceVariant
 
     menuAnchorItem: ui.rootItem
 
@@ -22,8 +24,8 @@ MenuButton {
     backgroundItem: RoundedRectangle {
         id: background
 
-        topRightRadius: 3
-        bottomRightRadius: 3
+        topRightRadius: M3.shape.extraSmall
+        bottomRightRadius: M3.shape.extraSmall
 
         color: root.backgroundColor
         border: root.border
@@ -40,7 +42,7 @@ MenuButton {
 
                 PropertyChanges {
                     target: background
-                    opacity: ui.theme.buttonOpacityHit
+                    opacity: 1 - M3.stateLayer.pressed
                 }
             },
             State {
@@ -49,7 +51,7 @@ MenuButton {
 
                 PropertyChanges {
                     target: background
-                    opacity: ui.theme.buttonOpacityHover
+                    opacity: 1 - M3.stateLayer.hover
                 }
             }
         ]

@@ -38,16 +38,13 @@ FocusScope {
     property alias navigation: navCtrl
     property alias hovered: mouseArea.containsMouse
 
-    signal triggered()
-    signal subMenuRequested()
+    signal triggered
+    signal subMenuRequested
 
     implicitHeight: root.isSeparator ? 9 : M3.density.apply(48)
     implicitWidth: Math.max(112, contentRow.implicitWidth + 24)
 
-    readonly property color contentColor: root.enabled
-                                          ? M3.color.onSurface
-                                          : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                                    M3.color.onSurface.b, M3.stateLayer.disabledContent)
+    readonly property color contentColor: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
     M3Divider {
         visible: root.isSeparator
@@ -134,10 +131,7 @@ FocusScope {
             id: label
 
             anchors.verticalCenter: parent.verticalCenter
-            width: contentRow.width - contentRow.spacing * 2
-                   - (shortcutLabel.visible ? shortcutLabel.width + contentRow.spacing : 0)
-                   - (chevron.visible ? chevron.width + contentRow.spacing : 0)
-                   - 24
+            width: contentRow.width - contentRow.spacing * 2 - (shortcutLabel.visible ? shortcutLabel.width + contentRow.spacing : 0) - (chevron.visible ? chevron.width + contentRow.spacing : 0) - 24
             horizontalAlignment: Text.AlignLeft
             text: root.text
             font: M3.typography.labelLarge

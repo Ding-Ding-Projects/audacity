@@ -37,9 +37,9 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal clicked()
+    signal clicked
     signal toggled(bool checked)
-    signal removed()
+    signal removed
 
     readonly property bool selectable: root.variant === "filter"
     readonly property bool removable: root.variant === "input"
@@ -50,8 +50,7 @@ FocusScope {
 
     readonly property color containerColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                           M3.color.onSurface.b, M3.stateLayer.disabledContainer)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         }
         if (root.selected) {
             return M3.color.secondaryContainer
@@ -61,8 +60,7 @@ FocusScope {
 
     readonly property color contentColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                           M3.color.onSurface.b, M3.stateLayer.disabledContent)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
         return root.selected ? M3.color.onSecondaryContainer : M3.color.onSurfaceVariant
     }
@@ -103,9 +101,7 @@ FocusScope {
         color: root.containerColor
 
         border.width: root.selected || root.elevated ? 0 : 1
-        border.color: root.enabled ? M3.color.outlineVariant
-                                   : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                             M3.color.onSurface.b, M3.stateLayer.disabledContainer)
+        border.color: root.enabled ? M3.color.outlineVariant : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
 
         Behavior on color {
             ColorAnimation {
@@ -191,7 +187,7 @@ FocusScope {
         cursorShape: Qt.PointingHandCursor
         z: -1
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

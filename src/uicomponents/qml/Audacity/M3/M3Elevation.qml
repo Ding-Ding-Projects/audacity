@@ -48,8 +48,7 @@ Item {
             radius: root.radius > 0 ? root.radius + index : 0
             color: "transparent"
             border.width: 1
-            border.color: Qt.rgba(root.shadowColor.r, root.shadowColor.g, root.shadowColor.b,
-                                  0.06 * (1.0 - index / Math.max(1, root.ambientBlur)))
+            border.color: Qt.rgba(root.shadowColor.r, root.shadowColor.g, root.shadowColor.b, 0.06 * (1.0 - index / Math.max(1, root.ambientBlur)))
             antialiasing: true
         }
     }
@@ -68,8 +67,7 @@ Item {
             radius: root.radius > 0 ? root.radius + index : 0
             color: "transparent"
             border.width: 1
-            border.color: Qt.rgba(root.shadowColor.r, root.shadowColor.g, root.shadowColor.b,
-                                  0.10 * (1.0 - index / Math.max(1, root.keyBlur)))
+            border.color: Qt.rgba(root.shadowColor.r, root.shadowColor.g, root.shadowColor.b, 0.10 * (1.0 - index / Math.max(1, root.keyBlur)))
             antialiasing: true
         }
     }

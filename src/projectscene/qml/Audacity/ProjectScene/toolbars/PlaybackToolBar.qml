@@ -107,7 +107,6 @@ Item {
             }
         }
 
-
         Component {
             id: playbackLevelComp
 

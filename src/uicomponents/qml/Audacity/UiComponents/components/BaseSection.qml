@@ -1,10 +1,15 @@
 /*
 * Audacity: A Digital Audio Editor
+*
+* A preferences section: a Material 3 title over a filled card that holds the
+* section content. The public API is unchanged from the original section.
 */
-import QtQuick 2.15
+import QtQuick
 
-import Muse.Ui 1.0
+import Muse.Ui
 import Muse.UiComponents
+
+import Audacity.M3
 
 Column {
     id: root
@@ -12,7 +17,7 @@ Column {
     default property alias contentData: sectionContent.data
 
     width: parent.width
-    spacing: 18
+    spacing: 8
 
     property alias title: titleLabel.text
     property int columnWidth: 208
@@ -36,12 +41,24 @@ Column {
 
     StyledTextLabel {
         id: titleLabel
-        font: ui.theme.bodyBoldFont
+
+        font: M3.typography.titleSmall
+        color: M3.color.onSurfaceVariant
+        visible: text !== ""
     }
 
-    Column {
-        id: sectionContent
+    M3Card {
         width: parent.width
-        spacing: root.rowSpacing
+        height: sectionContent.height + 2 * padding
+
+        variant: "filled"
+        padding: 16
+
+        Column {
+            id: sectionContent
+
+            width: parent.width
+            spacing: root.rowSpacing
+        }
     }
 }

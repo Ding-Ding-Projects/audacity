@@ -75,18 +75,13 @@ FocusScope {
 
         color: {
             if (!root.enabled) {
-                return root.checked
-                        ? Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, 0.12)
-                        : Qt.rgba(M3.color.surfaceContainerHighest.r, M3.color.surfaceContainerHighest.g,
-                                  M3.color.surfaceContainerHighest.b, 0.12)
+                return root.checked ? Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, 0.12) : Qt.rgba(M3.color.surfaceContainerHighest.r, M3.color.surfaceContainerHighest.g, M3.color.surfaceContainerHighest.b, 0.12)
             }
             return root.checked ? M3.color.primary : M3.color.surfaceContainerHighest
         }
 
         border.width: root.checked ? 0 : 2
-        border.color: root.enabled ? M3.color.outline
-                                   : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                             M3.color.onSurface.b, M3.stateLayer.disabledContainer)
+        border.color: root.enabled ? M3.color.outline : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
 
         Behavior on color {
             ColorAnimation {
@@ -110,9 +105,7 @@ FocusScope {
 
             color: {
                 if (!root.enabled) {
-                    return root.checked ? M3.color.surface
-                                        : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                                  M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                    return root.checked ? M3.color.surface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
                 }
                 return root.checked ? M3.color.onPrimary : M3.color.outline
             }
@@ -177,9 +170,7 @@ FocusScope {
         text: root.text
         visible: root.text !== ""
         font: M3.typography.bodyMedium
-        color: root.enabled ? M3.color.onSurface
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
     }
 
     MouseArea {

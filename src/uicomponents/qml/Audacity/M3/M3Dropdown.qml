@@ -102,8 +102,7 @@ FocusScope {
         border.width: popup.isOpened ? 2 : 1
         border.color: {
             if (!root.enabled) {
-                return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                               M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
             }
             return popup.isOpened ? M3.color.primary : M3.color.outline
         }
@@ -157,9 +156,7 @@ FocusScope {
         verticalAlignment: Text.AlignVCenter
         text: root.currentIndex >= 0 ? root.currentText : root.placeholder
         font: M3.typography.bodyLarge
-        color: root.enabled ? M3.color.onSurface
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         elide: Text.ElideRight
     }
 

@@ -41,7 +41,7 @@ FocusScope {
     property alias navigation: navCtrl
     property alias mouseArea: mouseArea
 
-    signal clicked()
+    signal clicked
     signal toggled(bool checked)
 
     implicitWidth: M3.density.apply(40)
@@ -49,10 +49,7 @@ FocusScope {
 
     readonly property color containerColor: {
         if (!root.enabled) {
-            return root.variant === "standard" || root.variant === "outlined"
-                    ? "transparent"
-                    : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b,
-                              M3.stateLayer.disabledContainer)
+            return root.variant === "standard" || root.variant === "outlined" ? "transparent" : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         }
         switch (root.variant) {
         case "filled":
@@ -68,8 +65,7 @@ FocusScope {
 
     readonly property color contentColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b,
-                           M3.stateLayer.disabledContent)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
         switch (root.variant) {
         case "filled":
@@ -167,7 +163,7 @@ FocusScope {
         enabled: root.enabled
         cursorShape: Qt.PointingHandCursor
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

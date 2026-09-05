@@ -29,7 +29,7 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal toggled()
+    signal toggled
 
     implicitHeight: Math.max(40, label.implicitHeight)
     implicitWidth: 40 + (label.visible ? label.implicitWidth + 4 : 0)
@@ -83,8 +83,7 @@ FocusScope {
             border.width: 2
             border.color: {
                 if (!root.enabled) {
-                    return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                   M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                    return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
                 }
                 return root.checked ? M3.color.primary : M3.color.onSurfaceVariant
             }
@@ -95,9 +94,7 @@ FocusScope {
                 height: width
                 radius: width / 2
                 antialiasing: true
-                color: root.enabled ? M3.color.primary
-                                    : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                              M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
                 Behavior on width {
                     NumberAnimation {
@@ -127,9 +124,7 @@ FocusScope {
         text: root.text
         visible: root.text !== ""
         font: M3.typography.bodyMedium
-        color: root.enabled ? M3.color.onSurface
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
     }
 
     MouseArea {

@@ -35,7 +35,7 @@ Item {
     property NavigationPanel navigationPanel: null
 
     signal activated(int index)
-    signal closed()
+    signal closed
 
     implicitWidth: root.modal ? 0 : root.drawerWidth
     implicitHeight: 600
@@ -126,8 +126,7 @@ Item {
                     required property var modelData
 
                     readonly property bool isSeparator: entry.modelData.separator === true
-                    readonly property bool isHeadline: !entry.isSeparator
-                                                       && entry.modelData.headline !== undefined
+                    readonly property bool isHeadline: !entry.isSeparator && entry.modelData.headline !== undefined
                     readonly property bool isDestination: !entry.isSeparator && !entry.isHeadline
                     readonly property bool selected: root.currentIndex === entry.index
 
@@ -210,10 +209,8 @@ Item {
                             anchors.left: parent.left
                             anchors.leftMargin: 16
                             anchors.verticalCenter: parent.verticalCenter
-                            iconCode: entry.modelData.icon !== undefined
-                                      ? entry.modelData.icon : IconCode.NONE
-                            color: entry.selected ? M3.color.onSecondaryContainer
-                                                  : M3.color.onSurfaceVariant
+                            iconCode: entry.modelData.icon !== undefined ? entry.modelData.icon : IconCode.NONE
+                            color: entry.selected ? M3.color.onSecondaryContainer : M3.color.onSurfaceVariant
                         }
 
                         StyledTextLabel {
@@ -226,8 +223,7 @@ Item {
                             elide: Text.ElideRight
                             text: entry.label
                             font: M3.typography.labelLarge
-                            color: entry.selected ? M3.color.onSecondaryContainer
-                                                  : M3.color.onSurfaceVariant
+                            color: entry.selected ? M3.color.onSecondaryContainer : M3.color.onSurfaceVariant
                         }
 
                         M3Badge {
@@ -236,8 +232,7 @@ Item {
                             anchors.right: parent.right
                             anchors.rightMargin: 24
                             anchors.verticalCenter: parent.verticalCenter
-                            count: entry.modelData.badgeCount !== undefined
-                                   ? entry.modelData.badgeCount : 0
+                            count: entry.modelData.badgeCount !== undefined ? entry.modelData.badgeCount : 0
                         }
                     }
 

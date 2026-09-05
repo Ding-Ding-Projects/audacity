@@ -45,8 +45,7 @@ FocusScope {
         if (root.itemData.checkable) {
             // qsTrc is a global helper, so it cannot be qualified by an id.
             // qmllint disable unqualified
-            return root.itemData.title + "  " + (root.itemData.checked ? qsTrc("global", "On")
-                                                                       : qsTrc("global", "Off"))
+            return root.itemData.title + "  " + (root.itemData.checked ? qsTrc("global", "On") : qsTrc("global", "Off"))
             // qmllint enable unqualified
         }
         return root.itemData.title
@@ -59,16 +58,12 @@ FocusScope {
     property color dataContainerColor: "transparent"
     property bool dataSelected: false
 
-    readonly property bool selected: root.dataSelected
-                                     || (Boolean(itemData)
-                                         && (itemData.checked || menuLoader.isMenuOpened))
+    readonly property bool selected: root.dataSelected || (Boolean(itemData) && (itemData.checked || menuLoader.isMenuOpened))
 
     enabled: Boolean(itemData) ? itemData.enabled : false
 
     implicitHeight: M3.density.apply(32)
-    implicitWidth: root.showsTitle
-                   ? contentRow.implicitWidth + 24
-                   : implicitHeight
+    implicitWidth: root.showsTitle ? contentRow.implicitWidth + 24 : implicitHeight
 
     width: implicitWidth
     height: implicitHeight
@@ -78,16 +73,14 @@ FocusScope {
             return "transparent"
         }
         if (root.selected) {
-            return root.dataContainerColor.a > 0 ? root.dataContainerColor
-                                                 : M3.color.secondaryContainer
+            return root.dataContainerColor.a > 0 ? root.dataContainerColor : M3.color.secondaryContainer
         }
         return "transparent"
     }
 
     readonly property color contentColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b,
-                           M3.stateLayer.disabledContent)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
         if (root.dataIconColor.a > 0) {
             return root.dataIconColor
@@ -112,8 +105,7 @@ FocusScope {
         name: Boolean(root.itemData) ? root.itemData.id : "M3ToolBarItem"
         enabled: root.enabled && root.visible
 
-        accessible.role: Boolean(root.itemData) && root.itemData.checkable
-                         ? MUAccessible.CheckBox : MUAccessible.Button
+        accessible.role: Boolean(root.itemData) && root.itemData.checkable ? MUAccessible.CheckBox : MUAccessible.Button
         accessible.name: root.accessibleName
         accessible.visualItem: root
         accessible.checked: Boolean(root.itemData) && root.itemData.checked
@@ -215,20 +207,16 @@ FocusScope {
         enabled: root.enabled
         cursorShape: Qt.PointingHandCursor
 
-        acceptedButtons: root.hasMenu && root.isMenuSecondary
-                         ? Qt.LeftButton | Qt.RightButton
-                         : Qt.LeftButton
+        acceptedButtons: root.hasMenu && root.isMenuSecondary ? Qt.LeftButton | Qt.RightButton : Qt.LeftButton
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 
-        onClicked: function(mouse) {
+        onClicked: function (mouse) {
             navCtrl.requestActive()
 
-            if (menuLoader.isMenuOpened
-                    || (root.hasMenu
-                        && (!root.isMenuSecondary || mouse.button === Qt.RightButton))) {
+            if (menuLoader.isMenuOpened || (root.hasMenu && (!root.isMenuSecondary || mouse.button === Qt.RightButton))) {
                 root.toggleMenuOpened()
                 return
             }
@@ -238,7 +226,7 @@ FocusScope {
             }
         }
 
-        onPressAndHold: function(event) {
+        onPressAndHold: function (event) {
             if (menuLoader.isMenuOpened || !root.hasMenu) {
                 event.accepted = false
                 return
@@ -251,7 +239,7 @@ FocusScope {
     StyledMenuLoader {
         id: menuLoader
 
-        onHandleMenuItem: function(itemId) {
+        onHandleMenuItem: function (itemId) {
             root.itemData.handleMenuItem(itemId)
         }
     }
@@ -274,9 +262,7 @@ FocusScope {
                 return
             }
             if (mouseArea.containsMouse) {
-                ui.tooltip.show(root, title,
-                                Boolean(root.itemData) ? root.itemData.description : "",
-                                Boolean(root.itemData) ? root.itemData.shortcuts : "")
+                ui.tooltip.show(root, title, Boolean(root.itemData) ? root.itemData.description : "", Boolean(root.itemData) ? root.itemData.shortcuts : "")
             } else {
                 ui.tooltip.hide(root)
             }

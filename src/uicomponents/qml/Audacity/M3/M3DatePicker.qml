@@ -50,15 +50,12 @@ M3Surface {
         return (first.getDay() + 6) % 7
     }
 
-    readonly property int daysInMonth: new Date(root.displayedYear,
-                                                root.displayedMonthIndex + 1, 0).getDate()
+    readonly property int daysInMonth: new Date(root.displayedYear, root.displayedMonthIndex + 1, 0).getDate()
 
     readonly property string monthLabel: Qt.formatDate(root.displayedMonth, "MMMM yyyy")
 
     function isSameDay(a, b) {
-        return a.getFullYear() === b.getFullYear()
-                && a.getMonth() === b.getMonth()
-                && a.getDate() === b.getDate()
+        return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
     }
 
     function dateFor(day) {
@@ -224,8 +221,7 @@ M3Surface {
                             font: M3.typography.bodyLarge
                             color: {
                                 if (!dayCell.selectable) {
-                                    return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                                   M3.color.onSurface.b, M3.stateLayer.disabledContent)
+                                    return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
                                 }
                                 return dayCell.selected ? M3.color.onPrimary : M3.color.onSurface
                             }

@@ -44,7 +44,7 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal moved()
+    signal moved
 
     readonly property bool horizontal: root.orientation === Qt.Horizontal
     readonly property real range: root.to - root.from
@@ -103,7 +103,7 @@ FocusScope {
     Keys.onRightPressed: root.step(root.horizontal ? 1 : 0)
     Keys.onDownPressed: root.step(-1)
     Keys.onUpPressed: root.step(1)
-    Keys.onPressed: function(event) {
+    Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Home) {
             root.setValue(root.from)
             event.accepted = true
@@ -122,9 +122,7 @@ FocusScope {
         height: root.horizontal ? root.trackThickness : root.height
         radius: root.trackThickness / 2
         antialiasing: true
-        color: root.enabled ? M3.color.secondaryContainer
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContainer)
+        color: root.enabled ? M3.color.secondaryContainer : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
     }
 
     // Active track.
@@ -133,24 +131,19 @@ FocusScope {
 
         radius: root.trackThickness / 2
         antialiasing: true
-        color: root.enabled ? M3.color.primary
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
         x: root.horizontal ? 0 : (root.width - root.trackThickness) / 2
-        y: root.horizontal ? (root.height - root.trackThickness) / 2
-                           : root.height - activeTrack.height
+        y: root.horizontal ? (root.height - root.trackThickness) / 2 : root.height - activeTrack.height
         width: root.horizontal ? handle.x + root.handleWidth : root.trackThickness
-        height: root.horizontal ? root.trackThickness
-                                : root.height - handle.y - root.handleWidth
+        height: root.horizontal ? root.trackThickness : root.height - handle.y - root.handleWidth
     }
 
     // Tick marks for a discrete slider.
     Repeater {
         id: ticks
 
-        readonly property int count: root.showTicks && root.stepSize > 0
-                                     ? Math.floor(root.range / root.stepSize) + 1 : 0
+        readonly property int count: root.showTicks && root.stepSize > 0 ? Math.floor(root.range / root.stepSize) + 1 : 0
 
         model: ticks.count
 
@@ -167,12 +160,8 @@ FocusScope {
             color: past ? M3.color.onPrimary : M3.color.onSecondaryContainer
             opacity: root.enabled ? 1.0 : M3.stateLayer.disabledContent
 
-            x: root.horizontal
-               ? root.handleWidth + fraction * root.travelLength - 2
-               : (root.width - 4) / 2
-            y: root.horizontal
-               ? (root.height - 4) / 2
-               : root.height - root.handleWidth - fraction * root.travelLength - 2
+            x: root.horizontal ? root.handleWidth + fraction * root.travelLength - 2 : (root.width - 4) / 2
+            y: root.horizontal ? (root.height - 4) / 2 : root.height - root.handleWidth - fraction * root.travelLength - 2
         }
     }
 
@@ -184,16 +173,10 @@ FocusScope {
         height: root.horizontal ? root.handleLength : root.handleWidth
         radius: root.handleWidth / 2
         antialiasing: true
-        color: root.enabled ? M3.color.primary
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
-        x: root.horizontal
-           ? root.handleWidth + root.position * root.travelLength - root.handleWidth / 2
-           : (root.width - handle.width) / 2
-        y: root.horizontal
-           ? (root.height - handle.height) / 2
-           : root.height - root.handleWidth - root.position * root.travelLength - root.handleWidth / 2
+        x: root.horizontal ? root.handleWidth + root.position * root.travelLength - root.handleWidth / 2 : (root.width - handle.width) / 2
+        y: root.horizontal ? (root.height - handle.height) / 2 : root.height - root.handleWidth - root.position * root.travelLength - root.handleWidth / 2
 
         Behavior on x {
             enabled: !mouseArea.pressed
@@ -232,12 +215,8 @@ FocusScope {
         width: implicitWidth
         height: implicitHeight
 
-        x: root.horizontal
-           ? Math.max(0, Math.min(root.width - width, handle.x + handle.width / 2 - width / 2))
-           : handle.x - width - 8
-        y: root.horizontal ? handle.y - height - 8
-                           : Math.max(0, Math.min(root.height - height,
-                                                  handle.y + handle.height / 2 - height / 2))
+        x: root.horizontal ? Math.max(0, Math.min(root.width - width, handle.x + handle.width / 2 - width / 2)) : handle.x - width - 8
+        y: root.horizontal ? handle.y - height - 8 : Math.max(0, Math.min(root.height - height, handle.y + handle.height / 2 - height / 2))
 
         StyledTextLabel {
             id: valueLabel
@@ -258,24 +237,22 @@ FocusScope {
         cursorShape: Qt.PointingHandCursor
 
         function valueAt(mouse) {
-            var fraction = root.horizontal
-                    ? (mouse.x - root.handleWidth) / root.travelLength
-                    : 1.0 - (mouse.y - root.handleWidth) / root.travelLength
+            var fraction = root.horizontal ? (mouse.x - root.handleWidth) / root.travelLength : 1.0 - (mouse.y - root.handleWidth) / root.travelLength
             return root.from + Math.max(0, Math.min(1, fraction)) * root.range
         }
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             navCtrl.requestActive()
             root.setValue(mouseArea.valueAt(mouse))
         }
 
-        onPositionChanged: function(mouse) {
+        onPositionChanged: function (mouse) {
             if (mouseArea.pressed) {
                 root.setValue(mouseArea.valueAt(mouse))
             }
         }
 
-        onWheel: function(wheel) {
+        onWheel: function (wheel) {
             root.step(wheel.angleDelta.y > 0 ? 1 : -1)
             wheel.accepted = true
         }

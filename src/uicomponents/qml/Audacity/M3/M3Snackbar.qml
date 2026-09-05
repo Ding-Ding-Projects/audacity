@@ -29,8 +29,8 @@ Rectangle {
     // Milliseconds before the snackbar dismisses itself. Zero keeps it open.
     property int duration: 4000
 
-    signal actionTriggered()
-    signal dismissed()
+    signal actionTriggered
+    signal dismissed
 
     implicitHeight: Math.max(48, label.implicitHeight + 28)
     implicitWidth: Math.min(600, Math.max(344, contentRow.implicitWidth + 32))
@@ -57,8 +57,7 @@ Rectangle {
             id: label
 
             anchors.verticalCenter: parent.verticalCenter
-            width: contentRow.width - (actionButton.visible ? actionButton.width + 8 : 0)
-                   - (closeButton.visible ? closeButton.width + 8 : 0)
+            width: contentRow.width - (actionButton.visible ? actionButton.width + 8 : 0) - (closeButton.visible ? closeButton.width + 8 : 0)
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.WordWrap
             maximumLineCount: 2

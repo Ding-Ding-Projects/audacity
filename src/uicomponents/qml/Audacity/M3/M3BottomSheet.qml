@@ -32,7 +32,7 @@ Item {
 
     property alias navigationSection: navSec
 
-    signal closed()
+    signal closed
 
     anchors.fill: parent
     visible: root.opened || sheet.y < root.height
@@ -150,11 +150,11 @@ Item {
 
             property real pressY: 0
 
-            onPressed: function(mouse) {
+            onPressed: function (mouse) {
                 pressY = mouse.y
             }
 
-            onReleased: function(mouse) {
+            onReleased: function (mouse) {
                 if (mouse.y - pressY > 40) {
                     root.close()
                 }

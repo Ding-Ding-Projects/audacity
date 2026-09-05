@@ -6,6 +6,8 @@ import QtQuick
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 StyledPopupView {
     id: root
 
@@ -24,6 +26,8 @@ StyledPopupView {
     property int hideDelay: ui.theme.tooltipDelay
 
     padding: 8
+    background.color: M3.color.inverseSurface
+    background.radius: M3.shape.extraSmall
     margins: 8
     contentWidth: Math.ceil(Math.max(fontMetrics.advanceWidth(root.formatted(root.sizingText)), fontMetrics.advanceWidth(valueLabel.text)))
     contentHeight: Math.ceil(fontMetrics.height)
@@ -41,6 +45,8 @@ StyledPopupView {
 
         anchors.fill: parent
         text: root.formatted(root.text)
+        font: M3.typography.labelLarge
+        color: M3.color.inverseOnSurface
     }
 
     FontMetrics {

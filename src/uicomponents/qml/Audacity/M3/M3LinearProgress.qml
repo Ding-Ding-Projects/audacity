@@ -36,8 +36,7 @@ Item {
 
     property string accessibleName: "Progress"
 
-    readonly property real progress: root.to === root.from
-                                     ? 0 : Math.max(0, Math.min(1, (root.value - root.from) / (root.to - root.from)))
+    readonly property real progress: root.to === root.from ? 0 : Math.max(0, Math.min(1, (root.value - root.from) / (root.to - root.from)))
 
     implicitHeight: 4
     implicitWidth: 240
@@ -141,8 +140,16 @@ Item {
             running: sweep.visible && M3.motion.reducedMotion
             loops: Animation.Infinite
 
-            NumberAnimation { from: 0.4; to: 1.0; duration: 600 }
-            NumberAnimation { from: 1.0; to: 0.4; duration: 600 }
+            NumberAnimation {
+                from: 0.4
+                to: 1.0
+                duration: 600
+            }
+            NumberAnimation {
+                from: 1.0
+                to: 0.4
+                duration: 600
+            }
         }
     }
 

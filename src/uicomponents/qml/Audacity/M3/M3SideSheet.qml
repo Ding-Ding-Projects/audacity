@@ -30,7 +30,7 @@ Item {
     property int edge: Qt.RightEdge
     property real sheetWidth: 320
 
-    signal closed()
+    signal closed
 
     anchors.fill: parent
     visible: root.opened || sheet.x !== root.closedX

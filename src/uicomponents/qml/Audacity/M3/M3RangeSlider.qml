@@ -36,7 +36,7 @@ FocusScope {
     property NavigationPanel navigationPanel: null
     property int navigationRow: 0
 
-    signal moved()
+    signal moved
 
     readonly property bool horizontal: root.orientation === Qt.Horizontal
     readonly property real range: root.to - root.from
@@ -79,9 +79,7 @@ FocusScope {
 
     function positionFor(value) {
         var fraction = root.fractionOf(value)
-        return root.horizontal
-                ? root.handleWidth + fraction * root.travelLength
-                : root.height - root.handleWidth - fraction * root.travelLength
+        return root.horizontal ? root.handleWidth + fraction * root.travelLength : root.height - root.handleWidth - fraction * root.travelLength
     }
 
     Rectangle {
@@ -92,9 +90,7 @@ FocusScope {
         height: root.horizontal ? root.trackThickness : root.height
         radius: root.trackThickness / 2
         antialiasing: true
-        color: root.enabled ? M3.color.secondaryContainer
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContainer)
+        color: root.enabled ? M3.color.secondaryContainer : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
     }
 
     Rectangle {
@@ -102,18 +98,12 @@ FocusScope {
 
         radius: root.trackThickness / 2
         antialiasing: true
-        color: root.enabled ? M3.color.primary
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
         x: root.horizontal ? root.positionFor(root.first) : (root.width - root.trackThickness) / 2
         y: root.horizontal ? (root.height - root.trackThickness) / 2 : root.positionFor(root.second)
-        width: root.horizontal
-               ? root.positionFor(root.second) - root.positionFor(root.first)
-               : root.trackThickness
-        height: root.horizontal
-                ? root.trackThickness
-                : root.positionFor(root.first) - root.positionFor(root.second)
+        width: root.horizontal ? root.positionFor(root.second) - root.positionFor(root.first) : root.trackThickness
+        height: root.horizontal ? root.trackThickness : root.positionFor(root.first) - root.positionFor(root.second)
     }
 
     component RangeHandle: Rectangle {
@@ -126,14 +116,10 @@ FocusScope {
         height: root.horizontal ? root.handleLength : root.handleWidth
         radius: root.handleWidth / 2
         antialiasing: true
-        color: root.enabled ? M3.color.primary
-                            : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                                      M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
-        x: root.horizontal ? root.positionFor(handle.handleValue) - root.handleWidth / 2
-                           : (root.width - handle.width) / 2
-        y: root.horizontal ? (root.height - handle.height) / 2
-                           : root.positionFor(handle.handleValue) - root.handleWidth / 2
+        x: root.horizontal ? root.positionFor(handle.handleValue) - root.handleWidth / 2 : (root.width - handle.width) / 2
+        y: root.horizontal ? (root.height - handle.height) / 2 : root.positionFor(handle.handleValue) - root.handleWidth / 2
     }
 
     RangeHandle {
@@ -216,13 +202,11 @@ FocusScope {
         property bool draggingSecond: false
 
         function valueAt(mouse) {
-            var fraction = root.horizontal
-                    ? (mouse.x - root.handleWidth) / root.travelLength
-                    : 1.0 - (mouse.y - root.handleWidth) / root.travelLength
+            var fraction = root.horizontal ? (mouse.x - root.handleWidth) / root.travelLength : 1.0 - (mouse.y - root.handleWidth) / root.travelLength
             return root.from + Math.max(0, Math.min(1, fraction)) * root.range
         }
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             var candidate = mouseArea.valueAt(mouse)
             mouseArea.draggingSecond = Math.abs(candidate - root.second) < Math.abs(candidate - root.first)
             if (mouseArea.draggingSecond) {
@@ -234,7 +218,7 @@ FocusScope {
             }
         }
 
-        onPositionChanged: function(mouse) {
+        onPositionChanged: function (mouse) {
             if (!mouseArea.pressed) {
                 return
             }

@@ -35,8 +35,8 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal accepted()
-    signal regexBuilderRequested()
+    signal accepted
+    signal regexBuilderRequested
 
     implicitHeight: M3.density.apply(56)
     implicitWidth: 320

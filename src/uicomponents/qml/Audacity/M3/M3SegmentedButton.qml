@@ -83,12 +83,8 @@ Item {
                 readonly property bool isLast: segment.index === repeater.count - 1
                 readonly property bool checked: root.isChecked(segment.index)
 
-                readonly property string label: typeof segment.modelData === "string"
-                                                ? segment.modelData
-                                                : (segment.modelData.text !== undefined ? segment.modelData.text : "")
-                readonly property int iconCode: typeof segment.modelData === "object"
-                                                && segment.modelData.icon !== undefined
-                                                ? segment.modelData.icon : IconCode.NONE
+                readonly property string label: typeof segment.modelData === "string" ? segment.modelData : (segment.modelData.text !== undefined ? segment.modelData.text : "")
+                readonly property int iconCode: typeof segment.modelData === "object" && segment.modelData.icon !== undefined ? segment.modelData.icon : IconCode.NONE
 
                 height: root.height
                 width: Math.max(48, segmentContent.implicitWidth + 24)

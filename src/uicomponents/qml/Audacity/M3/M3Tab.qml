@@ -38,14 +38,13 @@ FocusScope {
 
     property alias navigation: navCtrl
 
-    signal clicked()
+    signal clicked
 
     readonly property bool vertical: root.orientation === Qt.Vertical
 
     readonly property color contentColor: {
         if (!root.enabled) {
-            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g,
-                           M3.color.onSurface.b, M3.stateLayer.disabledContent)
+            return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
         if (!root.selected) {
             return M3.color.onSurfaceVariant
@@ -157,7 +156,7 @@ FocusScope {
         enabled: root.enabled
         cursorShape: Qt.PointingHandCursor
 
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             ripple.press(Qt.point(mouse.x, mouse.y))
         }
 

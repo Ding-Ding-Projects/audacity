@@ -53,9 +53,7 @@ M3Surface {
     }
 
     function setHours(value) {
-        var bounded = root.use24Hour
-                ? Math.max(0, Math.min(23, value))
-                : Math.max(1, Math.min(12, value))
+        var bounded = root.use24Hour ? Math.max(0, Math.min(23, value)) : Math.max(1, Math.min(12, value))
         if (!root.use24Hour) {
             bounded = (bounded % 12) + (root.afternoon ? 12 : 0)
         }
@@ -88,7 +86,7 @@ M3Surface {
             navigation.panel: root.navigationPanel
             navigation.column: 0
 
-            onTextEditingFinished: function(text) {
+            onTextEditingFinished: function (text) {
                 var value = parseInt(text, 10)
                 if (!isNaN(value)) {
                     root.setHours(value)
@@ -113,7 +111,7 @@ M3Surface {
             navigation.panel: root.navigationPanel
             navigation.column: 1
 
-            onTextEditingFinished: function(text) {
+            onTextEditingFinished: function (text) {
                 var value = parseInt(text, 10)
                 if (!isNaN(value)) {
                     root.setMinutes(value)
@@ -129,7 +127,7 @@ M3Surface {
             navigationPanel: root.navigationPanel
             navigationRowStart: 1
 
-            onActivated: function(index) {
+            onActivated: function (index) {
                 root.setAfternoon(index === 1)
             }
         }

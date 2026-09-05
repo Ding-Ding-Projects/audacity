@@ -37,7 +37,7 @@ StyledPopupView {
     property NavigationPanel navigationPanel: null
 
     signal handleMenuItem(string itemId)
-    signal regexBuilderRequested()
+    signal regexBuilderRequested
 
     // Items that survive the current filter text.
     readonly property var visibleItems: {
@@ -109,15 +109,13 @@ StyledPopupView {
                 checked: item.modelData.checked === true
                 enabled: item.modelData.enabled !== false
                 isSeparator: item.modelData.separator === true
-                hasSubMenu: item.modelData.subitems !== undefined
-                            && item.modelData.subitems.length > 0
+                hasSubMenu: item.modelData.subitems !== undefined && item.modelData.subitems.length > 0
 
                 navigation.panel: root.navigationPanel
                 navigation.row: item.index
 
                 onTriggered: {
-                    root.handleMenuItem(item.modelData.id !== undefined
-                                        ? String(item.modelData.id) : "")
+                    root.handleMenuItem(item.modelData.id !== undefined ? String(item.modelData.id) : "")
                     root.close()
                 }
 
@@ -152,7 +150,7 @@ StyledPopupView {
         onLoaded: {
             // qmllint disable missing-property
             subMenuLoader.item.navigationPanel = root.navigationPanel
-            subMenuLoader.item.handleMenuItem.connect(function(itemId) {
+            subMenuLoader.item.handleMenuItem.connect(function (itemId) {
                 root.handleMenuItem(itemId)
                 root.close()
             })

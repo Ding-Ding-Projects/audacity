@@ -30,9 +30,7 @@ Rectangle {
      */
     readonly property string accessibleText: root.showCount ? root.displayText : ""
 
-    readonly property string displayText: root.count > root.maxCount
-                                          ? root.maxCount + "+"
-                                          : String(root.count)
+    readonly property string displayText: root.count > root.maxCount ? root.maxCount + "+" : String(root.count)
 
     visible: root.showCount ? root.count > 0 : true
 

@@ -70,13 +70,9 @@ Item {
                 orientation: root.orientation
                 selected: root.currentIndex === tab.index
 
-                text: typeof tab.modelData === "string"
-                      ? tab.modelData
-                      : (tab.modelData.text !== undefined ? tab.modelData.text : "")
-                icon: typeof tab.modelData === "object" && tab.modelData.icon !== undefined
-                      ? tab.modelData.icon : IconCode.NONE
-                badgeCount: typeof tab.modelData === "object" && tab.modelData.badgeCount !== undefined
-                            ? tab.modelData.badgeCount : 0
+                text: typeof tab.modelData === "string" ? tab.modelData : (tab.modelData.text !== undefined ? tab.modelData.text : "")
+                icon: typeof tab.modelData === "object" && tab.modelData.icon !== undefined ? tab.modelData.icon : IconCode.NONE
+                badgeCount: typeof tab.modelData === "object" && tab.modelData.badgeCount !== undefined ? tab.modelData.badgeCount : 0
 
                 navigation.panel: root.navigationPanel
                 navigation.row: root.vertical ? tab.index : 0

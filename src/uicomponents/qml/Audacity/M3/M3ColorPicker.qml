@@ -49,7 +49,7 @@ M3Surface {
 
     property NavigationPanel navigationPanel: null
 
-    signal accepted()
+    signal accepted
 
     level: 3
     radius: M3.shape.large
@@ -70,8 +70,7 @@ M3Surface {
 
     readonly property var rgb: Formats.hsvToRgb(root.hue, root.saturation, root.brightness)
 
-    readonly property color currentColor: Qt.rgba(root.rgb[0] / 255, root.rgb[1] / 255,
-                                                  root.rgb[2] / 255, root.alpha)
+    readonly property color currentColor: Qt.rgba(root.rgb[0] / 255, root.rgb[1] / 255, root.rgb[2] / 255, root.alpha)
 
     readonly property real contrast: M3.contrastRatio(root.currentColor, root.contrastBackground)
 
@@ -89,8 +88,7 @@ M3Surface {
     }
 
     // 1 is the slowest level and 5 the fastest.
-    readonly property int rainbowCycleDuration: [12000, 8000, 5000, 3000, 1500][
-        Math.max(0, Math.min(4, root.rainbowSpeed - 1))]
+    readonly property int rainbowCycleDuration: [12000, 8000, 5000, 3000, 1500][Math.max(0, Math.min(4, root.rainbowSpeed - 1))]
 
     function applySelection() {
         if (root.selection === "rainbow") {
@@ -190,8 +188,10 @@ M3Surface {
                         root.commit()
                     }
 
-                    onPressed: function(mouse) { wheelMouse.updateHue(mouse) }
-                    onPositionChanged: function(mouse) {
+                    onPressed: function (mouse) {
+                        wheelMouse.updateHue(mouse)
+                    }
+                    onPositionChanged: function (mouse) {
                         if (wheelMouse.pressed) {
                             wheelMouse.updateHue(mouse)
                         }
@@ -218,8 +218,14 @@ M3Surface {
                         radius: parent.radius
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: "#FFFFFFFF" }
-                            GradientStop { position: 1.0; color: "#00FFFFFF" }
+                            GradientStop {
+                                position: 0.0
+                                color: "#FFFFFFFF"
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: "#00FFFFFF"
+                            }
                         }
                     }
 
@@ -228,8 +234,14 @@ M3Surface {
                         anchors.fill: parent
                         radius: parent.radius
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: "#00000000" }
-                            GradientStop { position: 1.0; color: "#FF000000" }
+                            GradientStop {
+                                position: 0.0
+                                color: "#00000000"
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: "#FF000000"
+                            }
                         }
                     }
                 }
@@ -259,8 +271,10 @@ M3Surface {
                         root.commit()
                     }
 
-                    onPressed: function(mouse) { fieldMouse.updateColor(mouse) }
-                    onPositionChanged: function(mouse) {
+                    onPressed: function (mouse) {
+                        fieldMouse.updateColor(mouse)
+                    }
+                    onPositionChanged: function (mouse) {
                         if (fieldMouse.pressed) {
                             fieldMouse.updateColor(mouse)
                         }
@@ -313,12 +327,11 @@ M3Surface {
 
                 width: 120
                 label: "Format"
-                model: ["named", "hex", "hex8", "rgb", "rgba", "hsl", "hsla",
-                        "hsv", "hwb", "lab", "lch", "oklab", "oklch", "cmyk"]
+                model: ["named", "hex", "hex8", "rgb", "rgba", "hsl", "hsla", "hsv", "hwb", "lab", "lch", "oklab", "oklch", "cmyk"]
                 currentIndex: 1
                 navigation.panel: root.navigationPanel
 
-                onActivated: function(index, value) {
+                onActivated: function (index, value) {
                     root.format = String(value)
                     root.commit()
                 }
@@ -330,13 +343,10 @@ M3Surface {
                 width: parent.width - 132
                 label: "Value"
                 enabled: !root.isRainbow
-                currentText: root.isRainbow
-                             ? "rainbow"
-                             : Formats.format(root.format, root.rgb[0], root.rgb[1],
-                                              root.rgb[2], root.alpha)
+                currentText: root.isRainbow ? "rainbow" : Formats.format(root.format, root.rgb[0], root.rgb[1], root.rgb[2], root.alpha)
                 navigation.panel: root.navigationPanel
 
-                onTextEditingFinished: function(text) {
+                onTextEditingFinished: function (text) {
                     var parsed = Formats.parse(text)
                     if (!parsed) {
                         entry.hasError = true
@@ -393,7 +403,7 @@ M3Surface {
                 checked: root.isRainbow
                 navigation.panel: root.navigationPanel
 
-                onToggled: function(checked) {
+                onToggled: function (checked) {
                     if (checked) {
                         root.selection = "rainbow"
                     } else {
@@ -430,9 +440,7 @@ M3Surface {
             border.color: M3.color.outlineVariant
 
             // Under reduced motion the rainbow preview settles on one hue.
-            color: root.isRainbow
-                   ? Qt.hsva(rainbowAnimator.phase, 0.8, 1.0, 1.0)
-                   : root.currentColor
+            color: root.isRainbow ? Qt.hsva(rainbowAnimator.phase, 0.8, 1.0, 1.0) : root.currentColor
 
             QtObject {
                 id: rainbowAnimator

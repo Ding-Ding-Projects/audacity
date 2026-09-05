@@ -32,7 +32,7 @@ Item {
     property NavigationPanel navigationPanel: null
 
     signal activated(int index)
-    signal fabTriggered()
+    signal fabTriggered
 
     implicitWidth: 80
     implicitHeight: 400
@@ -76,13 +76,8 @@ Item {
                 required property var modelData
 
                 readonly property bool selected: root.currentIndex === destination.index
-                readonly property string label: typeof destination.modelData === "string"
-                                                ? destination.modelData
-                                                : (destination.modelData.text !== undefined
-                                                   ? destination.modelData.text : "")
-                readonly property int iconCode: typeof destination.modelData === "object"
-                                                && destination.modelData.icon !== undefined
-                                                ? destination.modelData.icon : IconCode.NONE
+                readonly property string label: typeof destination.modelData === "string" ? destination.modelData : (destination.modelData.text !== undefined ? destination.modelData.text : "")
+                readonly property int iconCode: typeof destination.modelData === "object" && destination.modelData.icon !== undefined ? destination.modelData.icon : IconCode.NONE
 
                 width: 56
                 height: root.showLabels ? 56 : 32
@@ -136,8 +131,7 @@ Item {
                     StyledIconLabel {
                         anchors.centerIn: parent
                         iconCode: destination.iconCode
-                        color: destination.selected ? M3.color.onSecondaryContainer
-                                                    : M3.color.onSurfaceVariant
+                        color: destination.selected ? M3.color.onSecondaryContainer : M3.color.onSurfaceVariant
                     }
                 }
 
