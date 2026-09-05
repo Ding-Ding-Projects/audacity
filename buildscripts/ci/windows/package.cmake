@@ -9,53 +9,60 @@ set(INSTALL_DIR "build.install")
 # Options
 set(BUILD_MODE "" CACHE STRING "Build mode")
 set(PACKARCH "x86_64" CACHE STRING "Package architecture")
-set(BUILD_VERSION "" CACHE STRING "Build mode")
+set(BUILD_VERSION "" CACHE STRING "Build version")
 set(BUILD_NUMBER   "" CACHE STRING "Nightly build number")
 set(BUILD_BRANCH   "" CACHE STRING "Nightly branch")
 set(BUILD_REVISION "" CACHE STRING "Nightly revision (short SHA)")
 
-set(UPGRADE_UUID "11111111-1111-1111-1111-111111111111" CACHE STRING "WiX Upgrade GUID")
+# Squirrel.Windows options
+set(RELEASE_TAG "" CACHE STRING "Release tag, for example v4.0.0-m3.1")
+set(RUN_NUMBER "0" CACHE STRING "CI run number, used when no tag is present")
+set(PREVIOUS_RELEASES_DIR "" CACHE STRING "Directory with a previous RELEASES file and .nupkg files")
+set(SQUIRREL_OUT_DIR "${ARTIFACTS_DIR}/squirrel" CACHE STRING "Squirrel release directory")
 
-if (NOT BUILD_MODE)
-  file (STRINGS "${ARTIFACTS_DIR}/env/build_mode.env" BUILD_MODE)
+# Set to ON to parse this script without doing any work. Used to check that the
+# file still parses on machines that cannot run the packaging itself.
+option(PACKAGE_DRY_RUN "Parse only, do nothing" OFF)
+
+# Code signing is permanently prohibited for this project. There is no
+# SIGN_KEY, SIGN_SECRET or signtool path here, and none may be added.
+
+if (NOT PACKAGE_DRY_RUN)
+    if (NOT BUILD_MODE)
+        file (STRINGS "${ARTIFACTS_DIR}/env/build_mode.env" BUILD_MODE)
+    endif()
+
+    if (NOT BUILD_MODE)
+        message(FATAL_ERROR "not set BUILD_MODE")
+    endif()
+
+    if (NOT BUILD_VERSION)
+        file (STRINGS "${ARTIFACTS_DIR}/env/build_version.env" BUILD_VERSION)
+    endif()
 endif()
 
-# Check options
-if (NOT BUILD_MODE)
-  message(FATAL_ERROR "not set BUILD_MODE")
-endif()
-
-if (NOT BUILD_VERSION)
-  file (STRINGS "${ARTIFACTS_DIR}/env/build_version.env" BUILD_VERSION)
-endif()
-
-# Setup package type
+# Setup package type.
+# devel and nightly builds ship a plain archive; testing and stable builds ship
+# the Squirrel.Windows installer. There is no MSI, WiX or other fallback.
 set(PACK_TYPE "7z")
 if (BUILD_MODE STREQUAL "devel_build")
   set(PACK_TYPE "7z")
 elseif(BUILD_MODE STREQUAL "nightly_build")
   set(PACK_TYPE "7z")
 elseif(BUILD_MODE STREQUAL "testing_build")
-  set(PACK_TYPE "msi")
-  if(DEFINED ENV{WIN_MSI_TESTING_AU4_GUID} AND NOT "$ENV{WIN_MSI_TESTING_AU4_GUID}" STREQUAL "")
-    set(UPGRADE_UUID "$ENV{WIN_MSI_TESTING_AU4_GUID}" CACHE STRING "WiX Upgrade GUID" FORCE)
-  endif()
+  set(PACK_TYPE "squirrel")
 elseif(BUILD_MODE STREQUAL "stable_build")
-  set(PACK_TYPE "msi")
-  if(DEFINED ENV{WIN_MSI_STABLE_AU4_GUID} AND NOT "$ENV{WIN_MSI_STABLE_AU4_GUID}" STREQUAL "")
-    set(UPGRADE_UUID "$ENV{WIN_MSI_STABLE_AU4_GUID}" CACHE STRING "WiX Upgrade GUID" FORCE)
-  endif()
+  set(PACK_TYPE "squirrel")
 endif()
 
-# Setup signing
-set(SIGN_KEY    "$ENV{SIGN_KEY}")
-set(SIGN_SECRET "$ENV{SIGN_SECRET}")
-
-if(NOT DEFINED SIGN_ENABLE AND SIGN_KEY AND SIGN_SECRET)
-  set(SIGN_ENABLE ON)
+if (PACK_TYPE_OVERRIDE)
+  set(PACK_TYPE "${PACK_TYPE_OVERRIDE}")
 endif()
 
-set(SIGN_SERVICE_SH "${CMAKE_SOURCE_DIR}/buildscripts/ci/windows/sign_service_aws.sh")
+if (PACKAGE_DRY_RUN)
+    message(STATUS "PACKAGE_DRY_RUN is ON, nothing to do")
+    return()
+endif()
 
 file(MAKE_DIRECTORY "${ARTIFACTS_DIR}")
 
@@ -67,156 +74,52 @@ if(PACK_TYPE STREQUAL "7z")
   file(RENAME ${INSTALL_DIR} ${ARTIFACT_NAME})
   file(ARCHIVE_CREATE OUTPUT ${ARTIFACTS_DIR}/${ARTIFACT_NAME}.7z PATHS ${ARTIFACT_NAME} FORMAT 7zip)
 
-message(STATUS "Finished 7z packing")
-endif()
-
-# PACK MSI
-if(PACK_TYPE STREQUAL "msi")
-  message(STATUS "Start MSI packing...")
-
-  set(PACKAGE_UUID "")
-  if(WIN32)
-    execute_process(
-      COMMAND powershell -NoProfile -Command "[guid]::NewGuid().ToString()"
-      OUTPUT_VARIABLE PACKAGE_UUID
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET
-    )
-  endif()
-  if(NOT PACKAGE_UUID)
-    message(FATAL_ERROR "Could not generate PACKAGE_UUID")
-  endif()
-  message(STATUS "PACKAGE_UUID: ${PACKAGE_UUID}")
-
-  set(_cpack_config "${BUILD_DIR}/CPackConfig.cmake")
-  if(NOT EXISTS "${_cpack_config}")
-    message(FATAL_ERROR "CPackConfig.cmake not found at ${_cpack_config}")
-  endif()
-  get_filename_component(_install_abs "${INSTALL_DIR}" ABSOLUTE)
-  file(APPEND "${_cpack_config}"
-    "set(CPACK_WIX_PRODUCT_GUID \"${PACKAGE_UUID}\")\n"
-    "set(CPACK_WIX_UPGRADE_GUID \"${UPGRADE_UUID}\")\n"
-    "set(CPACK_INSTALL_CMAKE_PROJECTS \"\")\n"
-    "set(CPACK_INSTALLED_DIRECTORIES \"${_install_abs};.\")\n"
-  )
-
-  if(SIGN_ENABLE AND SIGN_KEY AND SIGN_SECRET)
-    set(_app_exe "${INSTALL_DIR}/bin/Audacity4.exe")
-
-    if(EXISTS "${_app_exe}")
-      message(STATUS "[sign-prepack] exe: ${_app_exe}")
-      find_program(BASH_EXECUTABLE bash REQUIRED)
-      execute_process(
-        COMMAND "${BASH_EXECUTABLE}" "${SIGN_SERVICE_SH}"
-                --s3_key     "${SIGN_KEY}"
-                --s3_secret  "${SIGN_SECRET}"
-                --file_path  "${_app_exe}"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        RESULT_VARIABLE _rc_exe
-      )
-      if(NOT _rc_exe EQUAL 0)
-        message(WARNING "[sign-prepack] failed to sign ${_app_exe} (rc=${_rc_exe})")
-      endif()
-    else()
-      message(WARNING "[sign-prepack] exe not found at ${_app_exe}")
-    endif()
-  else()
-    message(STATUS "[sign-prepack] disabled or credentials missing; skipping exe signing")
-  endif()
-
-  get_filename_component(_cmake_bin_dir "${CMAKE_COMMAND}" DIRECTORY)
-  find_program(_cpack_cmd cpack HINTS "${_cmake_bin_dir}" REQUIRED)
-  execute_process(
-    COMMAND "${_cpack_cmd}" -C Release
-    WORKING_DIRECTORY "${BUILD_DIR}"
-    RESULT_VARIABLE _rc_pkg
-  )
-  if(NOT _rc_pkg EQUAL 0)
-    set(_wix_log64 "${BUILD_DIR}/_CPack_Packages/win64/WIX/wix.log")
-    set(_wix_log32 "${BUILD_DIR}/_CPack_Packages/win32/WIX/wix.log")
-    foreach(_log "${_wix_log64}" "${_wix_log32}")
-      if(EXISTS "${_log}")
-        message(STATUS "---- wix.log (start) ----")
-        execute_process(COMMAND "${CMAKE_COMMAND}" -E cat "${_log}")
-        message(STATUS "---- wix.log (end) ----")
-      endif()
-    endforeach()
-
-    set(_features "${BUILD_DIR}/_CPack_Packages/win64/WIX/features.wxs")
-
-    if(EXISTS "${_features}")
-      message(STATUS "---- features.wxs (start) ----")
-      execute_process(COMMAND "${CMAKE_COMMAND}" -E cat "${_features}")
-      message(STATUS "---- features.wxs (end) ----")
-    else()
-      message(WARNING "features.wxs not found at ${_features}")
-    endif()
-
-    message(FATAL_ERROR "CPack/WiX packaging failed")
-  endif()
-
-  set(_WIX_PACK_DIR "win64")
-  set(_wix_logs_src "${BUILD_DIR}/_CPack_Packages/${_WIX_PACK_DIR}/WIX")
-  if(EXISTS "${_wix_logs_src}")
-    # Keep only the top-level WiX logs
-    file(GLOB _wix_log_files LIST_DIRECTORIES FALSE "${_wix_logs_src}/*")
-    list(FILTER _wix_log_files EXCLUDE REGEX "[.]msi$")
-    if(_wix_log_files)
-      set(_wix_logs_dst "${ARTIFACTS_DIR}/logs/WIX")
-      file(MAKE_DIRECTORY "${_wix_logs_dst}")
-      file(COPY ${_wix_log_files} DESTINATION "${_wix_logs_dst}")
-      message(STATUS "Copied WiX logs to ${_wix_logs_dst}")
-    endif()
-  endif()
-
-  file(GLOB_RECURSE _msi_candidates "${BUILD_DIR}/*.msi")
-  list(LENGTH _msi_candidates _n)
-  if(NOT _n EQUAL 1)
-    message(WARNING "Expected exactly 1 MSI, found ${_n}")
-  endif()
-  list(GET _msi_candidates 0 MSI_FILE)
-  if(NOT MSI_FILE)
-    message(FATAL_ERROR "No MSI produced in ${BUILD_DIR}")
-  endif()
-
-  if(BUILD_MODE STREQUAL "nightly_build")
-    if(BUILD_NUMBER AND BUILD_BRANCH AND BUILD_REVISION)
-      set(ARTIFACT_NAME "Audacity-Nightly-${BUILD_NUMBER}-${BUILD_BRANCH}-${BUILD_REVISION}-${PACKARCH}.msi")
-    else()
-      set(ARTIFACT_NAME "Audacity-${BUILD_VERSION}-${PACKARCH}.msi")
-    endif()
-  else()
-    set(ARTIFACT_NAME "Audacity-${BUILD_VERSION}-${PACKARCH}.msi")
-  endif()
-
-  set(ARTIFACT_PATH "${ARTIFACTS_DIR}/${ARTIFACT_NAME}")
-  file(COPY "${MSI_FILE}" DESTINATION "${ARTIFACTS_DIR}")
-  get_filename_component(_copied_name "${MSI_FILE}" NAME)
-  file(RENAME "${ARTIFACTS_DIR}/${_copied_name}" "${ARTIFACT_PATH}")
-  message(STATUS "Copied installer to ${ARTIFACT_PATH}")
-
-  if(SIGN_ENABLE)
-    if(NOT EXISTS "${SIGN_SERVICE_SH}")
-      message(FATAL_ERROR "Signing script not found: ${SIGN_SERVICE_SH}")
-    endif()
-
-    find_program(BASH_EXECUTABLE bash)
-
-    message(STATUS "Signing MSI: ${ARTIFACT_PATH}")
-    execute_process(
-      COMMAND "${BASH_EXECUTABLE}" "${SIGN_SERVICE_SH}"
-              --s3_key "${SIGN_KEY}"
-              --s3_secret "${SIGN_SECRET}"
-              --file_path "${ARTIFACT_PATH}"
-      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-      RESULT_VARIABLE _sign_rc
-    )
-    if(NOT _sign_rc EQUAL 0)
-      message(FATAL_ERROR "Code signing failed (exit ${_sign_rc})")
-    endif()
-    message(STATUS "Signing complete: ${ARTIFACT_PATH}")
-  endif()
-
-  message(STATUS "Finished MSI packing")
+  message(STATUS "Finished 7z packing")
   return()
 endif()
+
+# PACK Squirrel.Windows
+if(PACK_TYPE STREQUAL "squirrel")
+  message(STATUS "Start Squirrel.Windows packing...")
+
+  if(NOT EXISTS "${INSTALL_DIR}")
+    message(FATAL_ERROR "Install tree not found: ${INSTALL_DIR}")
+  endif()
+
+  set(SQUIRREL_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/package_squirrel.ps1")
+  if(NOT EXISTS "${SQUIRREL_SCRIPT}")
+    message(FATAL_ERROR "Squirrel packaging script not found: ${SQUIRREL_SCRIPT}")
+  endif()
+
+  find_program(POWERSHELL_EXECUTABLE NAMES pwsh powershell)
+  if(NOT POWERSHELL_EXECUTABLE)
+    message(FATAL_ERROR "PowerShell not found; it is required for Squirrel.Windows packaging")
+  endif()
+
+  set(_squirrel_args
+      -NoProfile -ExecutionPolicy Bypass
+      -File "${SQUIRREL_SCRIPT}"
+      -InstallDir "${INSTALL_DIR}"
+      -OutDir "${SQUIRREL_OUT_DIR}"
+      -Tag "${RELEASE_TAG}"
+      -RunNumber "${RUN_NUMBER}"
+  )
+
+  if(PREVIOUS_RELEASES_DIR)
+    list(APPEND _squirrel_args -PreviousReleasesDir "${PREVIOUS_RELEASES_DIR}")
+  endif()
+
+  execute_process(
+    COMMAND "${POWERSHELL_EXECUTABLE}" ${_squirrel_args}
+    RESULT_VARIABLE _squirrel_rc
+  )
+
+  if(NOT _squirrel_rc EQUAL 0)
+    message(FATAL_ERROR "Squirrel.Windows packaging failed (exit ${_squirrel_rc})")
+  endif()
+
+  message(STATUS "Finished Squirrel.Windows packing, output in ${SQUIRREL_OUT_DIR}")
+  return()
+endif()
+
+message(FATAL_ERROR "Unknown PACK_TYPE: ${PACK_TYPE}")
