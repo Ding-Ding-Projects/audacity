@@ -1,5 +1,5 @@
 /*
- * regex-builder.js — anchored regex builder workbench, reused by every
+ * regex-builder.js · anchored regex builder workbench, reused by every
  * search/filter field on the Material Audacity docs site.
  *
  * Exposes RegexBuilder.attach(field, options) which wires a small "." button
@@ -227,7 +227,7 @@
 
       explainPattern(pattern).forEach((t) => {
         const li = document.createElement('li');
-        li.innerHTML = '<code>' + escapeHtml(t.token) + '</code> — ' + escapeHtml(t.desc);
+        li.innerHTML = '<code>' + escapeHtml(t.token) + '</code> · ' + escapeHtml(t.desc);
         explainEl.appendChild(li);
       });
 

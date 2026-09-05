@@ -68,7 +68,7 @@
     notifications.slice(0, 50).forEach((n) => {
       const div = document.createElement('div');
       div.className = 'notif-item';
-      div.textContent = new Date(n.at).toLocaleTimeString() + ' — ' + n.message;
+      div.textContent = new Date(n.at).toLocaleTimeString() + ' · ' + n.message;
       list.appendChild(div);
     });
   }
@@ -177,7 +177,7 @@
 
     fetch('data/release.json').then((r) => r.json()).then((rel) => {
       document.getElementById('release-line').textContent =
-        'Version: ' + rel.tag + ' — Updated: ' + new Date(rel.updatedAt).toDateString() + ' — Commit: ' + rel.commit.slice(0, 10);
+        'Version: ' + rel.tag + ' · Updated: ' + new Date(rel.updatedAt).toDateString() + ' · Commit: ' + rel.commit.slice(0, 10);
     }).catch(() => { document.getElementById('release-line').textContent = 'Release information is unavailable right now.'; });
 
     const tabs = [
@@ -226,7 +226,7 @@
     ['Appearance editors', 'An infinite color picker: hue wheel, saturation/value field, and format translator across HEX/RGB/HSL/HSV/HWB/OKLCH/CMYK.'],
     ['Toy locks and authenticator', 'Playful lock screens and an authenticator surface for the desktop app.'],
     ['Ollama suite manager', 'Manage local Ollama models from within the app.'],
-    ['ADHD modes', 'Focus, Low stimulation, Time awareness, One thing at a time, and Momentum — all off by default, never presented as medical.'],
+    ['ADHD modes', 'Focus, Low stimulation, Time awareness, One thing at a time, and Momentum · all off by default, never presented as medical.'],
     ['Windows Squirrel installer', 'Unsigned Squirrel.Windows packaging with background update checks.'],
     ['Linux builds', 'Native Linux build targets alongside the Windows installer.'],
   ];
@@ -265,7 +265,7 @@
         if (!filtered.length) { el.innerHTML = '<p>No release assets are published yet. Tag: ' + rel.tag + '.</p>'; return; }
         el.innerHTML = '<ul>' + filtered.map((it) => {
           const a = it.asset;
-          return '<li><a href="' + a.url + '">' + a.name + '</a>' + (a.sha256 ? ' — SHA-256: <code>' + a.sha256 + '</code>' : '') + '</li>';
+          return '<li><a href="' + a.url + '">' + a.name + '</a>' + (a.sha256 ? ' · SHA-256: <code>' + a.sha256 + '</code>' : '') + '</li>';
         }).join('') + '</ul>';
       }
       body.innerHTML = '<p>' + rel.notes + '</p>' + unsignedNote + '<div id="assets-list"></div>';
@@ -284,7 +284,7 @@
         const el = document.getElementById('changelog-list');
         el.innerHTML = filtered.map((it) => {
           const e = it.entry;
-          return '<div class="md-card" style="margin-bottom:12px"><h3>' + e.summary + '</h3><p>' + e.date + ' — <a href="https://github.com/Ding-Ding-Projects/audacity/commit/' + e.sha + '"><code>' + e.shaDisplay + '</code></a></p><p>' + e.detail + '</p></div>';
+          return '<div class="md-card" style="margin-bottom:12px"><h3>' + e.summary + '</h3><p>' + e.date + ' · <a href="https://github.com/Ding-Ding-Projects/audacity/commit/' + e.sha + '"><code>' + e.shaDisplay + '</code></a></p><p>' + e.detail + '</p></div>';
         }).join('') || '<p>No entries match.</p>';
       }
       wireFilter(document.getElementById('changelog-filter-input'), items, list, 'changelog-filter');
@@ -311,6 +311,7 @@
     { id: 'getting-started', title: 'Getting started', file: 'docs/getting-started.md' },
     { id: 'architecture', title: 'Architecture overview', file: 'docs/architecture.md' },
     { id: 'regex-builder', title: 'The regex builder', file: 'docs/regex-builder.md' },
+    { id: 'command-palette', title: 'The command palette', file: 'docs/command-palette.md' },
   ];
   const LS_TABS = 'ma.docTabs.v1';
   function loadTabState() {
@@ -631,7 +632,7 @@
       } else if (filterText) {
         filtered = list.filter((h) => h.action.toLowerCase().includes(filterText.toLowerCase()));
       }
-      el.innerHTML = filtered.slice(0, 200).map((h) => '<div class="history-item">' + new Date(h.at).toLocaleString() + ' — ' + h.action + '</div>').join('') || '<p>No history entries.</p>';
+      el.innerHTML = filtered.slice(0, 200).map((h) => '<div class="history-item">' + new Date(h.at).toLocaleString() + ' · ' + h.action + '</div>').join('') || '<p>No history entries.</p>';
     }
     let historyRegex = null;
     document.getElementById('history-search-input').addEventListener('input', (e) => renderHistory(e.target.value, historyRegex));

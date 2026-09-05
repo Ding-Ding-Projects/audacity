@@ -1,5 +1,5 @@
 /*
- * m3-color.js — Material 3 color system for Material Audacity docs site.
+ * m3-color.js: Material 3 color system for Material Audacity docs site.
  *
  * Implements the HCT (Hue, Chroma, Tone) color space used by Material 3,
  * built on the CAM16 color appearance model, plus tonal palettes and a

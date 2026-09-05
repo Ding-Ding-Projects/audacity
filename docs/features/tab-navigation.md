@@ -40,10 +40,10 @@ The overflow popup offers four searches, each with its own `M3SearchBar` and
 its own `regexBuilderRequested` hook, so a term typed for one never silently
 narrows another:
 
-1. **This strip** — the tabs of the current strip.
-2. **In group** — the tabs inside one chosen group.
-3. **Groups** — the groups themselves, by name.
-4. **All strips** — every tab of every stored strip, labelled with its strip.
+1. **This strip**: the tabs of the current strip.
+2. **In group**: the tabs inside one chosen group.
+3. **Groups**: the groups themselves, by name.
+4. **All strips**: every tab of every stored strip, labelled with its strip.
 
 A query is treated as a regular expression when it compiles as one and as plain
 text otherwise.

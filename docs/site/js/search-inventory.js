@@ -1,5 +1,5 @@
 /*
- * search-inventory.js — hand-written registry of every search/filter field
+ * search-inventory.js: hand-written registry of every search/filter field
  * on the site. tests.html cross-checks this list against the live DOM: any
  * inventory row missing its builder, or any field with a builder missing
  * from this list, is reported as a visible failure.

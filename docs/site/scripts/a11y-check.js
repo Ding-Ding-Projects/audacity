@@ -1,5 +1,5 @@
 /*
- * a11y-check.js — basic accessibility sanity checks run against the live
+ * a11y-check.js: basic accessibility sanity checks run against the live
  * page with Playwright + Chromium: missing alt text, missing form labels,
  * and low-contrast text (computed from getComputedStyle).
  *

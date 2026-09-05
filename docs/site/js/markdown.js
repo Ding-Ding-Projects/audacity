@@ -1,4 +1,4 @@
-/* markdown.js — small hand-written markdown-to-HTML renderer (subset: headings,
+/* markdown.js: small hand-written markdown-to-HTML renderer (subset: headings,
    paragraphs, lists, code fences, inline code, bold/italic, links, blockquotes). */
 (function (global) {
   'use strict';
