@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QtQml/qqmlregistration.h>
 
 #include "framework/global/async/asyncable.h"
 #include "framework/global/modularity/ioc.h"
@@ -17,6 +18,7 @@ namespace au::experience {
 class NotificationListModel : public QAbstractListModel, public muse::async::Asyncable
 {
     Q_OBJECT
+    QML_ELEMENT
 
     Q_PROPERTY(bool historyMode READ historyMode WRITE setHistoryMode NOTIFY historyModeChanged FINAL)
     Q_PROPERTY(QString searchText READ searchText WRITE setSearchText NOTIFY searchTextChanged FINAL)

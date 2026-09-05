@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QtQml/qqmlregistration.h>
 #include <QVariantMap>
 
 #include "framework/global/async/asyncable.h"
@@ -17,6 +18,7 @@ namespace au::experience {
 class ScheduleListModel : public QAbstractListModel, public muse::async::Asyncable
 {
     Q_OBJECT
+    QML_ELEMENT
 
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged FINAL)
 

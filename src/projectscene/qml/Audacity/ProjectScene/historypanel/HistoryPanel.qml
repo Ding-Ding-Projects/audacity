@@ -12,6 +12,7 @@ import Audacity.ProjectScene
 
 import Audacity.M3
 import Audacity.Companion
+import Audacity.Chronicle
 
 Item {
     id: root

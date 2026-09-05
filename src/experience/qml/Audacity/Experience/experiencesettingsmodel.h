@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QObject>
+#include <QtQml/qqmlregistration.h>
 
 #include "framework/global/async/asyncable.h"
 #include "framework/global/modularity/ioc.h"
@@ -21,6 +22,7 @@ namespace au::experience {
 class ExperienceSettingsModel : public QObject, public muse::Contextable, public muse::async::Asyncable
 {
     Q_OBJECT
+    QML_ELEMENT
 
     Q_PROPERTY(int languageMode READ languageMode WRITE setLanguageMode NOTIFY languageModeChanged FINAL)
     Q_PROPERTY(int englishFunnyLevel READ englishFunnyLevel WRITE setEnglishFunnyLevel NOTIFY funnyLevelsChanged FINAL)

@@ -24,7 +24,7 @@ Item {
 
     property alias navigation: popupButton.navigation
 
-    property alias backgroundRadius: popupButton.backgroundRadius
+    property real backgroundRadius: M3.shape.full
 
     property bool isPlaying: false
 
