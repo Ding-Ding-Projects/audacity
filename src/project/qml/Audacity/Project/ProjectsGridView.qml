@@ -154,7 +154,7 @@ Item {
                 navigation.column: (model.index - (navigation.row * view.columns)) * 3 // * 3 because of controls inside ProjectItem
                 navigation.onActiveChanged: {
                     if (navigation.active) {
-                        view.positionViewAtIndex(index, GridView.Contain);
+                        view.positionViewAtIndex(index, GridView.Contain)
                     }
                 }
 
@@ -172,12 +172,12 @@ Item {
 
                 onClicked: {
                     if (isCreateNew) {
-                        root.createNewProjectRequested();
+                        root.createNewProjectRequested()
                     } else if (!isNoResultsFound) {
                         if (item.isCloud) {
-                            root.openCloudProjectRequested(item.itemId);
+                            root.openCloudProjectRequested(item.itemId)
                         } else {
-                            root.openProjectRequested(item.path, item.name);
+                            root.openProjectRequested(item.path, item.name)
                         }
                     }
                 }

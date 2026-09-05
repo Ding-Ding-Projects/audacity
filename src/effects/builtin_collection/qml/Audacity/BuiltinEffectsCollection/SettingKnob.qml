@@ -14,15 +14,15 @@ Item {
     property int radius: 16
 
     Component.onCompleted: {
-        root.model.init();
+        root.model.init()
     }
 
     Loader {
         id: knobLoader
 
         onLoaded: {
-            root.width = knobLoader.item.width;
-            root.height = knobLoader.item.height;
+            root.width = knobLoader.item.width
+            root.height = knobLoader.item.height
         }
         sourceComponent: isVertical ? verticalKnob : horizontalKnob
     }
@@ -47,11 +47,11 @@ Item {
             }
 
             onNewValueRequested: function (_, newValue) {
-                root.model.value = newValue;
+                root.model.value = newValue
             }
 
             onCommitRequested: {
-                root.model.commitSettings();
+                root.model.commitSettings()
             }
         }
     }
@@ -74,11 +74,11 @@ Item {
             }
 
             onNewValueRequested: function (_, newValue) {
-                root.model.value = newValue;
+                root.model.value = newValue
             }
 
             onCommitRequested: {
-                root.model.commitSettings();
+                root.model.commitSettings()
             }
         }
     }

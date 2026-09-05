@@ -60,8 +60,8 @@ BaseSection {
         navigation.column: 0
 
         onToggled: {
-            prv.useStyleFile = false;
-            root.styleFileImportPathChangeRequested("");
+            prv.useStyleFile = false
+            root.styleFileImportPathChangeRequested("")
         }
     }
 
@@ -84,7 +84,7 @@ BaseSection {
             navigation.column: 0
 
             onToggled: {
-                prv.useStyleFile = true;
+                prv.useStyleFile = true
             }
         }
 
@@ -107,7 +107,7 @@ BaseSection {
             navigationColumnOrderStart: 1
 
             onPathEdited: function (newPath) {
-                root.styleFileImportPathChangeRequested(newPath);
+                root.styleFileImportPathChangeRequested(newPath)
             }
         }
     }

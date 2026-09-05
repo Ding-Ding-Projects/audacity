@@ -80,7 +80,7 @@ Page {
 
             onSelectionChanged: {
                 if (picker.selection !== "" && picker.selection !== "rainbow") {
-                    M3.seedColor = picker.selection;
+                    M3.seedColor = picker.selection
                 }
             }
         }

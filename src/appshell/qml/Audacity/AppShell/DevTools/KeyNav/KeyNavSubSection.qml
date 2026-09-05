@@ -25,9 +25,9 @@ Rectangle {
     signal clicked(string info)
 
     function doClicked(control) {
-        var info = "sub: " + root.subsectionName + ", control: " + control;
-        console.log(info);
-        root.clicked(info);
+        var info = "sub: " + root.subsectionName + ", control: " + control
+        console.log(info)
+        root.clicked(info)
     }
 
     NavigationPanel {
@@ -35,7 +35,7 @@ Rectangle {
 
         onActiveChanged: {
             if (keynavsec.active) {
-                root.forceActiveFocus();
+                root.forceActiveFocus()
             }
         }
     }

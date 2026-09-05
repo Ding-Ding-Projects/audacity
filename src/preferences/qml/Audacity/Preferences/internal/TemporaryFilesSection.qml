@@ -34,7 +34,7 @@ BaseSection {
     property string temporaryPath: ""
 
     onTemporaryPathChanged: {
-        dirPicker.path = temporaryPath;
+        dirPicker.path = temporaryPath
     }
 
     signal temporaryFilesLocationChanged(string newPath)
@@ -63,8 +63,8 @@ BaseSection {
                 navigationColumnOrderStart: 1
 
                 onPathEdited: function (newPath) {
-                    path = newPath;
-                    root.temporaryFilesLocationChanged(newPath);
+                    path = newPath
+                    root.temporaryFilesLocationChanged(newPath)
                 }
             }
         }

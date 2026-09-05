@@ -25,9 +25,9 @@ Rectangle {
     NavigationSection {
         id: keynavsec
         onActiveChanged: {
-            console.debug("KeyNavSection.qml active: " + keynavsec.active);
+            console.debug("KeyNavSection.qml active: " + keynavsec.active)
             if (keynavsec.active) {
-                root.forceActiveFocus();
+                root.forceActiveFocus()
             }
         }
     }

@@ -27,7 +27,7 @@ StyledDialogView {
     margins: 0
 
     onNavigationActivateRequested: {
-        fileNameField.navigation.requestActive();
+        fileNameField.navigation.requestActive()
     }
 
     ExportLabelsModel {
@@ -35,7 +35,7 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        exportModel.init(root.trackId);
+        exportModel.init(root.trackId)
     }
 
     QtObject {
@@ -95,7 +95,7 @@ StyledDialogView {
                     navigation.accessible.name: fileNameLabel.text + ": " + currentText
 
                     onTextEdited: function (newTextValue) {
-                        exportModel.fileName = newTextValue;
+                        exportModel.fileName = newTextValue
                     }
                 }
             }
@@ -114,15 +114,15 @@ StyledDialogView {
                 M3Dropdown {
                     id: fileTypeDropdown
                     function indexOfValue(value) {
-                        var items = fileTypeDropdown.model;
+                        var items = fileTypeDropdown.model
                         for (var i = 0; i < items.length; ++i) {
-                            var item = items[i];
-                            var candidate = (typeof item === "object" && item !== null) ? item[fileTypeDropdown.valueRole] : item;
+                            var item = items[i]
+                            var candidate = (typeof item === "object" && item !== null) ? item[fileTypeDropdown.valueRole] : item
                             if (candidate === value) {
-                                return i;
+                                return i
                             }
                         }
-                        return -1;
+                        return -1
                     }
 
                     Layout.preferredWidth: prv.dropdownWidth
@@ -139,7 +139,7 @@ StyledDialogView {
                     navigation.accessible.name: fileTypeLabel.text + ": " + currentText
 
                     onActivated: function (index, value) {
-                        exportModel.currentFileType = value;
+                        exportModel.currentFileType = value
                     }
                 }
             }
@@ -173,7 +173,7 @@ StyledDialogView {
                     pathFieldTitle: folderLabel.text
 
                     onPathEdited: function (newPath) {
-                        exportModel.directoryPath = newPath;
+                        exportModel.directoryPath = newPath
                     }
                 }
             }
@@ -217,15 +217,15 @@ StyledDialogView {
                     navigationPanelStartOrder: fileSection.navigation.order + 1
 
                     onSetSelectedRequested: function (trackId, selected) {
-                        exportModel.changeSelectionForTrack(trackId, selected);
+                        exportModel.changeSelectionForTrack(trackId, selected)
                     }
 
                     onSelectAllRequested: function () {
-                        exportModel.selectAllTracks();
+                        exportModel.selectAllTracks()
                     }
 
                     onDeselectAllRequested: function () {
-                        exportModel.deselectAllTracks();
+                        exportModel.deselectAllTracks()
                     }
                 }
             }
@@ -256,7 +256,7 @@ StyledDialogView {
                 navigation.order: 1
 
                 onClicked: {
-                    root.reject();
+                    root.reject()
                 }
             }
 
@@ -278,8 +278,8 @@ StyledDialogView {
                 navigation.order: 2
 
                 onClicked: {
-                    exportModel.exportData();
-                    root.accept();
+                    exportModel.exportData()
+                    root.accept()
                 }
             }
         }

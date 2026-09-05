@@ -42,7 +42,7 @@ BaseSection {
         navigation.row: 1
 
         onClicked: {
-            root.restartAudioAndMidiDevicesRequested();
+            root.restartAudioAndMidiDevicesRequested()
         }
     }
 }

@@ -48,12 +48,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 1
 
             onNeedCheckForNewAppVersionChangeRequested: function (check) {
-                updateModel.needCheckForNewAppVersion = check;
+                updateModel.needCheckForNewAppVersion = check
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }

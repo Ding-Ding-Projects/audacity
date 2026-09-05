@@ -33,7 +33,7 @@ PreferencesPage {
     contentFillsAvailableHeight: true
 
     Component.onCompleted: {
-        preferencesModel.load();
+        preferencesModel.load()
     }
 
     AdvancedPreferencesModel {
@@ -54,12 +54,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 1
 
             onResetToDefaultRequested: {
-                preferencesModel.resetToDefault();
+                preferencesModel.resetToDefault()
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }

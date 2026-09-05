@@ -47,7 +47,7 @@ SpectrogramBaseSection {
 
                 currentValue: colorControlCurrentValue
                 onValueEditingFinished: function (value) {
-                    colorControlCurrentValue = value;
+                    colorControlCurrentValue = value
                 }
             }
         }
@@ -66,7 +66,7 @@ SpectrogramBaseSection {
             currentIndex: settingsModel.colorScheme
 
             onValueEdited: function (index) {
-                settingsModel.colorScheme = index;
+                settingsModel.colorScheme = index
             }
         }
     }

@@ -37,11 +37,11 @@ StyledDialogView {
     property string projectManagerUrl: ""
 
     onNavigationActivateRequested: {
-        watchVideoButton.navigation.requestActive();
+        watchVideoButton.navigation.requestActive()
     }
 
     onAccessibilityActivateRequested: {
-        accessibleInfo.readInfo();
+        accessibleInfo.readInfo()
     }
 
     Item {
@@ -87,13 +87,13 @@ StyledDialogView {
                 name: "%1; %2; %3; %4; %5".arg(titleLabel.text).arg(subtitleLabel.text).arg(publishTitleLabel.text).arg(repeater.contentText()).arg(watchVideoButton.text)
 
                 function readInfo() {
-                    accessibleInfo.ignored = false;
-                    accessibleInfo.focused = true;
+                    accessibleInfo.ignored = false
+                    accessibleInfo.focused = true
                 }
 
                 function resetFocus() {
-                    accessibleInfo.ignored = true;
-                    accessibleInfo.focused = false;
+                    accessibleInfo.ignored = true
+                    accessibleInfo.focused = false
                 }
             }
 
@@ -171,13 +171,13 @@ StyledDialogView {
                                 id: repeater
 
                                 function contentText() {
-                                    var result = "";
+                                    var result = ""
                                     for (var i = 0; i < repeater.count; ++i) {
-                                        var item = itemAt(i);
-                                        result += item.title + "; ";
+                                        var item = itemAt(i)
+                                        result += item.title + "; "
                                     }
 
-                                    return result;
+                                    return result
                                 }
 
                                 model: [qsTrc("project", "Create a portfolio to showcase your music"), qsTrc("project", "Gain followers and receive project comments and ratings"), qsTrc("project", "Share your projects and collaborate with other musicians")]
@@ -220,15 +220,15 @@ StyledDialogView {
                             navigation.accessible.ignored: true
                             navigation.onActiveChanged: {
                                 if (!navigation.active) {
-                                    accessible.ignored = false;
-                                    accessible.focused = true;
-                                    accessibleInfo.resetFocus();
+                                    accessible.ignored = false
+                                    accessible.focused = true
+                                    accessibleInfo.resetFocus()
                                 }
                             }
 
                             onClicked: {
-                                Qt.openUrlExternally("https://youtu.be/6LP4U_BF23w");
-                                root.hide();
+                                Qt.openUrlExternally("https://youtu.be/6LP4U_BF23w")
+                                root.hide()
                             }
                         }
                     }
@@ -249,10 +249,10 @@ StyledDialogView {
 
                     onClicked: {
                         Qt.callLater(function () {
-                            api.launcher.openUrl(root.projectManagerUrl);
-                        });
+                            api.launcher.openUrl(root.projectManagerUrl)
+                        })
 
-                        root.hide();
+                        root.hide()
                     }
                 }
 
@@ -264,7 +264,7 @@ StyledDialogView {
                     navigation.column: 3
 
                     onClicked: {
-                        root.hide();
+                        root.hide()
                     }
                 }
             }

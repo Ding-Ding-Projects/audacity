@@ -16,7 +16,7 @@ BaseSection {
     property var paths: []
     property string dialogTitle: qsTrc("preferences", "Choose plugin location")
     property var pathValidator: function (path) {
-        return true;
+        return true
     }
 
     signal addPathRequested
@@ -26,10 +26,10 @@ BaseSection {
     readonly property bool hasEmptyRow: {
         for (let i = 0; i < paths.length; ++i) {
             if (!paths[i] || paths[i].length === 0) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     }
 
     navigation.direction: NavigationPanel.Both
@@ -66,8 +66,8 @@ BaseSection {
                         pathFieldTitle: root.title
 
                         onPathEdited: function (newPath) {
-                            currentPath = newPath;
-                            root.pathChanged(rowIndex, newPath);
+                            currentPath = newPath
+                            root.pathChanged(rowIndex, newPath)
                         }
                     }
 
@@ -85,7 +85,7 @@ BaseSection {
                         navigation.column: 2
 
                         onClicked: {
-                            root.removePathRequested(rowIndex);
+                            root.removePathRequested(rowIndex)
                         }
                     }
                 }
@@ -119,7 +119,7 @@ BaseSection {
             navigation.column: 0
 
             onClicked: {
-                root.addPathRequested();
+                root.addPathRequested()
             }
         }
     }

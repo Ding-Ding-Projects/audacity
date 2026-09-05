@@ -82,7 +82,7 @@ DoublePage {
                             navigation.accessible.description: workspaceModel.formatNavigationDescription(modelData.description, modelData.selected)
 
                             onToggled: {
-                                workspaceModel.selectWorkspace(modelData.code);
+                                workspaceModel.selectWorkspace(modelData.code)
                             }
                         }
                         Column {
@@ -108,7 +108,7 @@ DoublePage {
                         anchors.fill: parent
 
                         onClicked: {
-                            workspaceModel.selectWorkspace(modelData.code);
+                            workspaceModel.selectWorkspace(modelData.code)
                         }
                     }
 
@@ -148,7 +148,7 @@ DoublePage {
     }
 
     Component.onCompleted: {
-        workspaceModel.load();
+        workspaceModel.load()
     }
 
     WorkspaceLayoutPageModel {

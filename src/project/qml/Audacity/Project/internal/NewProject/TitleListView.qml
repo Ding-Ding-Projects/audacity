@@ -44,7 +44,7 @@ Item {
     signal doubleClicked(var index)
 
     function clearSearch() {
-        searchField.clear();
+        searchField.clear()
     }
 
     StyledTextLabel {
@@ -106,11 +106,11 @@ Item {
             }
 
             onClicked: {
-                root.titleClicked(model.index);
+                root.titleClicked(model.index)
             }
 
             onDoubleClicked: {
-                root.doubleClicked(model.index);
+                root.doubleClicked(model.index)
             }
         }
     }

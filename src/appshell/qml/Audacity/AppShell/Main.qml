@@ -38,9 +38,9 @@ AppWindow {
 
     function toggleMaximized() {
         if (root.visibility === Window.Maximized) {
-            root.showNormal();
+            root.showNormal()
         } else {
-            root.showMaximized();
+            root.showMaximized()
         }
     }
 
@@ -51,8 +51,8 @@ AppWindow {
     }
 
     Component.onCompleted: {
-        framelessWindowModel.init();
-        window.init();
+        framelessWindowModel.init()
+        window.init()
     }
 
     M3AppTitleBar {
@@ -68,15 +68,15 @@ AppWindow {
         handleWindowGestures: true
 
         onShowWindowMinimizedRequested: {
-            root.showMinimized();
+            root.showMinimized()
         }
 
         onToggleWindowMaximizedRequested: {
-            root.toggleMaximized();
+            root.toggleMaximized()
         }
 
         onCloseWindowRequested: {
-            root.close();
+            root.close()
         }
     }
 

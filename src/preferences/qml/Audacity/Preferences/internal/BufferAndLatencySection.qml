@@ -59,7 +59,7 @@ BaseSection {
                 navigation.column: 0
 
                 onValueEdited: function (newValue) {
-                    apiModel.bufferLengthSelected(newValue);
+                    apiModel.bufferLengthSelected(newValue)
                 }
             }
         }
@@ -96,7 +96,7 @@ BaseSection {
                     navigation.column: 1
 
                     onValueEdited: function (newValue) {
-                        apiModel.latencyCompensationSelected(newValue);
+                        apiModel.latencyCompensationSelected(newValue)
                     }
                 }
 
@@ -106,10 +106,10 @@ BaseSection {
                     text: qsTrc("preferences", "Automatic")
                     checked: apiModel.automaticCompensationEnabled
                     onToggled: {
-                        apiModel.setAutomaticCompensationEnabled(checked);
+                        apiModel.setAutomaticCompensationEnabled(checked)
                         automaticCompensationCheckbox.checked = Qt.binding(function () {
-                            return apiModel.automaticCompensationEnabled;
-                        });
+                            return apiModel.automaticCompensationEnabled
+                        })
                     }
 
                     width: parent.width

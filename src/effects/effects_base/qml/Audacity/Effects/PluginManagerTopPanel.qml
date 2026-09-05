@@ -24,12 +24,12 @@ Item {
     signal searchTextChanged(string newText)
 
     function focusOnFirst() {
-        dropdownsRepeater.itemAt(0).navigation.requestActive();
+        dropdownsRepeater.itemAt(0).navigation.requestActive()
     }
 
     function readInfo() {
-        accessibleInfo.ignored = false;
-        accessibleInfo.focused = true;
+        accessibleInfo.ignored = false
+        accessibleInfo.focused = true
     }
 
     AccessibleItem {
@@ -41,17 +41,17 @@ Item {
 
     Component.onCompleted: {
         tableViewModel.enabledDisabledSelectedIndex = Qt.binding(function () {
-            return showModel.selectedIndex;
-        });
+            return showModel.selectedIndex
+        })
         tableViewModel.effectFamilySelectedIndex = Qt.binding(function () {
-            return typeModel.selectedIndex;
-        });
+            return typeModel.selectedIndex
+        })
         tableViewModel.effectTypeSelectedIndex = Qt.binding(function () {
-            return categoryModel.selectedIndex;
-        });
+            return categoryModel.selectedIndex
+        })
         tableViewModel.statusSelectedIndex = Qt.binding(function () {
-            return statusModel.selectedIndex;
-        });
+            return statusModel.selectedIndex
+        })
     }
 
     DropdownOptionsModel {
@@ -105,11 +105,11 @@ Item {
 
                 Component.onCompleted: {
                     // Don't know why `navigation.order: index` doesn't work here
-                    navigation.order = index;
+                    navigation.order = index
                 }
 
                 onHandleMenuItem: function (itemId) {
-                    modelData.select(itemId);
+                    modelData.select(itemId)
                 }
             }
         }
@@ -126,7 +126,7 @@ Item {
             navigation.order: dropdownsRepeater.count
 
             onSearchTextChanged: {
-                root.searchTextChanged(searchField.searchText);
+                root.searchTextChanged(searchField.searchText)
             }
         }
     }

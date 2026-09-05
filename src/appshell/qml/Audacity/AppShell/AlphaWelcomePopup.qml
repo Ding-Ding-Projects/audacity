@@ -158,7 +158,7 @@ release of Audacity 4.0<br><br>
                 variant: "filled"
 
                 onClicked: {
-                    root.accept();
+                    root.accept()
                 }
             }
         }

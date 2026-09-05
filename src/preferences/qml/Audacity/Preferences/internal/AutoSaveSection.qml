@@ -56,7 +56,7 @@ BaseSection {
             navigation.column: 1
 
             onToggled: {
-                root.autoSaveEnabledChanged(checked);
+                root.autoSaveEnabledChanged(checked)
             }
         }
 
@@ -81,7 +81,7 @@ BaseSection {
             navigation.column: 2
 
             onValueEdited: function (newValue) {
-                root.intervalChanged(newValue);
+                root.intervalChanged(newValue)
             }
         }
     }

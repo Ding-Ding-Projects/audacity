@@ -18,9 +18,9 @@ StyledPopupView {
     property real gain: 0
 
     property rect contentRect: {
-        let rect = fontMetrics.boundingRect("00.0 kHz");
-        rect.height = rect.height * 2;
-        return rect;
+        let rect = fontMetrics.boundingRect("00.0 kHz")
+        rect.height = rect.height * 2
+        return rect
     }
 
     property int decimalPlaces: 1
@@ -30,9 +30,9 @@ StyledPopupView {
 
     function freqLabel(f) {
         if (f >= 1000) {
-            return (f / 1000).toFixed(root.decimalPlaces) + " kHz";
+            return (f / 1000).toFixed(root.decimalPlaces) + " kHz"
         }
-        return Math.round(f) + " Hz";
+        return Math.round(f) + " Hz"
     }
 
     Item {
@@ -61,7 +61,7 @@ StyledPopupView {
         repeat: false
 
         onTriggered: {
-            root.open();
+            root.open()
         }
     }
 
@@ -72,25 +72,25 @@ StyledPopupView {
         repeat: false
 
         onTriggered: {
-            root.close();
+            root.close()
         }
     }
 
     function show(noDelay = false) {
         if (noDelay) {
-            root.open();
+            root.open()
         } else {
-            openTimer.restart();
+            openTimer.restart()
         }
-        closeTimer.stop();
+        closeTimer.stop()
     }
 
     function hide(noDelay = false) {
         if (noDelay) {
-            root.close();
+            root.close()
         } else {
-            closeTimer.restart();
+            closeTimer.restart()
         }
-        openTimer.stop();
+        openTimer.stop()
     }
 }

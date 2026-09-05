@@ -47,7 +47,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.meiImportLayoutChangeRequested(checked);
+            root.meiImportLayoutChangeRequested(checked)
         }
     }
 }

@@ -81,28 +81,28 @@ Item {
 
             sourceComponent: {
                 if (!parameterData) {
-                    return null;
+                    return null
                 }
 
                 switch (parameterData.type) {
                 case "toggle":
-                    return toggleControl;
+                    return toggleControl
                 case "dropdown":
-                    return dropdownControl;
+                    return dropdownControl
                 case "slider":
-                    return sliderControl;
+                    return sliderControl
                 case "numeric":
-                    return numericControl;
+                    return numericControl
                 case "readonly":
-                    return readonlyControl;
+                    return readonlyControl
                 case "time":
-                    return timeControl;
+                    return timeControl
                 case "file":
-                    return fileControl;
+                    return fileControl
                 case "text":
-                    return textControl;
+                    return textControl
                 default:
-                    return unknownControl;
+                    return unknownControl
                 }
             }
         }
@@ -146,13 +146,13 @@ Item {
                 root.gestureStarted(root.parameterId);
 
                 // Send the opposite of current value (toggle)
-                var isCurrentlyOn = parameterData.isToggleChecked;
-                root.valueChanged(root.parameterId, isCurrentlyOn ? parameterData.minValue : parameterData.maxValue);
+                var isCurrentlyOn = parameterData.isToggleChecked
+                root.valueChanged(root.parameterId, isCurrentlyOn ? parameterData.minValue : parameterData.maxValue)
 
-                root.gestureEnded(root.parameterId);
+                root.gestureEnded(root.parameterId)
                 m3Switch1.checked = Qt.binding(function () {
-                    return parameterData ? parameterData.isToggleChecked : false;
-                });
+                    return parameterData ? parameterData.isToggleChecked : false
+                })
             }
         }
     }
@@ -178,30 +178,30 @@ Item {
 
                 model: {
                     if (!parameterData || !parameterData.enumValues) {
-                        return [];
+                        return []
                     }
 
                     // Convert to array of objects with text property
-                    var items = [];
+                    var items = []
                     for (var i = 0; i < parameterData.enumValues.length; i++) {
                         items.push({
                             text: parameterData.enumValues[i]
-                        });
+                        })
                     }
-                    return items;
+                    return items
                 }
 
                 enabled: parameterData ? !parameterData.isReadOnly : false
 
                 onActivated: function (index, value) {
                     // Dropdown selection is a single atomic operation - begin and end gesture immediately
-                    root.gestureStarted(root.parameterId);
+                    root.gestureStarted(root.parameterId)
 
                     if (parameterData && parameterData.enumIndices && index >= 0 && index < parameterData.enumIndices.length) {
-                        root.valueChanged(root.parameterId, parameterData.enumIndices[index]);
+                        root.valueChanged(root.parameterId, parameterData.enumIndices[index])
                     }
 
-                    root.gestureEnded(root.parameterId);
+                    root.gestureEnded(root.parameterId)
                 }
             }
         }
@@ -245,19 +245,19 @@ Item {
 
                     onTriggered: {
                         if (slider.gestureActive) {
-                            slider.gestureActive = false;
-                            root.gestureEnded(root.parameterId);
+                            slider.gestureActive = false
+                            root.gestureEnded(root.parameterId)
                         }
                     }
                 }
 
                 onMoved: {
                     if (!slider.gestureActive) {
-                        slider.gestureActive = true;
-                        root.gestureStarted(root.parameterId);
+                        slider.gestureActive = true
+                        root.gestureStarted(root.parameterId)
                     }
-                    gestureEndTimer.restart();
-                    root.valueChanged(root.parameterId, slider.value);
+                    gestureEndTimer.restart()
+                    root.valueChanged(root.parameterId, slider.value)
                 }
             }
 
@@ -274,7 +274,7 @@ Item {
                 onGestureStarted: root.gestureStarted(root.parameterId)
                 onGestureEnded: root.gestureEnded(root.parameterId)
                 onValueCommitted: function (v) {
-                    root.valueChanged(root.parameterId, v);
+                    root.valueChanged(root.parameterId, v)
                 }
             }
         }
@@ -300,7 +300,7 @@ Item {
                 onGestureStarted: root.gestureStarted(root.parameterId)
                 onGestureEnded: root.gestureEnded(root.parameterId)
                 onValueCommitted: function (v) {
-                    root.valueChanged(root.parameterId, v);
+                    root.valueChanged(root.parameterId, v)
                 }
             }
         }
@@ -341,14 +341,14 @@ Item {
                 lowerTimeSignature: root.lowerTimeSignature
 
                 onValueChanged: {
-                    root.valueChanged(root.parameterId, timecode.value);
+                    root.valueChanged(root.parameterId, timecode.value)
                 }
 
                 onFocusChanged: {
                     if (focus) {
-                        root.gestureStarted(root.parameterId);
+                        root.gestureStarted(root.parameterId)
                     } else {
-                        root.gestureEnded(root.parameterId);
+                        root.gestureEnded(root.parameterId)
                     }
                 }
             }
@@ -386,22 +386,22 @@ Item {
 
                 pickerType: {
                     if (!parameterData) {
-                        return FilePicker.PickerType.File;
+                        return FilePicker.PickerType.File
                     }
 
                     if (parameterData.isDirectory) {
-                        return FilePicker.PickerType.Directory;
+                        return FilePicker.PickerType.Directory
                     }
 
                     // If "save" flag is set, use Any type (save dialog)
                     if (parameterData.isFileSave) {
-                        return FilePicker.PickerType.Any;
+                        return FilePicker.PickerType.Any
                     }
 
                     // Otherwise use File type (open dialog)
                     // Note: Multiple file selection is not yet fully supported in the Framework
                     // but the flag is available for future implementation
-                    return FilePicker.PickerType.File;
+                    return FilePicker.PickerType.File
                 }
 
                 enabled: parameterData ? !parameterData.isReadOnly : false
@@ -409,17 +409,17 @@ Item {
                 // Set file filters from parameterData
                 filter: {
                     if (!parameterData || !parameterData.fileFilters || parameterData.fileFilters.length === 0) {
-                        return "";
+                        return ""
                     }
                     // Join all filters with ";;" separator for Qt file dialog
-                    return parameterData.fileFilters.join(";;");
+                    return parameterData.fileFilters.join(";;")
                 }
 
                 onPathEdited: function (newPath) {
                     // File selection is a single atomic operation - begin and end gesture immediately
-                    root.gestureStarted(root.parameterId);
-                    root.stringValueChanged(root.parameterId, newPath);
-                    root.gestureEnded(root.parameterId);
+                    root.gestureStarted(root.parameterId)
+                    root.stringValueChanged(root.parameterId, newPath)
+                    root.gestureEnded(root.parameterId)
                 }
             }
         }
@@ -447,14 +447,14 @@ Item {
 
                 onActiveFocusChanged: {
                     if (activeFocus) {
-                        root.gestureStarted(root.parameterId);
+                        root.gestureStarted(root.parameterId)
                     } else {
-                        root.gestureEnded(root.parameterId);
+                        root.gestureEnded(root.parameterId)
                     }
                 }
 
                 onTextEdited: function (newTextValue) {
-                    root.stringValueChanged(root.parameterId, newTextValue);
+                    root.stringValueChanged(root.parameterId, newTextValue)
                 }
             }
         }

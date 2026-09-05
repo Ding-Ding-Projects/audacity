@@ -24,20 +24,20 @@ Item {
 
     function activateNumericInput(initialText) {
         if (!textEdit.activeFocus) {
-            textEdit.forceActiveFocus();
+            textEdit.forceActiveFocus()
         }
         if (initialText !== undefined && initialText !== "") {
-            textEdit.currentText = initialText;
+            textEdit.currentText = initialText
         }
     }
 
     onParameterChanged: {
         if (parameter) {
-            knob.from = parameter["min"];
-            knob.to = parameter["max"];
-            knob.value = parameter["value"];
-            knob.stepSize = parameter["step"] || 1;
-            textEdit.measureUnitsSymbol = parameter["unit"] || "";
+            knob.from = parameter["min"]
+            knob.to = parameter["max"]
+            knob.value = parameter["value"]
+            knob.stepSize = parameter["step"] || 1
+            textEdit.measureUnitsSymbol = parameter["unit"] || ""
         }
     }
 
@@ -61,15 +61,15 @@ Item {
                 navigation.accessible.name: root.parameter["title"]
 
                 onNewValueRequested: function (value) {
-                    root.newValueRequested(root.parameter["key"], value);
+                    root.newValueRequested(root.parameter["key"], value)
                 }
 
                 mouseArea.onReleased: function () {
-                    root.commitRequested();
+                    root.commitRequested()
                 }
 
                 mouseArea.onDoubleClicked: function () {
-                    root.newValueRequested(root.parameter["key"], root.defaultValue);
+                    root.newValueRequested(root.parameter["key"], root.defaultValue)
                 }
             }
 
@@ -78,11 +78,11 @@ Item {
 
                 function onNavigationEvent(event) {
                     if (event.type !== NavigationEvent.Trigger) {
-                        return;
+                        return
                     }
 
-                    root.activateNumericInput();
-                    event.accepted = true;
+                    root.activateNumericInput()
+                    event.accepted = true
                 }
             }
 
@@ -96,21 +96,21 @@ Item {
                 minValue: knob.from
                 maxValue: knob.to
                 decimals: {
-                    let s = knob.stepSize.toString();
+                    let s = knob.stepSize.toString()
                     if (s.indexOf('.') >= 0)
-                        return s.split('.')[1].length;
-                    return 0;
+                        return s.split('.')[1].length
+                    return 0
                 }
                 step: knob.stepSize
 
                 currentValue: +knob.value.toFixed(decimals)
 
                 onValueEdited: function (value) {
-                    root.newValueRequested(root.parameter["key"], value);
+                    root.newValueRequested(root.parameter["key"], value)
                 }
 
                 onValueEditingFinished: function (value) {
-                    root.commitRequested();
+                    root.commitRequested()
                 }
             }
         }

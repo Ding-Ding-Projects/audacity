@@ -74,7 +74,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Compression %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setCompression(newValue);
+                        ffmpegPrefModel.setCompression(newValue)
                     }
                 }
             }
@@ -106,7 +106,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "LPC %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setLpc(newValue);
+                        ffmpegPrefModel.setLpc(newValue)
                     }
                 }
             }
@@ -138,7 +138,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Min. PdO %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setMinPdO(newValue);
+                        ffmpegPrefModel.setMinPdO(newValue)
                     }
                 }
             }
@@ -170,7 +170,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Min. PtO %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setMinPtO(newValue);
+                        ffmpegPrefModel.setMinPtO(newValue)
                     }
                 }
             }
@@ -213,7 +213,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Frame %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setFrameSize(newValue);
+                        ffmpegPrefModel.setFrameSize(newValue)
                     }
                 }
             }
@@ -229,15 +229,15 @@ ColumnLayout {
 
                 M3Dropdown {
                     function indexOfValue(value) {
-                        var items = model;
+                        var items = model
                         for (var i = 0; i < items.length; ++i) {
-                            var item = items[i];
-                            var candidate = (typeof item === "object" && item !== null) ? item[valueRole] : item;
+                            var item = items[i]
+                            var candidate = (typeof item === "object" && item !== null) ? item[valueRole] : item
                             if (candidate === value) {
-                                return i;
+                                return i
                             }
                         }
-                        return -1;
+                        return -1
                     }
                     width: root.controlWidth
 
@@ -250,7 +250,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "PdO method %1").arg(currentText)
 
                     onActivated: function (index, value) {
-                        ffmpegPrefModel.setPdOMethod(index);
+                        ffmpegPrefModel.setPdOMethod(index)
                     }
                 }
             }
@@ -279,7 +279,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Max. PdO %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setMaxPdO(newValue);
+                        ffmpegPrefModel.setMaxPdO(newValue)
                     }
                 }
             }
@@ -308,7 +308,7 @@ ColumnLayout {
                     navigation.accessible.name: qsTrc("export", "Max. PtO %1").arg(currentValue)
 
                     onValueEdited: function (newValue) {
-                        ffmpegPrefModel.setMaxPtO(newValue);
+                        ffmpegPrefModel.setMaxPtO(newValue)
                     }
                 }
             }
@@ -326,10 +326,10 @@ ColumnLayout {
         checked: ffmpegPrefModel.useLpc
 
         onToggled: {
-            ffmpegPrefModel.setUseLpc(checked);
+            ffmpegPrefModel.setUseLpc(checked)
             lpcCheckbox.checked = Qt.binding(function () {
-                return ffmpegPrefModel.useLpc;
-            });
+                return ffmpegPrefModel.useLpc
+            })
         }
     }
 }

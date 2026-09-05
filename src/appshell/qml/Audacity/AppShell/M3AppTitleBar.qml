@@ -116,11 +116,11 @@ Rectangle {
 
             onLoaded: {
                 item.appWindow = Qt.binding(function () {
-                    return menuLoader.appWindow;
-                });
+                    return menuLoader.appWindow
+                })
                 item.availableWidth = Qt.binding(function () {
-                    return Math.max(0, root.width - 240);
-                });
+                    return Math.max(0, root.width - 240)
+                })
             }
         }
 
@@ -153,7 +153,7 @@ Rectangle {
 
                 onActiveChanged: {
                     if (active && root.appWindow) {
-                        root.appWindow.startSystemMove();
+                        root.appWindow.startSystemMove()
                     }
                 }
             }
@@ -162,7 +162,7 @@ Rectangle {
                 enabled: root.handleWindowGestures
 
                 onDoubleTapped: {
-                    root.toggleWindowMaximizedRequested();
+                    root.toggleWindowMaximizedRequested()
                 }
             }
         }
@@ -182,7 +182,7 @@ Rectangle {
                 navigation.order: 1
 
                 onClicked: {
-                    root.showWindowMinimizedRequested();
+                    root.showWindowMinimizedRequested()
                 }
             }
 
@@ -195,7 +195,7 @@ Rectangle {
                 navigation.order: 2
 
                 onClicked: {
-                    root.toggleWindowMaximizedRequested();
+                    root.toggleWindowMaximizedRequested()
                 }
             }
 
@@ -208,7 +208,7 @@ Rectangle {
                 navigation.order: 3
 
                 onClicked: {
-                    root.closeWindowRequested();
+                    root.closeWindowRequested()
                 }
             }
         }

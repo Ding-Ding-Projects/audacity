@@ -15,7 +15,7 @@ ProjectsView {
     }
 
     Component.onCompleted: {
-        recentProjectsModel.load();
+        recentProjectsModel.load()
     }
 
     sourceComponent: projectListComp
@@ -44,11 +44,11 @@ ProjectsView {
             onCreateNewProjectRequested: root.createNewProjectRequested()
 
             onOpenProjectRequested: function (projectPath, displayName) {
-                root.openProjectRequested(projectPath, displayName);
+                root.openProjectRequested(projectPath, displayName)
             }
 
             onOpenCloudProjectRequested: function (projectId) {
-                root.openCloudProjectRequested(projectId);
+                root.openCloudProjectRequested(projectId)
             }
         }
     }

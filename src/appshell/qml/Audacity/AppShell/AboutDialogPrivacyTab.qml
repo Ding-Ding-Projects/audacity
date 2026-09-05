@@ -55,8 +55,8 @@ ColumnLayout {
             linkColor: M3.color.primary
 
             text: {
-                let privacyUrl = root.model.privacyPolicyUrl();
-                return prv.privacySubtitle.arg("<a href=\"%1\">%2</a>".arg(privacyUrl.url).arg(qsTrc("appshell/about", "privacy policy")));
+                let privacyUrl = root.model.privacyPolicyUrl()
+                return prv.privacySubtitle.arg("<a href=\"%1\">%2</a>".arg(privacyUrl.url).arg(qsTrc("appshell/about", "privacy policy")))
             }
             font: M3.typography.bodyMedium
         }

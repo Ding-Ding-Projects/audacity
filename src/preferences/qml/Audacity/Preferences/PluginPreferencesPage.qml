@@ -17,7 +17,7 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        preferencesModel.init();
+        preferencesModel.init()
     }
 
     Column {
@@ -36,7 +36,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -55,7 +55,7 @@ PreferencesPage {
 
             paths: preferencesModel.lv2CustomPaths
             pathValidator: function (p) {
-                return preferencesModel.pathExists(p);
+                return preferencesModel.pathExists(p)
             }
 
             navigation.section: root.navigationSection
@@ -63,15 +63,15 @@ PreferencesPage {
 
             onAddPathRequested: preferencesModel.addLv2Path()
             onPathChanged: function (index, newPath) {
-                preferencesModel.setLv2Path(index, newPath);
+                preferencesModel.setLv2Path(index, newPath)
             }
             onRemovePathRequested: function (index) {
-                preferencesModel.removeLv2Path(index);
+                preferencesModel.removeLv2Path(index)
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -90,7 +90,7 @@ PreferencesPage {
 
             paths: preferencesModel.vst3CustomPaths
             pathValidator: function (p) {
-                return preferencesModel.pathExists(p);
+                return preferencesModel.pathExists(p)
             }
 
             navigation.section: root.navigationSection
@@ -98,15 +98,15 @@ PreferencesPage {
 
             onAddPathRequested: preferencesModel.addVst3Path()
             onPathChanged: function (index, newPath) {
-                preferencesModel.setVst3Path(index, newPath);
+                preferencesModel.setVst3Path(index, newPath)
             }
             onRemovePathRequested: function (index) {
-                preferencesModel.removeVst3Path(index);
+                preferencesModel.removeVst3Path(index)
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -139,8 +139,8 @@ PreferencesPage {
 
                     onFocusChanged: {
                         if (activeFocus) {
-                            const position = extensionSection.mapToItem(sectionsColumn, 0, 0);
-                            root.ensureContentVisibleRequested(Qt.rect(position.x, position.y, width, height));
+                            const position = extensionSection.mapToItem(sectionsColumn, 0, 0)
+                            root.ensureContentVisibleRequested(Qt.rect(position.x, position.y, width, height))
                         }
                     }
                 }

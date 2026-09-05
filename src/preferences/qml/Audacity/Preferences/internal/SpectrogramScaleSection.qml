@@ -30,7 +30,7 @@ SpectrogramBaseSection {
         currentIndex: settingsModel.scale
 
         onValueEdited: function (index) {
-            settingsModel.scale = index;
+            settingsModel.scale = index
         }
     }
 
@@ -60,7 +60,7 @@ SpectrogramBaseSection {
 
             currentValue: controlCurrentValue
             onValueEditingFinished: function (value) {
-                controlCurrentValue = value;
+                controlCurrentValue = value
             }
         }
     }

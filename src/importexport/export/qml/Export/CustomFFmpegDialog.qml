@@ -26,7 +26,7 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        ffmpegPrefModel.init();
+        ffmpegPrefModel.init()
     }
 
     ColumnLayout {

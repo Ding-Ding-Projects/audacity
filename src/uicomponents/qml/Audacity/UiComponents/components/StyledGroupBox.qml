@@ -78,7 +78,7 @@ Column {
                     navigation.order: index
 
                     onToggled: {
-                        root.valueChangeRequested(modelData["value"]);
+                        root.valueChangeRequested(modelData["value"])
                     }
                 }
             }

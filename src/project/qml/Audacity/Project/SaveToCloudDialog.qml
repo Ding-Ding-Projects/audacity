@@ -49,10 +49,10 @@ StyledDialogView {
                 root.ret = {
                     errcode: 0,
                     value: projectNameField.value
-                };
-                root.hide();
+                }
+                root.hide()
             } else {
-                model.openCreateAccountDialog();
+                model.openCreateAccountDialog()
             }
         }
     }
@@ -66,8 +66,8 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        model.init();
-        Qt.callLater(projectNameField.forceActiveFocus);
+        model.init()
+        Qt.callLater(projectNameField.forceActiveFocus)
     }
 
     ColumnLayout {
@@ -126,7 +126,7 @@ StyledDialogView {
                 navigation.order: 1
 
                 onClicked: function () {
-                    model.signOut();
+                    model.signOut()
                 }
             }
         }
@@ -174,14 +174,14 @@ StyledDialogView {
                 navigation.order: 1
 
                 onTextEdited: function (newTextValue) {
-                    value = newTextValue;
+                    value = newTextValue
                 }
 
                 onAccepted: function () {
                     if (prv.canTrigger) {
-                        prv.onTriggered();
+                        prv.onTriggered()
                     } else {
-                        Qt.callLater(projectNameField.forceActiveFocus);
+                        Qt.callLater(projectNameField.forceActiveFocus)
                     }
                 }
             }
@@ -211,13 +211,13 @@ StyledDialogView {
                 enabled: prv.canTrigger
 
                 onClicked: function () {
-                    prv.onTriggered();
+                    prv.onTriggered()
                 }
             }
 
             onStandardButtonClicked: function (buttonId) {
                 if (buttonId === ButtonBoxModel.Cancel) {
-                    root.reject();
+                    root.reject()
                 }
             }
         }

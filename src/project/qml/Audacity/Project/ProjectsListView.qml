@@ -25,14 +25,14 @@ Item {
     property real _columnsContentX: 0
 
     readonly property real _remainingColumnsMinWidth: {
-        var total = 0;
+        var total = 0
         for (var i = 1; i < columns.length; i++) {
-            total += columns[i].width;
+            total += columns[i].width
         }
         if (columns.length > 2) {
-            total += (columns.length - 2) * 24;
+            total += (columns.length - 2) * 24
         }
-        return total;
+        return total
     }
 
     property alias view: view
@@ -44,13 +44,13 @@ Item {
     signal openCloudProjectRequested(var projectId)
 
     function scrollColumnIntoView(columnX, columnWidth) {
-        var viewport = headerFlickable.width;
-        var cx = headerFlickable.contentX;
+        var viewport = headerFlickable.width
+        var cx = headerFlickable.contentX
 
         if (columnX < cx) {
-            headerFlickable.contentX = columnX;
+            headerFlickable.contentX = columnX
         } else if (columnX + columnWidth > cx + viewport) {
-            headerFlickable.contentX = columnX + columnWidth - viewport;
+            headerFlickable.contentX = columnX + columnWidth - viewport
         }
     }
 
@@ -116,7 +116,7 @@ Item {
             navigation.column: 0
 
             onClicked: {
-                root.createNewProjectRequested();
+                root.createNewProjectRequested()
             }
 
             RowLayout {
@@ -217,7 +217,7 @@ Item {
                             boundsBehavior: Flickable.StopAtBounds
 
                             onContentXChanged: {
-                                root._columnsContentX = contentX;
+                                root._columnsContentX = contentX
                             }
 
                             RowLayout {
@@ -307,14 +307,14 @@ Item {
                         navigation.column: 0
 
                         onColumnScrollRequested: function (columnX, columnWidth) {
-                            root.scrollColumnIntoView(columnX, columnWidth);
+                            root.scrollColumnIntoView(columnX, columnWidth)
                         }
 
                         onClicked: {
                             if (item.isCloud) {
-                                root.openCloudProjectRequested(item.itemId);
+                                root.openCloudProjectRequested(item.itemId)
                             } else {
-                                root.openProjectRequested(item.path, item.name);
+                                root.openProjectRequested(item.path, item.name)
                             }
                         }
                     }

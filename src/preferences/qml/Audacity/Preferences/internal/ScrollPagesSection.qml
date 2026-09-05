@@ -70,7 +70,7 @@ BaseSection {
             navigation.accessible.name: title
 
             onToggled: {
-                root.orientationChangeRequested(modelData["value"]);
+                root.orientationChangeRequested(modelData["value"])
             }
         }
     }
@@ -86,7 +86,7 @@ BaseSection {
         navigation.row: radioButtonList.model.length
 
         onToggled: {
-            root.limitScrollAreaChangeRequested(checked);
+            root.limitScrollAreaChangeRequested(checked)
         }
     }
 }

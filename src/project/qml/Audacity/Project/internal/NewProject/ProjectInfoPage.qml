@@ -48,13 +48,13 @@ Item {
             withPickupMeasure: additionalInfo.withPickupMeasure,
             pickupTimeSignature: additionalInfo.pickupTimeSignature,
             measureCount: additionalInfo.measureCount
-        };
+        }
 
-        return result;
+        return result
     }
 
     function focusOnFirst() {
-        additionalInfo.focusOnFirst();
+        additionalInfo.focusOnFirst()
     }
 
     StyledTextLabel {

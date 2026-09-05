@@ -58,7 +58,7 @@ BaseSection {
                 navigation.column: 0
 
                 onValueEdited: function (newIndex, newValue) {
-                    root.currentAudioApiIndexChangeRequested(newIndex);
+                    root.currentAudioApiIndexChangeRequested(newIndex)
                 }
             }
 
@@ -75,7 +75,7 @@ BaseSection {
                 navigation.column: 0
 
                 onValueEdited: function (newIndex, newValue) {
-                    apiModel.inputDeviceSelected(newIndex);
+                    apiModel.inputDeviceSelected(newIndex)
                 }
             }
         }
@@ -97,7 +97,7 @@ BaseSection {
                 navigation.column: 1
 
                 onValueEdited: function (newIndex, newValue) {
-                    apiModel.outputDeviceSelected(newIndex);
+                    apiModel.outputDeviceSelected(newIndex)
                 }
             }
 
@@ -114,7 +114,7 @@ BaseSection {
                 navigation.column: 1
 
                 onValueEdited: function (newIndex, newValue) {
-                    apiModel.inputChannelsSelected(newIndex);
+                    apiModel.inputChannelsSelected(newIndex)
                 }
             }
         }

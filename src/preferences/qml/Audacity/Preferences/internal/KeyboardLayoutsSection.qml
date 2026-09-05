@@ -43,15 +43,15 @@ BaseSection {
     M3Dropdown {
         id: dropdown
         function indexOfValue(value) {
-            var items = dropdown.model;
+            var items = dropdown.model
             for (var i = 0; i < items.length; ++i) {
-                var item = items[i];
-                var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item;
+                var item = items[i]
+                var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item
                 if (candidate === value) {
-                    return i;
+                    return i
                 }
             }
-            return -1;
+            return -1
         }
         width: root.columnWidth
 
@@ -63,7 +63,7 @@ BaseSection {
         navigation.order: 1
 
         onActivated: function (index, value) {
-            root.keyboardLayoutSelected(value);
+            root.keyboardLayoutSelected(value)
         }
     }
 }

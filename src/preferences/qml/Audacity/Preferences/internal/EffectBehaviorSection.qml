@@ -35,10 +35,10 @@ BaseSection {
             navigation.panel: root.navigation
 
             onToggled: {
-                editPreferencesModel.setApplyEffectToAllAudio(checked);
+                editPreferencesModel.setApplyEffectToAllAudio(checked)
                 checkbox.checked = Qt.binding(function () {
-                    return editPreferencesModel.applyEffectToAllAudio;
-                });
+                    return editPreferencesModel.applyEffectToAllAudio
+                })
             }
         }
     }

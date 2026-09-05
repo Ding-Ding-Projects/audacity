@@ -37,25 +37,25 @@ StyledDialogView {
     margins: 24
 
     function done(data = {}) {
-        let value = Object.assign(data);
+        let value = Object.assign(data)
 
         root.ret = {
             errcode: 0,
             value: value
-        };
+        }
 
-        root.hide();
+        root.hide()
     }
 
     onNavigationActivateRequested: {
-        var btn = buttonBox.firstFocusBtn;
+        var btn = buttonBox.firstFocusBtn
         if (btn) {
-            btn.navigation.requestActive();
+            btn.navigation.requestActive()
         }
     }
 
     onAccessibilityActivateRequested: {
-        accessibleInfo.readInfo();
+        accessibleInfo.readInfo()
     }
 
     NavigationPanel {
@@ -69,13 +69,13 @@ StyledDialogView {
 
         onNavigationEvent: function (event) {
             if (event.type === NavigationEvent.AboutActive) {
-                var btn = buttonBox.firstFocusBtn;
+                var btn = buttonBox.firstFocusBtn
                 if (Boolean(btn) && btn.enabled) {
-                    event.setData("controlIndex", [btn.navigation.row, btn.navigation.column]);
+                    event.setData("controlIndex", [btn.navigation.row, btn.navigation.column])
                 }
             } else {
-                buttonBox.restoreAccessibility();
-                accessibleInfo.resetFocus();
+                buttonBox.restoreAccessibility()
+                accessibleInfo.resetFocus()
             }
         }
     }
@@ -88,13 +88,13 @@ StyledDialogView {
         name: titleInfo.text + "; " + subtitleInfo.text
 
         function readInfo() {
-            accessibleInfo.ignored = false;
-            accessibleInfo.focused = true;
+            accessibleInfo.ignored = false
+            accessibleInfo.focused = true
         }
 
         function resetFocus() {
-            accessibleInfo.ignored = true;
-            accessibleInfo.focused = false;
+            accessibleInfo.ignored = true
+            accessibleInfo.focused = false
         }
     }
 
@@ -168,10 +168,10 @@ StyledDialogView {
                 checked: root.rememberChoice
 
                 onToggled: {
-                    root.rememberChoice = checked;
+                    root.rememberChoice = checked
                     checkbox.checked = Qt.binding(function () {
-                        return root.rememberChoice;
-                    });
+                        return root.rememberChoice
+                    })
                 }
             }
 
@@ -187,7 +187,7 @@ StyledDialogView {
                     root.done({
                         share: buttonId === ButtonBoxModel.Yes,
                         remember: checkbox.checked
-                    });
+                    })
                 }
             }
         }

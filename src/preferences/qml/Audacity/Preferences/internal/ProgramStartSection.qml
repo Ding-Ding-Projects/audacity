@@ -68,7 +68,7 @@ BaseSection {
                 navigation.column: 0
 
                 onToggled: {
-                    root.currentStartupModesChanged(model.index);
+                    root.currentStartupModesChanged(model.index)
                 }
             }
 
@@ -89,7 +89,7 @@ BaseSection {
                 navigationColumnOrderStart: 1
 
                 onPathEdited: function (newPath) {
-                    root.startupScorePathChanged(newPath);
+                    root.startupScorePathChanged(newPath)
                 }
             }
         }

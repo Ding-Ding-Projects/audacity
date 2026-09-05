@@ -31,14 +31,14 @@ PreferencesPage {
     id: root
 
     Component.onCompleted: {
-        preferencesModel.load();
+        preferencesModel.load()
     }
 
     GeneralPreferencesModel {
         id: preferencesModel
 
         onReceivingUpdateForCurrentLanguage: function (current, total, status) {
-            languagesSection.setUpdateProgress(current, total, status);
+            languagesSection.setUpdateProgress(current, total, status)
         }
     }
 
@@ -65,16 +65,16 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 1
 
             onLanguageSelected: function (languageCode) {
-                preferencesModel.currentLanguageCode = languageCode;
+                preferencesModel.currentLanguageCode = languageCode
             }
 
             onCheckForUpdateRequested: {
-                preferencesModel.checkUpdateForCurrentLanguage();
+                preferencesModel.checkUpdateForCurrentLanguage()
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -89,12 +89,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 2
 
             onNumberFormatSelected: function (numberFormatCode) {
-                preferencesModel.setNumberFormat(numberFormatCode);
+                preferencesModel.setNumberFormat(numberFormatCode)
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -116,12 +116,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 3
 
             onNeedCheckForNewAppVersionChangeRequested: function (check) {
-                updateModel.needCheckForNewAppVersion = check;
+                updateModel.needCheckForNewAppVersion = check
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -142,12 +142,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 4
 
             onSendCrashReportsChangeRequested: function (send) {
-                usageInfoModel.sendCrashReports = send;
+                usageInfoModel.sendCrashReports = send
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -168,12 +168,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 5
 
             onSendAnonymousUsageInfoChangeRequested: function (send) {
-                usageInfoModel.sendAnonymousUsageInfo = send;
+                usageInfoModel.sendAnonymousUsageInfo = send
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -189,12 +189,12 @@ PreferencesPage {
             temporaryPath: preferencesModel.temporaryDir
 
             onTemporaryFilesLocationChanged: function (path) {
-                preferencesModel.setTemporaryDir(path);
+                preferencesModel.setTemporaryDir(path)
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -215,7 +215,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }

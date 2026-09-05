@@ -92,7 +92,7 @@ BaseSection {
                     navigationPanel: root.navigation
 
                     onAccepted: {
-                        root.colorChangeRequested(colorPicker.currentColor, modelData.typeRole);
+                        root.colorChangeRequested(colorPicker.currentColor, modelData.typeRole)
                     }
                 }
             }

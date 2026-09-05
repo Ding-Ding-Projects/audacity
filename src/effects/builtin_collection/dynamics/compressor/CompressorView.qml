@@ -22,9 +22,9 @@ DynamicsEffectBase {
     implicitHeight: rootColumn.height
 
     builtinEffectModel: {
-        var model = CompressorViewModelFactory.createModel(root, root.instanceId);
-        model.onCompressionCurveChanged.connect(compressionCurve.requestPaint);
-        return model;
+        var model = CompressorViewModelFactory.createModel(root, root.instanceId)
+        model.onCompressionCurveChanged.connect(compressionCurve.requestPaint)
+        return model
     }
     property alias compressor: root.builtinEffectModel
 
@@ -151,11 +151,11 @@ DynamicsEffectBase {
                             knobFirst: false
                             warp: true
                             model: {
-                                var model = CompressorSettingModelFactory.createModel(root, root.instanceId, modelData);
+                                var model = CompressorSettingModelFactory.createModel(root, root.instanceId, modelData)
                                 model.onValueChanged.connect(function () {
-                                    compressionCurve.requestPaint();
-                                });
-                                return model;
+                                    compressionCurve.requestPaint()
+                                })
+                                return model
                             }
                         }
                     }

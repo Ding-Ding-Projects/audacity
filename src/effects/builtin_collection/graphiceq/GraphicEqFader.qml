@@ -27,14 +27,14 @@ Item {
         // For now, we close the tooltip and re-opening. It's better than no
         // tooltip at all.
         if (tooltip.isOpened) {
-            tooltip.hide(true);
+            tooltip.hide(true)
         }
 
-        tooltip.show(true);
+        tooltip.show(true)
     }
 
     function hideTooltip() {
-        tooltip.hide(true);
+        tooltip.hide(true)
     }
 
     width: eqFaderHandle.width
@@ -53,22 +53,22 @@ Item {
 
         onHighlightChanged: {
             if (navCtrl.highlight) {
-                tooltip.show(true);
+                tooltip.show(true)
             } else {
-                tooltip.hide(true);
+                tooltip.hide(true)
             }
         }
 
         onNavigationEvent: function (event) {
             switch (event.type) {
             case NavigationEvent.Up:
-                root.requestNewValue(Math.min(root.max, root.value + root.stepSize));
-                event.accepted = true;
-                break;
+                root.requestNewValue(Math.min(root.max, root.value + root.stepSize))
+                event.accepted = true
+                break
             case NavigationEvent.Down:
-                root.requestNewValue(Math.max(root.min, root.value - root.stepSize));
-                event.accepted = true;
-                break;
+                root.requestNewValue(Math.max(root.min, root.value - root.stepSize))
+                event.accepted = true
+                break
             }
         }
     }
@@ -112,18 +112,18 @@ Item {
                 hoverEnabled: true
 
                 onPressed: function (mouse) {
-                    mouse.accepted = false;
+                    mouse.accepted = false
                 }
 
                 onEntered: {
                     if (root.hoverTooltipEnabled) {
-                        tooltip.show();
+                        tooltip.show()
                     }
                 }
 
                 onExited: {
                     if (root.hoverTooltipEnabled) {
-                        tooltip.hide();
+                        tooltip.hide()
                     }
                 }
             }

@@ -59,7 +59,7 @@ Item {
                 hoverHitColor: "transparent"
 
                 function requestActiveFocus() {
-                    checkBox.navigation.requestActive();
+                    checkBox.navigation.requestActive()
                 }
 
                 M3Switch {
@@ -78,16 +78,16 @@ Item {
                     navigation.row: model.index
 
                     onToggled: {
-                        root.setSelectedRequested(modelData.itemId, checked);
+                        root.setSelectedRequested(modelData.itemId, checked)
                         checkBox.checked = Qt.binding(function () {
-                            return root.selectedItems.includes(modelData.itemId);
-                        });
+                            return root.selectedItems.includes(modelData.itemId)
+                        })
                     }
                 }
 
                 onFocusChanged: {
                     if (activeFocus) {
-                        listView.positionViewAtIndex(index, ListView.Contain);
+                        listView.positionViewAtIndex(index, ListView.Contain)
                     }
                 }
             }
@@ -122,7 +122,7 @@ Item {
             navigation.column: 1
 
             onClicked: {
-                root.selectAllRequested();
+                root.selectAllRequested()
             }
         }
 
@@ -137,7 +137,7 @@ Item {
             navigation.order: 2
 
             onClicked: {
-                root.deselectAllRequested();
+                root.deselectAllRequested()
             }
         }
     }

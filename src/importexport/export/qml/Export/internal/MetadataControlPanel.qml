@@ -51,7 +51,7 @@ RowLayout {
         navigation.column: root.navigationOrder
 
         onClicked: {
-            metadataModel.loadTemplate();
+            metadataModel.loadTemplate()
         }
     }
 
@@ -67,7 +67,7 @@ RowLayout {
         navigation.column: loadBtn.navigation.column + 1
 
         onClicked: {
-            metadataModel.saveTemplate();
+            metadataModel.saveTemplate()
         }
     }
 
@@ -83,7 +83,7 @@ RowLayout {
         navigation.column: saveBtn.navigation.column + 1
 
         onClicked: {
-            metadataModel.setAsDefault();
+            metadataModel.setAsDefault()
         }
     }
 
@@ -104,7 +104,7 @@ RowLayout {
         navigation.column: setDefaultBtn.navigation.column + 1
 
         onClicked: {
-            metadataModel.deleteTag(tagView.currentSourceRow);
+            metadataModel.deleteTag(tagView.currentSourceRow)
         }
     }
 
@@ -120,7 +120,7 @@ RowLayout {
         navigation.column: deleteBtn.navigation.column + 1
 
         onClicked: {
-            metadataModel.addTag();
+            metadataModel.addTag()
         }
     }
 }

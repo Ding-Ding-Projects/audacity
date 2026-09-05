@@ -130,7 +130,7 @@ BuiltinEffectBase {
                                 model: changePitch.fromPitchModel()
 
                                 onActivated: function (index, value) {
-                                    changePitch.fromPitchValue = index;
+                                    changePitch.fromPitchValue = index
                                 }
                             }
 
@@ -150,7 +150,7 @@ BuiltinEffectBase {
                                 maxValue: changePitch.fromOctaveMax()
 
                                 onValueEdited: function (newValue) {
-                                    changePitch.fromOctaveValue = newValue;
+                                    changePitch.fromOctaveValue = newValue
                                 }
                             }
                         }
@@ -181,7 +181,7 @@ BuiltinEffectBase {
                                 model: changePitch.toPitchModel()
 
                                 onActivated: function (index, value) {
-                                    changePitch.toPitchValue = index;
+                                    changePitch.toPitchValue = index
                                 }
                             }
 
@@ -201,7 +201,7 @@ BuiltinEffectBase {
                                 maxValue: changePitch.toOctaveMax()
 
                                 onValueEdited: function (newValue) {
-                                    changePitch.toOctaveValue = newValue;
+                                    changePitch.toOctaveValue = newValue
                                 }
                             }
                         }
@@ -257,7 +257,7 @@ BuiltinEffectBase {
                             maxValue: changePitch.semitonesMax()
 
                             onValueEdited: function (newValue) {
-                                changePitch.semitonesIntegerValue = newValue;
+                                changePitch.semitonesIntegerValue = newValue
                             }
                         }
                     }
@@ -287,7 +287,7 @@ BuiltinEffectBase {
                             maxValue: changePitch.centsMax()
 
                             onValueEdited: function (newValue) {
-                                changePitch.centsValue = newValue;
+                                changePitch.centsValue = newValue
                             }
                         }
                     }
@@ -347,7 +347,7 @@ BuiltinEffectBase {
                                 maxValue: changePitch.fromFrequencyMax()
 
                                 onValueEdited: function (newValue) {
-                                    changePitch.fromFrequencyValue = newValue;
+                                    changePitch.fromFrequencyValue = newValue
                                 }
                             }
                         }
@@ -377,7 +377,7 @@ BuiltinEffectBase {
                                 maxValue: changePitch.toFrequencyMax()
 
                                 onValueEdited: function (newValue) {
-                                    changePitch.toFrequencyValue = newValue;
+                                    changePitch.toFrequencyValue = newValue
                                 }
                             }
                         }
@@ -411,7 +411,7 @@ BuiltinEffectBase {
                                 stepSize: (changePitch.percentChangeMax() - changePitch.percentChangeMin()) / 100
 
                                 onMoved: {
-                                    changePitch.percentChangeValue = value;
+                                    changePitch.percentChangeValue = value
                                 }
                             }
 
@@ -431,7 +431,7 @@ BuiltinEffectBase {
                                 maxValue: changePitch.percentChangeMax()
 
                                 onValueEdited: function (newValue) {
-                                    changePitch.percentChangeValue = newValue;
+                                    changePitch.percentChangeValue = newValue
                                 }
                             }
                         }
@@ -454,10 +454,10 @@ BuiltinEffectBase {
             enabled: changePitch.useSBSMSEnabled()
 
             onToggled: {
-                changePitch.useSBSMSValue = checked;
+                changePitch.useSBSMSValue = checked
                 highQualityStretchingCheckbox.checked = Qt.binding(function () {
-                    return changePitch.useSBSMSValue;
-                });
+                    return changePitch.useSBSMSValue
+                })
             }
         }
     }

@@ -55,9 +55,9 @@ StyledDialogView {
                 askAgain: root.askAgain,
                 locationType: locationType
             }
-        };
+        }
 
-        root.hide();
+        root.hide()
     }
 
     ColumnLayout {
@@ -97,7 +97,7 @@ StyledDialogView {
                 navigation.accessible.description: description
 
                 onButtonClicked: {
-                    root.done(SaveLocationType.Cloud);
+                    root.done(SaveLocationType.Cloud)
                 }
             }
 
@@ -114,7 +114,7 @@ StyledDialogView {
                 navigation.accessible.description: description
 
                 onButtonClicked: {
-                    root.done(SaveLocationType.Local);
+                    root.done(SaveLocationType.Local)
                 }
             }
         }
@@ -143,10 +143,10 @@ StyledDialogView {
             navigation.order: 1
 
             onToggled: {
-                root.askAgain = !root.askAgain;
+                root.askAgain = !root.askAgain
                 dontAskAgainCheckbox.checked = Qt.binding(function () {
-                    return !root.askAgain;
-                });
+                    return !root.askAgain
+                })
             }
         }
     }

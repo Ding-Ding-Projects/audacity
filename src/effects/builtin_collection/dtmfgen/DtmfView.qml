@@ -79,11 +79,11 @@ BuiltinEffectBase {
                 }
 
                 onTrailingIconClicked: {
-                    dtmf.sequence = "";
+                    dtmf.sequence = ""
                 }
 
                 onTextEdited: function (newTextValue) {
-                    dtmf.sequence = newTextValue;
+                    dtmf.sequence = newTextValue
                 }
             }
 
@@ -117,7 +117,7 @@ BuiltinEffectBase {
 
                 onValueEdited: function (newValue) {
                     if (dtmf.amplitude !== newValue) {
-                        dtmf.amplitude = newValue;
+                        dtmf.amplitude = newValue
                     }
                 }
             }
@@ -157,7 +157,7 @@ BuiltinEffectBase {
                     navigation.order: amplitudeControl.navigation.order + 1
 
                     onValueChanged: {
-                        dtmf.duration = timecode.value;
+                        dtmf.duration = timecode.value
                     }
                 }
             }
@@ -206,9 +206,9 @@ BuiltinEffectBase {
                         navigation.order: 0
 
                         onNewValueRequested: function (value) {
-                            let newValue = +(value.toFixed(1));
+                            let newValue = +(value.toFixed(1))
                             if (newValue !== dtmf.dutyCycle) {
-                                dtmf.dutyCycle = newValue;
+                                dtmf.dutyCycle = newValue
                             }
                         }
                     }
@@ -224,9 +224,9 @@ BuiltinEffectBase {
                         currentValue: dtmf.dutyCycle * 10
 
                         onValueEdited: function (newValue) {
-                            newValue = newValue / 10;
+                            newValue = newValue / 10
                             if (newValue !== dtmf.dutyCycle) {
-                                dtmf.dutyCycle = newValue;
+                                dtmf.dutyCycle = newValue
                             }
                         }
                     }

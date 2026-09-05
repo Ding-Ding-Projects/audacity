@@ -23,7 +23,7 @@ BaseSection {
     }
 
     Component.onCompleted: {
-        workspacesModel.load();
+        workspacesModel.load()
     }
 
     ColumnLayout {
@@ -63,9 +63,9 @@ BaseSection {
 
                 onClicked: {
                     if (checked) {
-                        editPreferencesModel.removeFromAsymmetricWorkspaces(model.name);
+                        editPreferencesModel.removeFromAsymmetricWorkspaces(model.name)
                     } else {
-                        editPreferencesModel.appendToAsymmetricWorkspaces(model.name);
+                        editPreferencesModel.appendToAsymmetricWorkspaces(model.name)
                     }
                 }
             }

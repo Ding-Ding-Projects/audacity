@@ -62,7 +62,7 @@ BaseSection {
             navigation.column: 0
 
             onValueEdited: function (newIndex, newValue) {
-                root.defaultZoomTypeChangeRequested(newValue);
+                root.defaultZoomTypeChangeRequested(newValue)
             }
         }
 
@@ -86,7 +86,7 @@ BaseSection {
             navigation.column: 1
 
             onValueEdited: function (newValue) {
-                root.defaultZoomLevelChangeRequested(newValue);
+                root.defaultZoomLevelChangeRequested(newValue)
             }
         }
     }
@@ -108,7 +108,7 @@ BaseSection {
         navigation.column: 0
 
         onValueEdited: function (newValue) {
-            root.mouseZoomPrecisionChangeRequested(newValue);
+            root.mouseZoomPrecisionChangeRequested(newValue)
         }
     }
 }

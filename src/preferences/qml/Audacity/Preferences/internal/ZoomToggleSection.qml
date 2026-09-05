@@ -45,7 +45,7 @@ BaseSection {
         navigation.column: 0
 
         onValueEdited: function (newIndex, newValue) {
-            root.zoomPreset1ChangeRequested(newValue);
+            root.zoomPreset1ChangeRequested(newValue)
         }
     }
 
@@ -68,7 +68,7 @@ BaseSection {
         navigation.column: 0
 
         onValueEdited: function (newIndex, newValue) {
-            root.zoomPreset2ChangeRequested(newValue);
+            root.zoomPreset2ChangeRequested(newValue)
         }
     }
 }

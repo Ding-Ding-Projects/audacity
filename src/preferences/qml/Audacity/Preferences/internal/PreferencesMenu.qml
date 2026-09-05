@@ -37,13 +37,13 @@ Item {
         direction: NavigationPanel.Both
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus();
+                root.forceActiveFocus()
             }
         }
 
         onNavigationEvent: function (event) {
             if (event.type === NavigationEvent.AboutActive) {
-                event.setData("controlIndex", prv.currentItemNavigationIndex);
+                event.setData("controlIndex", prv.currentItemNavigationIndex)
             }
         }
     }
@@ -112,23 +112,23 @@ Item {
             navigation.accessible.role: MUAccessible.ListItem
             navigation.onActiveChanged: {
                 if (navigation.active) {
-                    treeView.model.selectRow(styleData.index);
+                    treeView.model.selectRow(styleData.index)
                 }
             }
 
             Component.onCompleted: {
-                updateExpandedState();
+                updateExpandedState()
             }
 
             onExpandedChanged: {
-                updateExpandedState();
+                updateExpandedState()
             }
 
             function updateExpandedState() {
                 if (expanded) {
-                    treeView.expand(styleData.index);
+                    treeView.expand(styleData.index)
                 } else {
-                    treeView.collapse(styleData.index);
+                    treeView.collapse(styleData.index)
                 }
             }
 
@@ -140,12 +140,12 @@ Item {
 
             onCheckedChanged: {
                 if (checked) {
-                    prv.currentItemNavigationIndex = [navigationRow, navigationColumn];
+                    prv.currentItemNavigationIndex = [navigationRow, navigationColumn]
                 }
             }
 
             onClicked: {
-                treeView.model.selectRow(styleData.index);
+                treeView.model.selectRow(styleData.index)
             }
         }
     }

@@ -54,7 +54,7 @@ BaseSection {
         navigation.column: 0
 
         onValueEdited: function (newValue) {
-            root.selectionProximityChangeRequested(newValue);
+            root.selectionProximityChangeRequested(newValue)
         }
     }
 }

@@ -52,7 +52,7 @@ BaseSection {
             navigation.column: 0
 
             onClicked: {
-                root.resetToDefaultRequested();
+                root.resetToDefaultRequested()
             }
         }
 

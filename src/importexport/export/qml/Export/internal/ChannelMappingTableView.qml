@@ -25,23 +25,23 @@ StyledTableView {
     sourceComponentCallback: function (type) {
         switch (type) {
         case ChannelMappingTableViewCellType.Mapping:
-            return mappingCellComp;
+            return mappingCellComp
         }
-        return null;
+        return null
     }
 
     Component.onCompleted: {
-        tableViewModel.setChannelCount(root.channelCount);
-        tableViewModel.load(false /* reload */);
+        tableViewModel.setChannelCount(root.channelCount)
+        tableViewModel.load(false /* reload */)
     }
 
     onChannelCountChanged: {
-        tableViewModel.setChannelCount(root.channelCount);
-        tableViewModel.load(true /* reload */);
+        tableViewModel.setChannelCount(root.channelCount)
+        tableViewModel.load(true /* reload */)
     }
 
     function commitChanges() {
-        tableViewModel.commitChanges();
+        tableViewModel.commitChanges()
     }
 
     Component {
@@ -71,10 +71,10 @@ StyledTableView {
             navigation.column: navigationColumnStart
 
             onToggled: {
-                tableViewModel.handleEdit(row, column);
+                tableViewModel.handleEdit(row, column)
                 cb.checked = Qt.binding(function () {
-                    return Boolean(cb.val);
-                });
+                    return Boolean(cb.val)
+                })
             }
         }
     }

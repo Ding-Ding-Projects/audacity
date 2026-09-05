@@ -68,11 +68,11 @@ Column {
         navigation.accessible.name: titleLabel.text + " " + currentValue + " " + measureUnitsSymbol
 
         onValueEdited: function (newValue) {
-            root.valueEdited(newValue);
+            root.valueEdited(newValue)
         }
 
         onValueEditingFinished: function (newValue) {
-            root.valueEditingFinished(newValue);
+            root.valueEditingFinished(newValue)
         }
     }
 }

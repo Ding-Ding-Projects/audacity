@@ -17,11 +17,11 @@ ProjectsView {
 
     function refresh() {
         if (!accountModel.isAuthorized) {
-            return;
+            return
         }
 
-        cloudProjectsModel.reload();
-        prv.updateDesiredRowCount();
+        cloudProjectsModel.reload()
+        prv.updateDesiredRowCount()
     }
 
     AccountModel {
@@ -29,9 +29,9 @@ ProjectsView {
 
         onIsAuthorizedChanged: {
             if (accountModel.isAuthorized) {
-                cloudProjectsModel.load();
+                cloudProjectsModel.load()
             } else {
-                cloudProjectsModel.clear();
+                cloudProjectsModel.clear()
             }
         }
     }
@@ -41,16 +41,16 @@ ProjectsView {
 
         onStateChanged: {
             if (cloudProjectsModel.state === CloudProjectsModel.Fine) {
-                prv.updateDesiredRowCount();
+                prv.updateDesiredRowCount()
             }
         }
     }
 
     Component.onCompleted: {
-        accountModel.init();
+        accountModel.init()
 
         if (accountModel.isAuthorized) {
-            cloudProjectsModel.load();
+            cloudProjectsModel.load()
         }
     }
 
@@ -58,7 +58,7 @@ ProjectsView {
         target: (root.item && root.item.view) ? root.item.view : null
 
         function onContentYChanged() {
-            prv.updateDesiredRowCount();
+            prv.updateDesiredRowCount()
         }
     }
 
@@ -70,77 +70,77 @@ ProjectsView {
 
         readonly property int remainingFullRowsBelowViewport: {
             if (!activeView || !activeView.view) {
-                return 0;
+                return 0
             }
 
-            let view = activeView.view;
-            let columns = view.columns || 1;
-            let cellHeight = view.cellHeight || 100;
-            let topMargin = view.topMargin || 0;
+            let view = activeView.view
+            let columns = view.columns || 1
+            let cellHeight = view.cellHeight || 100
+            let topMargin = view.topMargin || 0
 
-            let totalDataRows = Math.ceil(cloudProjectsModel.rowCount / columns);
-            let scrolledContent = view.contentY + topMargin;
-            let currentScrollRow = Math.max(0, Math.floor(scrolledContent / cellHeight));
-            let visibleRows = Math.ceil((view.height + (scrolledContent % cellHeight)) / cellHeight);
-            let viewportBottomRow = currentScrollRow + visibleRows;
+            let totalDataRows = Math.ceil(cloudProjectsModel.rowCount / columns)
+            let scrolledContent = view.contentY + topMargin
+            let currentScrollRow = Math.max(0, Math.floor(scrolledContent / cellHeight))
+            let visibleRows = Math.ceil((view.height + (scrolledContent % cellHeight)) / cellHeight)
+            let viewportBottomRow = currentScrollRow + visibleRows
 
-            return Math.max(0, totalDataRows - viewportBottomRow);
+            return Math.max(0, totalDataRows - viewportBottomRow)
         }
 
         readonly property bool isSatisfied: remainingFullRowsBelowViewport >= 2
 
         onIsSatisfiedChanged: {
             if (!isSatisfied) {
-                updateDesiredRowCount();
+                updateDesiredRowCount()
             }
         }
 
         function updateDesiredRowCount() {
             if (updateDesiredRowCountScheduled) {
-                return;
+                return
             }
 
             if (isSatisfied || !cloudProjectsModel.hasMore) {
-                return;
+                return
             }
 
-            updateDesiredRowCountScheduled = true;
+            updateDesiredRowCountScheduled = true
 
             Qt.callLater(function () {
-                let view = activeView ? activeView.view : null;
-                let columns = view ? (view.columns || 1) : 1;
+                let view = activeView ? activeView.view : null
+                let columns = view ? (view.columns || 1) : 1
 
-                let rowsToAdd = Math.max(3 - remainingFullRowsBelowViewport, 1);
-                let newDesiredRowCount = cloudProjectsModel.rowCount + rowsToAdd * columns;
+                let rowsToAdd = Math.max(3 - remainingFullRowsBelowViewport, 1)
+                let newDesiredRowCount = cloudProjectsModel.rowCount + rowsToAdd * columns
 
                 if (cloudProjectsModel.desiredRowCount < newDesiredRowCount) {
-                    cloudProjectsModel.desiredRowCount = newDesiredRowCount;
+                    cloudProjectsModel.desiredRowCount = newDesiredRowCount
                 }
 
-                updateDesiredRowCountScheduled = false;
-            });
+                updateDesiredRowCountScheduled = false
+            })
         }
     }
 
     sourceComponent: {
         if (!accountModel.isAuthorized) {
-            return notSignedInComp;
+            return notSignedInComp
         }
 
         switch (cloudProjectsModel.state) {
         case CloudProjectsModel.Error:
-            return errorComp;
+            return errorComp
         case CloudProjectsModel.Loading:
-            return loadingComp;
+            return loadingComp
         case CloudProjectsModel.Fine:
-            break;
+            break
         }
 
         if (cloudProjectsModel.rowCount == 0 && !cloudProjectsModel.hasMore && cloudProjectsModel.state != CloudProjectsModel.Loading) {
-            return emptyComp;
+            return emptyComp
         }
 
-        return projectListComp;
+        return projectListComp
     }
 
     Component {
@@ -165,7 +165,7 @@ ProjectsView {
             listAccessibleName: qsTrc("project", "Cloud projects list")
 
             onOpenCloudProjectRequested: function (projectId) {
-                root.openCloudProjectRequested(projectId);
+                root.openCloudProjectRequested(projectId)
             }
         }
     }
@@ -254,7 +254,7 @@ ProjectsView {
 
                         text: qsTrc("cloud", "Sign in")
                         onClicked: {
-                            Qt.callLater(accountModel.openSignInDialog);
+                            Qt.callLater(accountModel.openSignInDialog)
                         }
                     }
 
@@ -265,7 +265,7 @@ ProjectsView {
 
                         text: qsTrc("cloud", "Create account")
                         onClicked: {
-                            Qt.callLater(accountModel.openCreateAccountDialog);
+                            Qt.callLater(accountModel.openCreateAccountDialog)
                         }
                     }
                 }

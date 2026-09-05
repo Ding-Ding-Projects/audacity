@@ -56,7 +56,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newIndex, newValue) {
-            root.inputDeviceIdChangeRequested(newValue);
+            root.inputDeviceIdChangeRequested(newValue)
         }
     }
 
@@ -72,7 +72,7 @@ BaseSection {
         navigation.row: 2
 
         onValueEdited: function (newIndex, newValue) {
-            root.outputDeviceIdChangeRequested(newValue);
+            root.outputDeviceIdChangeRequested(newValue)
         }
     }
 
@@ -86,7 +86,7 @@ BaseSection {
         navigation.row: 3
 
         onToggled: {
-            root.useMIDI20OutputChangeRequested(checked);
+            root.useMIDI20OutputChangeRequested(checked)
         }
     }
 }

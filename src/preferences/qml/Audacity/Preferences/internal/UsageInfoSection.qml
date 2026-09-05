@@ -30,7 +30,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.sendAnonymousUsageInfoChangeRequested(checked);
+            root.sendAnonymousUsageInfoChangeRequested(checked)
         }
     }
 

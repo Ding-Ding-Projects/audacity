@@ -35,7 +35,7 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        metadataModel.load();
+        metadataModel.load()
     }
 
     ColumnLayout {
@@ -74,7 +74,7 @@ StyledDialogView {
             valueTypeRole: "roleType"
             readOnly: false
             isReadOnlyFunction: function (rowIndex) {
-                return metadataModel.isStandardTag(rowIndex);
+                return metadataModel.isStandardTag(rowIndex)
             }
 
             drawZebra: false
@@ -90,11 +90,11 @@ StyledDialogView {
             model: metadataModel
 
             onKeyEdited: function (row, newKey) {
-                metadataModel.renameTag(row, newKey);
+                metadataModel.renameTag(row, newKey)
             }
 
             onValueEdited: function (row, newVal) {
-                metadataModel.setTagValue(row, newVal);
+                metadataModel.setTagValue(row, newVal)
             }
         }
 
@@ -131,8 +131,8 @@ StyledDialogView {
                 accentButton: true
 
                 onClicked: {
-                    metadataModel.apply();
-                    root.accept();
+                    metadataModel.apply()
+                    root.accept()
                 }
             }
         }

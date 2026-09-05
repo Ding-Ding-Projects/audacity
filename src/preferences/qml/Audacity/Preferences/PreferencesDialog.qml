@@ -57,151 +57,151 @@ M3Dialog {
         function indexIn(pages, pageId) {
             for (var i = 0; i < pages.length; ++i) {
                 if (pages[i].id === pageId) {
-                    return i;
+                    return i
                 }
             }
-            return -1;
+            return -1
         }
 
         function updateStackCurrentIndex() {
-            var stackIndex = prv.indexIn(prv.pages, preferencesModel.currentPageId);
+            var stackIndex = prv.indexIn(prv.pages, preferencesModel.currentPageId)
             if (stackIndex >= 0) {
-                stack.currentIndex = stackIndex;
+                stack.currentIndex = stackIndex
             }
 
-            var tabIndex = prv.indexIn(prv.filteredPages, preferencesModel.currentPageId);
+            var tabIndex = prv.indexIn(prv.filteredPages, preferencesModel.currentPageId)
             if (tabIndex >= 0) {
-                tabs.currentIndex = tabIndex;
+                tabs.currentIndex = tabIndex
             }
         }
 
         // Collects every section title inside a page so that the search bar
         // matches the settings themselves and not only the page name.
         function keywordsOf(item, depth) {
-            var words = "";
+            var words = ""
             if (!Boolean(item) || depth > 4) {
-                return words;
+                return words
             }
             if (item.title !== undefined && typeof item.title === "string") {
-                words += " " + item.title;
+                words += " " + item.title
             }
             if (item.text !== undefined && typeof item.text === "string") {
-                words += " " + item.text;
+                words += " " + item.text
             }
-            var children = item.children;
+            var children = item.children
             if (Boolean(children)) {
                 for (var i = 0; i < children.length; ++i) {
-                    words += prv.keywordsOf(children[i], depth + 1);
+                    words += prv.keywordsOf(children[i], depth + 1)
                 }
             }
-            return words;
+            return words
         }
 
         function matches(page, needle) {
             if (needle === "") {
-                return true;
+                return true
             }
-            var haystack = page.title;
-            var obj = prv.pagesObjects[page.id];
+            var haystack = page.title
+            var obj = prv.pagesObjects[page.id]
             if (Boolean(obj)) {
-                haystack += prv.keywordsOf(obj, 0);
+                haystack += prv.keywordsOf(obj, 0)
             }
-            var expression = null;
+            var expression = null
             try {
-                expression = new RegExp(needle, "i");
+                expression = new RegExp(needle, "i")
             } catch (error) {
-                expression = null;
+                expression = null
             }
             if (expression !== null) {
-                return expression.test(haystack);
+                return expression.test(haystack)
             }
-            return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1;
+            return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1
         }
 
         function applyFilter() {
-            var result = [];
+            var result = []
             for (var i = 0; i < prv.pages.length; ++i) {
                 if (prv.matches(prv.pages[i], prv.searchText)) {
-                    result.push(prv.pages[i]);
+                    result.push(prv.pages[i])
                 }
             }
             if (result.length === 0) {
-                result = prv.pages;
+                result = prv.pages
             }
             prv.filteredPages = result;
 
             // Keep the shown page inside the filtered set, so a search always
             // lands on something that matches.
             if (prv.indexIn(result, preferencesModel.currentPageId) < 0 && result.length > 0) {
-                preferencesModel.currentPageId = result[0].id;
+                preferencesModel.currentPageId = result[0].id
             }
 
-            prv.updateStackCurrentIndex();
+            prv.updateStackCurrentIndex()
         }
     }
 
     Component.onCompleted: {
-        preferencesModel.load(root.currentPageId);
+        preferencesModel.load(root.currentPageId)
 
-        root.initPagesObjects();
+        root.initPagesObjects()
 
-        prv.applyFilter();
-        prv.updateStackCurrentIndex();
+        prv.applyFilter()
+        prv.updateStackCurrentIndex()
     }
 
     function initPagesObjects() {
-        var pages = preferencesModel.availablePages();
-        var known = [];
+        var pages = preferencesModel.availablePages()
+        var known = []
 
         for (var i in pages) {
-            var pageInfo = pages[i];
+            var pageInfo = pages[i]
 
             if (!Boolean(pageInfo.path)) {
-                continue;
+                continue
             }
 
-            var pageComponent = Qt.createComponent("../" + pageInfo.path);
+            var pageComponent = Qt.createComponent("../" + pageInfo.path)
 
             if (pageComponent.status === Component.Error) {
-                console.error("Error loading page:", pageInfo.path, pageComponent.errorString());
-                continue;
+                console.error("Error loading page:", pageInfo.path, pageComponent.errorString())
+                continue
             }
 
             var properties = {
                 navigationSection: root.navigationSection,
                 navigationOrderStart: (Number(i) + 1) * 100
-            };
+            }
 
             if (root.currentPageId === pageInfo.id) {
-                var params = root.params;
+                var params = root.params
                 for (var key in params) {
-                    properties[key] = params[key];
+                    properties[key] = params[key]
                 }
             }
 
-            var obj = pageComponent.createObject(stack, properties);
+            var obj = pageComponent.createObject(stack, properties)
 
             if (!Boolean(obj)) {
-                continue;
+                continue
             }
 
             obj.hideRequested.connect(function () {
-                root.hide();
-            });
+                root.hide()
+            })
 
-            prv.pagesObjects[pageInfo.id] = obj;
-            known.push(pageInfo);
+            prv.pagesObjects[pageInfo.id] = obj
+            known.push(pageInfo)
         }
 
-        prv.pages = known;
-        prv.filteredPages = known;
+        prv.pages = known
+        prv.filteredPages = known
     }
 
     PreferencesModel {
         id: preferencesModel
 
         onCurrentPageIdChanged: function (currentPageId) {
-            prv.updateStackCurrentIndex();
+            prv.updateStackCurrentIndex()
         }
     }
 
@@ -228,12 +228,12 @@ M3Dialog {
                 }
 
                 onSearchTextChanged: {
-                    prv.searchText = searchBar.searchText;
-                    prv.applyFilter();
+                    prv.searchText = searchBar.searchText
+                    prv.applyFilter()
                 }
 
                 onRegexBuilderRequested: {
-                    root.regexBuilderRequested();
+                    root.regexBuilderRequested()
                 }
             }
 
@@ -267,7 +267,7 @@ M3Dialog {
                             return {
                                 "text": page.title,
                                 "icon": page.icon
-                            };
+                            }
                         })
 
                         navigationPanel: NavigationPanel {
@@ -278,9 +278,9 @@ M3Dialog {
                         }
 
                         onActivated: function (index) {
-                            var page = prv.filteredPages[index];
+                            var page = prv.filteredPages[index]
                             if (Boolean(page)) {
-                                preferencesModel.currentPageId = page.id;
+                                preferencesModel.currentPageId = page.id
                             }
                         }
                     }
@@ -307,16 +307,16 @@ M3Dialog {
             variant: "text"
 
             onClicked: {
-                var pages = preferencesModel.availablePages();
+                var pages = preferencesModel.availablePages()
 
                 for (var i in pages) {
-                    var obj = prv.pagesObjects[pages[i].id];
+                    var obj = prv.pagesObjects[pages[i].id]
                     if (Boolean(obj)) {
-                        obj.reset();
+                        obj.reset()
                     }
                 }
 
-                preferencesModel.resetFactorySettings();
+                preferencesModel.resetFactorySettings()
             }
         },
         M3Button {
@@ -324,8 +324,8 @@ M3Dialog {
             variant: "text"
 
             onClicked: {
-                preferencesModel.cancel();
-                root.reject();
+                preferencesModel.cancel()
+                root.reject()
             }
         },
         M3Button {
@@ -333,19 +333,19 @@ M3Dialog {
             variant: "filled"
 
             onClicked: {
-                var ok = true;
-                var pages = preferencesModel.availablePages();
+                var ok = true
+                var pages = preferencesModel.availablePages()
 
                 for (var i in pages) {
-                    var obj = prv.pagesObjects[pages[i].id];
+                    var obj = prv.pagesObjects[pages[i].id]
                     if (Boolean(obj)) {
-                        ok &= obj.apply();
+                        ok &= obj.apply()
                     }
                 }
 
                 if (ok) {
-                    preferencesModel.apply();
-                    root.hide();
+                    preferencesModel.apply()
+                    root.hide()
                 }
             }
         }

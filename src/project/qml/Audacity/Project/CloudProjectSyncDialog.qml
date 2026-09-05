@@ -25,7 +25,7 @@ StyledDialogView {
     }
 
     onNavigationActivateRequested: {
-        buttonBox.focusOnFirstEnabled();
+        buttonBox.focusOnFirstEnabled()
     }
 
     CloudProjectSyncModel {
@@ -36,14 +36,14 @@ StyledDialogView {
                 root.ret = {
                     errcode: 0,
                     value: "synced"
-                };
-                root.hide();
+                }
+                root.hide()
             }
         }
     }
 
     Component.onCompleted: {
-        model.load();
+        model.load()
     }
 
     Column {
@@ -81,8 +81,8 @@ StyledDialogView {
                     root.ret = {
                         errcode: 0,
                         value: "stopped"
-                    };
-                    root.hide();
+                    }
+                    root.hide()
                 }
             }
 
@@ -91,8 +91,8 @@ StyledDialogView {
                     root.ret = {
                         errcode: 0,
                         value: "canceled"
-                    };
-                    root.hide();
+                    }
+                    root.hide()
                 }
             }
         }

@@ -72,7 +72,7 @@ BaseSection {
                 pathFieldTitle: titleLabel.text
 
                 onPathEdited: function (newPath) {
-                    model.path = newPath;
+                    model.path = newPath
                 }
             }
         }

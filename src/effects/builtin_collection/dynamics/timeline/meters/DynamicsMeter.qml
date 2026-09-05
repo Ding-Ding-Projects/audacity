@@ -25,7 +25,7 @@ Rectangle {
         id: prv
 
         function dbToY(db) {
-            return db / root.dbMin * root.height;
+            return db / root.dbMin * root.height
         }
 
         property color semiTransparentColor: Qt.rgba(areaColor.r, areaColor.g, areaColor.b, 0.5)

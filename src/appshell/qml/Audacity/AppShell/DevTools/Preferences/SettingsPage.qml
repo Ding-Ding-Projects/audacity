@@ -24,7 +24,7 @@ ColumnLayout {
     }
 
     Component.onCompleted: {
-        settingsModel.load();
+        settingsModel.load()
     }
 
     M3SearchBar {
@@ -37,7 +37,7 @@ ColumnLayout {
 
         //! NOTE Hook for the regex builder, attached by the search lane.
         onRegexBuilderRequested: {
-            root.regexBuilderRequested();
+            root.regexBuilderRequested()
         }
     }
 
@@ -114,20 +114,20 @@ ColumnLayout {
                     anchors.fill: parent
                     sourceComponent: root.componentByType(typeRole)
                     onLoaded: {
-                        loader.item.val = loader.val;
+                        loader.item.val = loader.val
 
                         if (loader.item.minValue !== undefined) {
-                            loader.item.minValue = loader.minValue;
+                            loader.item.minValue = loader.minValue
                         }
 
                         if (loader.item.maxValue !== undefined) {
-                            loader.item.maxValue = loader.maxValue;
+                            loader.item.maxValue = loader.maxValue
                         }
                     }
 
                     onValChanged: {
                         if (loader.item) {
-                            loader.item.val = loader.val;
+                            loader.item.val = loader.val
                         }
                     }
                 }
@@ -135,9 +135,9 @@ ColumnLayout {
                 Connections {
                     target: loader.item
                     function onChanged(newVal) {
-                        let sortFilterModelIndex = sortFilterModel.index(model.index, 0);
-                        let sourceModelIndex = sortFilterModel.mapToSource(sortFilterModelIndex);
-                        settingsModel.changeVal(sourceModelIndex.row, newVal);
+                        let sortFilterModelIndex = sortFilterModel.index(model.index, 0)
+                        let sourceModelIndex = sortFilterModel.mapToSource(sortFilterModelIndex)
+                        settingsModel.changeVal(sourceModelIndex.row, newVal)
                     }
                 }
             }
@@ -147,20 +147,20 @@ ColumnLayout {
     function componentByType(type) {
         switch (type) {
         case "Undefined":
-            return textComp;
+            return textComp
         case "Bool":
-            return boolComp;
+            return boolComp
         case "Int":
-            return intComp;
+            return intComp
         case "Double":
-            return doubleComp;
+            return doubleComp
         case "String":
-            return textComp;
+            return textComp
         case "Color":
-            return colorComp;
+            return colorComp
         }
 
-        return textComp;
+        return textComp
     }
 
     Component {
@@ -198,7 +198,7 @@ ColumnLayout {
             color: val
 
             onNewColorSelected: function (newColor) {
-                changed(newColor);
+                changed(newColor)
             }
         }
     }
@@ -220,7 +220,7 @@ ColumnLayout {
             decimals: 0
 
             onValueEdited: function (newValue) {
-                control.changed(newValue);
+                control.changed(newValue)
             }
         }
     }
@@ -242,7 +242,7 @@ ColumnLayout {
             decimals: 2
 
             onValueEdited: function (newValue) {
-                control.changed(newValue);
+                control.changed(newValue)
             }
         }
     }

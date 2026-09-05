@@ -33,9 +33,9 @@ StyledDialogView {
         running: root.isOpened
         onTriggered: {
             if (okButton.navigation.active) {
-                refocusTimer.stop();
+                refocusTimer.stop()
             } else {
-                okButton.navigation.requestActive();
+                okButton.navigation.requestActive()
             }
         }
     }
@@ -53,23 +53,23 @@ StyledDialogView {
     }
 
     function populateModel() {
-        pluginsModel.clear();
-        const entries = root.missingPlugins || [];
+        pluginsModel.clear()
+        const entries = root.missingPlugins || []
         for (let i = 0; i < entries.length; ++i) {
             pluginsModel.append({
                 name: entries[i].name || "",
                 path: entries[i].path || "",
                 vendor: entries[i].vendor || ""
-            });
+            })
         }
     }
 
     Component.onCompleted: {
         if (!root.missingPlugins) {
-            console.error("missing required property `missingPlugins`");
-            return;
+            console.error("missing required property `missingPlugins`")
+            return
         }
-        populateModel();
+        populateModel()
     }
 
     ColumnLayout {
@@ -128,10 +128,10 @@ StyledDialogView {
             model: pluginsModel
 
             onHandleItem: function (index, item) {
-                detailDialog.pluginName = item.name;
-                detailDialog.pluginPath = item.path;
-                detailDialog.pluginVendor = item.vendor;
-                detailDialog.open();
+                detailDialog.pluginName = item.name
+                detailDialog.pluginPath = item.path
+                detailDialog.pluginVendor = item.vendor
+                detailDialog.open()
             }
         }
 
@@ -148,7 +148,7 @@ StyledDialogView {
             text: qsTrc("effects", "OK")
 
             onClicked: {
-                root.accept();
+                root.accept()
             }
         }
     }
@@ -226,7 +226,7 @@ StyledDialogView {
                     currentText: detailDialog.pluginPath
 
                     Component.onCompleted: {
-                        inputField.persistentSelection = true;
+                        inputField.persistentSelection = true
                     }
                 }
             }
@@ -250,9 +250,9 @@ StyledDialogView {
 
         onOpened: {
             Qt.callLater(function () {
-                pathField.forceActiveFocus();
-                pathField.selectAll();
-            });
+                pathField.forceActiveFocus()
+                pathField.selectAll()
+            })
         }
     }
 }

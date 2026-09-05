@@ -82,7 +82,7 @@ DoublePage {
                             navigation.accessible.description: clipStyleModel.formatNavigationDescription(modelData.description, modelData.selected)
 
                             onToggled: {
-                                clipStyleModel.selectClipStyle(modelData.style);
+                                clipStyleModel.selectClipStyle(modelData.style)
                             }
                         }
                         Column {
@@ -105,7 +105,7 @@ DoublePage {
                         anchors.fill: parent
 
                         onClicked: {
-                            clipStyleModel.selectClipStyle(modelData.style);
+                            clipStyleModel.selectClipStyle(modelData.style)
                         }
                     }
 
@@ -142,7 +142,7 @@ DoublePage {
     }
 
     Component.onCompleted: {
-        clipStyleModel.load();
+        clipStyleModel.load()
     }
 
     M3Divider {

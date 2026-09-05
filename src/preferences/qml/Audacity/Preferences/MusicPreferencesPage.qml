@@ -17,7 +17,7 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        musicPreferencesModel.init();
+        musicPreferencesModel.init()
     }
 
     Column {
@@ -36,7 +36,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
 
@@ -66,7 +66,7 @@ PreferencesPage {
                         navigation.row: 0
 
                         onToggled: {
-                            musicPreferencesModel.setTempoDetectionPref(TempoDetection.ALWAYS);
+                            musicPreferencesModel.setTempoDetectionPref(TempoDetection.ALWAYS)
                         }
                     }
 
@@ -81,7 +81,7 @@ PreferencesPage {
                         navigation.row: 1
 
                         onToggled: {
-                            musicPreferencesModel.setTempoDetectionPref(TempoDetection.WORKSPACE_DEPENDENT);
+                            musicPreferencesModel.setTempoDetectionPref(TempoDetection.WORKSPACE_DEPENDENT)
                         }
                     }
 
@@ -107,7 +107,7 @@ PreferencesPage {
                         navigation.row: 3
 
                         onToggled: {
-                            musicPreferencesModel.setTempoDetectionPref(TempoDetection.NEVER);
+                            musicPreferencesModel.setTempoDetectionPref(TempoDetection.NEVER)
                         }
                     }
                 }
@@ -126,7 +126,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
 
@@ -142,10 +142,10 @@ PreferencesPage {
                 navigation.row: 0
 
                 onToggled: {
-                    musicPreferencesModel.askBeforeSubsequentImport = checked;
+                    musicPreferencesModel.askBeforeSubsequentImport = checked
                     m3Switch2.checked = Qt.binding(function () {
-                        return musicPreferencesModel.askBeforeSubsequentImport;
-                    });
+                        return musicPreferencesModel.askBeforeSubsequentImport
+                    })
                 }
             }
         }

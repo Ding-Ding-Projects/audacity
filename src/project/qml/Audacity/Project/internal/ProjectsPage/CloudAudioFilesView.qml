@@ -20,11 +20,11 @@ ProjectsView {
 
     function refresh() {
         if (!accountModel.isAuthorized) {
-            return;
+            return
         }
 
-        cloudAudioFilesModel.reload();
-        prv.updateDesiredRowCount();
+        cloudAudioFilesModel.reload()
+        prv.updateDesiredRowCount()
     }
 
     AccountModel {
@@ -32,9 +32,9 @@ ProjectsView {
 
         onIsAuthorizedChanged: {
             if (accountModel.isAuthorized) {
-                cloudAudioFilesModel.load();
+                cloudAudioFilesModel.load()
             } else {
-                cloudAudioFilesModel.clear();
+                cloudAudioFilesModel.clear()
             }
         }
     }
@@ -44,16 +44,16 @@ ProjectsView {
 
         onStateChanged: {
             if (cloudAudioFilesModel.state === CloudAudioFilesModel.Fine) {
-                prv.updateDesiredRowCount();
+                prv.updateDesiredRowCount()
             }
         }
     }
 
     Component.onCompleted: {
-        accountModel.init();
+        accountModel.init()
 
         if (accountModel.isAuthorized) {
-            cloudAudioFilesModel.load();
+            cloudAudioFilesModel.load()
         }
     }
 
@@ -61,7 +61,7 @@ ProjectsView {
         target: (root.item && root.item.view) ? root.item.view : null
 
         function onContentYChanged() {
-            prv.updateDesiredRowCount();
+            prv.updateDesiredRowCount()
         }
     }
 
@@ -74,77 +74,77 @@ ProjectsView {
 
         readonly property int remainingFullRowsBelowViewport: {
             if (!activeView || !activeView.view) {
-                return 0;
+                return 0
             }
 
-            let view = activeView.view;
-            let columns = view.columns || 1;
-            let cellHeight = view.cellHeight || 100;
-            let topMargin = view.topMargin || 0;
+            let view = activeView.view
+            let columns = view.columns || 1
+            let cellHeight = view.cellHeight || 100
+            let topMargin = view.topMargin || 0
 
-            let totalDataRows = Math.ceil(cloudAudioFilesModel.rowCount / columns);
-            let scrolledContent = view.contentY + topMargin;
-            let currentScrollRow = Math.max(0, Math.floor(scrolledContent / cellHeight));
-            let visibleRows = Math.ceil((view.height + (scrolledContent % cellHeight)) / cellHeight);
-            let viewportBottomRow = currentScrollRow + visibleRows;
+            let totalDataRows = Math.ceil(cloudAudioFilesModel.rowCount / columns)
+            let scrolledContent = view.contentY + topMargin
+            let currentScrollRow = Math.max(0, Math.floor(scrolledContent / cellHeight))
+            let visibleRows = Math.ceil((view.height + (scrolledContent % cellHeight)) / cellHeight)
+            let viewportBottomRow = currentScrollRow + visibleRows
 
-            return Math.max(0, totalDataRows - viewportBottomRow);
+            return Math.max(0, totalDataRows - viewportBottomRow)
         }
 
         readonly property bool isSatisfied: remainingFullRowsBelowViewport >= 2
 
         onIsSatisfiedChanged: {
             if (!isSatisfied) {
-                updateDesiredRowCount();
+                updateDesiredRowCount()
             }
         }
 
         function updateDesiredRowCount() {
             if (updateDesiredRowCountScheduled) {
-                return;
+                return
             }
 
             if (isSatisfied || !cloudAudioFilesModel.hasMore) {
-                return;
+                return
             }
 
-            updateDesiredRowCountScheduled = true;
+            updateDesiredRowCountScheduled = true
 
             Qt.callLater(function () {
-                let view = activeView ? activeView.view : null;
-                let columns = view ? (view.columns || 1) : 1;
+                let view = activeView ? activeView.view : null
+                let columns = view ? (view.columns || 1) : 1
 
-                let rowsToAdd = Math.max(3 - remainingFullRowsBelowViewport, 1);
-                let newDesiredRowCount = cloudAudioFilesModel.rowCount + rowsToAdd * columns;
+                let rowsToAdd = Math.max(3 - remainingFullRowsBelowViewport, 1)
+                let newDesiredRowCount = cloudAudioFilesModel.rowCount + rowsToAdd * columns
 
                 if (cloudAudioFilesModel.desiredRowCount < newDesiredRowCount) {
-                    cloudAudioFilesModel.desiredRowCount = newDesiredRowCount;
+                    cloudAudioFilesModel.desiredRowCount = newDesiredRowCount
                 }
 
-                updateDesiredRowCountScheduled = false;
-            });
+                updateDesiredRowCountScheduled = false
+            })
         }
     }
 
     sourceComponent: {
         if (!accountModel.isAuthorized) {
-            return notSignedInComp;
+            return notSignedInComp
         }
 
         switch (cloudAudioFilesModel.state) {
         case CloudAudioFilesModel.Error:
-            return errorComp;
+            return errorComp
         case CloudAudioFilesModel.Loading:
-            return loadingComp;
+            return loadingComp
         case CloudAudioFilesModel.Fine:
-            break;
+            break
         }
 
         if (cloudAudioFilesModel.rowCount == 0 && !cloudAudioFilesModel.hasMore && cloudAudioFilesModel.state != CloudAudioFilesModel.Loading) {
-            return emptyComp;
+            return emptyComp
         }
 
-        return root.viewType === ProjectsPageModel.List ? listComp : gridComp;
+        return root.viewType === ProjectsPageModel.List ? listComp : gridComp
     }
 
     Component {
@@ -168,7 +168,7 @@ ProjectsView {
             navigation.accessible.name: qsTrc("project", "Cloud audio files grid")
 
             onOpenCloudProjectRequested: function (id, _slug, _path) {
-                root.openCloudAudioFileRequested(id);
+                root.openCloudAudioFileRequested(id)
             }
         }
     }
@@ -202,7 +202,7 @@ ProjectsView {
             navigation.name: "CloudAudioFilesList"
 
             onOpenCloudProjectRequested: function (id, _slug, _path) {
-                root.openCloudAudioFileRequested(id);
+                root.openCloudAudioFileRequested(id)
             }
 
             columns: [
@@ -239,7 +239,7 @@ ProjectsView {
 
                                     onActiveChanged: function (active) {
                                         if (active) {
-                                            listItem.scrollIntoView();
+                                            listItem.scrollIntoView()
                                         }
                                     }
                                 }
@@ -294,8 +294,8 @@ ProjectsView {
 
                                 onActiveChanged: function (active) {
                                     if (active) {
-                                        listItem.scrollIntoView();
-                                        listItem.scrollColumnIntoView(remainingColumnIndex);
+                                        listItem.scrollIntoView()
+                                        listItem.scrollColumnIntoView(remainingColumnIndex)
                                     }
                                 }
                             }
@@ -331,8 +331,8 @@ ProjectsView {
 
                                 onActiveChanged: function (active) {
                                     if (active) {
-                                        listItem.scrollIntoView();
-                                        listItem.scrollColumnIntoView(remainingColumnIndex);
+                                        listItem.scrollIntoView()
+                                        listItem.scrollColumnIntoView(remainingColumnIndex)
                                     }
                                 }
                             }
@@ -368,8 +368,8 @@ ProjectsView {
 
                                 onActiveChanged: function (active) {
                                     if (active) {
-                                        listItem.scrollIntoView();
-                                        listItem.scrollColumnIntoView(remainingColumnIndex);
+                                        listItem.scrollIntoView()
+                                        listItem.scrollColumnIntoView(remainingColumnIndex)
                                     }
                                 }
                             }
@@ -403,18 +403,18 @@ ProjectsView {
                             menuModel: item.contextMenuModel
 
                             onHandleMenuItem: function (itemId) {
-                                item.contextMenuModel.handleMenuItem(itemId);
+                                item.contextMenuModel.handleMenuItem(itemId)
                             }
 
                             Component.onCompleted: {
                                 if (menuModel != null) {
-                                    menuModel.load();
+                                    menuModel.load()
                                 }
                             }
 
                             onMenuModelChanged: {
                                 if (menuModel != null) {
-                                    menuModel.load();
+                                    menuModel.load()
                                 }
                             }
 
@@ -438,13 +438,13 @@ ProjectsView {
 
                                     onActiveChanged: function (active) {
                                         if (active) {
-                                            listItem.scrollIntoView();
-                                            listItem.scrollColumnIntoView(remainingColumnIndex);
+                                            listItem.scrollIntoView()
+                                            listItem.scrollColumnIntoView(remainingColumnIndex)
                                         }
                                     }
 
                                     onTriggered: {
-                                        menuButton.clicked(null);
+                                        menuButton.clicked(null)
                                     }
                                 }
                             }
@@ -539,7 +539,7 @@ ProjectsView {
 
                         text: qsTrc("cloud", "Sign in")
                         onClicked: {
-                            Qt.callLater(accountModel.openSignInDialog);
+                            Qt.callLater(accountModel.openSignInDialog)
                         }
                     }
 
@@ -550,7 +550,7 @@ ProjectsView {
 
                         text: qsTrc("cloud", "Create account")
                         onClicked: {
-                            Qt.callLater(accountModel.openCreateAccountDialog);
+                            Qt.callLater(accountModel.openCreateAccountDialog)
                         }
                     }
                 }

@@ -75,10 +75,10 @@ BaseSection {
             navigation.row: parent.row
             navigation.column: 0
             onToggled: {
-                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, checked);
+                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, checked)
                 checkBox.checked = Qt.binding(function () {
-                    return preference.value;
-                });
+                    return preference.value
+                })
             }
         }
     }
@@ -89,15 +89,15 @@ BaseSection {
         M3Dropdown {
             id: dropdown
             function indexOfValue(value) {
-                var items = dropdown.model;
+                var items = dropdown.model
                 for (var i = 0; i < items.length; ++i) {
-                    var item = items[i];
-                    var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item;
+                    var item = items[i]
+                    var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item
                     if (candidate === value) {
-                        return i;
+                        return i
                     }
                 }
-                return -1;
+                return -1
             }
 
             readonly property var preference: parent.preference
@@ -113,8 +113,8 @@ BaseSection {
             navigation.row: parent.row
             navigation.column: 0
             onActivated: function (index, value) {
-                currentIndex = index;
-                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, value);
+                currentIndex = index
+                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, value)
             }
         }
     }
@@ -135,7 +135,7 @@ BaseSection {
             navigation.row: parent.row
             navigation.column: 0
             onTextEditingFinished: function (value) {
-                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, value);
+                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, value)
             }
         }
     }
@@ -156,8 +156,8 @@ BaseSection {
             navigationRowOrderStart: parent.row
 
             onPathEdited: function (value) {
-                path = value;
-                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, value);
+                path = value
+                section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, value)
             }
         }
     }

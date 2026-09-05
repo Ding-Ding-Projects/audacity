@@ -51,7 +51,7 @@ BaseSection {
 
                 onAccepted: {
                     if (seedPicker.selection !== "rainbow") {
-                        M3.seedColor = seedPicker.currentColor;
+                        M3.seedColor = seedPicker.currentColor
                     }
                 }
             }
@@ -82,7 +82,7 @@ BaseSection {
                     navigation.row: 1
 
                     onActivated: function (index, value) {
-                        M3.variant = M3.variants[index];
+                        M3.variant = M3.variants[index]
                     }
                 }
             }
@@ -107,7 +107,7 @@ BaseSection {
                     navigationRowStart: 2
 
                     onActivated: function (index) {
-                        root.densityChangeRequested(-index);
+                        root.densityChangeRequested(-index)
                     }
                 }
             }
@@ -123,10 +123,10 @@ BaseSection {
                 navigation.row: 3
 
                 onToggled: function (isOn) {
-                    root.reducedMotionChangeRequested(isOn);
+                    root.reducedMotionChangeRequested(isOn)
                     reducedMotionSwitch.checked = Qt.binding(function () {
-                        return root.reducedMotion;
-                    });
+                        return root.reducedMotion
+                    })
                 }
             }
         }

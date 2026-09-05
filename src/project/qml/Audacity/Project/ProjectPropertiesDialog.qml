@@ -49,7 +49,7 @@ StyledDialogView {
         order: 1
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus();
+                root.forceActiveFocus()
             }
         }
     }
@@ -59,7 +59,7 @@ StyledDialogView {
     }
 
     Component.onCompleted: {
-        projectPropertiesModel.load();
+        projectPropertiesModel.load()
     }
 
     ColumnLayout {
@@ -116,16 +116,16 @@ StyledDialogView {
                 isLeftSide: true
 
                 onClicked: {
-                    projectPropertiesModel.newProperty();
+                    projectPropertiesModel.newProperty()
                 }
             }
 
             onStandardButtonClicked: function (buttonId) {
                 if (buttonId === ButtonBoxModel.Ok) {
-                    projectPropertiesModel.saveProperties();
-                    root.hide();
+                    projectPropertiesModel.saveProperties()
+                    root.hide()
                 } else if (buttonId === ButtonBoxModel.Cancel) {
-                    root.hide();
+                    root.hide()
                 }
             }
         }

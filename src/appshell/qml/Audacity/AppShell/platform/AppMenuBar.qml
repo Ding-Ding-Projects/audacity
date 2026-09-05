@@ -45,11 +45,11 @@ Item {
         openedMenuAreaRect: prv.openedArea(menuLoader)
 
         onOpenMenuRequested: function (menuId) {
-            prv.openMenu(menuId);
+            prv.openMenu(menuId)
         }
 
         onCloseOpenedMenuRequested: {
-            menuLoader.close();
+            menuLoader.close()
         }
     }
 
@@ -62,7 +62,7 @@ Item {
     }
 
     Component.onCompleted: {
-        appMenuModel.load();
+        appMenuModel.load()
     }
 
     Row {
@@ -84,10 +84,10 @@ Item {
                 property bool highlight: appMenuModel.highlightedMenuId === menuId
                 onHighlightChanged: {
                     if (highlight) {
-                        forceActiveFocus();
-                        accessibleInfo.readInfo();
+                        forceActiveFocus()
+                        accessibleInfo.readInfo()
                     } else {
-                        accessibleInfo.resetFocus();
+                        accessibleInfo.resetFocus()
                     }
                 }
 
@@ -111,13 +111,13 @@ Item {
                     name: radioButtonDelegate.title
 
                     function readInfo() {
-                        accessibleInfo.ignored = false;
-                        accessibleInfo.focused = true;
+                        accessibleInfo.ignored = false
+                        accessibleInfo.focused = true
                     }
 
                     function resetFocus() {
-                        accessibleInfo.ignored = true;
-                        accessibleInfo.focused = false;
+                        accessibleInfo.ignored = true
+                        accessibleInfo.focused = false
                     }
                 }
 
@@ -182,16 +182,16 @@ Item {
 
                     onContainsMouseChanged: {
                         if (!mouseArea.containsMouse) {
-                            return;
+                            return
                         }
 
                         if (menuLoader.isMenuOpened && menuLoader.parent !== radioButtonDelegate) {
-                            appMenuModel.openMenu(radioButtonDelegate.menuId, true);
+                            appMenuModel.openMenu(radioButtonDelegate.menuId, true)
                         }
                     }
 
                     onClicked: {
-                        appMenuModel.openMenu(radioButtonDelegate.menuId, false);
+                        appMenuModel.openMenu(radioButtonDelegate.menuId, false)
                     }
                 }
             }
@@ -204,15 +204,15 @@ Item {
         property string menuId: ""
 
         onHandleMenuItem: function (itemId) {
-            Qt.callLater(appMenuModel.handleMenuItem, itemId);
+            Qt.callLater(appMenuModel.handleMenuItem, itemId)
         }
 
         onOpened: {
-            appMenuModel.openedMenuId = menuLoader.menuId;
+            appMenuModel.openedMenuId = menuLoader.menuId
         }
 
         onClosed: {
-            appMenuModel.openedMenuId = "";
+            appMenuModel.openedMenuId = ""
         }
     }
 
@@ -224,41 +224,41 @@ Item {
         property string lastOpenedMenuId: ""
 
         function openMenu(menuId, byHover) {
-            var children = contentRow.children;
+            var children = contentRow.children
             for (var i = 0; i < children.length; ++i) {
-                var item = children[i];
+                var item = children[i]
                 if (Boolean(item) && item.menuId === menuId) {
-                    needRestoreNavigationAfterClose = true;
-                    lastOpenedMenuId = menuId;
+                    needRestoreNavigationAfterClose = true
+                    lastOpenedMenuId = menuId
 
                     if (!byHover) {
                         if (menuLoader.isMenuOpened && menuLoader.parent === item) {
-                            menuLoader.close();
-                            return;
+                            menuLoader.close()
+                            return
                         }
                     }
 
-                    menuLoader.menuId = menuId;
-                    menuLoader.parent = item;
+                    menuLoader.menuId = menuId
+                    menuLoader.parent = item
 
-                    Qt.callLater(menuLoader.open, item.item.subitems);
+                    Qt.callLater(menuLoader.open, item.item.subitems)
 
-                    return;
+                    return
                 }
             }
         }
 
         function hasNavigatedItem() {
-            return appMenuModel.highlightedMenuId !== "";
+            return appMenuModel.highlightedMenuId !== ""
         }
 
         function openedArea(menuLoader) {
             if (menuLoader.isMenuOpened) {
                 if (menuLoader.menu.subMenuLoader && menuLoader.menu.subMenuLoader.isMenuOpened)
-                    return openedArea(menuLoader.menu.subMenuLoader);
-                return Qt.rect(menuLoader.menu.x, menuLoader.menu.y, menuLoader.menu.width, menuLoader.menu.height);
+                    return openedArea(menuLoader.menu.subMenuLoader)
+                return Qt.rect(menuLoader.menu.x, menuLoader.menu.y, menuLoader.menu.width, menuLoader.menu.height)
             }
-            return Qt.rect(0, 0, 0, 0);
+            return Qt.rect(0, 0, 0, 0)
         }
     }
 }

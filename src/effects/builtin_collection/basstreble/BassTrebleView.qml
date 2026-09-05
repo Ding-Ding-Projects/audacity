@@ -62,7 +62,7 @@ BuiltinEffectBase {
     }
 
     function newParameterValueRequested(key, value) {
-        bassTreble.setParam(key, value);
+        bassTreble.setParam(key, value)
     }
 
     ColumnLayout {
@@ -105,7 +105,7 @@ BuiltinEffectBase {
                         radius: prv.knobRadius
 
                         onNewValueRequested: function (key, newValue) {
-                            newParameterValueRequested(key, newValue);
+                            newParameterValueRequested(key, newValue)
                         }
 
                         onCommitRequested: bassTreble.commitSettings()
@@ -123,7 +123,7 @@ BuiltinEffectBase {
                         radius: prv.knobRadius
 
                         onNewValueRequested: function (key, newValue) {
-                            newParameterValueRequested(key, newValue);
+                            newParameterValueRequested(key, newValue)
                         }
 
                         onCommitRequested: bassTreble.commitSettings()
@@ -161,7 +161,7 @@ BuiltinEffectBase {
                         radius: prv.knobRadius
 
                         onNewValueRequested: function (key, newValue) {
-                            newParameterValueRequested(key, newValue);
+                            newParameterValueRequested(key, newValue)
                         }
 
                         onCommitRequested: bassTreble.commitSettings()
@@ -181,11 +181,11 @@ BuiltinEffectBase {
             text: prv.linkCheckboxText
             checked: bassTreble.link
             onToggled: function () {
-                bassTreble.link = !bassTreble.link;
-                bassTreble.commitSettings();
+                bassTreble.link = !bassTreble.link
+                bassTreble.commitSettings()
                 linkCheckbox.checked = Qt.binding(function () {
-                    return bassTreble.link;
-                });
+                    return bassTreble.link
+                })
             }
         }
     }

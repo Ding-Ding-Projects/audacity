@@ -47,9 +47,9 @@ BaseSection {
                 property var newLibPath
 
                 onTextEditingFinished: function (newTextValue) {
-                    let result = ffmpegPrefModel.setFFmpegLibraryPath(newTextValue);
-                    currentText = ffmpegPrefModel.ffmpegLibraryPath;
-                    inputField.text = ffmpegPrefModel.ffmpegLibraryPath;
+                    let result = ffmpegPrefModel.setFFmpegLibraryPath(newTextValue)
+                    currentText = ffmpegPrefModel.ffmpegLibraryPath
+                    inputField.text = ffmpegPrefModel.ffmpegLibraryPath
                 }
             }
 
@@ -65,7 +65,7 @@ BaseSection {
                 navigation.order: 1
 
                 onClicked: {
-                    api.launcher.openUrl("https://support.audacityteam.org/basics/installing-ffmpeg");
+                    api.launcher.openUrl("https://support.audacityteam.org/basics/installing-ffmpeg")
                 }
             }
 
@@ -79,7 +79,7 @@ BaseSection {
                 navigation.order: downloadBtn.navigation.order + 1
 
                 onClicked: {
-                    ffmpegPrefModel.locateFFmpegLibrary();
+                    ffmpegPrefModel.locateFFmpegLibrary()
                 }
             }
         }

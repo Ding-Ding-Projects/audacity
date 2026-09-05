@@ -48,8 +48,8 @@ Rectangle {
 
         onActiveChanged: {
             if (active) {
-                root.activeFocusRequested();
-                root.forceActiveFocus();
+                root.activeFocusRequested()
+                root.forceActiveFocus()
             }
         }
 
@@ -67,7 +67,7 @@ Rectangle {
                     subsectionOrder: model.index
                     color: mainMenu.color
                     onClicked: function (info) {
-                        root.lastClickedInfo = "sec: " + mainMenu.sectionName + ", " + info;
+                        root.lastClickedInfo = "sec: " + mainMenu.sectionName + ", " + info
                     }
                 }
             }
@@ -100,7 +100,7 @@ Rectangle {
                     subsectionOrder: model.index
                     color: topTools.color
                     onClicked: function (info) {
-                        root.lastClickedInfo = "sec: " + topTools.sectionName + ", " + info;
+                        root.lastClickedInfo = "sec: " + topTools.sectionName + ", " + info
                     }
                 }
             }
@@ -132,7 +132,7 @@ Rectangle {
                     subsectionOrder: model.index
                     color: leftPanel.color
                     onClicked: function (info) {
-                        root.lastClickedInfo = "sec: " + leftPanel.sectionName + ", " + info;
+                        root.lastClickedInfo = "sec: " + leftPanel.sectionName + ", " + info
                     }
                 }
             }
@@ -164,7 +164,7 @@ Rectangle {
                     subsectionOrder: model.index
                     color: rightPanel.color
                     onClicked: function (info) {
-                        root.lastClickedInfo = "sec: " + rightPanel.sectionName + ", " + info;
+                        root.lastClickedInfo = "sec: " + rightPanel.sectionName + ", " + info
                     }
                 }
             }
@@ -190,7 +190,7 @@ Rectangle {
             subsectionOrder: 0
             color: centerPanel.color
             onClicked: function (info) {
-                root.lastClickedInfo = "sec: " + centerPanel.sectionName + ", " + info;
+                root.lastClickedInfo = "sec: " + centerPanel.sectionName + ", " + info
             }
         }
     }

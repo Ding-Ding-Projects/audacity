@@ -30,7 +30,7 @@ BaseSection {
         navigation.row: 0
 
         onToggled: {
-            root.sendCrashReportsChangeRequested(checked);
+            root.sendCrashReportsChangeRequested(checked)
         }
     }
 

@@ -75,16 +75,16 @@ Page {
 
     readonly property int currentIndex: {
         if (model.bilingual) {
-            return 2;
+            return 2
         }
 
-        return model.currentLanguageCode === "zh_HK" ? 1 : 0;
+        return model.currentLanguageCode === "zh_HK" ? 1 : 0
     }
 
     function selectLanguage(index) {
-        var language = root.languages[index];
-        model.bilingual = language.bilingual;
-        model.currentLanguageCode = language.code;
+        var language = root.languages[index]
+        model.bilingual = language.bilingual
+        model.currentLanguageCode = language.code
     }
 
     ColumnLayout {
@@ -112,7 +112,7 @@ Page {
                 navigation.name: languageButton.modelData.title
 
                 onToggled: {
-                    root.selectLanguage(languageButton.index);
+                    root.selectLanguage(languageButton.index)
                 }
             }
         }

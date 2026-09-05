@@ -31,11 +31,11 @@ Item {
     }
 
     function readInfo() {
-        accessibleInfo.readInfo();
+        accessibleInfo.readInfo()
     }
 
     function resetFocus() {
-        accessibleInfo.resetFocus();
+        accessibleInfo.resetFocus()
     }
 
     AccessibleItem {
@@ -49,13 +49,13 @@ Item {
         name: qsTrc("appshell/gettingstarted", "%1. %2").arg(root.title).arg(root.activeButtonTitle)
 
         function readInfo() {
-            accessibleInfo.ignored = false;
-            accessibleInfo.focused = true;
+            accessibleInfo.ignored = false
+            accessibleInfo.focused = true
         }
 
         function resetFocus() {
-            accessibleInfo.ignored = true;
-            accessibleInfo.focused = false;
+            accessibleInfo.ignored = true
+            accessibleInfo.focused = false
         }
     }
 

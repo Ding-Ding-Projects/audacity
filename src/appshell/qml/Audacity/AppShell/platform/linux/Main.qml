@@ -40,9 +40,9 @@ AppWindow {
 
     function toggleMaximized() {
         if (root.visibility === Window.Maximized) {
-            root.showNormal();
+            root.showNormal()
         } else {
-            root.showMaximized();
+            root.showMaximized()
         }
     }
 
@@ -51,15 +51,15 @@ AppWindow {
     }
 
     Component.onCompleted: {
-        platformMenuBar.setSource("../PlatformMenuBar.qml");
+        platformMenuBar.setSource("../PlatformMenuBar.qml")
         if (platformMenuBar.item.available) {
-            platformMenuBar.item.load();
-            appTitleBar.showAppMenu = false;
+            platformMenuBar.item.load()
+            appTitleBar.showAppMenu = false
         } else {
-            platformMenuBar.active = 0;
+            platformMenuBar.active = 0
         }
 
-        window.init();
+        window.init()
     }
 
     M3AppTitleBar {
@@ -75,15 +75,15 @@ AppWindow {
         handleWindowGestures: true
 
         onShowWindowMinimizedRequested: {
-            root.showMinimized();
+            root.showMinimized()
         }
 
         onToggleWindowMaximizedRequested: {
-            root.toggleMaximized();
+            root.toggleMaximized()
         }
 
         onCloseWindowRequested: {
-            root.close();
+            root.close()
         }
     }
 

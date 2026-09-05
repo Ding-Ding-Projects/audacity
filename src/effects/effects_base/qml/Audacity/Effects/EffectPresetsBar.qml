@@ -33,20 +33,20 @@ RowLayout {
         property AbstractMenuModel activeMenuModel: null
 
         function openThreeDotMenu(button) {
-            activeMenuModel = presetsBarModel.presetContextMenu();
-            var pos = Qt.point(button.x, button.y + button.height);
-            menuLoader.show(pos, activeMenuModel);
+            activeMenuModel = presetsBarModel.presetContextMenu()
+            var pos = Qt.point(button.x, button.y + button.height)
+            menuLoader.show(pos, activeMenuModel)
         }
 
         function save(button) {
-            activeMenuModel = presetsBarModel.saveContextMenu();
-            var pos = Qt.point(button.x, button.y + button.height);
-            menuLoader.show(pos, activeMenuModel);
+            activeMenuModel = presetsBarModel.saveContextMenu()
+            var pos = Qt.point(button.x, button.y + button.height)
+            menuLoader.show(pos, activeMenuModel)
         }
     }
 
     Component.onCompleted: {
-        Qt.callLater(presetsBarModel.load);
+        Qt.callLater(presetsBarModel.load)
     }
 
     EffectPresetsBarModel {
@@ -59,11 +59,11 @@ RowLayout {
         target: presetsBarModel
 
         function onPresetChanged() {
-            presetSelector.currentIndex = presetsBarModel.presets.findIndex(preset => preset.id === presetsBarModel.preset);
+            presetSelector.currentIndex = presetsBarModel.presets.findIndex(preset => preset.id === presetsBarModel.preset)
         }
 
         function onPresetsChanged() {
-            presetSelector.currentIndex = presetsBarModel.presets.findIndex(preset => preset.id === presetsBarModel.preset);
+            presetSelector.currentIndex = presetsBarModel.presets.findIndex(preset => preset.id === presetsBarModel.preset)
         }
     }
 
@@ -76,7 +76,7 @@ RowLayout {
 
         onHandleMenuItem: function (itemId) {
             if (prv.activeMenuModel) {
-                prv.activeMenuModel.handleMenuItem(itemId);
+                prv.activeMenuModel.handleMenuItem(itemId)
             }
         }
     }
@@ -99,8 +99,8 @@ RowLayout {
         model: presetsBarModel.presets
 
         onActivated: function (index, value) {
-            presetsBarModel.preset = value;
-            currentIndex = presetsBarModel.presets.findIndex(preset => preset.id === value);
+            presetsBarModel.preset = value
+            currentIndex = presetsBarModel.presets.findIndex(preset => preset.id === value)
         }
     }
 
@@ -118,7 +118,7 @@ RowLayout {
         icon: IconCode.SAVE
 
         onClicked: {
-            prv.save(saveBtn);
+            prv.save(saveBtn)
         }
     }
 
@@ -138,7 +138,7 @@ RowLayout {
         enabled: presetsBarModel.canResetPreset
 
         onClicked: {
-            presetsBarModel.resetPreset();
+            presetsBarModel.resetPreset()
         }
     }
 
@@ -158,7 +158,7 @@ RowLayout {
         enabled: presetsBarModel.canDeletePreset
 
         onClicked: {
-            presetsBarModel.deletePreset();
+            presetsBarModel.deletePreset()
         }
     }
 
@@ -177,7 +177,7 @@ RowLayout {
         icon: IconCode.MENU_THREE_DOTS
 
         onClicked: {
-            prv.openThreeDotMenu(manageButton);
+            prv.openThreeDotMenu(manageButton)
         }
     }
 }

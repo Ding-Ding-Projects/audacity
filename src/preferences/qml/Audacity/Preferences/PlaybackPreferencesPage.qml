@@ -27,8 +27,8 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        playbackState.init();
-        playbackPreferencesModel.init();
+        playbackState.init()
+        playbackPreferencesModel.init()
     }
 
     Column {
@@ -47,7 +47,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -66,7 +66,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -85,7 +85,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -102,7 +102,7 @@ PreferencesPage {
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }

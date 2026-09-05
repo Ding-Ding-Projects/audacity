@@ -21,9 +21,9 @@ StyledTableView {
     sourceComponentCallback: function (type) {
         switch (type) {
         case PluginManagerTableViewCellType.Enabled:
-            return enabledComp;
+            return enabledComp
         }
-        return null;
+        return null
     }
 
     // TODO: https://github.com/audacity/audacity/issues/10852
@@ -58,7 +58,7 @@ StyledTableView {
 
             checked: val
             onToggled: {
-                tableViewModel.handleEdit(row, column);
+                tableViewModel.handleEdit(row, column)
             }
         }
     }

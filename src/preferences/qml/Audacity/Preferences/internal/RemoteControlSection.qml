@@ -57,7 +57,7 @@ BaseSection {
             navigation.column: 1
 
             onToggled: {
-                root.remoteControlChanged(checked);
+                root.remoteControlChanged(checked)
             }
         }
 
@@ -79,7 +79,7 @@ BaseSection {
             navigation.column: 2
 
             onValueEdited: function (newValue) {
-                root.portChanged(newValue);
+                root.portChanged(newValue)
             }
         }
     }

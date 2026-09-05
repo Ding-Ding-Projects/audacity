@@ -82,7 +82,7 @@ BuiltinEffectBase {
             navigation.order: 0
 
             onValueEdited: function (newIndex, newValue) {
-                chirp.waveform = newIndex;
+                chirp.waveform = newIndex
             }
         }
 
@@ -130,7 +130,7 @@ BuiltinEffectBase {
 
                             onToggled: {
                                 if (chirp.interpolation != prv.interpolationLinear) {
-                                    chirp.interpolation = prv.interpolationLinear;
+                                    chirp.interpolation = prv.interpolationLinear
                                 }
                             }
                         }
@@ -146,7 +146,7 @@ BuiltinEffectBase {
 
                             onToggled: {
                                 if (chirp.interpolation != prv.interpolationLogarithmic) {
-                                    chirp.interpolation = prv.interpolationLogarithmic;
+                                    chirp.interpolation = prv.interpolationLogarithmic
                                 }
                             }
                         }
@@ -178,7 +178,7 @@ BuiltinEffectBase {
 
                         onValueEdited: function (newValue) {
                             if (chirp.frequencyStart !== newValue) {
-                                chirp.frequencyStart = newValue;
+                                chirp.frequencyStart = newValue
                             }
                         }
                     }
@@ -202,7 +202,7 @@ BuiltinEffectBase {
 
                         onValueEdited: function (newValue) {
                             if (chirp.frequencyEnd !== newValue) {
-                                chirp.frequencyEnd = newValue;
+                                chirp.frequencyEnd = newValue
                             }
                         }
                     }
@@ -251,7 +251,7 @@ BuiltinEffectBase {
 
                     onValueEdited: function (newValue) {
                         if (chirp.amplitudeStart !== newValue) {
-                            chirp.amplitudeStart = newValue;
+                            chirp.amplitudeStart = newValue
                         }
                     }
                 }
@@ -275,7 +275,7 @@ BuiltinEffectBase {
 
                     onValueEdited: function (newValue) {
                         if (chirp.amplitudeEnd !== newValue) {
-                            chirp.amplitudeEnd = newValue;
+                            chirp.amplitudeEnd = newValue
                         }
                     }
                 }
@@ -319,7 +319,7 @@ BuiltinEffectBase {
                 navigation.order: 0
 
                 onValueChanged: {
-                    chirp.duration = timecode.value;
+                    chirp.duration = timecode.value
                 }
             }
         }

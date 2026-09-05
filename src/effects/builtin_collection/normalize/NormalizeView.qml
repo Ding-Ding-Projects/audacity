@@ -43,10 +43,10 @@ BuiltinEffectBase {
             text: qsTrc("effects/normalize", "Remove DC offset (center on 0.0 vertically)")
 
             onToggled: {
-                normalize.removeDC = checked;
+                normalize.removeDC = checked
                 removeDcCheckbox.checked = Qt.binding(function () {
-                    return normalize.removeDC;
-                });
+                    return normalize.removeDC
+                })
             }
             checked: normalize.removeDC
         }
@@ -66,10 +66,10 @@ BuiltinEffectBase {
 
                 text: qsTrc("effects/normalize", "Normalize peak amplitude to")
                 onToggled: {
-                    normalize.normalizePeakAmplitude = checked;
+                    normalize.normalizePeakAmplitude = checked
                     normalizePeakAmplitudeCheckbox.checked = Qt.binding(function () {
-                        return normalize.normalizePeakAmplitude;
-                    });
+                        return normalize.normalizePeakAmplitude
+                    })
                 }
                 checked: normalize.normalizePeakAmplitude
             }
@@ -91,7 +91,7 @@ BuiltinEffectBase {
                 currentValue: normalize.peakAmplitudeTarget
                 onValueEdited: function (newValue) {
                     if (newValue !== normalize.peakAmplitudeTarget) {
-                        normalize.peakAmplitudeTarget = newValue;
+                        normalize.peakAmplitudeTarget = newValue
                     }
                 }
             }
@@ -106,10 +106,10 @@ BuiltinEffectBase {
             text: qsTrc("effects/normalize", "Normalize stereo channels independently")
 
             onToggled: {
-                normalize.normalizeStereoChannelsIndependently = checked;
+                normalize.normalizeStereoChannelsIndependently = checked
                 normalizeStereoChannelsIndependentlyCheckbox.checked = Qt.binding(function () {
-                    return normalize.normalizeStereoChannelsIndependently;
-                });
+                    return normalize.normalizeStereoChannelsIndependently
+                })
             }
             enabled: normalize.normalizePeakAmplitude
             checked: normalize.normalizeStereoChannelsIndependently

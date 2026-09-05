@@ -38,7 +38,7 @@ PreferencesPage {
     }
 
     Component.onCompleted: {
-        appearanceModel.init();
+        appearanceModel.init()
     }
 
     Column {
@@ -60,29 +60,29 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart
 
             onThemeChangeRequested: function (newThemeCode) {
-                appearanceModel.currentThemeCode = newThemeCode;
+                appearanceModel.currentThemeCode = newThemeCode
             }
 
             onHighContrastChangeRequested: function (enabled) {
-                appearanceModel.highContrastEnabled = enabled;
+                appearanceModel.highContrastEnabled = enabled
             }
 
             onSetFollowSystemThemeRequested: function (enabled) {
-                appearanceModel.isFollowSystemTheme = enabled;
+                appearanceModel.isFollowSystemTheme = enabled
             }
 
             onAccentColorChangeRequested: function (newColorIndex) {
-                appearanceModel.currentAccentColorIndex = newColorIndex;
+                appearanceModel.currentAccentColorIndex = newColorIndex
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
 
             onEnsureContentVisibleRequested: function (contentRect) {
-                root.ensureContentVisibleRequested(contentRect);
+                root.ensureContentVisibleRequested(contentRect)
             }
         }
 
@@ -101,12 +101,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 1
 
             onColorChangeRequested: function (newColor, propertyType) {
-                appearanceModel.setNewColor(newColor, propertyType);
+                appearanceModel.setNewColor(newColor, propertyType)
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -120,12 +120,12 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 2
 
             onClipStyleChangeRequested: function (clipStyle) {
-                appearanceModel.setClipStyle(clipStyle);
+                appearanceModel.setClipStyle(clipStyle)
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -142,16 +142,16 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 3
 
             onDensityChangeRequested: function (level) {
-                appearanceModel.m3Density = level;
+                appearanceModel.m3Density = level
             }
 
             onReducedMotionChangeRequested: function (enabled) {
-                appearanceModel.m3ReducedMotion = enabled;
+                appearanceModel.m3ReducedMotion = enabled
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }
@@ -167,16 +167,16 @@ PreferencesPage {
             navigation.order: root.navigationOrderStart + 4
 
             onFontChangeRequested: function (newFontIndex) {
-                appearanceModel.currentFontIndex = newFontIndex;
+                appearanceModel.currentFontIndex = newFontIndex
             }
 
             onBodyTextSizeChangeRequested: function (newBodyTextSize) {
-                appearanceModel.bodyTextSize = newBodyTextSize;
+                appearanceModel.bodyTextSize = newBodyTextSize
             }
 
             onFocusChanged: {
                 if (activeFocus) {
-                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height));
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
                 }
             }
         }

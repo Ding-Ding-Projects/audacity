@@ -70,7 +70,7 @@ BaseSection {
             navigation.column: 0
 
             onToggled: {
-                root.useColorChangeRequested(true);
+                root.useColorChangeRequested(true)
             }
         }
 
@@ -85,7 +85,7 @@ BaseSection {
             navigationPanel: root.navigation
 
             onAccepted: {
-                root.colorChangeRequested(colorPicker.currentColor);
+                root.colorChangeRequested(colorPicker.currentColor)
             }
         }
 
@@ -101,7 +101,7 @@ BaseSection {
             navigation.column: 0
 
             onToggled: {
-                root.useColorChangeRequested(false);
+                root.useColorChangeRequested(false)
             }
         }
 
@@ -116,7 +116,7 @@ BaseSection {
             navigationColumnOrderStart: 1
 
             onPathEdited: function (newPath) {
-                root.wallpaperPathChangeRequested(newPath);
+                root.wallpaperPathChangeRequested(newPath)
             }
         }
     }

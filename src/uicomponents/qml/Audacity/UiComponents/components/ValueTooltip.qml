@@ -17,8 +17,8 @@ StyledPopupView {
     property string format: "%1"
 
     property string text: {
-        const v = Number(root.value);
-        return (isFinite(v) ? v.toFixed(root.decimalPlaces) : root.value) + root.unitText;
+        const v = Number(root.value)
+        return (isFinite(v) ? v.toFixed(root.decimalPlaces) : root.value) + root.unitText
     }
     property string sizingText: root.text
 
@@ -59,11 +59,11 @@ StyledPopupView {
         target: root.parent
 
         function onXChanged() {
-            root.repositionWindowIfNeed();
+            root.repositionWindowIfNeed()
         }
 
         function onYChanged() {
-            root.repositionWindowIfNeed();
+            root.repositionWindowIfNeed()
         }
     }
 
@@ -74,7 +74,7 @@ StyledPopupView {
         repeat: false
 
         onTriggered: {
-            root.open();
+            root.open()
         }
     }
 
@@ -85,33 +85,33 @@ StyledPopupView {
         repeat: false
 
         onTriggered: {
-            root.close();
+            root.close()
         }
     }
 
     function formatted(value) {
         if (!root.format.includes("%1")) {
-            console.warn("ValueTooltip: format is missing the %1 placeholder:", root.format);
-            return root.format + value;
+            console.warn("ValueTooltip: format is missing the %1 placeholder:", root.format)
+            return root.format + value
         }
-        return root.format.arg(value);
+        return root.format.arg(value)
     }
 
     function show(noDelay = false) {
         if (noDelay) {
-            root.open();
+            root.open()
         } else {
-            openTimer.restart();
+            openTimer.restart()
         }
-        closeTimer.stop();
+        closeTimer.stop()
     }
 
     function hide(noDelay = false) {
         if (noDelay) {
-            root.close();
+            root.close()
         } else {
-            closeTimer.restart();
+            closeTimer.restart()
         }
-        openTimer.stop();
+        openTimer.stop()
     }
 }

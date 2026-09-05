@@ -41,7 +41,7 @@ StyledDialogView {
         id: model
 
         Component.onCompleted: {
-            model.init();
+            model.init()
         }
     }
 
@@ -125,7 +125,7 @@ StyledDialogView {
                     navigation.accessible.description: qsTrc("appshell/welcome", "Previous item")
 
                     onClicked: {
-                        model.prevItem();
+                        model.prevItem()
                     }
                 }
             }
@@ -147,7 +147,7 @@ StyledDialogView {
                 MouseArea {
                     anchors.fill: image
                     onClicked: {
-                        model.activateCurrentItem();
+                        model.activateCurrentItem()
                     }
                 }
             }
@@ -174,7 +174,7 @@ StyledDialogView {
                     navigation.accessible.description: qsTrc("appshell/welcome", "Next item")
 
                     onClicked: {
-                        model.nextItem();
+                        model.nextItem()
                     }
                 }
             }
@@ -226,7 +226,7 @@ StyledDialogView {
             navigation.accessible.description: prv.titleText + "; " + prv.descText
 
             onClicked: {
-                model.activateCurrentItem();
+                model.activateCurrentItem()
             }
         }
 
@@ -291,7 +291,7 @@ StyledDialogView {
             navigation.accessible.description: showOnStartup.text
 
             onClicked: {
-                model.showOnStartup = !model.showOnStartup;
+                model.showOnStartup = !model.showOnStartup
             }
         }
 
@@ -315,7 +315,7 @@ StyledDialogView {
             navigation.accessible.description: okButton.text
 
             onClicked: {
-                root.accept();
+                root.accept()
             }
         }
     }

@@ -42,7 +42,7 @@ StyledDialogView {
             navigationSection: root.navigationSection
 
             onNavNextPageRequested: {
-                root.accept();
+                root.accept()
             }
         }
 
@@ -72,7 +72,7 @@ StyledDialogView {
                 navigation.column: 0
 
                 onClicked: {
-                    root.reject();
+                    root.reject()
                 }
             }
         }

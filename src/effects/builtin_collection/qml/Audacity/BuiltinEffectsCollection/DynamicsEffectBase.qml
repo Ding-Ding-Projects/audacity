@@ -16,6 +16,6 @@ BuiltinEffectBase {
     }
 
     Component.onCompleted: {
-        playStateModel.init();
+        playStateModel.init()
     }
 }

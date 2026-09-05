@@ -20,7 +20,7 @@ BaseSection {
     }
 
     Component.onCompleted: {
-        meterModel.init();
+        meterModel.init()
     }
 
     ComboBoxWithTitle {
@@ -30,7 +30,7 @@ BaseSection {
 
         currentIndex: meterModel.meterDbRange
         model: meterModel.dbRangeList.map(function (id) {
-            return meterModel.description(id);
+            return meterModel.description(id)
         })
 
         navigation.name: "MeterDbRangeBox"
@@ -38,7 +38,7 @@ BaseSection {
         navigation.row: 1
 
         onValueEdited: function (newIndex, _) {
-            meterModel.meterDbRange = newIndex;
+            meterModel.meterDbRange = newIndex
         }
     }
 }

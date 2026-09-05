@@ -25,7 +25,7 @@ BaseSection {
 
     onFocusChanged: {
         if (activeFocus) {
-            root.activeFocusRequested(Qt.rect(x, y, width, height));
+            root.activeFocusRequested(Qt.rect(x, y, width, height))
         }
     }
 

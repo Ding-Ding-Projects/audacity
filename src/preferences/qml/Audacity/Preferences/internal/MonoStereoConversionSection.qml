@@ -32,10 +32,10 @@ BaseSection {
             navigation.panel: root.navigation
 
             onToggled: {
-                root.askBeforeConverting = !root.askBeforeConverting;
+                root.askBeforeConverting = !root.askBeforeConverting
                 checkbox.checked = Qt.binding(function () {
-                    return !root.askBeforeConverting;
-                });
+                    return !root.askBeforeConverting
+                })
             }
         }
     }

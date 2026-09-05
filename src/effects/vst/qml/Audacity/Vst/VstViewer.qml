@@ -57,26 +57,26 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        viewModel.init();
-        view.init();
-        Qt.callLater(presetsBarModel.load);
+        viewModel.init()
+        view.init()
+        Qt.callLater(presetsBarModel.load)
     }
 
     function startPreview() {
-        viewModel.startPreview();
+        viewModel.startPreview()
     }
 
     function stopPreview() {
-        viewModel.stopPreview();
+        viewModel.stopPreview()
     }
 
     function manage(parent) {
-        var px = parent.x;
-        var py = parent.y + parent.height;
-        var pos = mapFromItem(parent, px, py);
+        var px = parent.x
+        var py = parent.y + parent.height
+        var pos = mapFromItem(parent, px, py)
 
-        prv.activeMenuModel = presetsBarModel.presetContextMenu();
-        menuLoader.show(pos, prv.activeMenuModel);
+        prv.activeMenuModel = presetsBarModel.presetContextMenu()
+        menuLoader.show(pos, prv.activeMenuModel)
     }
 
     EffectPresetsBarModel {
@@ -89,7 +89,7 @@ Rectangle {
 
         onHandleMenuItem: function (itemId) {
             if (prv.activeMenuModel) {
-                prv.activeMenuModel.handleMenuItem(itemId);
+                prv.activeMenuModel.handleMenuItem(itemId)
             }
         }
     }

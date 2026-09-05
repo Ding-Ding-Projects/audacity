@@ -30,11 +30,11 @@ PreferencesPage {
     contentFillsAvailableHeight: true
 
     function apply() {
-        return page.apply();
+        return page.apply()
     }
 
     function reset() {
-        page.reset();
+        page.reset()
     }
 
     MidiDeviceMappingPage {

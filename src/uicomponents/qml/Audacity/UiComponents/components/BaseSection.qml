@@ -39,7 +39,7 @@ Column {
 
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus();
+                root.forceActiveFocus()
             }
         }
     }

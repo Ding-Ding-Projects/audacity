@@ -50,8 +50,8 @@ StyledListView {
         target: root.propertiesModel
 
         function onPropertyAdded(index) {
-            root.positionViewAtIndex(index, ListView.Contain);
-            root.currentIndex = index;
+            root.positionViewAtIndex(index, ListView.Contain)
+            root.currentIndex = index
         }
     }
 
@@ -72,19 +72,19 @@ StyledListView {
         navigationPanel: root.navigationPanel
 
         onPropertyNameChanged: function () {
-            model.propertyName = propertyName;
+            model.propertyName = propertyName
         }
 
         onPropertyValueChanged: function () {
-            model.propertyValue = propertyValue;
+            model.propertyValue = propertyValue
         }
 
         onScrollIntoViewRequested: function () {
-            root.positionViewAtIndex(model.index, ListView.Contain);
+            root.positionViewAtIndex(model.index, ListView.Contain)
         }
 
         onDeletePropertyRequested: function () {
-            root.propertiesModel.deleteProperty(model.index);
+            root.propertiesModel.deleteProperty(model.index)
         }
     }
 }

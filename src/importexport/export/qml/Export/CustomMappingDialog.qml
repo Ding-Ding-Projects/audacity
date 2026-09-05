@@ -30,7 +30,7 @@ StyledDialogView {
         order: 1
         onActiveChanged: function (active) {
             if (active) {
-                root.forceActiveFocus();
+                root.forceActiveFocus()
             }
         }
     }
@@ -66,7 +66,7 @@ StyledDialogView {
                 navigation.accessible.name: qsTrc("export", "Channel count %1").arg(currentValue)
 
                 onValueEdited: function (newValue) {
-                    customMappingModel.exportChannels = newValue;
+                    customMappingModel.exportChannels = newValue
                 }
             }
         }
@@ -100,7 +100,7 @@ StyledDialogView {
                 buttonId: ButtonBoxModel.Cancel
                 minWidth: 80
                 onClicked: {
-                    root.reject();
+                    root.reject()
                 }
             }
 
@@ -112,9 +112,9 @@ StyledDialogView {
                 minWidth: 80
                 accentButton: true
                 onClicked: {
-                    mappingTable.commitChanges();
-                    customMappingModel.apply();
-                    root.accept();
+                    mappingTable.commitChanges()
+                    customMappingModel.apply()
+                    root.accept()
                 }
             }
         }

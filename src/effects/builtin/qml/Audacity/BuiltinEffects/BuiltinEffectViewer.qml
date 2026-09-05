@@ -30,25 +30,25 @@ Rectangle {
     height: implicitHeight
 
     Component.onCompleted: {
-        builder.load(instanceId, root, dialogView, usedDestructively);
-        builder.contentItem.init();
+        builder.load(instanceId, root, dialogView, usedDestructively)
+        builder.contentItem.init()
     }
 
     function manage(parent) {
         if (builder.contentItem) {
-            builder.contentItem.manage(parent);
+            builder.contentItem.manage(parent)
         }
     }
 
     function startPreview() {
         if (builder.contentItem) {
-            builder.contentItem.startPreview();
+            builder.contentItem.startPreview()
         }
     }
 
     function stopPreview() {
         if (builder.contentItem) {
-            builder.contentItem.stopPreview();
+            builder.contentItem.stopPreview()
         }
     }
 
