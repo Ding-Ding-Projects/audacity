@@ -24,6 +24,9 @@ set(FETCHCONTENT_BASE_DIR ${PROJECT_BINARY_DIR}/_deps)
 set(MUSE_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/muse)
 set(MUSE_FRAMEWORK_SRC_PATH ${MUSE_FRAMEWORK_PATH}/framework)
 
+# Material Design 3 patch overlay for the muse framework, see docs/design/MUSE_OVERLAY.md
+include(${CMAKE_CURRENT_LIST_DIR}/buildscripts/cmake/ApplyMusePatches.cmake)
+
 set(CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/buildscripts/cmake
