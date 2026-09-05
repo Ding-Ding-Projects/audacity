@@ -24,6 +24,22 @@ function(au_validate_changelog changelog_path)
         return()
     endif()
 
+    # A shallow clone (fetch-depth 1 or 3 in the pull request workflows) holds
+    # only the newest commits, so every older hash would read as missing. The
+    # release workflow clones the full history and runs the real check there.
+    execute_process(
+        COMMAND ${AU_GIT_EXECUTABLE} rev-parse --is-shallow-repository
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RESULT_VARIABLE shallow_result
+        OUTPUT_VARIABLE shallow_output
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if (shallow_result EQUAL 0 AND shallow_output STREQUAL "true")
+        message(WARNING "This is a shallow git clone, skipping the changelog commit hash check; a full clone validates it")
+        return()
+    endif()
+
     file(READ "${changelog_path}" changelog_text)
     string(REGEX MATCHALL "[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]"
                   found_hashes "${changelog_text}")
