@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 Item {
     id: root
@@ -21,7 +22,7 @@ Item {
 
     FontMetrics {
         id: fontMetrics
-        font.family: ui.theme.bodyFont.family
+        font.family: M3.typography.bodyMedium.family
         font.pixelSize: root.fontSize
     }
 

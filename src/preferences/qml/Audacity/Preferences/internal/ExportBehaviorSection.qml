@@ -7,6 +7,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -19,7 +20,8 @@ BaseSection {
 
     required property var exportPreferencesModel
 
-    CheckBox {
+    M3Switch {
+        id: m3Switch4
         width: parent.width
 
         text: qsTrc("preferences", "Show ‘How would you like to export?’ dialog")
@@ -30,8 +32,11 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 0
 
-        onClicked: {
-            root.exportPreferencesModel.askExportLocationType = !checked
+        onToggled: {
+            root.exportPreferencesModel.askExportLocationType = checked
+            m3Switch4.checked = Qt.binding(function () {
+                return root.exportPreferencesModel.askExportLocationType
+            })
         }
     }
 }

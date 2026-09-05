@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -44,8 +45,19 @@ BaseSection {
             text: qsTrc("preferences", "Number format")
         }
 
-        StyledDropdown {
+        M3Dropdown {
             id: dropdown
+            function indexOfValue(value) {
+                var items = dropdown.model
+                for (var i = 0; i < items.length; ++i) {
+                    var item = items[i]
+                    var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item
+                    if (candidate === value) {
+                        return i
+                    }
+                }
+                return -1
+            }
 
             width: root.columnWidth
 
@@ -58,8 +70,6 @@ BaseSection {
             navigation.accessible.name: qsTrc("preferences", "Number format %1").arg(currentText)
             navigation.panel: root.navigation
             navigation.column: 1
-
-            indeterminateText: ""
 
             onActivated: function (index, value) {
                 root.numberFormatSelected(value)

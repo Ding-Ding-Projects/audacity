@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -33,7 +34,7 @@ BaseSection {
     signal resetThemeToDefaultRequested
     signal scoreInversionEnableChangeRequested(bool enable)
 
-    CheckBox {
+    M3Switch {
         id: scoreInversionEnable
         width: parent.width
 
@@ -43,12 +44,13 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 0
 
-        onClicked: {
-            root.scoreInversionEnableChangeRequested(!checked)
+        onToggled: {
+            root.scoreInversionEnableChangeRequested(checked)
         }
     }
 
-    FlatButton {
+    M3Button {
+        variant: "tonal"
         text: qsTrc("preferences", "Reset to default")
 
         navigation.name: "ResetButton"

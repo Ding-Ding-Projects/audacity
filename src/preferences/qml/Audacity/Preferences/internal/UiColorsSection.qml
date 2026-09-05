@@ -27,6 +27,7 @@ import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
 import Audacity.AppShell
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -48,12 +49,12 @@ BaseSection {
             model: [
                 {
                     textRole: qsTrc("preferences", "Accent color"),
-                    colorRole: ui.theme.accentColor,
+                    colorRole: M3.color.primary,
                     typeRole: AppearancePreferencesModel.AccentColor
                 },
                 {
                     textRole: qsTrc("preferences", "Text and icons"),
-                    colorRole: ui.theme.fontPrimaryColor,
+                    colorRole: M3.color.onSurface,
                     typeRole: AppearancePreferencesModel.TextAndIconsColor
                 },
                 {
@@ -63,7 +64,7 @@ BaseSection {
                 },
                 {
                     textRole: qsTrc("preferences", "Border color"),
-                    colorRole: ui.theme.strokeColor,
+                    colorRole: M3.color.outlineVariant,
                     typeRole: AppearancePreferencesModel.BorderColor
                 }
             ]

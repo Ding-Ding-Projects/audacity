@@ -9,6 +9,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -69,7 +70,7 @@ BuiltinEffectBase {
             StyledTextLabel {
 
                 text: truncateSilence.detectSilenceLabel()
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
             }
 
             RoundedRectangle {
@@ -77,10 +78,10 @@ BuiltinEffectBase {
                 width: parent.width
                 height: detectSilenceRow.height + prv.spaceXL * 2
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
                 radius: prv.borderRadius
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: prv.borderWidth
 
                 Row {
@@ -103,7 +104,7 @@ BuiltinEffectBase {
                             text: truncateSilence.thresholdLabel()
                         }
 
-                        IncrementalPropertyControl {
+                        M3NumberField {
                             id: thresholdControl
 
                             width: parent.width
@@ -135,7 +136,7 @@ BuiltinEffectBase {
                             text: truncateSilence.minimumLabel()
                         }
 
-                        IncrementalPropertyControl {
+                        M3NumberField {
                             id: minimumControl
 
                             width: parent.width
@@ -168,7 +169,7 @@ BuiltinEffectBase {
             StyledTextLabel {
 
                 text: truncateSilence.actionLabel()
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
             }
 
             RoundedRectangle {
@@ -176,10 +177,10 @@ BuiltinEffectBase {
                 width: parent.width
                 height: actionColumn.height + prv.spaceXL * 2
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
                 radius: prv.borderRadius
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: prv.borderWidth
 
                 Column {
@@ -225,7 +226,7 @@ BuiltinEffectBase {
                             text: truncateSilence.currentActionConfig.fieldLabel || ""
                         }
 
-                        IncrementalPropertyControl {
+                        M3NumberField {
                             id: actionValueControl
 
                             width: prv.fieldWidth
@@ -250,7 +251,7 @@ BuiltinEffectBase {
                         }
                     }
 
-                    CheckBox {
+                    M3Switch {
                         id: independentCheckbox
 
                         width: parent.width
@@ -261,8 +262,11 @@ BuiltinEffectBase {
                         text: truncateSilence.currentActionConfig.independentLabel || ""
                         checked: truncateSilence.independentValue
 
-                        onClicked: {
-                            truncateSilence.independentValue = !checked
+                        onToggled: {
+                            truncateSilence.independentValue = checked
+                            independentCheckbox.checked = Qt.binding(function () {
+                                return truncateSilence.independentValue
+                            })
                         }
                     }
                 }

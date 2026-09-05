@@ -7,6 +7,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -54,7 +55,7 @@ BaseSection {
                 text: preferenceRow.modelData.description
                 horizontalAlignment: Text.AlignLeading
                 wrapMode: Text.WordWrap
-                color: ui.theme.fontSecondaryColor
+                color: M3.color.onSecondaryContainer
             }
         }
     }
@@ -62,7 +63,7 @@ BaseSection {
     Component {
         id: booleanEditor
 
-        CheckBox {
+        M3Switch {
             id: checkBox
 
             readonly property var preference: parent.preference
@@ -73,9 +74,11 @@ BaseSection {
             navigation.panel: section.navigation
             navigation.row: parent.row
             navigation.column: 0
-            onClicked: {
-                checked = !checked
+            onToggled: {
                 section.pluginPreferencesModel.setExtensionPreference(section.preferenceGroup.extensionId, preference.id, checked)
+                checkBox.checked = Qt.binding(function () {
+                    return preference.value
+                })
             }
         }
     }
@@ -83,8 +86,19 @@ BaseSection {
     Component {
         id: enumEditor
 
-        StyledDropdown {
+        M3Dropdown {
             id: dropdown
+            function indexOfValue(value) {
+                var items = dropdown.model
+                for (var i = 0; i < items.length; ++i) {
+                    var item = items[i]
+                    var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item
+                    if (candidate === value) {
+                        return i
+                    }
+                }
+                return -1
+            }
 
             readonly property var preference: parent.preference
             readonly property var section: parent.section
@@ -108,7 +122,7 @@ BaseSection {
     Component {
         id: textEditor
 
-        TextInputField {
+        M3TextField {
             id: textInput
 
             readonly property var preference: parent.preference

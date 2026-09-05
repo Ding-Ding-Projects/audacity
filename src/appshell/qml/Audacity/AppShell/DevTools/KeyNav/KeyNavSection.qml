@@ -6,6 +6,8 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -35,7 +37,7 @@ Rectangle {
         anchors.fill: parent
     }
 
-    FlatButton {
+    M3Button {
         id: btn
         anchors.right: parent.right
         width: 20

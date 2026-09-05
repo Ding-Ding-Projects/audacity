@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Muse.UiComponents
+import Audacity.Effects
+import Audacity.M3
 
 Column {
     id: root
@@ -30,7 +32,7 @@ Column {
             horizontalAlignment: Text.AlignLeft
         }
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: semitonesControl
 
             Layout.alignment: Qt.AlignRight
@@ -65,7 +67,7 @@ Column {
             width: parent.width
             spacing: 16
 
-            StyledSlider {
+            M3Slider {
                 id: percentageSlider
 
                 Layout.alignment: Qt.AlignLeft
@@ -85,7 +87,7 @@ Column {
                 navigation.name: root.navigationPrefix + "PercentageChangeSlider"
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 Layout.alignment: Qt.AlignRight
                 Layout.preferredWidth: root.valueFieldWidth
 

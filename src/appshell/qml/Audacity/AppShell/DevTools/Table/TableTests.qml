@@ -10,10 +10,12 @@ import Muse.UiComponents
 import Audacity.AppShell
 import Audacity.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surfaceContainer
 
     TableTestsModel {
         id: source
@@ -32,12 +34,14 @@ Rectangle {
         anchors.margins: 12
         spacing: 12
 
-        StyledTextLabel {
+        Text {
+            color: M3.color.onSurface
             text: "Minimal AbstractTableViewModel impl with default TableSortFilterProxyModel for sorting."
-            font: ui.theme.largeBodyFont
+            font: M3.typography.bodyLarge
         }
 
-        StyledTextLabel {
+        Text {
+            color: M3.color.onSurface
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
             text: "Click a column header to toggle its sort direction.\nRepeated clicks on different headers build a multi-key stable sort.\nThe default compareCells() extracts each cell's muse::Val and compares it; acceptsRow() accepts every row."
@@ -47,7 +51,7 @@ Rectangle {
         RowLayout {
             spacing: 8
 
-            FlatButton {
+            M3Button {
                 text: "Clear sort"
                 onClicked: proxy.clearSort()
             }

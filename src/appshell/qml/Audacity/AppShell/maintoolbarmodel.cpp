@@ -86,6 +86,16 @@ QHash<int, QByteArray> MainToolBarModel::roleNames() const
     return roles;
 }
 
+QVariantList MainToolBarModel::items() const
+{
+    QVariantList result;
+    for (const QVariantMap& item : m_items) {
+        result << item;
+    }
+
+    return result;
+}
+
 void MainToolBarModel::load()
 {
     beginResetModel();
@@ -100,6 +110,8 @@ void MainToolBarModel::load()
     }
 
     endResetModel();
+
+    emit itemsChanged();
 
     updateNotationPageItem();
     context()->currentProjectChanged().onNotify(this, [this]() {
@@ -118,6 +130,7 @@ void MainToolBarModel::updateNotationPageItem()
 
             QModelIndex modelIndex = index(i);
             emit dataChanged(modelIndex, modelIndex, { IsTitleBoldRole, EnabledRole });
+            emit itemsChanged();
 
             break;
         }

@@ -25,6 +25,7 @@ import QtQuick.Controls 2.15
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -81,7 +82,7 @@ BaseSection {
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: limitScrollAreaBox
         width: parent.width
 
@@ -91,8 +92,8 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: radioButtonList.model.length
 
-        onClicked: {
-            root.limitScrollAreaChangeRequested(!checked)
+        onToggled: {
+            root.limitScrollAreaChangeRequested(checked)
         }
     }
 }

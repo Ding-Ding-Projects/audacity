@@ -23,6 +23,7 @@ import QtQuick 2.15
 
 import Muse.UiComponents
 import Audacity.Preferences
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -70,7 +71,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: asioSection.visible
         }
 
@@ -90,7 +91,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         SampleRateSection {
             id: sampleRateSection
@@ -107,7 +108,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         BufferAndLatencySection {
             id: bufferAndLatencySection
@@ -124,7 +125,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         MeterDbRangeSection {
             id: meterDbRangeSection

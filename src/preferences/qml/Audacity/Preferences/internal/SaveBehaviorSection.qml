@@ -8,6 +8,7 @@ import Muse.UiComponents
 
 import Audacity.Preferences
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -24,7 +25,7 @@ BaseSection {
         width: parent.width
         spacing: root.rowSpacing
 
-        RoundedRadioButton {
+        M3RadioButton {
             checked: root.exportPreferencesModel.saveBehavior === SaveBehavior.AlwaysAsk
             text: qsTrc("preferences", "Always ask")
 
@@ -37,7 +38,7 @@ BaseSection {
             }
         }
 
-        RoundedRadioButton {
+        M3RadioButton {
             checked: root.exportPreferencesModel.saveBehavior === SaveBehavior.AlwaysSaveToCloud
             text: qsTrc("preferences", "Always save to cloud")
 
@@ -50,7 +51,7 @@ BaseSection {
             }
         }
 
-        RoundedRadioButton {
+        M3RadioButton {
             checked: root.exportPreferencesModel.saveBehavior === SaveBehavior.AlwaysSaveToComputer
             text: qsTrc("preferences", "Always save to computer")
 

@@ -19,38 +19,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+/*
+ * The developer tools navigation, drawn as Material 3 list items.
+ */
+pragma ComponentBehavior: Bound
 
-import Muse.Ui 1.0
+import QtQuick
+
+import Muse.Ui
 import Muse.UiComponents
 
-RadioButtonGroup {
+import Audacity.M3
+
+ListView {
     id: radioButtonList
 
     orientation: ListView.Vertical
-    spacing: 0
+    spacing: 2
 
     signal selected(string name)
 
     currentIndex: 0
 
-    delegate: PageTabButton {
-        id: radioButtonDelegate
+    NavigationPanel {
+        id: navPanel
+        name: "DevToolsMenu"
+        enabled: radioButtonList.enabled && radioButtonList.visible
+        direction: NavigationPanel.Vertical
+        accessible.name: "DevTools menu"
+    }
 
-        width: parent.width
+    delegate: M3ListItem {
+        id: listItem
 
-        leftPadding: 30
+        required property int index
+        required property var modelData
 
-        ButtonGroup.group: radioButtonList.radioButtonGroup
-        orientation: Qt.Horizontal
-        checked: index === radioButtonList.currentIndex
+        width: ListView.view.width
 
-        title: modelData["title"]
+        headline: listItem.modelData["title"]
+        selected: listItem.index === radioButtonList.currentIndex
 
-        onToggled: {
-            radioButtonList.currentIndex = index
-            radioButtonList.selected(modelData["name"])
+        navigation.panel: navPanel
+        navigation.row: listItem.index
+
+        onClicked: {
+            radioButtonList.currentIndex = listItem.index
+            radioButtonList.selected(listItem.modelData["name"])
         }
     }
 }

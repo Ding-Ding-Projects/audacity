@@ -8,6 +8,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.Effects
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -78,8 +79,9 @@ StyledDialogView {
                 order: tableView.navigationPanel.order + 1
             }
 
-            FlatButton {
+            M3Button {
                 id: rescanButton
+                variant: "tonal"
 
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredHeight: 32
@@ -95,7 +97,7 @@ StyledDialogView {
                 }
             }
 
-            CheckBox {
+            M3Switch {
                 id: alsoRescanBrokenPluginsCheckBox
 
                 Layout.alignment: Qt.AlignVCenter
@@ -107,8 +109,11 @@ StyledDialogView {
                 text: qsTrc("effects", "Include plugins with errors")
                 checked: root.tableViewModel.alsoRescanBrokenPlugins
 
-                onClicked: {
-                    root.tableViewModel.alsoRescanBrokenPlugins = !checked
+                onToggled: {
+                    root.tableViewModel.alsoRescanBrokenPlugins = checked
+                    alsoRescanBrokenPluginsCheckBox.checked = Qt.binding(function () {
+                        return root.tableViewModel.alsoRescanBrokenPlugins
+                    })
                 }
             }
 
@@ -117,8 +122,9 @@ StyledDialogView {
                 Layout.fillWidth: true
             }
 
-            FlatButton {
+            M3Button {
                 id: okButton
+                variant: "tonal"
 
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredHeight: 32
@@ -135,8 +141,9 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: cancelButton
+                variant: "tonal"
 
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredHeight: 32

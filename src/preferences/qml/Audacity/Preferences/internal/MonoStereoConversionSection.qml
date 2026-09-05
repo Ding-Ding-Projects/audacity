@@ -4,6 +4,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -18,7 +19,7 @@ BaseSection {
         width: parent.width
         spacing: 24
 
-        CheckBox {
+        M3Switch {
             id: checkbox
 
             width: parent.width
@@ -30,8 +31,11 @@ BaseSection {
             navigation.name: "StereoToMonoBox"
             navigation.panel: root.navigation
 
-            onClicked: {
+            onToggled: {
                 root.askBeforeConverting = !root.askBeforeConverting
+                checkbox.checked = Qt.binding(function () {
+                    return !root.askBeforeConverting
+                })
             }
         }
     }

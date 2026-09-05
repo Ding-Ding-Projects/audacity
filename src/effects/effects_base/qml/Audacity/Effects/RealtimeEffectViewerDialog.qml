@@ -12,6 +12,7 @@ import Audacity.BuiltinEffects
 import Audacity.Lv2
 import Audacity.AudioUnit
 import Audacity.Vst
+import Audacity.M3
 
 EffectStyledDialogView {
     id: root
@@ -171,7 +172,7 @@ EffectStyledDialogView {
                 width: topPanelContainer.width
                 height: topPanelContainer.height
 
-                color: ui.theme.backgroundPrimaryColor
+                color: M3.color.surface
 
                 Row {
                     id: headerBar
@@ -210,7 +211,7 @@ EffectStyledDialogView {
                     }
                 }
 
-                SeparatorLine {
+                M3Divider {
                     id: separator
 
                     anchors.top: headerBar.bottom

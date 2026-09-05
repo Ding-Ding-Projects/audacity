@@ -5,10 +5,12 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 StyledDialogView {
     id: root
 
-    property color color: "#444444"
+    property color color: M3.color.surfaceContainerHigh
     property bool isApplyColor: false
 
     contentWidth: 400
@@ -34,7 +36,8 @@ StyledDialogView {
                 onTextChanged: input.value = newTextValue
             }
 
-            StyledTextLabel {
+            Text {
+                color: M3.color.onSurface
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 text: "Use right click for showing context menu"
@@ -49,14 +52,14 @@ StyledDialogView {
             anchors.bottomMargin: 20
             spacing: 20
 
-            FlatButton {
+            M3Button {
                 text: "Cancel"
                 onClicked: {
                     root.reject()
                 }
             }
 
-            FlatButton {
+            M3Button {
                 text: "OK"
                 onClicked: {
                     root.ret = {

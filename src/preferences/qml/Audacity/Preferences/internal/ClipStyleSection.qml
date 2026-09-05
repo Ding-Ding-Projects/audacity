@@ -31,6 +31,7 @@ import Audacity.AppShell
 import Audacity.Preferences
 import Audacity.ProjectScene
 import Audacity.TrackEdit
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -65,7 +66,7 @@ BaseSection {
                 }
             }
 
-            RoundedRadioButton {
+            M3RadioButton {
                 text: qsTrc("preferences", "Colorful")
 
                 checked: root.currentClipStyle == ClipStyle.COLORFUL
@@ -96,7 +97,7 @@ BaseSection {
                 }
             }
 
-            RoundedRadioButton {
+            M3RadioButton {
                 text: qsTrc("preferences", "Classic")
 
                 checked: root.currentClipStyle == ClipStyle.CLASSIC

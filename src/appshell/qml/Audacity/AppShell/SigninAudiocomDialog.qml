@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 StyledDialogView {
@@ -21,6 +22,11 @@ StyledDialogView {
     margins: 20
 
     modal: true
+
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surface
+    }
 
     ColumnLayout {
         id: content
@@ -40,17 +46,32 @@ StyledDialogView {
             }
         }
 
-        ButtonBox {
+        NavigationPanel {
+            id: buttonsNavPanel
+            name: "SigninAudiocomButtons"
+            section: root.navigationSection
+            order: 1
+            direction: NavigationPanel.Horizontal
+        }
+
+        RowLayout {
             Layout.fillWidth: true
             Layout.topMargin: 12
 
-            buttons: [ButtonBoxModel.Cancel]
+            Item {
+                Layout.fillWidth: true
+            }
 
-            navigationPanel.section: root.navigationSection
-            navigationPanel.order: 1
+            M3Button {
+                variant: "text"
 
-            onStandardButtonClicked: function (buttonId) {
-                if (buttonId === ButtonBoxModel.Cancel) {
+                //: Label of a dialog button
+                text: qsTrc("global", "Cancel")
+
+                navigation.panel: buttonsNavPanel
+                navigation.column: 0
+
+                onClicked: {
                     root.reject()
                 }
             }

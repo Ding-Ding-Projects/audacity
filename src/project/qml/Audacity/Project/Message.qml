@@ -22,6 +22,7 @@
 import QtQuick 2.15
 
 import Muse.UiComponents
+import Audacity.M3
 
 Column {
     property alias title: titleLabel.text
@@ -32,7 +33,7 @@ Column {
     StyledTextLabel {
         id: titleLabel
         width: parent.width
-        font: ui.theme.tabBoldFont
+        font: M3.typography.titleSmall
     }
 
     StyledTextLabel {

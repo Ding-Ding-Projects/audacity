@@ -6,10 +6,12 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surface
 
     property string lastClickedInfo: ""
 
@@ -22,12 +24,12 @@ Rectangle {
         anchors.right: parent.right
         height: 64
 
-        StyledTextLabel {
+        Text {
+            color: M3.color.onSurface
             anchors.fill: parent
             anchors.margins: 8
             verticalAlignment: Text.AlignVCenter
             text: "Last clicked: " + root.lastClickedInfo
-            color: "#000000"
         }
     }
 
@@ -37,9 +39,9 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         height: 64
-        color: "#729fcf"
+        color: M3.color.surfaceContainerHigh
 
-        anchors.margins: ui.theme.navCtrlBorderWidth
+        anchors.margins: M3.focusIndicatorThickness
 
         sectionName: "mainMenu"
         sectionOrder: 101
@@ -78,9 +80,9 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         height: 64
-        color: "#ef2929"
+        color: M3.color.errorContainer
 
-        anchors.margins: ui.theme.navCtrlBorderWidth
+        anchors.margins: M3.focusIndicatorThickness
 
         sectionName: "topTools"
         sectionOrder: 102
@@ -111,9 +113,9 @@ Rectangle {
         anchors.top: topTools.bottom
         anchors.bottom: parent.bottom
         width: 120
-        color: "#729fcf"
+        color: M3.color.surfaceContainerHigh
 
-        anchors.margins: ui.theme.navCtrlBorderWidth
+        anchors.margins: M3.focusIndicatorThickness
 
         sectionName: "leftPanel"
         sectionOrder: 103
@@ -143,9 +145,9 @@ Rectangle {
         anchors.top: topTools.bottom
         anchors.bottom: parent.bottom
         width: 120
-        color: "#8ae234"
+        color: M3.color.tertiaryContainer
 
-        anchors.margins: ui.theme.navCtrlBorderWidth
+        anchors.margins: M3.focusIndicatorThickness
 
         sectionName: "rightPanel"
         sectionOrder: 105
@@ -175,9 +177,9 @@ Rectangle {
         anchors.right: rightPanel.left
         anchors.top: topTools.bottom
         anchors.bottom: parent.bottom
-        color: "#ef2929"
+        color: M3.color.errorContainer
 
-        anchors.margins: ui.theme.navCtrlBorderWidth
+        anchors.margins: M3.focusIndicatorThickness
 
         sectionName: "centerPanel"
         sectionOrder: 104

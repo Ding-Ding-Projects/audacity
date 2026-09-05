@@ -9,6 +9,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.Export 1.0
+import Audacity.M3
 
 RowLayout {
     id: root
@@ -38,8 +39,9 @@ RowLayout {
         Layout.fillWidth: true
     }
 
-    FlatButton {
+    M3Button {
         id: loadBtn
+        variant: "tonal"
 
         Layout.preferredWidth: root.templateButtonWidth
 
@@ -53,8 +55,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: saveBtn
+        variant: "tonal"
 
         Layout.preferredWidth: root.templateButtonWidth
 
@@ -68,8 +71,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: setDefaultBtn
+        variant: "tonal"
 
         Layout.preferredWidth: root.templateButtonWidth
 
@@ -83,10 +87,11 @@ RowLayout {
         }
     }
 
-    SeparatorLine {}
+    M3Divider {}
 
-    FlatButton {
+    M3Button {
         id: deleteBtn
+        variant: "tonal"
 
         Layout.preferredWidth: tagButtonWidth
 
@@ -103,8 +108,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: addBtn
+        variant: "tonal"
 
         Layout.preferredWidth: tagButtonWidth
 

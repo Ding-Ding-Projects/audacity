@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.UiComponents
 import Muse.Ui 1.0
 import Audacity.Project 1.0
+import Audacity.M3
 
 Loader {
     id: root
@@ -32,7 +33,7 @@ Loader {
 
     property int viewType: ProjectsPageModel.Grid
 
-    property color backgroundColor: ui.theme.backgroundSecondaryColor
+    property color backgroundColor: M3.color.surfaceContainer
     property real sideMargin: 46
 
     property NavigationSection navigationSection

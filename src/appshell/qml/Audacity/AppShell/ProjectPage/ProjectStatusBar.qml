@@ -24,10 +24,23 @@ import QtQuick.Layouts
 
 import Muse.UiComponents
 
+import Audacity.M3
 import Audacity.ProjectScene
 
 Item {
     id: root
+
+    // The Material 3 bottom app bar of the project page.
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surfaceContainer
+
+        M3Divider {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+        }
+    }
 
     property NavigationSection navigationSection: NavigationSection {
         id: navSec

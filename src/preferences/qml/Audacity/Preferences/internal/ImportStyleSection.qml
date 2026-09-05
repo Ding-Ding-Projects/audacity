@@ -25,6 +25,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -46,7 +47,7 @@ BaseSection {
         property bool useStyleFile: root.styleFileImportPath !== ""
     }
 
-    RoundedRadioButton {
+    M3RadioButton {
         id: builtInStyleButton
         width: root.columnWidth
 
@@ -68,7 +69,7 @@ BaseSection {
         width: parent.width
         spacing: root.columnSpacing
 
-        RoundedRadioButton {
+        M3RadioButton {
             id: useStyleFileButton
 
             width: root.columnWidth

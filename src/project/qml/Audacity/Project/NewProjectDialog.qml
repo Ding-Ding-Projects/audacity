@@ -27,6 +27,7 @@ import Muse.UiComponents
 import Audacity.Project 1.0
 
 import "internal/NewProject"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -97,7 +98,7 @@ StyledDialogView {
             Layout.fillWidth: true
             Layout.maximumHeight: buttonBox.height
 
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
             opacity: 0.7
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.Wrap

@@ -7,8 +7,10 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.Diagnostics 1.0
 
+import Audacity.M3
+
 Rectangle {
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surface
 
     CrashHandlerDevToolsModel {
         id: model
@@ -42,14 +44,15 @@ Rectangle {
                     iconCode: IconCode.WARNING
                 }
 
-                StyledTextLabel {
+                Text {
+                    color: M3.color.onSurface
                     // Just for fun... or when a user accidentally sees this (shouldn't happen)
                     text: "DANGER! This button does exactly what it says!"
                 }
             }
         }
 
-        FlatButton {
+        M3Button {
             text: "Crash"
             onClicked: model.doCrash()
         }

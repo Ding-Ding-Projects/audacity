@@ -19,8 +19,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
+import QtQuick
+
 import Muse.UiComponents
+
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -32,7 +35,9 @@ Rectangle {
     width: 88
     height: 64
 
-    radius: 2
+    //! NOTE The colours below are the previewed theme's own colours, so they
+    //! are data rather than Material 3 roles.
+    radius: M3.shape.extraSmall
     color: theme.backgroundPrimaryColor
 
     RoundedRectangle {
@@ -60,7 +65,7 @@ Rectangle {
                 height: 32
                 width: parent.width
 
-                radius: 2
+                radius: M3.shape.extraSmall
                 color: root.theme.backgroundPrimaryColor
 
                 border.color: root.theme.strokeColor
@@ -76,7 +81,7 @@ Rectangle {
                         width: parent.width
                         height: 3
 
-                        radius: 4
+                        radius: M3.shape.extraSmall
                         color: root.theme.fontPrimaryColor
                     }
 
@@ -84,7 +89,7 @@ Rectangle {
                         width: parent.width
                         height: 3
 
-                        radius: 4
+                        radius: M3.shape.extraSmall
                         color: root.theme.fontPrimaryColor
                     }
 
@@ -92,7 +97,7 @@ Rectangle {
                         width: (parent.width * 2) / 3
                         height: 3
 
-                        radius: 4
+                        radius: M3.shape.extraSmall
                         color: root.theme.fontPrimaryColor
                     }
                 }
@@ -108,7 +113,7 @@ Rectangle {
                     height: parent.height
                     width: 32
 
-                    radius: 2
+                    radius: M3.shape.extraSmall
                     color: Utils.colorWithAlpha(root.theme.buttonColor, root.theme.buttonOpacityNormal)
                     border.color: root.theme.strokeColor
                     border.width: root.theme.borderWidth
@@ -118,7 +123,7 @@ Rectangle {
                     height: parent.height
                     width: 32
 
-                    radius: 2
+                    radius: M3.shape.extraSmall
                     color: Utils.colorWithAlpha(root.theme.accentColor, root.theme.buttonOpacityNormal)
                     border.color: root.theme.strokeColor
                     border.width: root.theme.borderWidth
@@ -131,9 +136,16 @@ Rectangle {
         id: borderRect
         anchors.fill: parent
         color: "transparent"
-        radius: 2
-        border.width: 1
-        border.color: mouseArea.containsMouse ? root.theme.accentColor : root.theme.strokeColor
+        radius: M3.shape.extraSmall
+        border.width: mouseArea.containsMouse ? 2 : 1
+        border.color: mouseArea.containsMouse ? M3.color.primary : M3.color.outlineVariant
+
+        Behavior on border.width {
+            NumberAnimation {
+                duration: M3.motion.short3
+                easing: M3.motion.standard
+            }
+        }
     }
 
     MouseArea {

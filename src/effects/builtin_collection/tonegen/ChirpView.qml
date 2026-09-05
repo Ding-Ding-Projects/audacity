@@ -10,6 +10,7 @@ import Audacity.UiComponents
 
 // TODO: move to common controls
 import Audacity.Preferences
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -74,10 +75,6 @@ BuiltinEffectBase {
             title: qsTrc("effects/chirp", "Waveform")
             columnWidth: parent.width
 
-            control.background.color: ui.theme.backgroundPrimaryColor
-            control.background.border.width: 1
-            control.itemColor: "transparent"
-
             currentIndex: chirp.waveform
             model: chirp.waveforms
 
@@ -94,9 +91,9 @@ BuiltinEffectBase {
             Layout.fillWidth: true
             Layout.preferredHeight: frequencyGroup.height + prv.spacing * 2
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
 
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
             border.width: 1
 
             radius: 4
@@ -122,7 +119,7 @@ BuiltinEffectBase {
 
                         spacing: prv.spacing
 
-                        RoundedRadioButton {
+                        M3RadioButton {
                             id: interpolationLinearRadio
 
                             text: qsTrc("effects/chirp", "Linear")
@@ -138,7 +135,7 @@ BuiltinEffectBase {
                             }
                         }
 
-                        RoundedRadioButton {
+                        M3RadioButton {
                             id: interpolationLogarithmicRadio
 
                             text: qsTrc("effects/chirp", "Logarithmic")
@@ -218,9 +215,9 @@ BuiltinEffectBase {
             Layout.fillWidth: true
             Layout.preferredHeight: amplitudeGroup.height + prv.padding
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
 
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
             border.width: 1
 
             radius: 4
@@ -301,13 +298,13 @@ BuiltinEffectBase {
                 Layout.columnSpan: 2
 
                 border: Border {
-                    color: ui.theme.strokeColor
+                    color: M3.color.outlineVariant
                     width: 1
                 }
 
                 arrowSpacing: -2
-                backgroundColor: ui.theme.backgroundSecondaryColor
-                textColor: ui.theme.fontPrimaryColor
+                backgroundColor: M3.color.surfaceContainer
+                textColor: M3.color.onSurface
 
                 value: chirp.duration
                 mode: TimecodeModeSelector.Duration

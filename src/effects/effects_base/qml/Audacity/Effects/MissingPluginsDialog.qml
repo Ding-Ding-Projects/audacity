@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -93,7 +94,7 @@ StyledDialogView {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignLeft
                     text: qsTrc("effects", "Missing plugins")
-                    font: ui.theme.headerBoldFont
+                    font: M3.typography.headlineSmall
                 }
 
                 StyledTextLabel {
@@ -134,8 +135,9 @@ StyledDialogView {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: okButton
+            variant: "tonal"
 
             Layout.alignment: Qt.AlignRight
 
@@ -183,7 +185,7 @@ StyledDialogView {
 
                 horizontalAlignment: Text.AlignLeft
                 text: detailDialog.pluginName
-                font: ui.theme.headerBoldFont
+                font: M3.typography.headlineSmall
             }
 
             GridLayout {
@@ -211,7 +213,7 @@ StyledDialogView {
                     text: qsTrc("effects", "Path:")
                 }
 
-                TextInputField {
+                M3TextField {
                     id: pathField
 
                     Layout.fillWidth: true
@@ -229,8 +231,9 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: detailCloseButton
+                variant: "tonal"
 
                 anchors.right: parent.right
 

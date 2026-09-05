@@ -8,6 +8,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.Effects
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -55,7 +56,7 @@ Rectangle {
         return Math.min(totalHeight, prv.maxDialogHeight)
     }
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     QtObject {
         id: prv
@@ -91,8 +92,8 @@ Rectangle {
             width: parent.width
             height: parent.height
 
-            color: ui.theme.backgroundSecondaryColor
-            border.color: ui.theme.strokeColor
+            color: M3.color.surfaceContainer
+            border.color: M3.color.outlineVariant
             border.width: prv.borderWidth
             radius: prv.borderRadius
 

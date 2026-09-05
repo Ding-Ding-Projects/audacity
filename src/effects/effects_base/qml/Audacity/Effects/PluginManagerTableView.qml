@@ -4,6 +4,7 @@
 import QtQuick 2.15
 import Muse.UiComponents
 import Audacity.Effects
+import Audacity.M3
 
 StyledTableView {
     id: root
@@ -33,7 +34,7 @@ StyledTableView {
     Component {
         id: enabledComp
 
-        CheckBox {
+        M3Switch {
             id: item
 
             property var itemData
@@ -56,7 +57,7 @@ StyledTableView {
             navigation.column: navigationColumnStart
 
             checked: val
-            onClicked: {
+            onToggled: {
                 tableViewModel.handleEdit(row, column)
             }
         }

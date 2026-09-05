@@ -8,6 +8,8 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 StyledDialogView {
     id: root
 
@@ -16,7 +18,7 @@ StyledDialogView {
     contentHeight: 578
     contentWidth: 560
 
-    background.color: ui.theme.backgroundSecondaryColor
+    background.color: M3.color.surface
 
     ColumnLayout {
         anchors.fill: parent
@@ -28,10 +30,11 @@ StyledDialogView {
             spacing: 24
             anchors.margins: 24
 
-            StyledTextLabel {
-                text: "<b>Notes on Audacity 4 - Alpha 1</b>"
+            Text {
+                text: qsTrc("appshell/about", "Notes on Audacity 4 - Alpha 1")
 
-                font.pixelSize: 16
+                font: M3.typography.titleLarge
+                color: M3.color.onSurface
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
@@ -41,9 +44,10 @@ StyledDialogView {
                 width: 512
                 height: 426
 
-                color: ui.theme.textFieldColor
+                color: M3.color.surfaceContainerLow
+                radius: M3.shape.medium
                 border.width: 1
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
 
                 clip: true
 
@@ -58,12 +62,16 @@ StyledDialogView {
                         policy: ScrollBar.AlwaysOn
                     }
 
-                    StyledTextLabel {
+                    Text {
                         id: message
 
                         width: parent.width
                         horizontalAlignment: Text.AlignLeft
                         wrapMode: Text.WordWrap
+                        textFormat: Text.RichText
+                        font: M3.typography.bodyMedium
+                        color: M3.color.onSurface
+                        linkColor: M3.color.primary
 
                         text: `<b>What am I testing in this build?</b><br><br>
 The purpose of this early-stage alpha release is to provide a build for our <br>
@@ -132,7 +140,9 @@ release of Audacity 4.0<br><br>
             }
         }
 
-        SeparatorLine {}
+        M3Divider {
+            Layout.fillWidth: true
+        }
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
@@ -141,11 +151,11 @@ release of Audacity 4.0<br><br>
 
             spacing: 12
 
-            FlatButton {
+            M3Button {
                 //: Label of a dialog button
                 text: qsTrc("global", "OK")
 
-                accentButton: true
+                variant: "filled"
 
                 onClicked: {
                     root.accept()

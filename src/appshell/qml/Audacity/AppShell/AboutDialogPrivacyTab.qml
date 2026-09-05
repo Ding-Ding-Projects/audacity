@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
 import Audacity.AppShell
 
 ColumnLayout {
@@ -34,26 +35,30 @@ ColumnLayout {
 
         spacing: prv.versionTextSpacing
 
-        StyledTextLabel {
+        Text {
             width: parent.width
 
             horizontalAlignment: Text.AlignHCenter
 
             text: prv.privacyTitle
-            font: ui.theme.tabBoldFont
+            font: M3.typography.titleMedium
+            color: M3.color.onSurface
         }
 
-        StyledTextLabel {
+        Text {
             width: parent.width
 
             horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
             textFormat: Text.RichText
+            color: M3.color.onSurfaceVariant
+            linkColor: M3.color.primary
 
             text: {
                 let privacyUrl = root.model.privacyPolicyUrl()
                 return prv.privacySubtitle.arg("<a href=\"%1\">%2</a>".arg(privacyUrl.url).arg(qsTrc("appshell/about", "privacy policy")))
             }
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
         }
     }
 
@@ -75,7 +80,8 @@ ColumnLayout {
 
             height: gplInner.height + prv.contentTextMargin * 2
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainerLow
+            radius: M3.shape.medium
 
             Column {
                 id: gplInner
@@ -86,7 +92,7 @@ ColumnLayout {
 
                 anchors.margins: prv.contentTextMargin
 
-                StyledTextLabel {
+                Text {
                     width: parent.width
 
                     horizontalAlignment: Text.AlignLeft
@@ -95,7 +101,9 @@ ColumnLayout {
 
                     text: root.model.gplText()
 
-                    font: ui.theme.bodyFont
+                    font: M3.typography.bodySmall
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
                 }
             }
         }

@@ -9,6 +9,8 @@ import Muse.UiComponents
 
 import Audacity.Cloud 1.0
 
+import Audacity.M3
+
 FocusScope {
     id: root
 
@@ -47,10 +49,10 @@ FocusScope {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: ui.theme.backgroundSecondaryColor
+        color: M3.color.surface
     }
 
-    StyledTextLabel {
+    Text {
         id: pageTitle
 
         anchors.top: parent.top
@@ -61,8 +63,10 @@ FocusScope {
         anchors.rightMargin: prv.sideMargin
 
         text: qsTrc("appshell", "Cloud account")
-        font: ui.theme.titleBoldFont
+        font: M3.typography.headlineSmall
+        color: M3.color.onSurface
         horizontalAlignment: Text.AlignLeft
+        elide: Text.ElideRight
     }
 
     CloudItem {

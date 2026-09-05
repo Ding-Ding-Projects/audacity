@@ -9,6 +9,7 @@ import Muse.UiComponents
 
 import Audacity.Export 1.0
 import "internal"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -48,7 +49,7 @@ StyledDialogView {
                 text: qsTrc("export", "Channel count")
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: channelCountControl
 
                 Layout.preferredWidth: 125
@@ -82,7 +83,7 @@ StyledDialogView {
             channelCount: customMappingModel.exportChannels
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         ButtonBox {
             id: buttonBox

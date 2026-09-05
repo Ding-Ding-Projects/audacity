@@ -1,6 +1,7 @@
 import QtQuick
 
 import Audacity.BuiltinEffects
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -14,7 +15,7 @@ Rectangle {
     property bool usedDestructively: true
     required property int numNavigationPanels
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     function init() {
         root.builtinEffectModel.init()

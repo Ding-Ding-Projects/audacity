@@ -25,6 +25,8 @@
 #include "global/async/async.h"
 
 namespace {
+const char* LANGUAGE_PAGE = "LanguagePage.qml";
+const char* SEED_COLOR_PAGE = "SeedColorPage.qml";
 const char* THEMES_PAGE = "ThemesPage.qml";
 const char* CLIP_VISUALIZATION_PAGE = "ClipVisualizationPage.qml";
 const char* WORKSPACE_LAYOUT_PAGE = "WorkspaceLayoutPage.qml";
@@ -39,7 +41,9 @@ FirstLaunchSetupModel::FirstLaunchSetupModel(QObject* parent)
     : QObject(parent), muse::Contextable(muse::iocCtxForQmlObject(this))
 {
     m_pages = {
+        Page { LANGUAGE_PAGE, "audacity://project" },
         Page { THEMES_PAGE, "audacity://project" },
+        Page { SEED_COLOR_PAGE, "audacity://project" },
         Page { CLIP_VISUALIZATION_PAGE, "audacity://project" },
         Page { WORKSPACE_LAYOUT_PAGE, "audacity://project" },
     };

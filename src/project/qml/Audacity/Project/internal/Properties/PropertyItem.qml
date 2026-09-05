@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 RowLayout {
     id: root
@@ -54,18 +55,18 @@ RowLayout {
         Layout.preferredWidth: root.propertyNameWidth
 
         text: root.propertyName ? root.propertyName : ""
-        font: ui.theme.bodyBoldFont
+        font: M3.typography.titleSmall
         horizontalAlignment: Qt.AlignLeft
         visible: root.isStandardProperty ? root.isStandardProperty : false
     }
 
-    TextInputField {
+    M3TextField {
         Layout.preferredWidth: root.propertyNameWidth
 
         currentText: root.propertyName ? root.propertyName : ""
         visible: !root.isStandardProperty
         //: Placeholder text of an empty project property field
-        hint: qsTrc("project/properties", "Property")
+        placeholder: qsTrc("project/properties", "Property")
 
         navigation.name: root.propertyName + "PropertyName"
         navigation.panel: root.navigationPanel
@@ -76,29 +77,29 @@ RowLayout {
             }
         }
 
-        onTextChanged: function (newValue) {
+        onTextEdited: function (newValue) {
             root.propertyName = newValue
         }
     }
 
-    TextInputField {
+    M3TextField {
         Layout.fillWidth: true
 
         currentText: root.propertyValue ? root.propertyValue : ""
-        hint: root.isStandardProperty ? "" : qsTrc("project/properties", "Value")
+        placeholder: root.isStandardProperty ? "" : qsTrc("project/properties", "Value")
         visible: !root.isFileInfoPanelProperty
 
         navigation.name: root.propertyName + "PropertyValue"
         navigation.panel: root.navigationPanel
         navigation.column: prv.navigationStartIndex + 1
-        accessible.name: root.propertyName + " " + currentText
+        accessibleName: root.propertyName + " " + currentText
         navigation.onActiveChanged: {
             if (navigation.active && !root.isFileInfoPanelProperty) {
                 root.scrollIntoViewRequested()
             }
         }
 
-        onTextChanged: function (newValue) {
+        onTextEdited: function (newValue) {
             root.propertyValue = newValue
         }
     }
@@ -107,13 +108,14 @@ RowLayout {
         Layout.fillWidth: root.valueFillWidth
 
         text: root.propertyValue ? root.propertyValue : ""
-        font: ui.theme.bodyBoldFont
+        font: M3.typography.titleSmall
         horizontalAlignment: Qt.AlignLeft
         visible: root.isFileInfoPanelProperty
     }
 
-    FlatButton {
+    M3Button {
         id: deletePropertyButton
+        variant: "tonal"
 
         icon: IconCode.DELETE_TANK
         opacity: !root.isStandardProperty
@@ -123,7 +125,7 @@ RowLayout {
         navigation.name: root.propertyName + "Delete"
         navigation.panel: root.navigationPanel
         navigation.column: prv.navigationStartIndex + 2
-        accessible.name: "Delete"
+        accessibleName: "Delete"
 
         onClicked: root.deletePropertyRequested()
     }

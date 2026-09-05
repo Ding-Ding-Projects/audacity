@@ -10,6 +10,7 @@ import Muse.UiComponents
 import Audacity.Project 1.0
 
 import "internal/ProjectsPage"
+import Audacity.M3
 
 Item {
     id: root
@@ -19,7 +20,7 @@ Item {
     property alias showNewProjectItem: newProjectItem.visible
     property string searchText
 
-    property color backgroundColor: ui.theme.backgroundSecondaryColor
+    property color backgroundColor: M3.color.surfaceContainer
     property real sideMargin: 46
     property real _columnsContentX: 0
 
@@ -87,7 +88,7 @@ Item {
         StyledTextLabel {
             text: headerText
 
-            font: Qt.font(Object.assign({}, ui.theme.bodyBoldFont, {
+            font: Qt.font(Object.assign({}, M3.typography.titleSmall, {
                 capitalization: Font.AllUppercase
             }))
             horizontalAlignment: Text.AlignLeft
@@ -147,7 +148,7 @@ Item {
                     Layout.preferredWidth: 100
 
                     text: qsTrc("project", "New project")
-                    font: ui.theme.largeBodyFont
+                    font: M3.typography.bodyLarge
                     horizontalAlignment: Text.AlignLeft
                 }
 
@@ -258,7 +259,7 @@ Item {
                     }
                 }
 
-                SeparatorLine {}
+                M3Divider {}
 
                 StyledListView {
                     id: view

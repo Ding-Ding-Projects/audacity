@@ -1,20 +1,27 @@
+/*
+* Audacity: A Digital Audio Editor
+*/
 import QtQuick
 
 import Muse.Ui
 import Muse.UiComponents
 
-FlatButton {
+import Audacity.M3
+
+M3IconButton {
     id: root
 
     property bool isMasterEffect: false
+    property bool accentButton: false
     property int size: 24
 
-    width: size
-    height: size
+    width: root.size
+    height: root.size
+
     icon: IconCode.BYPASS
-    iconColor: accentButton ? ui.theme.extra["white_color"] : ui.theme.fontPrimaryColor
-    iconFont: ui.theme.toolbarIconsFont
-    accentColor: isMasterEffect ? ui.theme.extra["black_color"] : ui.theme.accentColor
+    variant: root.accentButton ? "filled" : "standard"
+
     //: Tooltip of the effect power button
     toolTipTitle: qsTrc("effects", "Bypass effect")
+    accessibleName: root.toolTipTitle
 }

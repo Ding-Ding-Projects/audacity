@@ -6,6 +6,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -57,9 +58,9 @@ BuiltinEffectBase {
             Layout.preferredWidth: leftColumn.implicitWidth + 2 * prv.rowSpacing
             Layout.preferredHeight: rightColumn.height
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
 
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
             border.width: 1
 
             radius: 4
@@ -220,7 +221,7 @@ BuiltinEffectBase {
                 onCommitRequested: reverb.commitSettings()
             }
 
-            SeparatorLine {
+            M3Divider {
                 Layout.columnSpan: 2
             }
 
@@ -260,7 +261,7 @@ BuiltinEffectBase {
                 onCommitRequested: reverb.commitSettings()
             }
 
-            CheckBox {
+            M3Switch {
                 id: wetOnly
 
                 navigation.panel: root.rightColumnNavigationPanel
@@ -268,9 +269,12 @@ BuiltinEffectBase {
 
                 text: qsTrc("effects/reverb", "Wet only")
                 checked: reverb.wetOnly
-                onClicked: function () {
+                onToggled: function () {
                     reverb.wetOnly = !reverb.wetOnly
                     reverb.commitSettings()
+                    wetOnly.checked = Qt.binding(function () {
+                        return reverb.wetOnly
+                    })
                 }
             }
 

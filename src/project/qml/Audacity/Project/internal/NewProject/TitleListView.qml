@@ -23,6 +23,7 @@ import QtQuick 2.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 Item {
     id: root
@@ -51,7 +52,7 @@ Item {
 
         anchors.top: parent.top
 
-        font: ui.theme.bodyBoldFont
+        font: M3.typography.titleSmall
     }
 
     SearchField {
@@ -100,7 +101,7 @@ Item {
 
                 horizontalAlignment: Text.AlignLeft
                 text: modelData
-                font: ui.theme.bodyBoldFont
+                font: M3.typography.titleSmall
             }
 
             onClicked: {
@@ -118,7 +119,7 @@ Item {
 
         anchors.fill: parent
 
-        font: ui.theme.bodyBoldFont
+        font: M3.typography.titleSmall
 
         //: Message shown when a search returns nothing
         text: qsTrc("global", "No results found")

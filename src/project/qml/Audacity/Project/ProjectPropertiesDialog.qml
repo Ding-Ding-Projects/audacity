@@ -27,6 +27,7 @@ import Muse.UiComponents
 import Audacity.Project 1.0
 
 import "internal/Properties"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -81,7 +82,7 @@ StyledDialogView {
             navigationColumnStart: propertiesFileInfoPanel.navigationColumnEnd + 1
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         ProjectPropertiesFileInfoPanel {
             id: propertiesFileInfoPanel

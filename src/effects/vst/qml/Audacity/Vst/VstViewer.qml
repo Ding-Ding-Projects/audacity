@@ -27,6 +27,7 @@ import Muse.Vst
 
 import Audacity.Effects
 import Audacity.Vst
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -42,7 +43,7 @@ Rectangle {
     property alias title: view.title
     property bool isPreviewing: viewModel.isPreviewing
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     implicitWidth: view.implicitWidth
     implicitHeight: view.implicitHeight

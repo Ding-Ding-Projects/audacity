@@ -7,6 +7,7 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 ColumnLayout {
     id: root
@@ -57,7 +58,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0
@@ -99,7 +100,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0

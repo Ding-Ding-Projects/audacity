@@ -6,6 +6,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -77,9 +78,9 @@ BuiltinEffectBase {
                 Layout.preferredWidth: leftColumn.implicitWidth + 2 * prv.horizontalLeftColumnPadding
                 Layout.preferredHeight: leftColumn.implicitHeight + 2 * prv.verticalPadding
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: 1
 
                 radius: 4
@@ -134,9 +135,9 @@ BuiltinEffectBase {
                 Layout.preferredWidth: rightColumn.implicitWidth + 2 * prv.horizontalRightColumnPadding
                 Layout.preferredHeight: leftColumn.implicitHeight + 2 * prv.verticalPadding
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: 1
 
                 radius: 4
@@ -169,7 +170,7 @@ BuiltinEffectBase {
             }
         }
 
-        CheckBox {
+        M3Switch {
             id: linkCheckbox
 
             Layout.bottomMargin: root.usedDestructively ? prv.gridSpacing : 0
@@ -179,9 +180,12 @@ BuiltinEffectBase {
 
             text: prv.linkCheckboxText
             checked: bassTreble.link
-            onClicked: function () {
+            onToggled: function () {
                 bassTreble.link = !bassTreble.link
                 bassTreble.commitSettings()
+                linkCheckbox.checked = Qt.binding(function () {
+                    return bassTreble.link
+                })
             }
         }
     }

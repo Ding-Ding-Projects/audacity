@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -38,7 +39,7 @@ BaseSection {
     signal importBreaksChangeRequested(bool importBreaks)
     signal useDefaultFontChangeRequested(bool use)
 
-    CheckBox {
+    M3Switch {
         id: importLayoutBox
         width: parent.width
 
@@ -48,12 +49,12 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 0
 
-        onClicked: {
-            root.importLayoutChangeRequested(!checked)
+        onToggled: {
+            root.importLayoutChangeRequested(checked)
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: importBreaksBox
         width: parent.width
 
@@ -63,12 +64,12 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 1
 
-        onClicked: {
-            root.importBreaksChangeRequested(!checked)
+        onToggled: {
+            root.importBreaksChangeRequested(checked)
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: needUseDefaultFontBox
         width: parent.width
 
@@ -78,8 +79,8 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 2
 
-        onClicked: {
-            root.useDefaultFontChangeRequested(!checked)
+        onToggled: {
+            root.useDefaultFontChangeRequested(checked)
         }
     }
 }

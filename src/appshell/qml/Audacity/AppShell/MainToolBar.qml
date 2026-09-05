@@ -19,18 +19,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Controls 2.15
 
-import Muse.Ui 1.0
+/*
+ * The main page switcher, drawn as Material 3 primary tabs.
+ */
+pragma ComponentBehavior: Bound
+
+import QtQuick
+
+import Muse.Ui
 import Muse.UiComponents
+
+import Audacity.M3
 import Audacity.AppShell
 
 Item {
     id: root
 
-    width: radioButtonList.width
-    height: radioButtonList.height
+    width: tabsRow.width
+    height: M3.density.apply(48)
 
     property alias navigation: navPanel
 
@@ -43,10 +50,7 @@ Item {
     }
 
     function focusOnFirst() {
-        var btn = radioButtonList.itemAtIndex(0)
-        if (btn) {
-            btn.navigation.requestActive()
-        }
+        navPanel.requestActive()
     }
 
     MainToolBarModel {
@@ -64,34 +68,46 @@ Item {
         accessible.name: qsTrc("appshell", "Main toolbar")
     }
 
-    RadioButtonGroup {
-        id: radioButtonList
-        spacing: 0
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surface
+    }
 
-        model: toolBarModel
+    Row {
+        id: tabsRow
 
-        delegate: PageTabButton {
-            id: radioButtonDelegate
+        height: parent.height
 
-            enabled: model.enabled
+        Repeater {
+            model: toolBarModel.items
 
-            ButtonGroup.group: radioButtonList.radioButtonGroup
+            delegate: M3Tab {
+                id: tab
 
-            spacing: 0
-            leftPadding: 12
+                required property int index
+                required property var modelData
 
-            normalStateFont: model.isTitleBold ? ui.theme.largeBodyBoldFont : ui.theme.largeBodyFont
+                height: tabsRow.height
 
-            navigation.name: model.title
-            navigation.panel: navPanel
-            navigation.order: model.index
+                primary: true
+                enabled: modelData.enabled
+                selected: modelData.uri === root.currentUri
+                text: modelData.title
+                accessibleName: modelData.title
 
-            checked: model.uri === root.currentUri
-            title: model.title
+                navigation.panel: navPanel
+                navigation.column: tab.index
 
-            onToggled: {
-                root.selected(model.uri)
+                onClicked: {
+                    root.selected(tab.modelData.uri)
+                }
             }
         }
+    }
+
+    M3Divider {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
     }
 }

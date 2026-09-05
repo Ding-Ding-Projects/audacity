@@ -9,6 +9,7 @@ import Muse.GraphicalEffects
 
 import Audacity.UiComponents 1.0
 import Audacity.ProjectScene
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -67,7 +68,7 @@ BaseSection {
             width: parent.width
             spacing: root.columnSpacing
 
-            RoundedRadioButton {
+            M3RadioButton {
 
                 checked: editPreferencesModel.stereoHeightsPref === AsymmetricStereoHeights.ALWAYS
                 text: qsTrc("preferences", "Always")
@@ -81,7 +82,7 @@ BaseSection {
                 }
             }
 
-            RoundedRadioButton {
+            M3RadioButton {
                 id: workspaceRadioBtn
 
                 checked: editPreferencesModel.stereoHeightsPref === AsymmetricStereoHeights.WORKSPACE_DEPENDENT
@@ -109,7 +110,7 @@ BaseSection {
                 navigation.order: root.navigation.order + 1
             }
 
-            RoundedRadioButton {
+            M3RadioButton {
                 checked: editPreferencesModel.stereoHeightsPref === AsymmetricStereoHeights.NEVER
                 text: qsTrc("preferences", "Never")
 

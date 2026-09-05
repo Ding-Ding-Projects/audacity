@@ -12,6 +12,7 @@ import Audacity.ProjectScene
 
 // TODO: move to common controls
 import Audacity.Preferences
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -65,7 +66,7 @@ BuiltinEffectBase {
                 text: qsTrc("effects/dtmf", "DTMF sequence")
             }
 
-            TextInputField {
+            M3TextField {
                 id: sequenceInput
 
                 currentText: dtmf.sequence
@@ -73,11 +74,11 @@ BuiltinEffectBase {
                 navigation.panel: root.leftColumnNavigationPanel
                 navigation.order: 0
 
-                validator: RegularExpressionValidator {
+                textInput.validator: RegularExpressionValidator {
                     regularExpression: /[0-9A-Da-z\*\#]*/
                 }
 
-                onTextCleared: {
+                onTrailingIconClicked: {
                     dtmf.sequence = ""
                 }
 
@@ -136,13 +137,13 @@ BuiltinEffectBase {
                     Layout.fillHeight: false
 
                     border: Border {
-                        color: ui.theme.strokeColor
+                        color: M3.color.outlineVariant
                         width: 1
                     }
 
                     arrowSpacing: -2
-                    backgroundColor: ui.theme.backgroundSecondaryColor
-                    textColor: ui.theme.fontPrimaryColor
+                    backgroundColor: M3.color.surfaceContainer
+                    textColor: M3.color.onSurface
 
                     value: dtmf.duration
                     mode: TimecodeModeSelector.Duration
@@ -172,9 +173,9 @@ BuiltinEffectBase {
             Layout.preferredWidth: 1
             Layout.preferredHeight: leftColumn.height
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainer
 
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
             border.width: 1
 
             radius: 4
@@ -212,7 +213,7 @@ BuiltinEffectBase {
                         }
                     }
 
-                    IncrementalPropertyControl {
+                    M3NumberField {
 
                         implicitWidth: 60
 

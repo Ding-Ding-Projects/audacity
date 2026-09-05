@@ -7,6 +7,7 @@ import QtQuick.Controls
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 Rectangle {
     id: formatsColumn
@@ -14,7 +15,7 @@ Rectangle {
     width: 320
     height: parent.height
 
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surfaceContainer
 
     property var ffmpegPrefModel: null
 
@@ -62,7 +63,8 @@ Rectangle {
                 text: qsTrc("export", "Formats")
             }
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
                 Layout.fillWidth: true
 
                 text: qsTrc("export", "Show all")
@@ -79,9 +81,9 @@ Rectangle {
                 width: 142
                 height: 502
 
-                color: ui.theme.textFieldColor
+                color: M3.color.surfaceContainerHighest
                 border.width: 1
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
 
                 StyledListView {
                     anchors.fill: parent
@@ -139,7 +141,8 @@ Rectangle {
                 text: qsTrc("export", "Codecs")
             }
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
                 Layout.fillWidth: true
 
                 text: qsTrc("export", "Show all")
@@ -156,9 +159,9 @@ Rectangle {
                 width: 142
                 height: 502
 
-                color: ui.theme.textFieldColor
+                color: M3.color.surfaceContainerHighest
                 border.width: 1
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
 
                 StyledListView {
                     anchors.fill: parent

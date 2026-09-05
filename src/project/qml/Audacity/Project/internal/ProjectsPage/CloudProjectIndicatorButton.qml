@@ -23,6 +23,7 @@ import QtQuick 2.15
 
 import Muse.UiComponents
 import Muse.Ui 1.0
+import Audacity.M3
 
 Item {
     id: root
@@ -92,7 +93,7 @@ Item {
 
             PropertyChanges {
                 target: foreground
-                color: ui.theme.accentColor
+                color: M3.color.primary
             }
         },
         State {

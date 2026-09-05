@@ -9,6 +9,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -79,7 +80,7 @@ BuiltinEffectBase {
             width: parent.width
             horizontalAlignment: Text.AlignLeft
             text: changePitch.estimatedStartPitch
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
         }
 
         // From pitch / To pitch section
@@ -91,10 +92,10 @@ BuiltinEffectBase {
                 width: parent.width
                 height: pitchRow.height + prv.spaceXL * 2
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
                 radius: prv.borderRadius
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: prv.borderWidth
 
                 Row {
@@ -117,7 +118,7 @@ BuiltinEffectBase {
                             width: parent.width
                             spacing: prv.spaceM
 
-                            StyledDropdown {
+                            M3Dropdown {
                                 id: fromPitchDropdown
 
                                 width: prv.pitchDropdownFieldWidth
@@ -133,7 +134,7 @@ BuiltinEffectBase {
                                 }
                             }
 
-                            IncrementalPropertyControl {
+                            M3NumberField {
                                 id: fromOctaveControl
 
                                 width: parent.width - fromPitchDropdown.width - parent.spacing
@@ -168,7 +169,7 @@ BuiltinEffectBase {
                             width: parent.width
                             spacing: prv.spaceM
 
-                            StyledDropdown {
+                            M3Dropdown {
                                 id: toPitchDropdown
 
                                 width: prv.pitchDropdownFieldWidth
@@ -184,7 +185,7 @@ BuiltinEffectBase {
                                 }
                             }
 
-                            IncrementalPropertyControl {
+                            M3NumberField {
                                 id: toOctaveControl
 
                                 width: parent.width - fromPitchDropdown.width - parent.spacing
@@ -218,10 +219,10 @@ BuiltinEffectBase {
                 width: parent.width
                 height: semitonesRow.height + prv.spaceXL * 2
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
                 radius: prv.borderRadius
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: prv.borderWidth
 
                 Row {
@@ -240,7 +241,7 @@ BuiltinEffectBase {
                             text: changePitch.semitonesLabel()
                         }
 
-                        IncrementalPropertyControl {
+                        M3NumberField {
                             id: semitonesControl
 
                             width: parent.width
@@ -270,7 +271,7 @@ BuiltinEffectBase {
                             text: changePitch.centsLabel()
                         }
 
-                        IncrementalPropertyControl {
+                        M3NumberField {
                             id: centsControl
 
                             width: parent.width
@@ -303,10 +304,10 @@ BuiltinEffectBase {
                 width: parent.width
                 height: frequencyColumn.height + prv.spaceXL * 2
 
-                color: ui.theme.backgroundSecondaryColor
+                color: M3.color.surfaceContainer
                 radius: prv.borderRadius
 
-                border.color: ui.theme.strokeColor
+                border.color: M3.color.outlineVariant
                 border.width: prv.borderWidth
 
                 Column {
@@ -330,7 +331,7 @@ BuiltinEffectBase {
                                 text: changePitch.fromFrequencyLabel()
                             }
 
-                            IncrementalPropertyControl {
+                            M3NumberField {
                                 id: fromFrequencyControl
 
                                 width: parent.width
@@ -360,7 +361,7 @@ BuiltinEffectBase {
                                 text: changePitch.toFrequencyLabel()
                             }
 
-                            IncrementalPropertyControl {
+                            M3NumberField {
                                 id: toFrequencyControl
 
                                 width: parent.width
@@ -395,7 +396,7 @@ BuiltinEffectBase {
                             width: parent.width
                             spacing: prv.spaceXL
 
-                            StyledSlider {
+                            M3Slider {
                                 id: percentSlider
 
                                 width: parent.width - percentField.width - parent.spacing
@@ -414,7 +415,7 @@ BuiltinEffectBase {
                                 }
                             }
 
-                            IncrementalPropertyControl {
+                            M3NumberField {
                                 id: percentField
 
                                 width: prv.fieldWidth
@@ -440,7 +441,7 @@ BuiltinEffectBase {
         }
 
         // Use high quality stretching checkbox
-        CheckBox {
+        M3Switch {
             id: highQualityStretchingCheckbox
 
             width: parent.width
@@ -452,8 +453,11 @@ BuiltinEffectBase {
             checked: changePitch.useSBSMSValue
             enabled: changePitch.useSBSMSEnabled()
 
-            onClicked: {
-                changePitch.useSBSMSValue = !checked
+            onToggled: {
+                changePitch.useSBSMSValue = checked
+                highQualityStretchingCheckbox.checked = Qt.binding(function () {
+                    return changePitch.useSBSMSValue
+                })
             }
         }
     }

@@ -25,6 +25,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -39,19 +40,18 @@ BaseSection {
     signal playChordSymbolWhenEditingChangeRequested(bool play)
     signal notePlayDurationChangeRequested(int duration)
 
-    CheckBox {
+    M3Switch {
         id: playNotesBox
         width: parent.width
 
         text: qsTrc("appshell/preferences", "Play notes when editing")
-        font: ui.theme.bodyBoldFont
 
         navigation.name: "PlayNotesBox"
         navigation.panel: root.navigation
         navigation.row: 0
 
-        onClicked: {
-            root.playNotesWhenEditingChangeRequested(!checked)
+        onToggled: {
+            root.playNotesWhenEditingChangeRequested(checked)
         }
     }
 
@@ -77,7 +77,7 @@ BaseSection {
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: playChordBox
         width: parent.width
 
@@ -89,12 +89,12 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 2
 
-        onClicked: {
-            root.playChordWhenEditingChangeRequested(!checked)
+        onToggled: {
+            root.playChordWhenEditingChangeRequested(checked)
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: playChordSymbolBox
         width: parent.width
 
@@ -106,8 +106,8 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 3
 
-        onClicked: {
-            root.playChordSymbolWhenEditingChangeRequested(!checked)
+        onToggled: {
+            root.playChordSymbolWhenEditingChangeRequested(checked)
         }
     }
 }

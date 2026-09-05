@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import Audacity.ProjectScene
 import Muse.UiComponents
+import Audacity.Effects
+import Audacity.M3
 
 Item {
     id: root
@@ -84,7 +86,7 @@ Item {
                 }
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: textEdit
 
                 navigation.accessible.name: root.parameter["title"] + " " + currentValue

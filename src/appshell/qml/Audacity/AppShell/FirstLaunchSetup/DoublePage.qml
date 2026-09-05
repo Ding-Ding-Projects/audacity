@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 Item {
@@ -78,13 +79,14 @@ Item {
 
                 spacing: 24
 
-                StyledTextLabel {
+                Text {
                     id: titleLabel
 
                     width: parent.width
 
-                    horizontalAlignment: Qt.AlignLeft
-                    font: ui.theme.largeBodyBoldFont
+                    horizontalAlignment: Text.AlignLeft
+                    font: M3.typography.titleLarge
+                    color: M3.color.onSurface
                     wrapMode: Text.Wrap
                 }
 

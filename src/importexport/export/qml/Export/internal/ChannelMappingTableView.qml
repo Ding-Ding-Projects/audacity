@@ -6,6 +6,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.Export 1.0
+import Audacity.M3
 
 StyledTableView {
     id: root
@@ -46,7 +47,7 @@ StyledTableView {
     Component {
         id: mappingCellComp
 
-        CheckBox {
+        M3Switch {
             id: cb
 
             checked: Boolean(cb.val)
@@ -69,8 +70,11 @@ StyledTableView {
             navigation.row: navigationRow
             navigation.column: navigationColumnStart
 
-            onClicked: {
+            onToggled: {
                 tableViewModel.handleEdit(row, column)
+                cb.checked = Qt.binding(function () {
+                    return Boolean(cb.val)
+                })
             }
         }
     }

@@ -7,6 +7,7 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 ColumnLayout {
     id: root
@@ -60,7 +61,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                TextInputField {
+                M3TextField {
                     implicitWidth: root.controlWidth
 
                     currentText: ffmpegPrefModel.language
@@ -69,7 +70,7 @@ ColumnLayout {
                     navigation.order: 0
                     navigation.accessible.name: qsTrc("export", "Language")
 
-                    onTextChanged: function (newTextValue) {
+                    onTextEdited: function (newTextValue) {
                         ffmpegPrefModel.setLanguage(newTextValue)
                     }
                 }
@@ -87,7 +88,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                TextInputField {
+                M3TextField {
                     implicitWidth: root.controlWidth
 
                     currentText: ffmpegPrefModel.tag
@@ -96,7 +97,7 @@ ColumnLayout {
                     navigation.order: 1
                     navigation.accessible.name: qsTrc("export", "Tag")
 
-                    onTextChanged: function (newTextValue) {
+                    onTextEdited: function (newTextValue) {
                         ffmpegPrefModel.setTag(newTextValue)
                     }
                 }
@@ -113,7 +114,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: -1
@@ -145,7 +146,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0
@@ -188,7 +189,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0
@@ -224,7 +225,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0
@@ -253,7 +254,18 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                StyledDropdown {
+                M3Dropdown {
+                    function indexOfValue(value) {
+                        var items = model
+                        for (var i = 0; i < items.length; ++i) {
+                            var item = items[i]
+                            var candidate = (typeof item === "object" && item !== null) ? item[valueRole] : item
+                            if (candidate === value) {
+                                return i
+                            }
+                        }
+                        return -1
+                    }
                     width: root.controlWidth
 
                     model: ffmpegPrefModel.profileList
@@ -273,7 +285,7 @@ ColumnLayout {
     }
 
     RowLayout {
-        CheckBox {
+        M3Switch {
             id: bitReservoirCheckbox
 
             text: qsTrc("appshell/preferences", "Bit reservoir")
@@ -283,12 +295,15 @@ ColumnLayout {
 
             checked: ffmpegPrefModel.bitReservoir
 
-            onClicked: {
-                ffmpegPrefModel.setBitReservoir(!checked)
+            onToggled: {
+                ffmpegPrefModel.setBitReservoir(checked)
+                bitReservoirCheckbox.checked = Qt.binding(function () {
+                    return ffmpegPrefModel.bitReservoir
+                })
             }
         }
 
-        CheckBox {
+        M3Switch {
             id: vblCheckbox
 
             text: qsTrc("appshell/preferences", "VBL")
@@ -298,8 +313,11 @@ ColumnLayout {
 
             checked: ffmpegPrefModel.vbl
 
-            onClicked: {
-                ffmpegPrefModel.setVbl(!checked)
+            onToggled: {
+                ffmpegPrefModel.setVbl(checked)
+                vblCheckbox.checked = Qt.binding(function () {
+                    return ffmpegPrefModel.vbl
+                })
             }
         }
     }

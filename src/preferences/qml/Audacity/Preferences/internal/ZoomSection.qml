@@ -25,6 +25,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -53,7 +54,7 @@ BaseSection {
             control.textRole: "title"
             control.valueRole: "value"
 
-            currentIndex: control.indexOfValue(root.defaultZoom.type)
+            currentIndex: indexOfValue(root.defaultZoom.type)
 
             navigation.name: "DefaultZoomBox"
             navigation.panel: root.navigation
@@ -65,7 +66,7 @@ BaseSection {
             }
         }
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: defaultZoomControl
             width: 64
 

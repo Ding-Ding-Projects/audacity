@@ -25,6 +25,7 @@ import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
 import Audacity.AppShell
 
 Page {
@@ -95,7 +96,7 @@ Page {
             height: childrenRect.height
             spacing: 16
 
-            CheckBox {
+            M3Checkbox {
                 Layout.alignment: Qt.AlignCenter
 
                 enabled: model.isFollowSystemThemeAvailable
@@ -113,7 +114,7 @@ Page {
                 }
             }
 
-            CheckBox {
+            M3Checkbox {
                 Layout.alignment: Qt.AlignCenter
 
                 text: model.enableHighContrastText
@@ -138,13 +139,13 @@ Page {
             height: childrenRect.height
 
             spacing: 6
-            StyledTextLabel {
+            Text {
                 id: accentColorTitleLabel
-                Layout.alignment: Qt.AlignCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 text: model.accentColorText
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
+                color: M3.color.onSurfaceVariant
             }
 
             AccentColorsList {
@@ -155,6 +156,8 @@ Page {
 
                 colors: model.accentColors
                 currentColorIndex: model.currentAccentColorIndex
+
+                showCustom: true
 
                 sampleSize: 22
                 spacing: 6
@@ -170,13 +173,17 @@ Page {
             }
         }
 
-        StyledTextLabel {
+        Text {
             id: highContrastPreferencesHintLabel
             visible: model.highContrastEnabled
             Layout.fillWidth: true
             Layout.topMargin: 15
             Layout.preferredHeight: Math.max(implicitHeight, accentColorsList.implicitHeight)
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
             text: model.highContrastPreferencesHint
+            font: M3.typography.bodyMedium
+            color: M3.color.onSurfaceVariant
         }
 
         // Accessibility group for the entire page content

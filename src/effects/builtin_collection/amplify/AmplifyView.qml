@@ -3,6 +3,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -77,7 +78,7 @@ BuiltinEffectBase {
             }
         }
 
-        CheckBox {
+        M3Switch {
             id: canClipCheckbox
 
             navigation.panel: root.amplifyNavigationPanel
@@ -86,8 +87,11 @@ BuiltinEffectBase {
             text: amplify.canClipLabel
             checked: amplify.canClip
 
-            onClicked: {
-                amplify.canClip = !checked
+            onToggled: {
+                amplify.canClip = checked
+                canClipCheckbox.checked = Qt.binding(function () {
+                    return amplify.canClip
+                })
             }
         }
     }

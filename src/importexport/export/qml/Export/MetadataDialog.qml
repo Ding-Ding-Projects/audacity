@@ -10,6 +10,7 @@ import Muse.UiComponents
 
 import Audacity.Export 1.0
 import "internal"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -77,7 +78,7 @@ StyledDialogView {
             }
 
             drawZebra: false
-            headerColor: ui.theme.backgroundSecondaryColor
+            headerColor: M3.color.surfaceContainer.toString()
             keyColumnWidth: 100
             isKeyEditable: true
             headerCapitalization: Font.Capitalize

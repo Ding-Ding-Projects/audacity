@@ -5,6 +5,7 @@ import QtQuick 2.15
 import QtQuick.Shapes 1.15
 import Muse.Ui
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 /*
  * A rectangle with upper rounded corners
@@ -21,7 +22,7 @@ Shape {
         id: prv
 
         readonly property int radius: 2
-        property color color: root.isClipping ? ui.theme.extra["record_color"] : ui.theme.backgroundSecondaryColor
+        property color color: root.isClipping ? ui.theme.extra["record_color"] : M3.color.surfaceContainer
     }
 
     MouseArea {
@@ -36,7 +37,7 @@ Shape {
         id: path
 
         strokeWidth: 1
-        strokeColor: ui.theme.strokeColor
+        strokeColor: M3.color.outlineVariant
         fillColor: prv.color
 
         startX: prv.radius

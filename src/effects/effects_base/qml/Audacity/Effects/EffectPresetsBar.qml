@@ -8,6 +8,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.Effects
+import Audacity.M3
 
 RowLayout {
     id: root
@@ -80,7 +81,7 @@ RowLayout {
         }
     }
 
-    StyledDropdown {
+    M3Dropdown {
         id: presetSelector
 
         navigation.panel: root.navigationPanel
@@ -89,63 +90,13 @@ RowLayout {
         navigation.accessible.name: qsTrc("effects", "Select preset")
 
         Layout.fillWidth: true
-        background.color: ui.theme.backgroundPrimaryColor
-        background.border.width: 1
-        itemColor: "transparent"
 
         textRole: "name"
         valueRole: "id"
 
-        parentWindow: root.parentWindow
         enabled: presetsBarModel.presetsDropdownEnabled
 
-        indeterminateText: qsTrc("effects", "Select preset")
-
         model: presetsBarModel.presets
-        displayText: {
-            const preset = presetsBarModel.presets.find(item => item.id === presetsBarModel.preset)
-            return preset ? preset.name : indeterminateText
-        }
-
-        contentItem: RowLayout {
-            property alias labelItem: textItem
-            property alias text: textItem.text
-
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 8
-            spacing: 6
-
-            StyledTextLabel {
-                id: textItem
-
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-            }
-
-            StyledIconLabel {
-                Layout.alignment: Qt.AlignVCenter
-                iconCode: IconCode.SMALL_ARROW_DOWN
-            }
-        }
-
-        contentListItem: RowLayout {
-            property alias text: textItem.text
-            property alias truncated: textItem.truncated
-
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            spacing: 0
-
-            StyledTextLabel {
-                id: textItem
-
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-            }
-        }
 
         onActivated: function (index, value) {
             presetsBarModel.preset = value
@@ -153,8 +104,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: saveBtn
+        variant: "tonal"
 
         navigation.panel: root.navigationPanel
         navigation.order: presetSelector.navigation.order + 1
@@ -170,8 +122,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: resetBtn
+        variant: "tonal"
 
         navigation.panel: root.navigationPanel
         navigation.order: saveBtn.navigation.order + 1
@@ -189,8 +142,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: deleteBtn
+        variant: "tonal"
 
         navigation.panel: root.navigationPanel
         navigation.order: resetBtn.navigation.order + 1
@@ -208,8 +162,9 @@ RowLayout {
         }
     }
 
-    FlatButton {
+    M3Button {
         id: manageButton
+        variant: "tonal"
 
         navigation.panel: root.navigationPanel
         navigation.order: deleteBtn.navigation.order + 1

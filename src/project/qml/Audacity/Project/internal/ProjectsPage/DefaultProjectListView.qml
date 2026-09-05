@@ -7,6 +7,7 @@ import QtQuick.Controls 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 import Audacity.Project 1.0
+import Audacity.M3
 
 Item {
     id: root
@@ -15,7 +16,7 @@ Item {
     property int viewType: ProjectsPageModel.Grid
     property string searchText
 
-    property color backgroundColor: ui.theme.backgroundSecondaryColor
+    property color backgroundColor: M3.color.surfaceContainer
     property real sideMargin: 46
 
     property bool showNewProjectItem: false
@@ -148,9 +149,9 @@ Item {
                             path: item.thumbnailUrl ?? ""
                             placeholder: root.placeholder
 
-                            backgroundColor: ui.theme.backgroundSecondaryColor
-                            lineColor: Qt.alpha(ui.theme.fontPrimaryColor, 0.8)
-                            borderColor: ui.theme.strokeColor
+                            backgroundColor: M3.color.surfaceContainer
+                            lineColor: Qt.alpha(M3.color.onSurface, 0.8)
+                            borderColor: M3.color.outlineVariant
                         }
 
                         Item {
@@ -166,7 +167,7 @@ Item {
                             width: parent.width - thumbnail.width - nameSpacing
 
                             text: item.name ?? ""
-                            font: ui.theme.largeBodyFont
+                            font: M3.typography.bodyLarge
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignLeft
                             elide: Text.ElideRight
@@ -283,7 +284,7 @@ Item {
                         id: sizeLabel
                         text: Boolean(item.fileSize) ? item.fileSize : "-"
 
-                        font: ui.theme.largeBodyFont
+                        font: M3.typography.bodyLarge
                         horizontalAlignment: Text.AlignLeft
 
                         NavigationFocusBorder {
@@ -353,7 +354,7 @@ Item {
                                 color: "transparent"
                                 radius: 3
                                 border.width: 1
-                                border.color: ui.theme.strokeColor
+                                border.color: M3.color.outlineVariant
                             }
 
                             NavigationFocusBorder {

@@ -8,6 +8,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -70,14 +71,14 @@ BaseSection {
                         }
                     }
 
-                    FlatButton {
+                    M3Button {
+                        variant: "tonal"
                         Layout.alignment: Qt.AlignVCenter
 
                         icon: IconCode.DELETE_TANK
                         text: qsTrc("preferences", "Remove")
-                        buttonType: FlatButton.IconOnly
 
-                        accessible.name: qsTrc("preferences", "Remove location")
+                        accessibleName: qsTrc("preferences", "Remove location")
 
                         navigation.panel: root.navigation
                         navigation.row: rowIndex
@@ -100,14 +101,15 @@ BaseSection {
                     text: qsTrc("preferences", "The directory does not exist")
                     color: ui.theme.extra["error_text_color"]
 
-                    font: Qt.font(Object.assign({}, ui.theme.bodyFont, {
-                        pointSize: ui.theme.bodyFont.pointSize - 1
+                    font: Qt.font(Object.assign({}, M3.typography.bodyMedium, {
+                        pointSize: M3.typography.bodyMedium.pointSize - 1
                     }))
                 }
             }
         }
 
-        FlatButton {
+        M3Button {
+            variant: "tonal"
             text: qsTrc("preferences", "Add new location")
 
             enabled: !root.hasEmptyRow

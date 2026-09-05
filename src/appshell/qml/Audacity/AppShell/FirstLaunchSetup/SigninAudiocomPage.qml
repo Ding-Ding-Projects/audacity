@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 Page {
@@ -51,14 +52,14 @@ Page {
 
         readonly property string forgotPasswordUrl: "https://audio.com/auth/forgot-password"
 
-        readonly property bool canTrigger: !model.authInProgress && emailInputField.inputField.text.length > 0 && passwordInputField.inputField.text.length > 0
+        readonly property bool canTrigger: !model.authInProgress && emailInputField.currentText.length > 0 && passwordInputField.currentText.length > 0
 
         function onTriggered() {
             if (!canTrigger) {
                 return
             }
 
-            root.isCreateAccountMode ? model.signUpWithEmail(emailInputField.inputField.text, passwordInputField.inputField.text) : model.signInWithEmail(emailInputField.inputField.text, passwordInputField.inputField.text)
+            root.isCreateAccountMode ? model.signUpWithEmail(emailInputField.currentText, passwordInputField.currentText) : model.signInWithEmail(emailInputField.currentText, passwordInputField.currentText)
         }
     }
 
@@ -85,9 +86,13 @@ Page {
 
         spacing: prv.columnSpacing
 
-        FlatButton {
+        M3Button {
             Layout.fillWidth: true
-            Layout.preferredHeight: prv.socialButtonHeight
+            Layout.preferredHeight: 40
+
+            variant: "outlined"
+            text: prv.googleTextLabel
+            accessibleName: prv.googleTextLabel
 
             NavigationPanel {
                 id: socialButtonsPanel
@@ -104,22 +109,6 @@ Page {
             navigation.row: 0
             navigation.column: 0
 
-            contentItem: RowLayout {
-                spacing: prv.socialIconTextSpacing
-
-                Image {
-                    source: "qrc:/resources/GoogleLogo.png"
-                    fillMode: Image.PreserveAspectFit
-
-                    Layout.preferredWidth: prv.providerLogoSize
-                    Layout.preferredHeight: prv.providerLogoSize
-                }
-
-                StyledTextLabel {
-                    text: prv.googleTextLabel
-                }
-            }
-
             onClicked: {
                 model.signInWithSocial(prv.googleAuthProvider)
             }
@@ -131,20 +120,21 @@ Page {
             Layout.fillWidth: true
             Layout.preferredHeight: emailSeparatorText.height
 
-            SeparatorLine {
+            M3Divider {
                 Layout.fillWidth: true
                 orientation: Qt.Horizontal
             }
 
-            StyledTextLabel {
+            Text {
                 id: emailSeparatorText
 
                 text: prv.orUseEmailText
                 horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 12
+                font: M3.typography.labelLarge
+                color: M3.color.onSurfaceVariant
             }
 
-            SeparatorLine {
+            M3Divider {
                 Layout.fillWidth: true
                 orientation: Qt.Horizontal
             }
@@ -164,27 +154,35 @@ Page {
                 accessible.name: qsTrc("appshell/gettingstarted", "Email field")
             }
 
-            StyledTextLabel {
+            Text {
                 text: prv.emailText
+                font: M3.typography.labelLarge
+                color: M3.color.onSurfaceVariant
             }
 
-            TextInputField {
+            M3TextField {
                 id: emailInputField
 
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: prv.textInputHeight
+
+                variant: "outlined"
+                accessibleName: prv.emailText
 
                 navigation.name: "EmailInput"
                 navigation.panel: emailFieldPanel
                 navigation.row: 0
                 navigation.column: 0
 
-                onAccepted: {
-                    if (prv.canTrigger) {
-                        prv.onTriggered()
-                    } else {
-                        Qt.callLater(emailInputField.ensureActiveFocus)
+                Connections {
+                    target: emailInputField.textInput
+
+                    function onAccepted() {
+                        if (prv.canTrigger) {
+                            prv.onTriggered()
+                        } else {
+                            Qt.callLater(emailInputField.textInput.forceActiveFocus)
+                        }
                     }
                 }
             }
@@ -197,8 +195,10 @@ Page {
             RowLayout {
                 width: parent.width
 
-                StyledTextLabel {
+                Text {
                     text: prv.passwordText
+                    font: M3.typography.labelLarge
+                    color: M3.color.onSurfaceVariant
                 }
 
                 Item {
@@ -234,11 +234,14 @@ Page {
                         Qt.openUrlExternally(prv.forgotPasswordUrl)
                     }
 
-                    StyledTextLabel {
+                    Text {
                         id: forgotPasswordLabel
                         anchors.fill: parent
                         text: prv.forgotPasswordLink.arg(prv.forgotPasswordUrl)
                         textFormat: Text.RichText
+                        font: M3.typography.bodyMedium
+                        color: M3.color.onSurfaceVariant
+                        linkColor: M3.color.primary
 
                         onLinkActivated: function (link) {
                             Qt.openUrlExternally(link)
@@ -247,14 +250,15 @@ Page {
                 }
             }
 
-            TextInputField {
+            M3TextField {
                 id: passwordInputField
 
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: prv.textInputHeight
 
-                inputField.echoMode: TextInput.Password
+                variant: "outlined"
+                isPassword: true
+                accessibleName: prv.passwordText
 
                 NavigationPanel {
                     id: passwordFieldPanel
@@ -271,11 +275,15 @@ Page {
                 navigation.row: 0
                 navigation.column: 0
 
-                onAccepted: {
-                    if (prv.canTrigger) {
-                        prv.onTriggered()
-                    } else {
-                        Qt.callLater(passwordInputField.ensureActiveFocus)
+                Connections {
+                    target: passwordInputField.textInput
+
+                    function onAccepted() {
+                        if (prv.canTrigger) {
+                            prv.onTriggered()
+                        } else {
+                            Qt.callLater(passwordInputField.textInput.forceActiveFocus)
+                        }
                     }
                 }
             }
@@ -286,19 +294,20 @@ Page {
             Layout.fillWidth: true
             Layout.topMargin: prv.formButtonExtraSpace
 
-            StyledTextLabel {
+            Text {
                 anchors.left: parent.left
 
                 visible: model.showErrorMessage
-                color: ui.theme.extra["error_text_color"]
+                color: M3.color.error
+                font: M3.typography.bodyMedium
 
                 text: model.errorMessage
             }
 
-            FlatButton {
+            M3Button {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: prv.formButtonHeight
+                height: 40
 
                 enabled: prv.canTrigger
 
@@ -311,7 +320,8 @@ Page {
                     accessible.name: qsTrc("appshell/gettingstarted", "Form action")
                 }
 
-                accentButton: true
+                variant: "filled"
+                loading: model.authInProgress
 
                 text: {
                     if (root.isCreateAccountMode) {
@@ -334,8 +344,10 @@ Page {
             Layout.alignment: Qt.AlignHCenter
             spacing: prv.textLinkSpacing
 
-            StyledTextLabel {
+            Text {
                 text: root.isCreateAccountMode ? prv.haveAccountText : prv.noAccountText
+                font: M3.typography.bodyMedium
+                color: M3.color.onSurfaceVariant
             }
 
             FocusableControl {
@@ -365,11 +377,13 @@ Page {
                     root.isCreateAccountMode = !root.isCreateAccountMode
                 }
 
-                StyledTextLabel {
+                Text {
                     id: accountLinkLabel
                     anchors.fill: parent
                     text: root.isCreateAccountMode ? prv.signInLinkText : prv.createAccountLinkText
-                    color: ui.theme.linkColor
+                    color: M3.color.primary
+                    font.family: M3.typography.bodyMedium.family
+                    font.pixelSize: M3.typography.bodyMedium.pixelSize
                     font.underline: true
 
                     MouseArea {

@@ -7,6 +7,7 @@ import Muse.UiComponents
 
 import Audacity.AppShell
 import Audacity.Spectrogram
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -34,7 +35,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         SpectrogramScaleSection {
             settingsModel: root.settingsModel
@@ -47,7 +48,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         SpectrogramColorsSection {
             settingsModel: root.settingsModel
@@ -60,7 +61,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         SpectrogramAlgorithmSection {
             settingsModel: root.settingsModel

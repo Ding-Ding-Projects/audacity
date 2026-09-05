@@ -28,6 +28,7 @@ import Audacity.Project 1.0
 import Muse.Cloud 1.0
 
 import "internal/ProjectsPage"
+import Audacity.M3
 
 FocusScope {
     id: root
@@ -64,7 +65,7 @@ FocusScope {
 
         anchors.fill: parent
 
-        color: ui.theme.backgroundTertiaryColor
+        color: M3.color.surfaceContainerHigh
     }
 
     RowLayout {
@@ -93,7 +94,7 @@ FocusScope {
             Layout.fillWidth: true
 
             text: qsTrc("project", "Projects")
-            font: ui.theme.titleBoldFont
+            font: M3.typography.titleLarge
             horizontalAlignment: Text.AlignLeft
         }
 
@@ -197,8 +198,9 @@ FocusScope {
                 accessible.name: qsTrc("project", "View buttons")
             }
 
-            FlatButton {
+            M3Button {
                 id: refreshButton
+                variant: "tonal"
 
                 visible: tabBar.currentIndex === 1 || tabBar.currentIndex === 2
 
@@ -207,7 +209,6 @@ FocusScope {
 
                 icon: IconCode.UPDATE
                 text: qsTrc("project", "Refresh")
-                orientation: Qt.Horizontal
             }
 
             RadioButtonGroup {
@@ -238,7 +239,7 @@ FocusScope {
 
                     iconCode: modelData.icon
                     transparent: true
-                    checkedColor: ui.theme.buttonColor
+                    checkedColor: M3.color.secondaryContainer
 
                     navigation.name: "ViewType_" + modelData.title
                     navigation.panel: viewButtonsNavPanel
@@ -382,9 +383,9 @@ FocusScope {
         height: 48
         width: parent.width
 
-        color: ui.theme.backgroundTertiaryColor
+        color: M3.color.surfaceContainerHigh
 
-        SeparatorLine {
+        M3Divider {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
@@ -401,7 +402,8 @@ FocusScope {
             accessible.name: qsTrc("project", "Projects actions")
         }
 
-        FlatButton {
+        M3Button {
+            variant: "tonal"
             anchors.left: parent.left
             anchors.leftMargin: prv.sideMargin
             anchors.verticalCenter: parent.verticalCenter
@@ -427,7 +429,8 @@ FocusScope {
 
             spacing: 22
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
                 navigation.name: "NewProject"
                 navigation.panel: navBottomPanel
                 navigation.column: 2
@@ -439,7 +442,8 @@ FocusScope {
                 }
             }
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
                 navigation.name: "Open other Project"
                 navigation.panel: navBottomPanel
                 navigation.column: 3

@@ -4,6 +4,8 @@ import Audacity.ProjectScene
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
 import Muse.UiComponents
+import Audacity.Effects
+import Audacity.M3
 
 Item {
     id: root
@@ -139,7 +141,7 @@ Item {
             horizontalAlignment: Qt.AlignHCenter
         }
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: textEdit
 
             navigation.accessible.name: root.parameter["title"] + " " + currentValue

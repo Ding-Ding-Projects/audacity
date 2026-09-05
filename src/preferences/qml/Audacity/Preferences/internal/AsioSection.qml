@@ -6,6 +6,7 @@ import QtQuick
 import Muse.UiComponents
 
 import Audacity.UiComponents
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -20,7 +21,8 @@ BaseSection {
         width: parent.width
         spacing: root.spacing
 
-        CheckBox {
+        M3Switch {
+            id: m3Switch3
             width: root.columnWidth
             anchors.verticalCenter: parent.verticalCenter
 
@@ -33,12 +35,16 @@ BaseSection {
             navigation.row: 1
             navigation.column: 0
 
-            onClicked: {
-                apiModel.setAsioUseDeviceSampleRate(!checked)
+            onToggled: {
+                apiModel.setAsioUseDeviceSampleRate(checked)
+                m3Switch3.checked = Qt.binding(function () {
+                    return apiModel.asioUseDeviceSampleRate
+                })
             }
         }
 
-        FlatButton {
+        M3Button {
+            variant: "tonal"
             text: qsTrc("preferences", "Driver settings")
 
             navigation.name: "AsioDriverSettingsButton"

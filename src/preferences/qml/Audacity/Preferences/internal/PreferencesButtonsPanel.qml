@@ -1,11 +1,11 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-only
- * MuseScore-CLA-applies
+ * Audacity-CLA-applies
  *
- * MuseScore
- * Music Composition & Notation
+ * Audacity
+ * A Digital Audio Editor
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2024 Audacity BVBA and others
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -19,50 +19,69 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Layouts
 
-import Muse.Ui 1.0
+import Muse.Ui
 import Muse.UiComponents
+
+import Audacity.M3
 
 Rectangle {
     id: root
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
-    property alias navigation: buttonBox.navigationPanel
+    property NavigationPanel navigation: NavigationPanel {
+        name: "PreferencesButtons"
+        direction: NavigationPanel.Horizontal
+        enabled: root.enabled && root.visible
+    }
 
     signal revertFactorySettingsRequested
     signal applyRequested
     signal rejectRequested
 
-    ButtonBox {
-        id: buttonBox
-
+    RowLayout {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: 20
+        anchors.margins: 24
 
-        buttons: [ButtonBoxModel.Cancel, ButtonBoxModel.Ok]
+        spacing: 8
 
-        FlatButton {
+        M3Button {
             text: qsTrc("appshell/preferences", "Reset preferences")
-            buttonRole: ButtonBoxModel.CustomRole
-            buttonId: ButtonBoxModel.CustomButton + 1
-            isLeftSide: true
+            variant: "text"
 
-            onClicked: {
-                root.revertFactorySettingsRequested()
-            }
+            navigation.panel: root.navigation
+            navigation.column: 0
+
+            onClicked: root.revertFactorySettingsRequested()
         }
 
-        onStandardButtonClicked: function (buttonId) {
-            if (buttonId === ButtonBoxModel.Cancel) {
-                root.rejectRequested()
-            } else if (buttonId === ButtonBoxModel.Ok) {
-                root.applyRequested()
-            }
+        Item {
+            Layout.fillWidth: true
+        }
+
+        M3Button {
+            text: qsTrc("global", "Cancel")
+            variant: "text"
+
+            navigation.panel: root.navigation
+            navigation.column: 1
+
+            onClicked: root.rejectRequested()
+        }
+
+        M3Button {
+            text: qsTrc("global", "OK")
+            variant: "filled"
+
+            navigation.panel: root.navigation
+            navigation.column: 2
+
+            onClicked: root.applyRequested()
         }
     }
 }

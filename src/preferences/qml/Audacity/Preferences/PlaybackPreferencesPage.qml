@@ -7,6 +7,7 @@ import Muse.UiComponents
 
 import Audacity.AppShell
 import Audacity.Playback
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -51,7 +52,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         CursorSection {
             id: cursorSection
@@ -70,7 +71,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         RecordingBehaviorSection {
             id: recordingBehaviorSection
@@ -89,7 +90,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         LeadInRecordingSection {
             recordingPreferencesModel: recordingPreferencesModel

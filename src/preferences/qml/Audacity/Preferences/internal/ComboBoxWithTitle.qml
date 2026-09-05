@@ -22,6 +22,7 @@
 import QtQuick 2.15
 
 import Muse.UiComponents
+import Audacity.M3
 
 Column {
     id: root
@@ -49,7 +50,18 @@ Column {
     spacing: 6
 
     function indexOfValue(value) {
-        return comboBox.indexOfValue(value)
+        var items = comboBox.model
+        if (!items) {
+            return -1
+        }
+        for (var i = 0; i < items.length; ++i) {
+            var item = items[i]
+            var candidate = (typeof item === "object" && item !== null) ? item[comboBox.valueRole] : item
+            if (candidate === value) {
+                return i
+            }
+        }
+        return -1
     }
 
     StyledTextLabel {
@@ -64,14 +76,12 @@ Column {
         maximumLineCount: 2
     }
 
-    StyledDropdown {
+    M3Dropdown {
         id: comboBox
 
         width: root.columnWidth
 
         navigation.accessible.name: root.title + " " + currentText
-
-        indeterminateText: ""
 
         onActivated: function (index, value) {
             root.valueEdited(index, value)

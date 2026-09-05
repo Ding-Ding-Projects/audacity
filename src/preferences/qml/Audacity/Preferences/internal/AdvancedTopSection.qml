@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -40,7 +41,8 @@ BaseSection {
         //! NOTE: Added to prevent components clipping when navigating
         width: root.width - root.padding * 2
 
-        FlatButton {
+        M3Button {
+            variant: "tonal"
             Layout.alignment: Qt.AlignVCenter
 
             text: qsTrc("preferences", "Reset to default")

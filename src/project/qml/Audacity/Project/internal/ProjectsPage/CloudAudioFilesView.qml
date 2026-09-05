@@ -13,6 +13,7 @@ import Audacity.Project 1.0
 import Audacity.Cloud 1.0
 
 import "../../."
+import Audacity.M3
 
 ProjectsView {
     id: root
@@ -223,7 +224,7 @@ ProjectsView {
                             Layout.fillWidth: !thumbnailItem.visible
 
                             text: item.name ?? ""
-                            font: ui.theme.largeBodyFont
+                            font: M3.typography.bodyLarge
                             horizontalAlignment: Text.AlignLeft
 
                             NavigationFocusBorder {
@@ -261,7 +262,7 @@ ProjectsView {
                                 placeholder: prv.placeholderFile
 
                                 backgroundColor: "transparent"
-                                lineColor: Qt.alpha(ui.theme.fontPrimaryColor, 0.8)
+                                lineColor: Qt.alpha(M3.color.onSurface, 0.8)
                                 borderColor: "transparent"
                             }
                         }
@@ -315,7 +316,7 @@ ProjectsView {
                         id: durationLabel
                         text: Boolean(item.duration) ? item.duration : "-"
 
-                        font: ui.theme.largeBodyFont
+                        font: M3.typography.bodyLarge
                         horizontalAlignment: Text.AlignLeft
 
                         NavigationFocusBorder {
@@ -352,7 +353,7 @@ ProjectsView {
                         id: sizeLabel
                         text: Boolean(item.fileSize) ? item.fileSize : "-"
 
-                        font: ui.theme.largeBodyFont
+                        font: M3.typography.bodyLarge
                         horizontalAlignment: Text.AlignLeft
 
                         NavigationFocusBorder {
@@ -422,7 +423,7 @@ ProjectsView {
                                 color: "transparent"
                                 radius: 3
                                 border.width: 1
-                                border.color: ui.theme.strokeColor
+                                border.color: M3.color.outlineVariant
                             }
 
                             NavigationFocusBorder {
@@ -531,7 +532,8 @@ ProjectsView {
                         accessible.name: qsTrc("cloud", "Sign in buttons")
                     }
 
-                    FlatButton {
+                    M3Button {
+                        variant: "tonal"
                         navigation.panel: navPanel
                         navigation.order: 1
 
@@ -541,7 +543,8 @@ ProjectsView {
                         }
                     }
 
-                    FlatButton {
+                    M3Button {
+                        variant: "tonal"
                         navigation.panel: navPanel
                         navigation.order: 2
 

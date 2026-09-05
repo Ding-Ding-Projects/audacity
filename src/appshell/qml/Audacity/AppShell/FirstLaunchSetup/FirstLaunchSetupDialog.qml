@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 StyledDialogView {
@@ -74,6 +75,11 @@ StyledDialogView {
         model.load()
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surface
+    }
+
     ColumnLayout {
         id: content
 
@@ -81,15 +87,17 @@ StyledDialogView {
         spacing: 0
         Layout.margins: 0
 
-        StyledTextLabel {
-            Layout.preferredHeight: 27 // 28 - 1 for the SeparatorLine
+        Text {
+            Layout.preferredHeight: 27 // 28 - 1 for the divider
             Layout.leftMargin: 8
             Layout.alignment: Qt.AlignLeft
-            text: title
-            font: ui.theme.bodyFont
+            verticalAlignment: Text.AlignVCenter
+            text: root.title
+            font: M3.typography.labelLarge
+            color: M3.color.onSurfaceVariant
         }
 
-        SeparatorLine {
+        M3Divider {
             Layout.fillWidth: true
             Layout.margins: 0
             Layout.preferredHeight: 1
@@ -136,7 +144,7 @@ StyledDialogView {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             Layout.fillWidth: true
             Layout.margins: 0
             Layout.preferredHeight: 1
@@ -144,21 +152,22 @@ StyledDialogView {
 
         RowLayout {
             id: buttons
-            Layout.preferredHeight: 47 // 48 - 1 for the SeparatorLine
+            Layout.preferredHeight: 47 // 48 - 1 for the divider
 
             Layout.fillWidth: true
             Layout.leftMargin: 12
             Layout.rightMargin: 12
-            Layout.topMargin: 9 // 10 - 1 for the SeparatorLine
+            Layout.topMargin: 9 // 10 - 1 for the divider
             Layout.bottomMargin: 10
             spacing: 8
 
-            StyledTextLabel {
+            Text {
                 Layout.topMargin: 6
                 Layout.bottomMargin: 6
                 Layout.alignment: Qt.AlignLeft
                 text: model.formatPageProgress(model.currentPageIndex + 1, model.numberOfPages)
-                font: ui.theme.bodyFont
+                font: M3.typography.labelLarge
+                color: M3.color.onSurfaceVariant
             }
 
             Item {
@@ -184,11 +193,13 @@ StyledDialogView {
                 direction: NavigationPanel.Horizontal
             }
 
-            FlatButton {
+            M3Button {
                 id: backButton
 
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 28
+                Layout.preferredHeight: 40
+
+                variant: "text"
 
                 text: model.backButtonText
                 enabled: model.canGoBack
@@ -199,8 +210,8 @@ StyledDialogView {
                 navigation.column: 3
                 navigation.onActiveChanged: {
                     if (!navigation.active) {
-                        accessible.ignored = false
-                        accessible.focused = true
+                        navigation.accessible.ignored = false
+                        navigation.accessible.focused = true
                         pageLoader.item.resetFocus()
                     }
                 }
@@ -218,14 +229,16 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: extraButton
 
                 Layout.alignment: Qt.AlignRight
-                Layout.preferredHeight: 28
+                Layout.preferredHeight: 40
+
+                readonly property bool accentButton: root.currentPage ? root.currentPage.extraButtonAccent : true
 
                 visible: root.currentPage ? Boolean(root.currentPage.extraButtonTitle) : false
-                accentButton: root.currentPage ? root.currentPage.extraButtonAccent : true
+                variant: extraButton.accentButton ? "filled" : "outlined"
 
                 text: root.currentPage ? root.currentPage.extraButtonTitle : ""
 
@@ -245,22 +258,22 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: nextStepButton
 
                 Layout.alignment: Qt.AlignRight
-                Layout.preferredHeight: 28
+                Layout.preferredHeight: 40
 
                 text: model.nextButtonText
-                accentButton: !extraButton.visible || !extraButton.accentButton
+                variant: (!extraButton.visible || !extraButton.accentButton) ? "filled" : "outlined"
 
                 navigation.name: "NextButton"
                 navigation.panel: buttons.navigationPanel
                 navigation.column: 2
                 navigation.onActiveChanged: {
                     if (!navigation.active) {
-                        accessible.ignored = false
-                        accessible.focused = true
+                        navigation.accessible.ignored = false
+                        navigation.accessible.focused = true
                         pageLoader.item.resetFocus()
                     }
                 }

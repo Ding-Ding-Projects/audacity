@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -32,7 +33,8 @@ BaseSection {
 
     title: qsTrc("appshell/preferences", "Audio engine")
 
-    FlatButton {
+    M3Button {
+        variant: "tonal"
         text: qsTrc("appshell/preferences", "Restart audio and MIDI devices")
 
         navigation.name: "RestartAudioAndMidiDevicesBox"

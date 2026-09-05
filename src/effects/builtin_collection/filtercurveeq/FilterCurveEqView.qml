@@ -6,6 +6,7 @@ import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
 import Audacity.UiComponents
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -59,7 +60,7 @@ BuiltinEffectBase {
                 anchors.leftMargin: gridPlot.backgroundX
                 anchors.verticalCenter: parent.verticalCenter
 
-                CheckBox {
+                M3Switch {
                     id: linFreqScaleCheckBox
 
                     anchors.verticalCenter: parent.verticalCenter
@@ -71,10 +72,15 @@ BuiltinEffectBase {
 
                     checked: filterCurveEq.linFreqScale
 
-                    onClicked: filterCurveEq.linFreqScale = !filterCurveEq.linFreqScale
+                    onToggled: {
+                        filterCurveEq.linFreqScale = !filterCurveEq.linFreqScale
+                        linFreqScaleCheckBox.checked = Qt.binding(function () {
+                            return filterCurveEq.linFreqScale
+                        })
+                    }
                 }
 
-                CheckBox {
+                M3Switch {
                     id: showGridlinesCheckBox
 
                     anchors.verticalCenter: parent.verticalCenter
@@ -86,7 +92,12 @@ BuiltinEffectBase {
 
                     checked: filterCurveEq.gridlinesVisible
 
-                    onClicked: filterCurveEq.gridlinesVisible = !filterCurveEq.gridlinesVisible
+                    onToggled: {
+                        filterCurveEq.gridlinesVisible = !filterCurveEq.gridlinesVisible
+                        showGridlinesCheckBox.checked = Qt.binding(function () {
+                            return filterCurveEq.gridlinesVisible
+                        })
+                    }
                 }
             }
 
@@ -101,8 +112,9 @@ BuiltinEffectBase {
                 anchors.rightMargin: gridPlot.width - (gridPlot.backgroundX + gridPlot.backgroundWidth)
                 anchors.verticalCenter: parent.verticalCenter
 
-                FlatButton {
+                M3Button {
                     id: resetButton
+                    variant: "tonal"
 
                     width: 64
                     height: 28
@@ -115,8 +127,9 @@ BuiltinEffectBase {
                     onClicked: filterCurveEq.curveModel.flatten()
                 }
 
-                FlatButton {
+                M3Button {
                     id: invertButton
+                    variant: "tonal"
 
                     width: 64
                     height: 28
@@ -129,8 +142,9 @@ BuiltinEffectBase {
                     onClicked: filterCurveEq.curveModel.invert()
                 }
 
-                FlatButton {
+                M3Button {
                     id: zoomInButton
+                    variant: "tonal"
 
                     width: 28
                     height: 28
@@ -146,8 +160,9 @@ BuiltinEffectBase {
                     onClicked: filterCurveEq.zoomIn()
                 }
 
-                FlatButton {
+                M3Button {
                     id: zoomOutButton
+                    variant: "tonal"
 
                     width: 28
                     height: 28
@@ -185,8 +200,8 @@ BuiltinEffectBase {
             // plot background.
             FontMetrics {
                 id: labelFm
-                font.family: ui.theme.bodyFont.family
-                font.pixelSize: ui.theme.bodyFont.pixelSize
+                font.family: M3.typography.bodyMedium.family
+                font.pixelSize: M3.typography.bodyMedium.pixelSize
             }
             Binding {
                 target: filterCurveEq
@@ -230,7 +245,7 @@ BuiltinEffectBase {
                     width: plotClip.width
                     height: plotClip.height
 
-                    lineColor: ui.theme.accentColor
+                    lineColor: M3.color.primary
                     lineWidth: 2
 
                     drawBackground: false
@@ -240,7 +255,7 @@ BuiltinEffectBase {
 
                     standardPointStyle {
                         centerRadius: 5.0
-                        centerColor: ui.theme.accentColor
+                        centerColor: M3.color.primary
 
                         centerRadiusHovered: 1.0
                         centerColorHovered: ui.theme.extra["white_color"]
@@ -249,12 +264,12 @@ BuiltinEffectBase {
                         middleRingColorHovered: ui.theme.extra["black_color"]
 
                         outlineWidthHovered: 3.0
-                        outlineColorHovered: ui.theme.accentColor
+                        outlineColorHovered: M3.color.primary
                     }
 
                     ghostPointStyle {
                         centerRadius: 4.0
-                        centerColor: ui.theme.accentColor
+                        centerColor: M3.color.primary
                     }
 
                     defaultValue: filterCurveEq.curveModel.defaultValue

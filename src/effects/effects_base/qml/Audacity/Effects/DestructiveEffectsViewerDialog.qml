@@ -12,6 +12,7 @@ import Audacity.BuiltinEffects
 import Audacity.Lv2
 import Audacity.AudioUnit
 import Audacity.Vst
+import Audacity.M3
 
 EffectStyledDialogView {
     id: root
@@ -211,7 +212,7 @@ EffectStyledDialogView {
                 width: topPanelContainer.width
                 height: topPanelContainer.height
 
-                color: ui.theme.backgroundPrimaryColor
+                color: M3.color.surface
 
                 Row {
                     id: headerBar
@@ -234,7 +235,7 @@ EffectStyledDialogView {
                     }
                 }
 
-                SeparatorLine {
+                M3Divider {
                     id: separator
 
                     anchors.top: headerBar.bottom
@@ -274,40 +275,32 @@ EffectStyledDialogView {
                 width: bottomPanelContainer.width
                 height: bottomPanelContainer.height
 
-                color: ui.theme.backgroundPrimaryColor
+                color: M3.color.surface
 
                 Item {
                     anchors.fill: parent
                     anchors.margins: prv.panelMargins
 
-                    ButtonBox {
+                    RowLayout {
                         id: bbox
 
                         anchors.left: parent.left
                         anchors.right: parent.right
 
                         spacing: prv.panelMargins
-                        navigationPanel.section: root.navigationSection
-                        navigationPanel.order: (prv.showTopPanel ? 1 : 0) + (prv.viewer && prv.viewer.numNavigationPanels !== undefined ? prv.viewer.numNavigationPanels : (viewerModel.effectFamily === EffectFamily.Builtin ? 2 : 0))
 
-                        //! TODO Move function to ButtonBox (Muse framework)
-                        function buttonById(id) {
-                            for (var i = 0; i < bbox.count; i++) {
-                                var btn = bbox.itemAt(i)
-                                if (btn.buttonId === id) {
-                                    return btn
-                                }
-                            }
-
-                            return null
+                        property NavigationPanel navigationPanel: NavigationPanel {
+                            name: "EffectDialogButtons"
+                            direction: NavigationPanel.Horizontal
+                            section: root.navigationSection
+                            order: (prv.showTopPanel ? 1 : 0) + (prv.viewer && prv.viewer.numNavigationPanels !== undefined ? prv.viewer.numNavigationPanels : (viewerModel.effectFamily === EffectFamily.Builtin ? 2 : 0))
                         }
 
-                        FlatButton {
+                        M3Button {
                             id: previewBtn
 
-                            height: presetsBar.height
                             minWidth: 80
-                            isLeftSide: true
+                            variant: "tonal"
 
                             visible: prv.isPreviewAllowed
 
@@ -320,8 +313,6 @@ EffectStyledDialogView {
                             //: Shown on a button that starts effect preview
                             qsTrc("effects", "Preview")
 
-                            buttonRole: ButtonBoxModel.CustomRole
-                            buttonId: ButtonBoxModel.CustomButton + 2
                             enabled: prv.isApplyAllowed
 
                             onClicked: {
@@ -336,37 +327,38 @@ EffectStyledDialogView {
                             }
                         }
 
-                        FlatButton {
+                        Item {
+                            Layout.fillWidth: true
+                        }
+
+                        M3Button {
                             id: cancelBtn
 
-                            height: presetsBar.height
                             minWidth: 80
+                            variant: "text"
+
                             navigation.panel: bbox.navigationPanel
                             navigation.order: previewBtn.navigation.order + 1
 
                             //: Label of a dialog button
                             text: qsTrc("global", "Cancel")
-                            buttonRole: ButtonBoxModel.RejectRole
-                            buttonId: ButtonBoxModel.Cancel
 
                             onClicked: {
                                 prv.closeWindow(false)
                             }
                         }
 
-                        FlatButton {
+                        M3Button {
                             id: okBtn
 
-                            height: presetsBar.height
                             minWidth: 80
+                            variant: "filled"
+
                             navigation.panel: bbox.navigationPanel
                             navigation.order: cancelBtn.navigation.order + 1
 
                             //: Label of the dialog button that applies the effect
                             text: qsTrc("global", "Apply")
-                            buttonRole: ButtonBoxModel.AcceptRole
-                            buttonId: ButtonBoxModel.Apply
-                            accentButton: true
                             enabled: prv.isApplyAllowed
 
                             onClicked: {

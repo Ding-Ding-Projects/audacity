@@ -8,6 +8,7 @@ import Muse.UiComponents
 
 import Audacity.Effects 1.0
 import Audacity.AudioUnit 1.0
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -27,7 +28,7 @@ Rectangle {
 
     property alias view: view
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     width: implicitWidth
     height: implicitHeight

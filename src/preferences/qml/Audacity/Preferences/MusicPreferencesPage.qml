@@ -7,6 +7,7 @@ import Muse.UiComponents
 
 import Audacity.Preferences
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -56,7 +57,7 @@ PreferencesPage {
                     width: parent.width
                     spacing: musicImportsSection.columnSpacing
 
-                    RoundedRadioButton {
+                    M3RadioButton {
                         checked: musicPreferencesModel.tempoDetectionPref === TempoDetection.ALWAYS
                         text: qsTrc("preferences", "Always")
 
@@ -69,7 +70,7 @@ PreferencesPage {
                         }
                     }
 
-                    RoundedRadioButton {
+                    M3RadioButton {
                         id: workspaceRadioBtn
 
                         checked: musicPreferencesModel.tempoDetectionPref === TempoDetection.WORKSPACE_DEPENDENT
@@ -97,7 +98,7 @@ PreferencesPage {
                         navigation.order: musicImportsSection.navigation.order + 1
                     }
 
-                    RoundedRadioButton {
+                    M3RadioButton {
                         checked: musicPreferencesModel.tempoDetectionPref === TempoDetection.NEVER
                         text: qsTrc("preferences", "Never")
 
@@ -113,7 +114,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         BaseSection {
             id: detectionBehaviorSection
@@ -129,7 +130,8 @@ PreferencesPage {
                 }
             }
 
-            CheckBox {
+            M3Switch {
+                id: m3Switch2
                 width: parent.width
 
                 text: qsTrc("preferences", "Ask me each time")
@@ -139,8 +141,11 @@ PreferencesPage {
                 navigation.panel: detectionBehaviorSection.navigation
                 navigation.row: 0
 
-                onClicked: {
-                    musicPreferencesModel.askBeforeSubsequentImport = !checked
+                onToggled: {
+                    musicPreferencesModel.askBeforeSubsequentImport = checked
+                    m3Switch2.checked = Qt.binding(function () {
+                        return musicPreferencesModel.askBeforeSubsequentImport
+                    })
                 }
             }
         }

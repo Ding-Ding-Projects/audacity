@@ -19,47 +19,132 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Layouts
 
-import Muse.Ui 1.0
+import Muse.Ui
 import Muse.UiComponents
 
-StyledDialogView {
+import Audacity.M3
+
+M3Dialog {
     id: root
 
     title: qsTrc("preferences", "Preferences")
+    headline: qsTrc("preferences", "Preferences")
 
-    contentWidth: 880
-    contentHeight: 640
+    contentWidth: 960
+    contentHeight: 660
     resizable: true
+
+    fullScreen: false
+    margins: 24
 
     property string currentPageId: ""
     property var params: null
 
-    property QtObject prv: QtObject {
-        property var pagesObjects: (new Map())
+    signal regexBuilderRequested
 
-        function resolveStackCurrentIndex() {
-            var keys = Object.keys(root.prv.pagesObjects)
-            return keys.indexOf(preferencesModel.currentPageId)
+    QtObject {
+        id: prv
+
+        property var pagesObjects: (new Map())
+        property var pages: []
+        property var filteredPages: []
+        property string searchText: ""
+
+        function indexIn(pages, pageId) {
+            for (var i = 0; i < pages.length; ++i) {
+                if (pages[i].id === pageId) {
+                    return i
+                }
+            }
+            return -1
         }
 
         function updateStackCurrentIndex() {
-            stack.currentIndex = resolveStackCurrentIndex()
+            var stackIndex = prv.indexIn(prv.pages, preferencesModel.currentPageId)
+            if (stackIndex >= 0) {
+                stack.currentIndex = stackIndex
+            }
+
+            var tabIndex = prv.indexIn(prv.filteredPages, preferencesModel.currentPageId)
+            if (tabIndex >= 0) {
+                tabs.currentIndex = tabIndex
+            }
+        }
+
+        // Collects every section title inside a page so that the search bar
+        // matches the settings themselves and not only the page name.
+        function keywordsOf(item, depth) {
+            var words = ""
+            if (!Boolean(item) || depth > 4) {
+                return words
+            }
+            if (item.title !== undefined && typeof item.title === "string") {
+                words += " " + item.title
+            }
+            if (item.text !== undefined && typeof item.text === "string") {
+                words += " " + item.text
+            }
+            var children = item.children
+            if (Boolean(children)) {
+                for (var i = 0; i < children.length; ++i) {
+                    words += prv.keywordsOf(children[i], depth + 1)
+                }
+            }
+            return words
+        }
+
+        function matches(page, needle) {
+            if (needle === "") {
+                return true
+            }
+            var haystack = page.title
+            var obj = prv.pagesObjects[page.id]
+            if (Boolean(obj)) {
+                haystack += prv.keywordsOf(obj, 0)
+            }
+            var expression = null
+            try {
+                expression = new RegExp(needle, "i")
+            } catch (error) {
+                expression = null
+            }
+            if (expression !== null) {
+                return expression.test(haystack)
+            }
+            return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1
+        }
+
+        function applyFilter() {
+            var result = []
+            for (var i = 0; i < prv.pages.length; ++i) {
+                if (prv.matches(prv.pages[i], prv.searchText)) {
+                    result.push(prv.pages[i])
+                }
+            }
+            if (result.length === 0) {
+                result = prv.pages
+            }
+            prv.filteredPages = result
+            prv.updateStackCurrentIndex()
         }
     }
 
     Component.onCompleted: {
         preferencesModel.load(root.currentPageId)
 
-        initPagesObjects()
+        root.initPagesObjects()
 
+        prv.applyFilter()
         prv.updateStackCurrentIndex()
     }
 
     function initPagesObjects() {
         var pages = preferencesModel.availablePages()
+        var known = []
+
         for (var i in pages) {
             var pageInfo = pages[i]
 
@@ -76,14 +161,13 @@ StyledDialogView {
 
             var properties = {
                 navigationSection: root.navigationSection,
-                navigationOrderStart: (i + 1) * 100
+                navigationOrderStart: (Number(i) + 1) * 100
             }
 
             if (root.currentPageId === pageInfo.id) {
                 var params = root.params
                 for (var key in params) {
-                    var value = params[key]
-                    properties[key] = value
+                    properties[key] = params[key]
                 }
             }
 
@@ -97,8 +181,12 @@ StyledDialogView {
                 root.hide()
             })
 
-            root.prv.pagesObjects[pageInfo.id] = obj
+            prv.pagesObjects[pageInfo.id] = obj
+            known.push(pageInfo)
         }
+
+        prv.pages = known
+        prv.filteredPages = known
     }
 
     PreferencesModel {
@@ -109,55 +197,100 @@ StyledDialogView {
         }
     }
 
-    ColumnLayout {
-        anchors.fill: parent
+    Item {
+        width: parent.width
+        height: root.contentHeight - 172
 
-        spacing: 0
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 16
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            M3SearchBar {
+                id: searchBar
 
-            spacing: 0
+                Layout.fillWidth: true
 
-            PreferencesMenu {
-                id: menu
+                placeholder: qsTrc("preferences", "Search settings")
+                showRegexBuilder: true
 
+                navigation.panel: NavigationPanel {
+                    name: "PreferencesSearch"
+                    section: root.navigationSection
+                    order: 0
+                }
+
+                onSearchTextChanged: {
+                    prv.searchText = searchBar.searchText
+                    prv.applyFilter()
+                }
+
+                onRegexBuilderRequested: {
+                    root.regexBuilderRequested()
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: 220
 
-                navigation.section: root.navigationSection
-                navigation.order: 1
+                spacing: 16
 
-                model: preferencesModel
-            }
+                M3Tabs {
+                    id: tabs
 
-            SeparatorLine {
-                orientation: Qt.Vertical
-            }
+                    Layout.preferredWidth: 232
+                    Layout.fillHeight: true
 
-            StackLayout {
-                id: stack
+                    orientation: Qt.Vertical
+                    primary: false
+
+                    model: prv.filteredPages.map(function (page) {
+                        return {
+                            "text": page.title,
+                            "icon": page.icon
+                        }
+                    })
+
+                    navigationPanel: NavigationPanel {
+                        name: "PreferencesPages"
+                        section: root.navigationSection
+                        direction: NavigationPanel.Vertical
+                        order: 1
+                    }
+
+                    onActivated: function (index) {
+                        var page = prv.filteredPages[index]
+                        if (Boolean(page)) {
+                            preferencesModel.currentPageId = page.id
+                        }
+                    }
+                }
+
+                M3Divider {
+                    Layout.fillHeight: true
+                    orientation: Qt.Vertical
+                }
+
+                StackLayout {
+                    id: stack
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
             }
         }
+    }
 
-        SeparatorLine {}
+    actions: [
+        M3Button {
+            text: qsTrc("appshell/preferences", "Reset preferences")
+            variant: "text"
 
-        PreferencesButtonsPanel {
-            id: buttonsPanel
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: 70
-
-            navigation.section: root.navigationSection
-            navigation.order: 100000
-
-            onRevertFactorySettingsRequested: {
+            onClicked: {
                 var pages = preferencesModel.availablePages()
 
                 for (var i in pages) {
-                    var page = pages[i]
-                    var obj = root.prv.pagesObjects[page.id]
+                    var obj = prv.pagesObjects[pages[i].id]
                     if (Boolean(obj)) {
                         obj.reset()
                     }
@@ -165,19 +298,26 @@ StyledDialogView {
 
                 preferencesModel.resetFactorySettings()
             }
+        },
+        M3Button {
+            text: qsTrc("global", "Cancel")
+            variant: "text"
 
-            onRejectRequested: {
+            onClicked: {
                 preferencesModel.cancel()
                 root.reject()
             }
+        },
+        M3Button {
+            text: qsTrc("global", "OK")
+            variant: "filled"
 
-            onApplyRequested: {
+            onClicked: {
                 var ok = true
                 var pages = preferencesModel.availablePages()
 
                 for (var i in pages) {
-                    var page = pages[i]
-                    var obj = root.prv.pagesObjects[page.id]
+                    var obj = prv.pagesObjects[pages[i].id]
                     if (Boolean(obj)) {
                         ok &= obj.apply()
                     }
@@ -189,5 +329,5 @@ StyledDialogView {
                 }
             }
         }
-    }
+    ]
 }

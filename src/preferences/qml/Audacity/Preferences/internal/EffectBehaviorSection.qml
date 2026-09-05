@@ -7,6 +7,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -21,7 +22,7 @@ BaseSection {
         width: parent.width
         spacing: 24
 
-        CheckBox {
+        M3Switch {
             id: checkbox
 
             width: parent.width
@@ -33,8 +34,11 @@ BaseSection {
             navigation.name: "EmptySelectionEffectsBox"
             navigation.panel: root.navigation
 
-            onClicked: {
-                editPreferencesModel.setApplyEffectToAllAudio(!checked)
+            onToggled: {
+                editPreferencesModel.setApplyEffectToAllAudio(checked)
+                checkbox.checked = Qt.binding(function () {
+                    return editPreferencesModel.applyEffectToAllAudio
+                })
             }
         }
     }

@@ -10,6 +10,7 @@ import Audacity.AppShell
 import Audacity.Preferences
 import Audacity.UiComponents
 import Audacity.TrackEdit
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -50,7 +51,7 @@ BaseSection {
             navigation.section: root.navigation.section
             navigation.order: pasteBehaviorPanel.navigation.order + 1
 
-            CheckBox {
+            M3Switch {
                 id: checkboxAlwaysPasteAsNew
 
                 width: parent.width
@@ -63,8 +64,11 @@ BaseSection {
                 navigation.panel: pasteAsNewSection.navigation
                 navigation.row: 0
 
-                onClicked: {
-                    editPreferencesModel.setPasteAsNewClip(!checked)
+                onToggled: {
+                    editPreferencesModel.setPasteAsNewClip(checked)
+                    checkboxAlwaysPasteAsNew.checked = Qt.binding(function () {
+                        return editPreferencesModel.pasteAsNewClip
+                    })
                 }
             }
 

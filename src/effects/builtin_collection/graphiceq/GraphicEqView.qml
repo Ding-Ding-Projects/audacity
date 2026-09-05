@@ -5,6 +5,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -41,8 +42,8 @@ BuiltinEffectBase {
         anchors.centerIn: parent
 
         radius: 8
-        color: ui.theme.backgroundSecondaryColor
-        border.color: ui.theme.strokeColor
+        color: M3.color.surfaceContainer
+        border.color: M3.color.outlineVariant
 
         Column {
             id: boardAndButtons
@@ -70,8 +71,9 @@ BuiltinEffectBase {
                 spacing: 8
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                FlatButton {
+                M3Button {
                     id: resetButton
+                    variant: "tonal"
 
                     width: 64
                     height: 28
@@ -84,8 +86,9 @@ BuiltinEffectBase {
                     onClicked: graphicEq.bandsModel.flatten()
                 }
 
-                FlatButton {
+                M3Button {
                     id: invertButton
+                    variant: "tonal"
 
                     width: 64
                     height: 28

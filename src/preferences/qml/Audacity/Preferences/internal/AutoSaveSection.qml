@@ -25,6 +25,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -42,7 +43,7 @@ BaseSection {
     Row {
         spacing: 12
 
-        CheckBox {
+        M3Switch {
             id: autoSaveCheckBox
 
             width: root.columnWidth
@@ -54,12 +55,12 @@ BaseSection {
             navigation.panel: root.navigation
             navigation.column: 1
 
-            onClicked: {
-                root.autoSaveEnabledChanged(!checked)
+            onToggled: {
+                root.autoSaveEnabledChanged(checked)
             }
         }
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: autoSaveIntervalControl
 
             width: 96

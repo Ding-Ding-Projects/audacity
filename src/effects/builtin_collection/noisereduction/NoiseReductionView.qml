@@ -6,6 +6,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -50,8 +51,8 @@ BuiltinEffectBase {
             spacing: 16
 
             RoundedRectangle {
-                color: ui.theme.backgroundSecondaryColor
-                border.color: ui.theme.strokeColor
+                color: M3.color.surfaceContainer
+                border.color: M3.color.outlineVariant
                 border.width: 1
                 radius: 4
                 width: 211
@@ -80,8 +81,9 @@ BuiltinEffectBase {
                         horizontalAlignment: Text.AlignLeft
                     }
 
-                    FlatButton {
+                    M3Button {
                         id: getNoiseProfileButton
+                        variant: "tonal"
 
                         Layout.fillWidth: true
                         Layout.margins: 16
@@ -102,8 +104,8 @@ BuiltinEffectBase {
             }
 
             RoundedRectangle {
-                color: ui.theme.backgroundSecondaryColor
-                border.color: ui.theme.strokeColor
+                color: M3.color.surfaceContainer
+                border.color: M3.color.outlineVariant
                 border.width: 1
                 radius: 4
                 width: 301
@@ -226,7 +228,7 @@ BuiltinEffectBase {
                         isInt: true
                     }
 
-                    SeparatorLine {
+                    M3Divider {
                         Layout.fillWidth: true
                         Layout.leftMargin: 16
                         Layout.rightMargin: 16
@@ -257,7 +259,7 @@ BuiltinEffectBase {
                             width: parent.width
                             spacing: 8
 
-                            RoundedRadioButton {
+                            M3RadioButton {
                                 id: audioWithNoiseRemovedRadioButton
 
                                 width: parent.width
@@ -273,7 +275,7 @@ BuiltinEffectBase {
                                 }
                             }
 
-                            RoundedRadioButton {
+                            M3RadioButton {
                                 id: noiseOnlyRadioButton
                                 width: parent.width
 

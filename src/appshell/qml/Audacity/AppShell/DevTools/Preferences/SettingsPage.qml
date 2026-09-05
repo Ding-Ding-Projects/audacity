@@ -11,8 +11,13 @@ import Muse.Dock 1.0
 
 import Audacity.AppShell
 
+import Audacity.M3
+
 ColumnLayout {
     id: root
+
+    //! NOTE Hook for the regex builder, attached by the search lane.
+    signal regexBuilderRequested
 
     SettingListModel {
         id: settingsModel
@@ -22,8 +27,18 @@ ColumnLayout {
         settingsModel.load()
     }
 
-    SearchField {
+    M3SearchBar {
         id: searchField
+
+        Layout.fillWidth: true
+
+        placeholder: "Search settings"
+        showRegexBuilder: true
+
+        //! NOTE Hook for the regex builder, attached by the search lane.
+        onRegexBuilderRequested: {
+            root.regexBuilderRequested()
+        }
     }
 
     StyledListView {
@@ -55,8 +70,9 @@ ColumnLayout {
         section.delegate: Rectangle {
             width: parent.width
             height: 24
-            color: ui.theme.backgroundSecondaryColor
-            StyledTextLabel {
+            color: M3.color.surface
+            Text {
+                color: M3.color.onSurface
                 anchors.fill: parent
                 anchors.margins: 2
                 horizontalAlignment: Qt.AlignLeft
@@ -71,7 +87,8 @@ ColumnLayout {
             anchors.rightMargin: 8
             height: 32
 
-            StyledTextLabel {
+            Text {
+                color: M3.color.onSurface
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
@@ -155,11 +172,16 @@ ColumnLayout {
             signal changed(var newVal)
             anchors.fill: parent
             border.width: 1
-            border.color: ui.theme.strokeColor
+            border.color: M3.color.outlineVariant
+            radius: M3.shape.extraSmall
+            color: M3.color.surface
+
             TextEdit {
                 anchors.fill: parent
-                anchors.margins: 2
+                anchors.margins: 4
                 verticalAlignment: Text.AlignVCenter
+                color: M3.color.onSurface
+                font: M3.typography.bodyMedium
                 text: String(val)
                 onEditingFinished: textControl.changed(text)
             }
@@ -227,7 +249,7 @@ ColumnLayout {
 
     Component {
         id: boolComp
-        CheckBox {
+        M3Checkbox {
             id: checkbox
             property var val
             signal changed(var newVal)

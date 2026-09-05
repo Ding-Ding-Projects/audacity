@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 ColumnLayout {
     id: root
@@ -58,7 +59,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: -1
@@ -90,7 +91,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0
@@ -122,7 +123,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: -1
@@ -154,7 +155,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: -1
@@ -197,7 +198,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: 0
@@ -226,7 +227,18 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                StyledDropdown {
+                M3Dropdown {
+                    function indexOfValue(value) {
+                        var items = model
+                        for (var i = 0; i < items.length; ++i) {
+                            var item = items[i]
+                            var candidate = (typeof item === "object" && item !== null) ? item[valueRole] : item
+                            if (candidate === value) {
+                                return i
+                            }
+                        }
+                        return -1
+                    }
                     width: root.controlWidth
 
                     model: ffmpegPrefModel.pdOMethodList
@@ -252,7 +264,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: -1
@@ -281,7 +293,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     implicitWidth: root.controlWidth
 
                     minValue: -1
@@ -303,7 +315,7 @@ ColumnLayout {
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: lpcCheckbox
 
         text: qsTrc("appshell/preferences", "Use LPC")
@@ -313,8 +325,11 @@ ColumnLayout {
 
         checked: ffmpegPrefModel.useLpc
 
-        onClicked: {
-            ffmpegPrefModel.setUseLpc(!checked)
+        onToggled: {
+            ffmpegPrefModel.setUseLpc(checked)
+            lpcCheckbox.checked = Qt.binding(function () {
+                return ffmpegPrefModel.useLpc
+            })
         }
     }
 }

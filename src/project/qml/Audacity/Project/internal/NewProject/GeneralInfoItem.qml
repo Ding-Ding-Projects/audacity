@@ -23,12 +23,13 @@ import QtQuick 2.9
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 Column {
     id: root
 
     property string title: ""
-    property alias info: textField.hint
+    property alias info: textField.placeholder
 
     property alias navigation: textField.navigation
 
@@ -38,17 +39,17 @@ Column {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        font: ui.theme.bodyBoldFont
+        font: M3.typography.titleSmall
         horizontalAlignment: Text.AlignLeft
         text: title
     }
 
-    TextInputField {
+    M3TextField {
         id: textField
 
         navigation.accessible.name: root.title + " " + currentText
 
-        onTextChanged: function (newTextValue) {
+        onTextEdited: function (newTextValue) {
             root.info = newTextValue
         }
     }

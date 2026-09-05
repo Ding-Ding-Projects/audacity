@@ -26,6 +26,14 @@
 
 #include "log.h"
 #include "translation.h"
+#include "settings.h"
+
+#include <algorithm>
+
+namespace {
+const muse::Settings::Key M3_REDUCED_MOTION_KEY("ui", "ui/m3/reducedMotion");
+const muse::Settings::Key M3_DENSITY_KEY("ui", "ui/m3/density");
+}
 
 using namespace au::appshell;
 using namespace muse::ui;
@@ -250,4 +258,35 @@ void AppearancePreferencesModel::setBodyTextSize(int size)
 
     uiConfiguration()->setBodyFontSize(size);
     emit bodyTextSizeChanged();
+}
+
+int AppearancePreferencesModel::m3Density() const
+{
+    return muse::settings()->value(M3_DENSITY_KEY).toInt();
+}
+
+void AppearancePreferencesModel::setM3Density(int level)
+{
+    const int clamped = std::clamp(level, -3, 0);
+    if (clamped == m3Density()) {
+        return;
+    }
+
+    muse::settings()->setSharedValue(M3_DENSITY_KEY, muse::Val(clamped));
+    emit m3AppearanceChanged();
+}
+
+bool AppearancePreferencesModel::m3ReducedMotion() const
+{
+    return muse::settings()->value(M3_REDUCED_MOTION_KEY).toBool();
+}
+
+void AppearancePreferencesModel::setM3ReducedMotion(bool enabled)
+{
+    if (enabled == m3ReducedMotion()) {
+        return;
+    }
+
+    muse::settings()->setSharedValue(M3_REDUCED_MOTION_KEY, muse::Val(enabled));
+    emit m3AppearanceChanged();
 }

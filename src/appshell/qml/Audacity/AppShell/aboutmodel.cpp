@@ -5,6 +5,7 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QDateTime>
 #include <QUrl>
 #include <QVariantList>
 
@@ -272,6 +273,48 @@ QString AboutModel::appVersion() const
     return application()->unstable()
            ? muse::qtrc("appshell/about", "Unstable prerelease for %1").arg(version)
            : version;
+}
+
+QString AboutModel::buildVersion() const
+{
+#ifdef MUSE_APP_VERSION
+    const QString configured = QStringLiteral(MUSE_APP_VERSION);
+    if (!configured.isEmpty()) {
+        return configured;
+    }
+#endif
+    return QString::fromStdString(application()->fullVersion().toString().toStdString());
+}
+
+static QDateTime buildDateTimeUtc()
+{
+#ifdef AU_BUILD_TIMESTAMP_UTC
+    QDateTime dateTime = QDateTime::fromString(QStringLiteral(AU_BUILD_TIMESTAMP_UTC), Qt::ISODate);
+    dateTime.setTimeSpec(Qt::UTC);
+    return dateTime;
+#else
+    return QDateTime();
+#endif
+}
+
+QString AboutModel::buildUpdatedAtUtc() const
+{
+    const QDateTime dateTime = buildDateTimeUtc();
+    if (!dateTime.isValid()) {
+        return QString();
+    }
+
+    return dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss 'UTC'"));
+}
+
+QString AboutModel::buildUpdatedAtLocal() const
+{
+    const QDateTime dateTime = buildDateTimeUtc();
+    if (!dateTime.isValid()) {
+        return QString();
+    }
+
+    return dateTime.toLocalTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss t"));
 }
 
 QString AboutModel::appRevision() const

@@ -7,6 +7,7 @@ import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
 import Audacity.AppShell
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -28,7 +29,7 @@ BaseSection {
             width: parent.width
             spacing: root.columnSpacing
 
-            RoundedRadioButton {
+            M3RadioButton {
 
                 checked: pluginPreferencesModel.effectMenuOrganization == 0
                 text: qsTrc("preferences", "Group effects")
@@ -42,7 +43,7 @@ BaseSection {
                 }
             }
 
-            RoundedRadioButton {
+            M3RadioButton {
                 checked: pluginPreferencesModel.effectMenuOrganization == 1
                 text: qsTrc("preferences", "Display effects in one flat list")
 

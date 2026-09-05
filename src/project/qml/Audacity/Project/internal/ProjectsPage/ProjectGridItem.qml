@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.GraphicalEffects 1.0
 import Audacity.Project 1.0
+import Audacity.M3
 
 FocusScope {
     id: root
@@ -140,7 +141,7 @@ FocusScope {
                         padding: 2
                     }
 
-                    border.color: ui.theme.strokeColor
+                    border.color: M3.color.outlineVariant
                     border.width: parent.borderWidth
                 }
 
@@ -199,7 +200,7 @@ FocusScope {
                     width: 20
                     height: width
 
-                    normalColor: ui.theme.buttonColor
+                    normalColor: M3.color.secondaryContainer
 
                     menuModel: root.contextMenuModel
 
@@ -252,7 +253,7 @@ FocusScope {
                 maximumLineCount: 1
                 width: parent.width
 
-                font: ui.theme.largeBodyFont
+                font: M3.typography.bodyLarge
             }
 
             StyledTextLabel {
@@ -290,7 +291,7 @@ FocusScope {
 
         Rectangle {
             anchors.fill: parent
-            color: ui.theme.backgroundPrimaryColor
+            color: M3.color.surface
 
             StyledTextLabel {
                 anchors.fill: parent
@@ -306,9 +307,9 @@ FocusScope {
             path: root.thumbnailUrl
             placeholder: root.placeholder
 
-            backgroundColor: ui.theme.backgroundSecondaryColor
-            lineColor: Qt.alpha(ui.theme.fontPrimaryColor, 0.8)
-            borderColor: ui.theme.strokeColor
+            backgroundColor: M3.color.surfaceContainer
+            lineColor: Qt.alpha(M3.color.onSurface, 0.8)
+            borderColor: M3.color.outlineVariant
         }
     }
 }

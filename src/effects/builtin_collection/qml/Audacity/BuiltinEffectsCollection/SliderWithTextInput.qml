@@ -1,6 +1,7 @@
 import QtQuick
 import Muse.UiComponents
 import Audacity.Effects
+import Audacity.M3
 
 Column {
     id: root
@@ -37,7 +38,7 @@ Column {
         width: parent.width - spacing
         spacing: 16
 
-        StyledSlider {
+        M3Slider {
             id: slider
 
             navigation.panel: root.navigationPanel
@@ -58,7 +59,7 @@ Column {
             }
         }
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: incrementalPropertyControl
 
             navigation.panel: root.navigationPanel

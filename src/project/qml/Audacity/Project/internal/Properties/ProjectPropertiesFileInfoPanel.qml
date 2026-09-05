@@ -25,6 +25,7 @@ import QtQuick.Layouts 1.15
 import Audacity.Project 1.0
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 ColumnLayout {
     id: root
@@ -56,8 +57,9 @@ ColumnLayout {
             navigationPanel: root.navigationPanel
         }
 
-        FlatButton {
+        M3Button {
             id: openFileLocation
+            variant: "tonal"
 
             Layout.preferredWidth: 30
             Layout.preferredHeight: 30
@@ -67,7 +69,7 @@ ColumnLayout {
             navigation.name: "OpenFileLocation"
             navigation.panel: root.navigationPanel
             navigation.column: filePathProperty.navigationColumnEnd + 1
-            accessible.name: "Open file location"
+            accessibleName: "Open file location"
 
             onClicked: root.propertiesModel.openFileLocation()
         }

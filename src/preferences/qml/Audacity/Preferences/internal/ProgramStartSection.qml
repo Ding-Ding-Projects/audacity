@@ -25,6 +25,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -53,7 +54,7 @@ BaseSection {
             width: parent.width
             spacing: root.columnSpacing
 
-            RoundedRadioButton {
+            M3RadioButton {
                 anchors.verticalCenter: parent.verticalCenter
 
                 width: filePicker.visible ? Math.max(implicitWidth, root.columnWidth) : parent.width

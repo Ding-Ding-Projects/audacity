@@ -37,7 +37,7 @@ BaseSection {
         control.textRole: "title"
         control.valueRole: "value"
 
-        currentIndex: control.indexOfValue(root.zoomPreset1)
+        currentIndex: indexOfValue(root.zoomPreset1)
 
         navigation.name: "ZoomPreset1Box"
         navigation.panel: root.navigation
@@ -60,7 +60,7 @@ BaseSection {
         control.textRole: "title"
         control.valueRole: "value"
 
-        currentIndex: control.indexOfValue(root.zoomPreset2)
+        currentIndex: indexOfValue(root.zoomPreset2)
 
         navigation.name: "ZoomPreset2Box"
         navigation.panel: root.navigation

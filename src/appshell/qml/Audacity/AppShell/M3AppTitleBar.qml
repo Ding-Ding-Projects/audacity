@@ -55,9 +55,9 @@ Rectangle {
     // platform has no frameless window controller of its own.
     property bool handleWindowGestures: false
 
-    signal showWindowMinimizedRequested()
-    signal toggleWindowMaximizedRequested()
-    signal closeWindowRequested()
+    signal showWindowMinimizedRequested
+    signal toggleWindowMaximizedRequested
+    signal closeWindowRequested
 
     color: M3.color.surfaceContainer
 

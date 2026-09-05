@@ -8,6 +8,7 @@ import Muse.UiComponents
 
 import Audacity.AppShell
 import Audacity.Preferences
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -41,7 +42,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         SaveBehaviorSection {
             id: saveBehaviorSection

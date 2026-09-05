@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -56,7 +57,7 @@ BaseSection {
         rowSpacing: root.rowSpacing
         columnSpacing: root.columnSpacing
 
-        RoundedRadioButton {
+        M3RadioButton {
             id: colorButton
             implicitWidth: root.columnWidth
 
@@ -90,7 +91,7 @@ BaseSection {
             }
         }
 
-        RoundedRadioButton {
+        M3RadioButton {
             implicitWidth: root.columnWidth
 
             checked: !root.useColor

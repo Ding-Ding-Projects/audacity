@@ -31,6 +31,12 @@ public:
     explicit AboutModel(QObject* parent = nullptr);
 
     Q_INVOKABLE QString appVersion() const;
+
+    //! NOTE Build provenance, fixed when the build was configured. Never the
+    //! time the application was started.
+    Q_INVOKABLE QString buildVersion() const;
+    Q_INVOKABLE QString buildUpdatedAtUtc() const;
+    Q_INVOKABLE QString buildUpdatedAtLocal() const;
     Q_INVOKABLE QString appRevision() const;
     Q_INVOKABLE QVariantMap appUrl() const;
     Q_INVOKABLE QVariantMap forumUrl() const;

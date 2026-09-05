@@ -26,6 +26,7 @@ import Muse.Ui
 import Muse.UiComponents
 import Muse.GraphicalEffects
 
+import Audacity.M3
 import Audacity.AppShell
 
 StyledDialogView {
@@ -51,6 +52,11 @@ StyledDialogView {
         readonly property string descText: model.currentItem ? model.currentItem.description : ""
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surface
+    }
+
     Column {
         id: contentColumn
 
@@ -61,16 +67,21 @@ StyledDialogView {
             topMargin: contentColumn.spacing
         }
 
-        StyledTextLabel {
+        Text {
             id: titleLabel
 
             height: 80
             width: prv.imageWidth
             anchors.horizontalCenter: contentColumn.horizontalCenter
 
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
             text: prv.titleText
-            font: ui.theme.headerBoldFont
+            font: M3.typography.headlineSmall
+            color: M3.color.onSurface
             wrapMode: Text.WordWrap
+            elide: Text.ElideRight
 
             maximumLineCount: 2
         }
@@ -98,17 +109,16 @@ StyledDialogView {
                 height: imageAndArrowsRow.height
                 width: (imageAndArrowsRow.width - image.width) / 2
 
-                FlatButton {
+                M3IconButton {
                     id: prevButton
 
                     height: 48
                     width: prevButton.height
                     anchors.centerIn: prevButtonArea
 
-                    contentItem: StyledIconLabel {
-                        iconCode: IconCode.CHEVRON_LEFT
-                        font.pixelSize: 30
-                    }
+                    variant: "tonal"
+                    icon: IconCode.CHEVRON_LEFT
+                    accessibleName: qsTrc("appshell/welcome", "Previous item")
 
                     navigation.panel: arrowButtonsPanel
                     navigation.column: 0
@@ -131,7 +141,7 @@ StyledDialogView {
 
                 layer.enabled: ui.isEffectsAllowed
                 layer.effect: RoundedCornersEffect {
-                    radius: 8
+                    radius: M3.shape.large
                 }
 
                 MouseArea {
@@ -148,17 +158,16 @@ StyledDialogView {
                 width: (imageAndArrowsRow.width - image.width) / 2
                 height: imageAndArrowsRow.height
 
-                FlatButton {
+                M3IconButton {
                     id: nextButton
 
                     height: 48
                     width: nextButton.height
                     anchors.centerIn: nextButtonArea
 
-                    contentItem: StyledIconLabel {
-                        iconCode: IconCode.CHEVRON_RIGHT
-                        font.pixelSize: 30
-                    }
+                    variant: "tonal"
+                    icon: IconCode.CHEVRON_RIGHT
+                    accessibleName: qsTrc("appshell/welcome", "Next item")
 
                     navigation.panel: arrowButtonsPanel
                     navigation.column: 1
@@ -171,7 +180,7 @@ StyledDialogView {
             }
         }
 
-        StyledTextLabel {
+        Text {
             id: descriptionLabel
 
             visible: prv.descText !== ""
@@ -182,8 +191,11 @@ StyledDialogView {
 
             text: prv.descText
 
-            font: ui.theme.largeBodyFont
+            horizontalAlignment: Text.AlignHCenter
+            font: M3.typography.bodyLarge
+            color: M3.color.onSurfaceVariant
             wrapMode: Text.WordWrap
+            elide: Text.ElideRight
             maximumLineCount: 3
         }
 
@@ -197,15 +209,14 @@ StyledDialogView {
             width: 1
         }
 
-        FlatButton {
+        M3Button {
             id: contentButton
 
             height: 40
             anchors.horizontalCenter: contentColumn.horizontalCenter
 
             text: model.currentItem ? model.currentItem.buttonText : ""
-            textFont: ui.theme.tabBoldFont
-            accentButton: true
+            variant: "filled"
 
             navigation.panel: NavigationPanel {
                 name: "ContentButton"
@@ -247,7 +258,13 @@ StyledDialogView {
             right: parent.right
         }
 
-        color: ui.theme.backgroundPrimaryColor
+        color: M3.color.surfaceContainer
+
+        M3Divider {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+        }
 
         NavigationPanel {
             id: footerPanel
@@ -257,7 +274,7 @@ StyledDialogView {
             direction: NavigationPanel.Horizontal
         }
 
-        CheckBox {
+        M3Checkbox {
             id: showOnStartup
 
             anchors {
@@ -278,16 +295,18 @@ StyledDialogView {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: okButton
 
             width: 154
-            height: 30
+            height: 40
             anchors {
                 margins: 24
                 right: footerArea.right
                 verticalCenter: footerArea.verticalCenter
             }
+
+            variant: "filled"
 
             text: qsTrc("global", "OK")
 

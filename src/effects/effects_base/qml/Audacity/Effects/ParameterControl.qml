@@ -9,6 +9,7 @@ import Muse.UiComponents
 
 import Audacity.Effects
 import Audacity.UiComponents
+import Audacity.M3
 
 Item {
     id: root
@@ -130,7 +131,8 @@ Item {
     Component {
         id: toggleControl
 
-        CheckBox {
+        M3Switch {
+            id: m3Switch1
             navigation.panel: root.navigationPanel
             navigation.order: root.navigationOrderStart
             navigation.accessible.name: parameterData ? parameterData.name : ""
@@ -139,7 +141,7 @@ Item {
             checked: parameterData ? parameterData.isToggleChecked : false
             enabled: parameterData ? !parameterData.isReadOnly : false
 
-            onClicked: {
+            onToggled: {
                 // Toggle is a single atomic operation - begin and end gesture immediately
                 root.gestureStarted(root.parameterId);
 
@@ -148,6 +150,9 @@ Item {
                 root.valueChanged(root.parameterId, isCurrentlyOn ? parameterData.minValue : parameterData.maxValue)
 
                 root.gestureEnded(root.parameterId)
+                m3Switch1.checked = Qt.binding(function () {
+                    return parameterData ? parameterData.isToggleChecked : false
+                })
             }
         }
     }
@@ -159,14 +164,14 @@ Item {
         RowLayout {
             spacing: prv.spaceL
 
-            StyledDropdown {
+            M3Dropdown {
                 id: dropdown
                 Layout.maximumWidth: prv.dropdownMaxWidth
                 Layout.alignment: Qt.AlignVCenter
 
                 navigation.panel: root.navigationPanel
                 navigation.order: root.navigationOrderStart
-                navigation.accessible.name: parameterData ? parameterData.name + (dropdown.displayText ? ": " + dropdown.displayText : "") : ""
+                navigation.accessible.name: parameterData ? parameterData.name + (dropdown.currentText ? ": " + dropdown.currentText : "") : ""
                 navigation.accessible.description: parameterData ? parameterData.description : ""
 
                 currentIndex: parameterData ? parameterData.currentEnumIndex : 0
@@ -209,7 +214,7 @@ Item {
         RowLayout {
             spacing: prv.spaceL
 
-            StyledSlider {
+            M3Slider {
                 id: slider
                 // Tighten the slider when there's a description label so the
                 // hint text has room and doesn't get pushed off the row.
@@ -414,7 +419,7 @@ Item {
         RowLayout {
             spacing: prv.spaceL
 
-            TextInputField {
+            M3TextField {
                 id: textField
                 Layout.preferredWidth: prv.textControlWidth
                 Layout.alignment: Qt.AlignVCenter

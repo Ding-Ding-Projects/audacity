@@ -38,6 +38,8 @@ class MainToolBarModel : public QAbstractListModel, public muse::async::Asyncabl
     Q_OBJECT
     QML_ELEMENT
 
+    Q_PROPERTY(QVariantList items READ items NOTIFY itemsChanged)
+
     muse::GlobalInject<muse::IGlobalConfiguration> globalConfiguration;
 
     muse::ContextInject<au::context::IGlobalContext> context { this };
@@ -50,6 +52,11 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void load();
+
+    QVariantList items() const;
+
+signals:
+    void itemsChanged();
 
 private:
     enum Roles {

@@ -25,10 +25,12 @@ import QtQuick.Controls 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
     height: parent.height
-    color: ui.theme.backgroundTertiaryColor
+    color: M3.color.surfaceContainerHigh
 
     default property alias contentData: content.data
 

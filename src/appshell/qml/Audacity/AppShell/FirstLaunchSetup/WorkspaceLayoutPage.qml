@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 DoublePage {
@@ -46,12 +47,19 @@ DoublePage {
                 model: workspaceModel.workspaces
 
                 delegate: Rectangle {
-                    border.color: modelData.selected ? ui.theme.accentColor : ui.theme.strokeColor
-                    border.width: 1
-                    color: "transparent"
+                    border.color: modelData.selected ? M3.color.primary : M3.color.outlineVariant
+                    border.width: modelData.selected ? 2 : 1
+                    color: modelData.selected ? M3.color.secondaryContainer : "transparent"
                     height: 60
-                    radius: 4
+                    radius: M3.shape.medium
                     width: parent.width
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: M3.motion.short3
+                            easing: M3.motion.standard
+                        }
+                    }
 
                     Row {
                         anchors.bottomMargin: 12
@@ -62,7 +70,7 @@ DoublePage {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        RoundedRadioButton {
+                        M3RadioButton {
                             anchors.verticalCenter: parent.verticalCenter
                             checked: modelData.selected
 
@@ -81,13 +89,15 @@ DoublePage {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 4
 
-                            StyledTextLabel {
-                                font: ui.theme.bodyBoldFont
+                            Text {
+                                font: M3.typography.titleSmall
+                                color: M3.color.onSurface
                                 text: modelData.title
                             }
-                            StyledTextLabel {
+                            Text {
                                 anchors.left: parent.left
-                                font: ui.theme.bodyFont
+                                font: M3.typography.bodyMedium
+                                color: M3.color.onSurfaceVariant
                                 horizontalAlignment: Text.AlignLeft
                                 text: modelData.description
                                 wrapMode: Text.WordWrap
@@ -116,9 +126,10 @@ DoublePage {
         }
 
         // Additional info text
-        StyledTextLabel {
+        Text {
             id: infoTextLabel
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
+            color: M3.color.onSurfaceVariant
             horizontalAlignment: Text.AlignLeft
             text: workspaceModel.additionalInfoText
             width: parent.width

@@ -27,6 +27,7 @@ import Muse.UiComponents
 import Audacity.Project 1.0
 
 import "internal/SaveToCloud"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -67,7 +68,7 @@ StyledDialogView {
         StyledTextLabel {
             Layout.fillWidth: true
             text: prv.isExport ? qsTrc("project/export", "How would you like to export?") : qsTrc("project/save", "How would you like to save?")
-            font: ui.theme.headerBoldFont
+            font: M3.typography.headlineSmall
         }
 
         RowLayout {
@@ -118,7 +119,7 @@ StyledDialogView {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             Layout.margins: -24
         }
 
@@ -131,7 +132,7 @@ StyledDialogView {
             accessible.name: dontAskAgainCheckbox.text
         }
 
-        CheckBox {
+        M3Switch {
             id: dontAskAgainCheckbox
 
             width: parent.width
@@ -141,8 +142,11 @@ StyledDialogView {
             navigation.panel: dontAskAgainPanel
             navigation.order: 1
 
-            onClicked: {
+            onToggled: {
                 root.askAgain = !root.askAgain
+                dontAskAgainCheckbox.checked = Qt.binding(function () {
+                    return !root.askAgain
+                })
             }
         }
     }

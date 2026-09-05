@@ -22,6 +22,7 @@
 import QtQuick 2.15
 
 import Muse.UiComponents
+import Audacity.M3
 
 Column {
     id: root
@@ -57,7 +58,7 @@ Column {
         maximumLineCount: 2
     }
 
-    IncrementalPropertyControl {
+    M3NumberField {
         id: control
 
         width: root.controlWidth

@@ -26,6 +26,8 @@ import Muse.UiComponents
 import Audacity.AppShell
 import Muse.Dock 1.0
 
+import Audacity.M3
+
 DockPage {
     id: root
 
@@ -34,7 +36,15 @@ DockPage {
 
     property var topToolKeyNavSec
 
-    central: Text {
-        text: "Publish"
+    central: Rectangle {
+        color: M3.color.surface
+
+        Text {
+            anchors.centerIn: parent
+
+            text: qsTrc("appshell", "Publish")
+            font: M3.typography.headlineMedium
+            color: M3.color.onSurface
+        }
     }
 }

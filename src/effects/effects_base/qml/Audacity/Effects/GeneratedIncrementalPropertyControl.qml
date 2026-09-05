@@ -4,8 +4,9 @@
 import QtQuick
 
 import Muse.UiComponents
+import Audacity.M3
 
-IncrementalPropertyControl {
+M3NumberField {
     id: root
 
     property var parameterData: null

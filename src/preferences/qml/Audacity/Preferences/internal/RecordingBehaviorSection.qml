@@ -7,6 +7,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -19,7 +20,7 @@ BaseSection {
         width: parent.width
         spacing: 12
 
-        CheckBox {
+        M3Switch {
             id: inputMonitoringCheckBox
 
             width: parent.width
@@ -32,12 +33,15 @@ BaseSection {
             navigation.panel: root.navigation
             navigation.order: 1
 
-            onClicked: {
-                recordingPreferencesModel.isInputMonitoringOn = !checked
+            onToggled: {
+                recordingPreferencesModel.isInputMonitoringOn = checked
+                inputMonitoringCheckBox.checked = Qt.binding(function () {
+                    return recordingPreferencesModel.isInputMonitoringOn
+                })
             }
         }
 
-        CheckBox {
+        M3Switch {
             id: micMeteringCheckBox
 
             width: parent.width
@@ -50,8 +54,11 @@ BaseSection {
             navigation.panel: root.navigation
             navigation.order: 2
 
-            onClicked: {
-                recordingPreferencesModel.isMicMeteringOn = !checked
+            onToggled: {
+                recordingPreferencesModel.isMicMeteringOn = checked
+                micMeteringCheckBox.checked = Qt.binding(function () {
+                    return recordingPreferencesModel.isMicMeteringOn
+                })
             }
         }
     }

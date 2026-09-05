@@ -23,6 +23,7 @@ import QtQuick 2.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 Item {
@@ -93,14 +94,16 @@ Item {
 
         height: root.title.length > 0 ? childrenRect.height : 0
 
-        StyledTextLabel {
+        Text {
             id: titleLabel
 
             anchors.horizontalCenter: parent.horizontalCenter
 
             width: parent.width
 
-            font: ui.theme.largeBodyBoldFont
+            horizontalAlignment: Text.AlignHCenter
+            font: M3.typography.titleLarge
+            color: M3.color.onSurface
             wrapMode: Text.Wrap
         }
     }

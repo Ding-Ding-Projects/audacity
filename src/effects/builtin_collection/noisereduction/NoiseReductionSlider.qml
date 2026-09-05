@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Muse.UiComponents
 import Audacity.Effects
+import Audacity.M3
 
 Row {
     id: root
@@ -27,7 +28,7 @@ Row {
 
     spacing: 16
 
-    StyledSlider {
+    M3Slider {
         id: slider
 
         width: (root.width - root.spacing) * 0.6
@@ -46,7 +47,7 @@ Row {
         }
     }
 
-    IncrementalPropertyControl {
+    M3NumberField {
         id: textControl
 
         width: (root.width - root.spacing) * 0.4

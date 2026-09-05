@@ -25,6 +25,7 @@ import Muse.Ui
 import Muse.UiComponents
 import Audacity.AppShell
 import Audacity.Preferences
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -98,7 +99,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: automaticUpdateSection.visible
         }
 
@@ -125,7 +126,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: crashReportsSection.visible
         }
 
@@ -151,7 +152,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: usageInfoSection.visible
         }
 
@@ -177,7 +178,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         TemporaryFilesSection {
             id: temporaryFilesSection
@@ -204,7 +205,7 @@ PreferencesPage {
             availableSpace: preferencesModel.availableSpace
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         FFmpegLibrarySection {
             id: ffmpegLibrarySection

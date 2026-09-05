@@ -25,6 +25,7 @@ import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
 import Audacity.AppShell
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -80,7 +81,7 @@ BaseSection {
                 width: parent.width
                 spacing: 8
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     currentValue: apiModel.latencyCompensation
 
                     enabled: !apiModel.automaticCompensationEnabled
@@ -99,12 +100,17 @@ BaseSection {
                     }
                 }
 
-                CheckBox {
+                M3Switch {
                     id: automaticCompensationCheckbox
 
                     text: qsTrc("preferences", "Automatic")
                     checked: apiModel.automaticCompensationEnabled
-                    onClicked: apiModel.setAutomaticCompensationEnabled(!checked)
+                    onToggled: {
+                        apiModel.setAutomaticCompensationEnabled(checked)
+                        automaticCompensationCheckbox.checked = Qt.binding(function () {
+                            return apiModel.automaticCompensationEnabled
+                        })
+                    }
 
                     width: parent.width
                     anchors.verticalCenter: parent.verticalCenter

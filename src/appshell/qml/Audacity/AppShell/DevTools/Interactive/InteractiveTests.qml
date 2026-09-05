@@ -6,9 +6,11 @@ import Muse.Interactive
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
 
-    color: "#71C2EF"
+    color: M3.color.surface
 
     NavigationSection {
         id: navSec
@@ -34,8 +36,9 @@ Rectangle {
         testModel.init()
     }
 
-    StyledTextLabel {
+    Text {
         id: header
+        color: M3.color.onSurface
         width: parent.width
         height: 40
         text: testModel.currentUri
@@ -50,7 +53,7 @@ Rectangle {
         spacing: 16
         columns: 2
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 0
@@ -58,7 +61,7 @@ Rectangle {
             onClicked: testModel.openSampleDialog()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 1
@@ -70,7 +73,7 @@ Rectangle {
             }
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 2
@@ -78,7 +81,7 @@ Rectangle {
             onClicked: testModel.openSampleDialogAsync()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 3
@@ -90,7 +93,7 @@ Rectangle {
             }
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 4
@@ -102,7 +105,7 @@ Rectangle {
             }
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 5
@@ -110,7 +113,7 @@ Rectangle {
             onClicked: testModel.closeSampleDialog()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 6
@@ -120,7 +123,7 @@ Rectangle {
             }
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 7
@@ -128,7 +131,7 @@ Rectangle {
             onClicked: testModel.question()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 8
@@ -136,7 +139,7 @@ Rectangle {
             onClicked: testModel.customQuestion()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 9
@@ -144,7 +147,7 @@ Rectangle {
             onClicked: testModel.information()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 10
@@ -152,7 +155,7 @@ Rectangle {
             onClicked: testModel.warning()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 11
@@ -160,7 +163,7 @@ Rectangle {
             onClicked: testModel.critical()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 10
@@ -168,7 +171,7 @@ Rectangle {
             onClicked: testModel.criticalWithDetailedText()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 12
@@ -176,7 +179,7 @@ Rectangle {
             onClicked: testModel.require()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 13
@@ -184,7 +187,7 @@ Rectangle {
             onClicked: testModel.openWidgetDialog()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 14
@@ -192,7 +195,7 @@ Rectangle {
             onClicked: testModel.openWidgetDialogAsync()
         }
 
-        FlatButton {
+        M3Button {
             width: 200
             navigation.panel: navPanel
             navigation.row: 15

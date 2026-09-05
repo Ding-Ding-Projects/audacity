@@ -39,41 +39,146 @@ Rectangle {
     property real routeScale: 1.0
 
     readonly property var entries: [
-        { "name": "M3Button", "component": buttonsPage },
-        { "name": "M3IconButton", "component": iconButtonsPage },
-        { "name": "M3FAB", "component": fabPage },
-        { "name": "M3SegmentedButton", "component": segmentedPage },
-        { "name": "M3Switch", "component": switchPage },
-        { "name": "M3Checkbox", "component": checkboxPage },
-        { "name": "M3RadioButton", "component": radioPage },
-        { "name": "M3Slider", "component": sliderPage },
-        { "name": "M3RangeSlider", "component": rangeSliderPage },
-        { "name": "M3TextField", "component": textFieldPage },
-        { "name": "M3SearchBar", "component": searchBarPage },
-        { "name": "M3Menu", "component": menuPage },
-        { "name": "M3Dropdown", "component": dropdownPage },
-        { "name": "M3Chip", "component": chipPage },
-        { "name": "M3Card", "component": cardPage },
-        { "name": "M3Dialog", "component": dialogPage },
-        { "name": "M3BottomSheet", "component": bottomSheetPage },
-        { "name": "M3SideSheet", "component": sideSheetPage },
-        { "name": "M3Snackbar", "component": snackbarPage },
-        { "name": "M3Tooltip", "component": tooltipPage },
-        { "name": "M3TopAppBar", "component": topAppBarPage },
-        { "name": "M3NavigationRail", "component": navigationRailPage },
-        { "name": "M3NavigationDrawer", "component": navigationDrawerPage },
-        { "name": "M3Tabs", "component": tabsPage },
-        { "name": "M3LinearProgress", "component": linearProgressPage },
-        { "name": "M3CircularProgress", "component": circularProgressPage },
-        { "name": "M3Badge", "component": badgePage },
-        { "name": "M3Divider", "component": dividerPage },
-        { "name": "M3ListItem", "component": listItemPage },
-        { "name": "M3DatePicker", "component": datePickerPage },
-        { "name": "M3TimePicker", "component": timePickerPage },
-        { "name": "M3ColorPicker", "component": colorPickerPage },
-        { "name": "M3Surface", "component": surfacePage },
-        { "name": "M3StateLayer", "component": stateLayerPage },
-        { "name": "Tokens", "component": tokensPage }
+        {
+            "name": "M3Button",
+            "component": buttonsPage
+        },
+        {
+            "name": "M3IconButton",
+            "component": iconButtonsPage
+        },
+        {
+            "name": "M3FAB",
+            "component": fabPage
+        },
+        {
+            "name": "M3SegmentedButton",
+            "component": segmentedPage
+        },
+        {
+            "name": "M3Switch",
+            "component": switchPage
+        },
+        {
+            "name": "M3Checkbox",
+            "component": checkboxPage
+        },
+        {
+            "name": "M3RadioButton",
+            "component": radioPage
+        },
+        {
+            "name": "M3Slider",
+            "component": sliderPage
+        },
+        {
+            "name": "M3RangeSlider",
+            "component": rangeSliderPage
+        },
+        {
+            "name": "M3TextField",
+            "component": textFieldPage
+        },
+        {
+            "name": "M3SearchBar",
+            "component": searchBarPage
+        },
+        {
+            "name": "M3Menu",
+            "component": menuPage
+        },
+        {
+            "name": "M3Dropdown",
+            "component": dropdownPage
+        },
+        {
+            "name": "M3Chip",
+            "component": chipPage
+        },
+        {
+            "name": "M3Card",
+            "component": cardPage
+        },
+        {
+            "name": "M3Dialog",
+            "component": dialogPage
+        },
+        {
+            "name": "M3BottomSheet",
+            "component": bottomSheetPage
+        },
+        {
+            "name": "M3SideSheet",
+            "component": sideSheetPage
+        },
+        {
+            "name": "M3Snackbar",
+            "component": snackbarPage
+        },
+        {
+            "name": "M3Tooltip",
+            "component": tooltipPage
+        },
+        {
+            "name": "M3TopAppBar",
+            "component": topAppBarPage
+        },
+        {
+            "name": "M3NavigationRail",
+            "component": navigationRailPage
+        },
+        {
+            "name": "M3NavigationDrawer",
+            "component": navigationDrawerPage
+        },
+        {
+            "name": "M3Tabs",
+            "component": tabsPage
+        },
+        {
+            "name": "M3LinearProgress",
+            "component": linearProgressPage
+        },
+        {
+            "name": "M3CircularProgress",
+            "component": circularProgressPage
+        },
+        {
+            "name": "M3Badge",
+            "component": badgePage
+        },
+        {
+            "name": "M3Divider",
+            "component": dividerPage
+        },
+        {
+            "name": "M3ListItem",
+            "component": listItemPage
+        },
+        {
+            "name": "M3DatePicker",
+            "component": datePickerPage
+        },
+        {
+            "name": "M3TimePicker",
+            "component": timePickerPage
+        },
+        {
+            "name": "M3ColorPicker",
+            "component": colorPickerPage
+        },
+        {
+            "name": "M3Surface",
+            "component": surfacePage
+        },
+        {
+            "name": "M3StateLayer",
+            "component": stateLayerPage
+        },
+        {
+            "name": "Tokens",
+            "component": tokensPage
+        }
     ]
 
     property int currentIndex: 0
@@ -208,8 +313,7 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.margins: 8
                 visible: root.routeComponent !== ""
-                text: "route " + root.routeComponent + " state " + root.routeState
-                      + " theme " + root.routeTheme + " requested, " + M3.schemeName + " applied"
+                text: "route " + root.routeComponent + " state " + root.routeState + " theme " + root.routeTheme + " requested, " + M3.schemeName + " applied"
                 font: M3.typography.labelSmall
                 color: M3.color.onSurfaceVariant
             }
@@ -355,13 +459,44 @@ Rectangle {
         Row {
             spacing: 24
 
-            M3FAB { size: "small"; icon: IconCode.PLUS; accessibleName: "Add" }
-            M3FAB { size: "regular"; icon: IconCode.PLUS; accessibleName: "Add" }
-            M3FAB { size: "large"; icon: IconCode.PLUS; accessibleName: "Add" }
-            M3FAB { size: "extended"; icon: IconCode.PLUS; text: "New track" }
-            M3FAB { size: "regular"; icon: IconCode.PLUS; variant: "secondary"; accessibleName: "Add" }
-            M3FAB { size: "regular"; icon: IconCode.PLUS; variant: "tertiary"; accessibleName: "Add" }
-            M3FAB { size: "regular"; icon: IconCode.PLUS; variant: "surface"; accessibleName: "Add" }
+            M3FAB {
+                size: "small"
+                icon: IconCode.PLUS
+                accessibleName: "Add"
+            }
+            M3FAB {
+                size: "regular"
+                icon: IconCode.PLUS
+                accessibleName: "Add"
+            }
+            M3FAB {
+                size: "large"
+                icon: IconCode.PLUS
+                accessibleName: "Add"
+            }
+            M3FAB {
+                size: "extended"
+                icon: IconCode.PLUS
+                text: "New track"
+            }
+            M3FAB {
+                size: "regular"
+                icon: IconCode.PLUS
+                variant: "secondary"
+                accessibleName: "Add"
+            }
+            M3FAB {
+                size: "regular"
+                icon: IconCode.PLUS
+                variant: "tertiary"
+                accessibleName: "Add"
+            }
+            M3FAB {
+                size: "regular"
+                icon: IconCode.PLUS
+                variant: "surface"
+                accessibleName: "Add"
+            }
         }
     }
 
@@ -377,9 +512,20 @@ Rectangle {
             }
 
             M3SegmentedButton {
-                model: [{ "text": "Loop", "icon": IconCode.LOOP },
-                        { "text": "Solo", "icon": IconCode.PLAY },
-                        { "text": "Mute", "icon": IconCode.MUTE }]
+                model: [
+                    {
+                        "text": "Loop",
+                        "icon": IconCode.LOOP
+                    },
+                    {
+                        "text": "Solo",
+                        "icon": IconCode.PLAY
+                    },
+                    {
+                        "text": "Mute",
+                        "icon": IconCode.MUTE
+                    }
+                ]
                 multiSelect: true
                 checkedIndexes: [0]
                 navigationPanel: contentPanel
@@ -393,11 +539,28 @@ Rectangle {
         Column {
             spacing: 16
 
-            M3Switch { text: "On with icon"; checked: true; navigation.panel: contentPanel }
-            M3Switch { text: "Off with icon" }
-            M3Switch { text: "On without icon"; checked: true; showIcon: false }
-            M3Switch { text: "Disabled"; enabled: false }
-            M3Switch { text: "Disabled and on"; checked: true; enabled: false }
+            M3Switch {
+                text: "On with icon"
+                checked: true
+                navigation.panel: contentPanel
+            }
+            M3Switch {
+                text: "Off with icon"
+            }
+            M3Switch {
+                text: "On without icon"
+                checked: true
+                showIcon: false
+            }
+            M3Switch {
+                text: "Disabled"
+                enabled: false
+            }
+            M3Switch {
+                text: "Disabled and on"
+                checked: true
+                enabled: false
+            }
         }
     }
 
@@ -407,11 +570,27 @@ Rectangle {
         Column {
             spacing: 8
 
-            M3Checkbox { text: "Unchecked"; navigation.panel: contentPanel }
-            M3Checkbox { text: "Checked"; checked: true }
-            M3Checkbox { text: "Indeterminate"; indeterminate: true }
-            M3Checkbox { text: "Disabled"; enabled: false }
-            M3Checkbox { text: "Disabled and checked"; checked: true; enabled: false }
+            M3Checkbox {
+                text: "Unchecked"
+                navigation.panel: contentPanel
+            }
+            M3Checkbox {
+                text: "Checked"
+                checked: true
+            }
+            M3Checkbox {
+                text: "Indeterminate"
+                indeterminate: true
+            }
+            M3Checkbox {
+                text: "Disabled"
+                enabled: false
+            }
+            M3Checkbox {
+                text: "Disabled and checked"
+                checked: true
+                enabled: false
+            }
         }
     }
 
@@ -421,9 +600,18 @@ Rectangle {
         Column {
             spacing: 8
 
-            M3RadioButton { text: "Selected"; checked: true; navigation.panel: contentPanel }
-            M3RadioButton { text: "Not selected" }
-            M3RadioButton { text: "Disabled"; enabled: false }
+            M3RadioButton {
+                text: "Selected"
+                checked: true
+                navigation.panel: contentPanel
+            }
+            M3RadioButton {
+                text: "Not selected"
+            }
+            M3RadioButton {
+                text: "Disabled"
+                enabled: false
+            }
         }
     }
 
@@ -590,15 +778,46 @@ Rectangle {
                 navigationPanel: contentPanel
 
                 model: [
-                    { "id": "undo", "title": "Undo", "shortcut": "Ctrl+Z", "icon": IconCode.UNDO },
-                    { "id": "redo", "title": "Redo", "shortcut": "Ctrl+Shift+Z", "icon": IconCode.REDO },
-                    { "separator": true },
-                    { "id": "loop", "title": "Loop playback", "checkable": true, "checked": true },
-                    { "id": "more", "title": "More", "subitems": [
-                        { "id": "a", "title": "First" },
-                        { "id": "b", "title": "Second" }
-                    ] },
-                    { "id": "off", "title": "Not available", "enabled": false }
+                    {
+                        "id": "undo",
+                        "title": "Undo",
+                        "shortcut": "Ctrl+Z",
+                        "icon": IconCode.UNDO
+                    },
+                    {
+                        "id": "redo",
+                        "title": "Redo",
+                        "shortcut": "Ctrl+Shift+Z",
+                        "icon": IconCode.REDO
+                    },
+                    {
+                        "separator": true
+                    },
+                    {
+                        "id": "loop",
+                        "title": "Loop playback",
+                        "checkable": true,
+                        "checked": true
+                    },
+                    {
+                        "id": "more",
+                        "title": "More",
+                        "subitems": [
+                            {
+                                "id": "a",
+                                "title": "First"
+                            },
+                            {
+                                "id": "b",
+                                "title": "Second"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "off",
+                        "title": "Not available",
+                        "enabled": false
+                    }
                 ]
             }
         }
@@ -613,9 +832,20 @@ Rectangle {
             M3Dropdown {
                 width: 240
                 label: "Sample rate"
-                model: [{ "text": "44100 Hz", "value": 44100 },
-                        { "text": "48000 Hz", "value": 48000 },
-                        { "text": "96000 Hz", "value": 96000 }]
+                model: [
+                    {
+                        "text": "44100 Hz",
+                        "value": 44100
+                    },
+                    {
+                        "text": "48000 Hz",
+                        "value": 48000
+                    },
+                    {
+                        "text": "96000 Hz",
+                        "value": 96000
+                    }
+                ]
                 currentIndex: 1
                 navigation.panel: contentPanel
             }
@@ -638,13 +868,37 @@ Rectangle {
             Row {
                 spacing: 8
 
-                M3Chip { text: "Assist"; variant: "assist"; icon: IconCode.STAR; navigation.panel: contentPanel }
-                M3Chip { text: "Filter"; variant: "filter" }
-                M3Chip { text: "Filter on"; variant: "filter"; checked: true }
-                M3Chip { text: "Input"; variant: "input" }
-                M3Chip { text: "Suggestion"; variant: "suggestion" }
-                M3Chip { text: "Elevated"; elevated: true }
-                M3Chip { text: "Disabled"; enabled: false }
+                M3Chip {
+                    text: "Assist"
+                    variant: "assist"
+                    icon: IconCode.STAR
+                    navigation.panel: contentPanel
+                }
+                M3Chip {
+                    text: "Filter"
+                    variant: "filter"
+                }
+                M3Chip {
+                    text: "Filter on"
+                    variant: "filter"
+                    checked: true
+                }
+                M3Chip {
+                    text: "Input"
+                    variant: "input"
+                }
+                M3Chip {
+                    text: "Suggestion"
+                    variant: "suggestion"
+                }
+                M3Chip {
+                    text: "Elevated"
+                    elevated: true
+                }
+                M3Chip {
+                    text: "Disabled"
+                    enabled: false
+                }
             }
         }
     }
@@ -694,9 +948,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.WordWrap
                 width: 480
-                text: "M3Dialog is built on the muse StyledDialogView, so it is opened through the "
-                      + "interactive provider by URI rather than shown inline. The gallery shows its "
-                      + "anatomy instead."
+                text: "M3Dialog is built on the muse StyledDialogView, so it is opened through the " + "interactive provider by URI rather than shown inline. The gallery shows its " + "anatomy instead."
                 font: M3.typography.bodyMedium
                 color: M3.color.onSurfaceVariant
             }
@@ -735,8 +987,14 @@ Rectangle {
                         anchors.right: parent.right
                         spacing: 8
 
-                        M3Button { variant: "text"; text: "Cancel" }
-                        M3Button { variant: "filled"; text: "Discard" }
+                        M3Button {
+                            variant: "text"
+                            text: "Cancel"
+                        }
+                        M3Button {
+                            variant: "filled"
+                            text: "Discard"
+                        }
                     }
                 }
             }
@@ -763,8 +1021,17 @@ Rectangle {
 
                     headline: "Export options"
 
-                    M3ListItem { width: parent.width; headline: "WAV"; supportingText: "Uncompressed" }
-                    M3ListItem { width: parent.width; headline: "FLAC"; supportingText: "Lossless"; y: 72 }
+                    M3ListItem {
+                        width: parent.width
+                        headline: "WAV"
+                        supportingText: "Uncompressed"
+                    }
+                    M3ListItem {
+                        width: parent.width
+                        headline: "FLAC"
+                        supportingText: "Lossless"
+                        y: 72
+                    }
                 }
             }
         }
@@ -790,7 +1057,9 @@ Rectangle {
 
                     headline: "Track settings"
 
-                    M3Switch { text: "Solo" }
+                    M3Switch {
+                        text: "Solo"
+                    }
                 }
             }
         }
@@ -854,7 +1123,10 @@ Rectangle {
                     navigationIcon: IconCode.MENU_THREE_DOTS
                     navigationPanel: contentPanel
 
-                    M3IconButton { icon: IconCode.SETTINGS_COG; accessibleName: "Settings" }
+                    M3IconButton {
+                        icon: IconCode.SETTINGS_COG
+                        accessibleName: "Settings"
+                    }
                 }
             }
         }
@@ -867,9 +1139,20 @@ Rectangle {
             implicitHeight: 400
             fabIcon: IconCode.PLUS
             navigationPanel: contentPanel
-            model: [{ "text": "Tracks", "icon": IconCode.AUDIO },
-                    { "text": "Effects", "icon": IconCode.CONFIGURE },
-                    { "text": "Mixer", "icon": IconCode.MIXER }]
+            model: [
+                {
+                    "text": "Tracks",
+                    "icon": IconCode.AUDIO
+                },
+                {
+                    "text": "Effects",
+                    "icon": IconCode.CONFIGURE
+                },
+                {
+                    "text": "Mixer",
+                    "icon": IconCode.MIXER
+                }
+            ]
         }
     }
 
@@ -880,11 +1163,27 @@ Rectangle {
             implicitHeight: 400
             headline: "Audacity"
             navigationPanel: contentPanel
-            model: [{ "text": "Tracks", "icon": IconCode.AUDIO, "badgeCount": 3 },
-                    { "text": "Effects", "icon": IconCode.CONFIGURE },
-                    { "separator": true },
-                    { "headline": "Recent" },
-                    { "text": "Podcast", "icon": IconCode.AUDIO }]
+            model: [
+                {
+                    "text": "Tracks",
+                    "icon": IconCode.AUDIO,
+                    "badgeCount": 3
+                },
+                {
+                    "text": "Effects",
+                    "icon": IconCode.CONFIGURE
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "headline": "Recent"
+                },
+                {
+                    "text": "Podcast",
+                    "icon": IconCode.AUDIO
+                }
+            ]
         }
     }
 
@@ -898,7 +1197,18 @@ Rectangle {
                 width: 480
                 primary: true
                 navigationPanel: contentPanel
-                model: [{ "text": "Waveform" }, { "text": "Spectrogram" }, { "text": "Notes", "badgeCount": 2 }]
+                model: [
+                    {
+                        "text": "Waveform"
+                    },
+                    {
+                        "text": "Spectrogram"
+                    },
+                    {
+                        "text": "Notes",
+                        "badgeCount": 2
+                    }
+                ]
             }
 
             M3Tabs {
@@ -922,9 +1232,22 @@ Rectangle {
         Column {
             spacing: 24
 
-            M3LinearProgress { width: 320; value: 0.6; accessibleName: "Determinate" }
-            M3LinearProgress { width: 320; indeterminate: true; accessibleName: "Indeterminate" }
-            M3LinearProgress { width: 320; value: 0.6; wavy: true; accessibleName: "Wavy" }
+            M3LinearProgress {
+                width: 320
+                value: 0.6
+                accessibleName: "Determinate"
+            }
+            M3LinearProgress {
+                width: 320
+                indeterminate: true
+                accessibleName: "Indeterminate"
+            }
+            M3LinearProgress {
+                width: 320
+                value: 0.6
+                wavy: true
+                accessibleName: "Wavy"
+            }
         }
     }
 
@@ -934,9 +1257,20 @@ Rectangle {
         Row {
             spacing: 24
 
-            M3CircularProgress { indeterminate: false; value: 0.7; accessibleName: "Determinate" }
-            M3CircularProgress { indeterminate: true; accessibleName: "Indeterminate" }
-            M3CircularProgress { indeterminate: true; wavy: true; implicitSize: 64 }
+            M3CircularProgress {
+                indeterminate: false
+                value: 0.7
+                accessibleName: "Determinate"
+            }
+            M3CircularProgress {
+                indeterminate: true
+                accessibleName: "Indeterminate"
+            }
+            M3CircularProgress {
+                indeterminate: true
+                wavy: true
+                implicitSize: 64
+            }
         }
     }
 
@@ -946,10 +1280,19 @@ Rectangle {
         Row {
             spacing: 24
 
-            M3Badge { showCount: false }
-            M3Badge { count: 3 }
-            M3Badge { count: 42 }
-            M3Badge { count: 1200; maxCount: 999 }
+            M3Badge {
+                showCount: false
+            }
+            M3Badge {
+                count: 3
+            }
+            M3Badge {
+                count: 42
+            }
+            M3Badge {
+                count: 1200
+                maxCount: 999
+            }
         }
     }
 
@@ -959,14 +1302,22 @@ Rectangle {
         Column {
             spacing: 24
 
-            M3Divider { width: 320 }
-            M3Divider { width: 320; inset: 16 }
+            M3Divider {
+                width: 320
+            }
+            M3Divider {
+                width: 320
+                inset: 16
+            }
 
             Row {
                 height: 60
                 spacing: 24
 
-                M3Divider { height: 60; orientation: Qt.Vertical }
+                M3Divider {
+                    height: 60
+                    orientation: Qt.Vertical
+                }
             }
         }
     }
@@ -1082,10 +1433,24 @@ Rectangle {
             spacing: 16
 
             Repeater {
-                model: [{ "name": "hover", "hovered": true },
-                        { "name": "focus", "focused": true },
-                        { "name": "pressed", "pressed": true },
-                        { "name": "dragged", "dragged": true }]
+                model: [
+                    {
+                        "name": "hover",
+                        "hovered": true
+                    },
+                    {
+                        "name": "focus",
+                        "focused": true
+                    },
+                    {
+                        "name": "pressed",
+                        "pressed": true
+                    },
+                    {
+                        "name": "dragged",
+                        "dragged": true
+                    }
+                ]
 
                 delegate: Rectangle {
                     id: stateSample
@@ -1126,10 +1491,7 @@ Rectangle {
 
             StyledTextLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "Scheme " + M3.schemeName + ", seed " + M3.seedColor
-                      + ", variant " + M3.variant
-                      + ", reduced motion " + M3.motion.reducedMotion
-                      + ", density " + M3.density.level
+                text: "Scheme " + M3.schemeName + ", seed " + M3.seedColor + ", variant " + M3.variant + ", reduced motion " + M3.motion.reducedMotion + ", density " + M3.density.level
                 font: M3.typography.titleMedium
                 color: M3.color.onSurface
             }
@@ -1160,9 +1522,7 @@ Rectangle {
                             wrapMode: Text.WordWrap
                             text: swatch.modelData
                             font: M3.typography.labelSmall
-                            color: M3.contrastRatio(M3.color.onSurface,
-                                                    M3.color.roles[swatch.modelData]) >= 4.5
-                                   ? M3.color.onSurface : M3.color.surface
+                            color: M3.contrastRatio(M3.color.onSurface, M3.color.roles[swatch.modelData]) >= 4.5 ? M3.color.onSurface : M3.color.surface
                         }
                     }
                 }

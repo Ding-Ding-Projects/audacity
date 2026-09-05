@@ -25,6 +25,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -37,7 +38,7 @@ BaseSection {
 
     signal muteHiddenInstrumentsChangeRequested(bool mute)
 
-    CheckBox {
+    M3Switch {
         id: muteHiddenInstrumentsCheckBox
 
         width: parent.width
@@ -47,8 +48,8 @@ BaseSection {
         navigation.name: "MuteHiddenInstrumentsCheckbox"
         navigation.panel: root.navigation
 
-        onClicked: {
-            root.muteHiddenInstrumentsChangeRequested(!checked)
+        onToggled: {
+            root.muteHiddenInstrumentsChangeRequested(checked)
         }
     }
 }

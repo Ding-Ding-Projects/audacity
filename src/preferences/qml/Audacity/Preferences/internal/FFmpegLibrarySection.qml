@@ -8,6 +8,7 @@ import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
 import Audacity.Export 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -34,7 +35,7 @@ BaseSection {
         Row {
             spacing: 8
 
-            TextInputField {
+            M3TextField {
                 id: formatField
 
                 width: 223
@@ -52,8 +53,9 @@ BaseSection {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: downloadBtn
+                variant: "tonal"
 
                 width: 182
 
@@ -67,7 +69,8 @@ BaseSection {
                 }
             }
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
                 width: 178
 
                 text: qsTrc("export", "Locate existing installation")

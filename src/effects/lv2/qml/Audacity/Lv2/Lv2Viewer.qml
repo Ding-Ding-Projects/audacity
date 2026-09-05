@@ -8,6 +8,7 @@ import Muse.Ui
 
 import Audacity.Effects
 import Audacity.Lv2
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -24,7 +25,7 @@ Rectangle {
 
     implicitWidth: textItem.width
     implicitHeight: textItem.height
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     QtObject {
         id: prv
@@ -95,7 +96,7 @@ Rectangle {
         height: visible ? 100 : 0
         anchors.centerIn: parent
         text: qsTrc("effects/lv2", "No available UI:\n%1").arg(prv.viewModel.unsupportedUiReason)
-        color: ui.theme.fontPrimaryColor
+        color: M3.color.onSurface
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap

@@ -27,6 +27,7 @@ import Muse.UiComponents
 import Audacity.UiComponents
 import Audacity.AppShell
 import Audacity.Preferences
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -73,7 +74,7 @@ BaseSection {
             width: parent.width
             spacing: 12
 
-            CheckBox {
+            M3Switch {
                 id: followSystemThemeCheckBox
                 width: parent.width
 
@@ -84,12 +85,13 @@ BaseSection {
                 navigation.row: 1
                 navigation.column: 0
 
-                onClicked: {
-                    root.setFollowSystemThemeRequested(!checked)
+                onToggled: {
+                    root.setFollowSystemThemeRequested(checked)
                 }
             }
 
-            CheckBox {
+            M3Switch {
+                id: m3Switch6
                 width: parent.width
 
                 text: qsTrc("preferences", "Enable high-contrast")
@@ -101,8 +103,11 @@ BaseSection {
                 navigation.row: 2
                 navigation.column: 0
 
-                onClicked: {
-                    root.highContrastChangeRequested(!checked)
+                onToggled: {
+                    root.highContrastChangeRequested(checked)
+                    m3Switch6.checked = Qt.binding(function () {
+                        return root.highContrastEnabled
+                    })
                 }
             }
         }

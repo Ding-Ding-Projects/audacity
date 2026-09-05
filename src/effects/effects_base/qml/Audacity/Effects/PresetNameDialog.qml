@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -54,7 +55,7 @@ StyledDialogView {
         }
     }
 
-    TextInputField {
+    M3TextField {
         id: input
 
         anchors.top: parent.top
@@ -66,9 +67,9 @@ StyledDialogView {
         navigation.name: "Preset name"
 
         //: Placeholder text of the preset name input field
-        hint: qsTrc("effects", "Preset name")
+        placeholder: qsTrc("effects", "Preset name")
 
-        onTextChanged: t => input.currentText = t
+        onTextEdited: t => input.currentText = t
         onAccepted: prv.submit()
     }
 
@@ -87,8 +88,8 @@ StyledDialogView {
 
         text: root.invalidReason
         color: ui.theme.extra["error_text_color"]
-        font: Qt.font(Object.assign({}, ui.theme.bodyFont, {
-            pointSize: ui.theme.bodyFont.pointSize - 1
+        font: Qt.font(Object.assign({}, M3.typography.bodyMedium, {
+            pointSize: M3.typography.bodyMedium.pointSize - 1
         }))
     }
 

@@ -1,5 +1,7 @@
 import QtQuick
 import Muse.UiComponents
+import Audacity.Effects
+import Audacity.M3
 
 Row {
     id: root
@@ -15,7 +17,7 @@ Row {
         tempo.init()
     }
 
-    StyledSlider {
+    M3Slider {
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width - root.valueFieldWidth - root.spacing
 
@@ -32,7 +34,7 @@ Row {
         }
     }
 
-    IncrementalPropertyControl {
+    M3NumberField {
         width: root.valueFieldWidth
 
         navigation.panel: root.navPanel

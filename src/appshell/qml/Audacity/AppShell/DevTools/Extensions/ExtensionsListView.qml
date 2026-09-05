@@ -6,8 +6,10 @@ import QtQuick 2.15
 import Muse.UiComponents
 import Muse.Extensions 1.0
 
+import Audacity.M3
+
 Rectangle {
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surface
 
     DevExtensionsListModel {
         id: devModel
@@ -18,20 +20,14 @@ Rectangle {
 
         model: devModel.extensionsList()
 
-        delegate: ListItemBlank {
+        delegate: M3ListItem {
             anchors.left: parent ? parent.left : undefined
             anchors.right: parent ? parent.right : undefined
             height: 96
 
-            StyledTextLabel {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 8
-                anchors.rightMargin: 8
-                anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: Text.AlignLeft
-                text: (model.index + 1) + ": " + modelData.title + "\n uri: " + modelData.uri + "\n type: " + modelData.type
-            }
+            overline: String(model.index + 1)
+            headline: modelData.title
+            supportingText: "uri: " + modelData.uri + "\ntype: " + modelData.type
 
             onClicked: devModel.clicked(modelData.uri)
         }

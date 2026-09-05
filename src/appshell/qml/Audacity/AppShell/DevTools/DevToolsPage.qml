@@ -26,6 +26,8 @@ import Muse.UiComponents
 import Muse.Dock 1.0
 import Muse.Toast 1.0
 
+import Audacity.M3
+
 import "./Gallery"
 import "./Interactive"
 import "./CrashHandler"
@@ -89,7 +91,7 @@ DockPage {
 
             Rectangle {
                 anchors.fill: parent
-                color: ui.theme.backgroundPrimaryColor
+                color: M3.color.surfaceContainer
 
                 DevToolsMenu {
                     anchors.fill: parent

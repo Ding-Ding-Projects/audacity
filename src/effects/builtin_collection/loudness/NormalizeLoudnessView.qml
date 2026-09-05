@@ -3,6 +3,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -37,7 +38,7 @@ BuiltinEffectBase {
                 text: normalizeLoudness.normalizeLabel
             }
 
-            StyledDropdown {
+            M3Dropdown {
                 id: algorithmDropdown
 
                 width: 194
@@ -58,7 +59,7 @@ BuiltinEffectBase {
                 text: normalizeLoudness.toLabel
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: targetControl
 
                 width: 125
@@ -86,15 +87,18 @@ BuiltinEffectBase {
         Row {
             spacing: 8
 
-            CheckBox {
+            M3Switch {
                 id: independentStereoCheckbox
 
                 navigation.panel: root.normalizeLoudnessNavigationPanel
                 navigation.order: targetControl.navigation.order + 1
 
                 checked: normalizeLoudness.normalizeStereoChannelsIndependently
-                onClicked: {
-                    normalizeLoudness.normalizeStereoChannelsIndependently = !checked
+                onToggled: {
+                    normalizeLoudness.normalizeStereoChannelsIndependently = checked
+                    independentStereoCheckbox.checked = Qt.binding(function () {
+                        return normalizeLoudness.normalizeStereoChannelsIndependently
+                    })
                 }
             }
 
@@ -107,7 +111,7 @@ BuiltinEffectBase {
         Row {
             spacing: 8
 
-            CheckBox {
+            M3Switch {
                 id: dualMonoCheckbox
 
                 navigation.panel: root.normalizeLoudnessNavigationPanel
@@ -115,8 +119,11 @@ BuiltinEffectBase {
 
                 enabled: !normalizeLoudness.useRmsAlgorithm
                 checked: normalizeLoudness.useDualMono
-                onClicked: {
-                    normalizeLoudness.useDualMono = !checked
+                onToggled: {
+                    normalizeLoudness.useDualMono = checked
+                    dualMonoCheckbox.checked = Qt.binding(function () {
+                        return normalizeLoudness.useDualMono
+                    })
                 }
             }
 

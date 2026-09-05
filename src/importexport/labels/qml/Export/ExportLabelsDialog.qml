@@ -12,6 +12,7 @@ import Audacity.UiComponents 1.0
 import Audacity.Export
 
 import "internal"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -78,7 +79,7 @@ StyledDialogView {
                     }
                 }
 
-                TextInputField {
+                M3TextField {
                     id: fileNameField
 
                     Layout.fillWidth: true
@@ -93,7 +94,7 @@ StyledDialogView {
                     navigation.order: 1
                     navigation.accessible.name: fileNameLabel.text + ": " + currentText
 
-                    onTextChanged: function (newTextValue) {
+                    onTextEdited: function (newTextValue) {
                         exportModel.fileName = newTextValue
                     }
                 }
@@ -110,8 +111,19 @@ StyledDialogView {
                     }
                 }
 
-                StyledDropdown {
+                M3Dropdown {
                     id: fileTypeDropdown
+                    function indexOfValue(value) {
+                        var items = fileTypeDropdown.model
+                        for (var i = 0; i < items.length; ++i) {
+                            var item = items[i]
+                            var candidate = (typeof item === "object" && item !== null) ? item[fileTypeDropdown.valueRole] : item
+                            if (candidate === value) {
+                                return i
+                            }
+                        }
+                        return -1
+                    }
 
                     Layout.preferredWidth: prv.dropdownWidth
 
@@ -125,8 +137,6 @@ StyledDialogView {
                     navigation.panel: fileSection.navigation
                     navigation.order: fileNameField.navigation.order + 1
                     navigation.accessible.name: fileTypeLabel.text + ": " + currentText
-
-                    indeterminateText: ""
 
                     onActivated: function (index, value) {
                         exportModel.currentFileType = value
@@ -169,7 +179,7 @@ StyledDialogView {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         BaseSection {
             id: labelTracksSection
@@ -221,7 +231,7 @@ StyledDialogView {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         ButtonBox {
             id: buttonBox

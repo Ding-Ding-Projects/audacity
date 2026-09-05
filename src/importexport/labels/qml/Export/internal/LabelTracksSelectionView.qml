@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 Item {
     id: root
@@ -32,9 +33,9 @@ Item {
 
         width: itemsViewWidth
 
-        color: ui.theme.backgroundSecondaryColor
+        color: M3.color.surfaceContainer
 
-        border.color: ui.theme.strokeColor
+        border.color: M3.color.outlineVariant
         border.width: 1
 
         radius: 4
@@ -61,7 +62,7 @@ Item {
                     checkBox.navigation.requestActive()
                 }
 
-                CheckBox {
+                M3Switch {
                     id: checkBox
                     anchors.margins: 4
                     anchors.verticalCenter: parent.verticalCenter
@@ -69,7 +70,6 @@ Item {
                     anchors.right: parent.right
 
                     text: modelData.title
-                    font: modelData.isBold ? ui.theme.bodyBoldFont : ui.theme.bodyFont
 
                     checked: root.selectedItems.includes(modelData.itemId)
 
@@ -77,8 +77,11 @@ Item {
                     navigation.panel: navPanel
                     navigation.row: model.index
 
-                    onClicked: {
-                        root.setSelectedRequested(modelData.itemId, !checked)
+                    onToggled: {
+                        root.setSelectedRequested(modelData.itemId, checked)
+                        checkBox.checked = Qt.binding(function () {
+                            return root.selectedItems.includes(modelData.itemId)
+                        })
                     }
                 }
 
@@ -108,7 +111,8 @@ Item {
             direction: NavigationPanel.Horizontal
         }
 
-        FlatButton {
+        M3Button {
+            variant: "tonal"
             Layout.fillWidth: true
 
             text: qsTrc("global", "Select all")
@@ -122,7 +126,8 @@ Item {
             }
         }
 
-        FlatButton {
+        M3Button {
+            variant: "tonal"
             Layout.fillWidth: true
 
             text: qsTrc("global", "Clear")

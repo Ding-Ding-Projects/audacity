@@ -10,6 +10,7 @@ import Muse.UiComponents
 
 import Audacity.Export 1.0
 import "internal"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -38,7 +39,7 @@ StyledDialogView {
         //     width: root.contentWidth
         //     height: 44
 
-        //     color: ui.theme.backgroundPrimaryColor
+        //     color: M3.color.surface
         // }
 
         // ENABLE WHEN PRESETS BAR IS VISIBLE
@@ -60,7 +61,7 @@ StyledDialogView {
                 navigationOrderStart: 1
             }
 
-            SeparatorLine {
+            M3Divider {
                 orientation: Qt.Vertical
             }
 
@@ -69,7 +70,7 @@ StyledDialogView {
                 width: 560
                 height: parent.height
 
-                color: ui.theme.backgroundPrimaryColor
+                color: M3.color.surface
 
                 ColumnLayout {
 
@@ -95,7 +96,7 @@ StyledDialogView {
                         Layout.fillHeight: true
                     }
 
-                    SeparatorLine {}
+                    M3Divider {}
 
                     Item {
                         // spacer
@@ -116,7 +117,7 @@ StyledDialogView {
                         Layout.fillHeight: true
                     }
 
-                    SeparatorLine {}
+                    M3Divider {}
 
                     Item {
                         // spacer
@@ -135,7 +136,7 @@ StyledDialogView {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         ButtonBox {
             id: buttonBox

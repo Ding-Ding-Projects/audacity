@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -42,7 +43,7 @@ BaseSection {
     signal warnGuitarBendsChangeRequested(bool warn)
     signal delayBetweenNotesChangeRequested(int delay)
 
-    CheckBox {
+    M3Switch {
         id: advanceToNextNoteBox
         width: parent.width
 
@@ -52,12 +53,12 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 0
 
-        onClicked: {
-            root.advanceToNextNoteChangeRequested(!checked)
+        onToggled: {
+            root.advanceToNextNoteChangeRequested(checked)
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: colorNotesBox
         width: parent.width
 
@@ -67,12 +68,12 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 1
 
-        onClicked: {
-            root.colorNotesChangeRequested(!checked)
+        onToggled: {
+            root.colorNotesChangeRequested(checked)
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: warnBendsBox
         width: parent.width
 
@@ -82,8 +83,8 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 2
 
-        onClicked: {
-            root.warnGuitarBendsChangeRequested(!checked)
+        onToggled: {
+            root.warnGuitarBendsChangeRequested(checked)
         }
     }
 

@@ -23,6 +23,7 @@ import QtQuick 2.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 Rectangle {
@@ -33,7 +34,7 @@ Rectangle {
     width: view.width
     height: view.height
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surfaceContainer
 
     NavigationPanel {
         id: navPanel
@@ -62,7 +63,7 @@ Rectangle {
 
         model: toolBarModel
 
-        delegate: FlatButton {
+        delegate: M3Button {
             property var item: Boolean(model) ? model.item : null
 
             text: Boolean(item) ? item.title : ""
@@ -72,14 +73,12 @@ Rectangle {
             toolTipDescription: Boolean(item) ? item.description : ""
             toolTipShortcut: Boolean(item) ? item.shortcuts : ""
 
-            orientation: Qt.Horizontal
-            transparent: true
+            variant: "text"
 
             navigation.panel: navPanel
             navigation.order: model.index
 
-            iconFont: ui.theme.toolbarIconsFont
-            height: 36
+            height: 40
 
             onClicked: {
                 toolBarModel.handleMenuItem(item.id)

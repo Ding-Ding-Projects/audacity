@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -39,8 +40,19 @@ BaseSection {
 
     signal keyboardLayoutSelected(string keyboardLayout)
 
-    StyledDropdown {
+    M3Dropdown {
         id: dropdown
+        function indexOfValue(value) {
+            var items = dropdown.model
+            for (var i = 0; i < items.length; ++i) {
+                var item = items[i]
+                var candidate = (typeof item === "object" && item !== null) ? item[dropdown.valueRole] : item
+                if (candidate === value) {
+                    return i
+                }
+            }
+            return -1
+        }
         width: root.columnWidth
 
         currentIndex: dropdown.indexOfValue(root.currentKeyboardLayout)
@@ -51,7 +63,7 @@ BaseSection {
         navigation.order: 1
 
         onActivated: function (index, value) {
-            root.keyboardLayoutSelected(dropdown.value)
+            root.keyboardLayoutSelected(value)
         }
     }
 }

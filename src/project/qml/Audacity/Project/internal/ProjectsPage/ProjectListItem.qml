@@ -8,6 +8,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.GraphicalEffects 1.0
 import Audacity.Project 1.0
+import Audacity.M3
 
 ListItemBlank {
     id: root
@@ -117,7 +118,7 @@ ListItemBlank {
         }
     }
 
-    SeparatorLine {
+    M3Divider {
         id: bottomBorder
         anchors.bottom: parent.bottom
     }

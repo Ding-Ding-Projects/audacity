@@ -41,7 +41,7 @@ BaseSection {
         title: qsTrc("appshell/preferences", "Shortest note:")
         columnWidth: root.columnWidth
 
-        currentIndex: control.indexOfValue(root.currentShortestNote)
+        currentIndex: indexOfValue(root.currentShortestNote)
 
         control.textRole: "title"
         control.valueRole: "value"

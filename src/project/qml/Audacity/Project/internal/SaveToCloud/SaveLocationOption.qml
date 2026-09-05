@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 ColumnLayout {
     id: root
@@ -64,7 +65,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        color: ui.theme.backgroundSecondaryColor
+        color: M3.color.surfaceContainer
 
         bottomLeftRadius: root.radius
         bottomRightRadius: root.radius
@@ -77,7 +78,7 @@ ColumnLayout {
             StyledTextLabel {
                 id: titleLabel
                 Layout.fillWidth: true
-                font: ui.theme.headerBoldFont
+                font: M3.typography.headlineSmall
                 horizontalAlignment: Text.AlignLeft
             }
 
@@ -87,14 +88,14 @@ ColumnLayout {
                 Layout.fillHeight: true
                 wrapMode: Text.WordWrap
                 maximumLineCount: 0
-                font: ui.theme.largeBodyFont
+                font: M3.typography.bodyLarge
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignTop
             }
 
-            FlatButton {
+            M3Button {
                 id: button
-                accentButton: true
+                variant: "filled"
 
                 onClicked: {
                     root.buttonClicked()

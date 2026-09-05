@@ -39,7 +39,7 @@ BaseSection {
         title: qsTrc("appshell/preferences", "Overture import character set:")
         columnWidth: root.columnWidth
 
-        currentIndex: control.indexOfValue(root.currentOvertureCharset)
+        currentIndex: indexOfValue(root.currentOvertureCharset)
         model: root.charsets
 
         navigation.name: "OvertureBox"

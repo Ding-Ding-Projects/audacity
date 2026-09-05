@@ -58,6 +58,11 @@ class AppearancePreferencesModel : public QObject, public muse::async::Asyncable
 
     Q_PROPERTY(ClipStyles::Style clipStyle READ clipStyle NOTIFY clipStyleChanged)
 
+    //! Material 3 density level, from -3 (compact) to 0 (comfortable).
+    Q_PROPERTY(int m3Density READ m3Density WRITE setM3Density NOTIFY m3AppearanceChanged)
+    //! User override for the Material 3 reduced motion path.
+    Q_PROPERTY(bool m3ReducedMotion READ m3ReducedMotion WRITE setM3ReducedMotion NOTIFY m3AppearanceChanged)
+
 public:
     explicit AppearancePreferencesModel(QObject* parent = nullptr);
 
@@ -90,6 +95,9 @@ public:
     Q_INVOKABLE void setNewColor(const QColor& newColor, ColorType colorType);
     Q_INVOKABLE QStringList allFonts() const;
 
+    int m3Density() const;
+    bool m3ReducedMotion() const;
+
     Q_INVOKABLE ClipStyles::Style clipStyle() const;
     Q_INVOKABLE void setClipStyle(ClipStyles::Style style);
 
@@ -100,6 +108,8 @@ public slots:
     void setCurrentAccentColorIndex(int index);
     void setCurrentFontIndex(int index);
     void setBodyTextSize(int size);
+    void setM3Density(int level);
+    void setM3ReducedMotion(bool enabled);
 
 signals:
     void isFollowSystemThemeChanged();
@@ -107,6 +117,7 @@ signals:
     void currentFontIndexChanged();
     void bodyTextSizeChanged();
     void clipStyleChanged();
+    void m3AppearanceChanged();
 
 private:
     muse::ui::ThemeInfo currentTheme() const;

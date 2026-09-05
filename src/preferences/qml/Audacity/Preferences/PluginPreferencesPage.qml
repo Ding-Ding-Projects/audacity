@@ -7,6 +7,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import "internal"
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -40,7 +41,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: lv2Section.visible
         }
 
@@ -75,7 +76,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: vst3Section.visible
         }
 
@@ -122,7 +123,7 @@ PreferencesPage {
                 width: parent.width
                 spacing: root.sectionsSpacing
 
-                SeparatorLine {
+                M3Divider {
                     width: parent.width
                 }
 

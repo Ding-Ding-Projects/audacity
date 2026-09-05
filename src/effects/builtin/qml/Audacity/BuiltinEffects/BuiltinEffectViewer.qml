@@ -4,6 +4,7 @@
 import QtQuick
 
 import Audacity.BuiltinEffects
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -20,7 +21,7 @@ Rectangle {
 
     signal closeRequested
 
-    color: ui.theme.backgroundPrimaryColor
+    color: M3.color.surface
 
     implicitWidth: builder.contentItem ? builder.contentItem.implicitWidth : 450
     implicitHeight: builder.contentItem ? builder.contentItem.implicitHeight : 200

@@ -11,6 +11,7 @@ import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
 
 import "../timeline"
+import Audacity.M3
 
 DynamicsEffectBase {
     id: root
@@ -88,8 +89,8 @@ DynamicsEffectBase {
         Rectangle {
             id: bottomPanel
 
-            color: ui.theme.backgroundSecondaryColor
-            border.color: ui.theme.strokeColor
+            color: M3.color.surfaceContainer
+            border.color: M3.color.outlineVariant
             width: knobRow.width
             height: knobRow.height
             radius: 4
@@ -138,7 +139,7 @@ DynamicsEffectBase {
                 Rectangle {
                     width: 1
                     height: thresholdColumn.height
-                    color: ui.theme.strokeColor
+                    color: M3.color.outlineVariant
                 }
 
                 Repeater {

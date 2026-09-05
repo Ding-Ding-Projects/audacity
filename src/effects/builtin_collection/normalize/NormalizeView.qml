@@ -4,6 +4,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -33,7 +34,7 @@ BuiltinEffectBase {
         bottomPadding: 2
         spacing: 10
 
-        CheckBox {
+        M3Switch {
             id: removeDcCheckbox
 
             navigation.panel: root.normalizeNavigationPanel
@@ -41,8 +42,11 @@ BuiltinEffectBase {
 
             text: qsTrc("effects/normalize", "Remove DC offset (center on 0.0 vertically)")
 
-            onClicked: {
-                normalize.removeDC = !checked
+            onToggled: {
+                normalize.removeDC = checked
+                removeDcCheckbox.checked = Qt.binding(function () {
+                    return normalize.removeDC
+                })
             }
             checked: normalize.removeDC
         }
@@ -51,7 +55,7 @@ BuiltinEffectBase {
             width: root.width
             height: 28
 
-            CheckBox {
+            M3Switch {
                 id: normalizePeakAmplitudeCheckbox
 
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
@@ -61,13 +65,16 @@ BuiltinEffectBase {
                 navigation.order: removeDcCheckbox.navigation.order + 1
 
                 text: qsTrc("effects/normalize", "Normalize peak amplitude to")
-                onClicked: {
-                    normalize.normalizePeakAmplitude = !checked
+                onToggled: {
+                    normalize.normalizePeakAmplitude = checked
+                    normalizePeakAmplitudeCheckbox.checked = Qt.binding(function () {
+                        return normalize.normalizePeakAmplitude
+                    })
                 }
                 checked: normalize.normalizePeakAmplitude
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: peakAmplitudeControl
 
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
@@ -90,7 +97,7 @@ BuiltinEffectBase {
             }
         }
 
-        CheckBox {
+        M3Switch {
             id: normalizeStereoChannelsIndependentlyCheckbox
 
             navigation.panel: root.normalizeNavigationPanel
@@ -98,8 +105,11 @@ BuiltinEffectBase {
 
             text: qsTrc("effects/normalize", "Normalize stereo channels independently")
 
-            onClicked: {
-                normalize.normalizeStereoChannelsIndependently = !checked
+            onToggled: {
+                normalize.normalizeStereoChannelsIndependently = checked
+                normalizeStereoChannelsIndependentlyCheckbox.checked = Qt.binding(function () {
+                    return normalize.normalizeStereoChannelsIndependently
+                })
             }
             enabled: normalize.normalizePeakAmplitude
             checked: normalize.normalizeStereoChannelsIndependently

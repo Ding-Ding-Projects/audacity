@@ -16,6 +16,8 @@ qt_add_qml_module(appshell_qml
         FirstLaunchSetup/clipvisualizationpagemodel.h
         FirstLaunchSetup/firstlaunchsetupmodel.cpp
         FirstLaunchSetup/firstlaunchsetupmodel.h
+        FirstLaunchSetup/languagepagemodel.cpp
+        FirstLaunchSetup/languagepagemodel.h
         FirstLaunchSetup/themespagemodel.cpp
         FirstLaunchSetup/themespagemodel.h
         FirstLaunchSetup/workspacelayoutpagemodel.cpp
@@ -58,6 +60,8 @@ qt_add_qml_module(appshell_qml
         DevTools/Preferences/SettingsPage.qml
         DevTools/Table/TableTests.qml
         FirstLaunchSetup/ClipVisualizationPage.qml
+        FirstLaunchSetup/LanguagePage.qml
+        FirstLaunchSetup/SeedColorPage.qml
         FirstLaunchSetup/DoublePage.qml
         FirstLaunchSetup/FirstLaunchSetupDialog.qml
         FirstLaunchSetup/Page.qml
@@ -156,3 +160,17 @@ target_include_directories(appshell_qml PRIVATE
     FirstLaunchSetup
     PublishPage
 )
+
+# Build provenance for the about dialog. Both values are fixed when the build
+# is configured, so the dialog never reports the time the application started.
+string(TIMESTAMP AU_BUILD_TIMESTAMP_UTC "%Y-%m-%dT%H:%M:%SZ" UTC)
+
+target_compile_definitions(appshell_qml PRIVATE
+    AU_BUILD_TIMESTAMP_UTC="${AU_BUILD_TIMESTAMP_UTC}"
+)
+
+if (DEFINED MUSE_APP_VERSION)
+    target_compile_definitions(appshell_qml PRIVATE
+        MUSE_APP_VERSION="${MUSE_APP_VERSION}"
+    )
+endif()

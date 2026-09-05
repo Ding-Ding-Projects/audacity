@@ -4,6 +4,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.Cloud
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -56,7 +57,7 @@ StyledDialogView {
 
             text: qsTrc("project/cloud", "Project is syncing with audio.com. Do you want to stop the sync process?")
 
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.Wrap
         }

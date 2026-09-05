@@ -26,6 +26,7 @@ import Muse.UiComponents
 
 import Audacity.AppShell
 import Audacity.Preferences
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -85,7 +86,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             visible: uiColorsSection.visible
         }
 
@@ -110,7 +111,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         ClipStyleSection {
             currentClipStyle: appearanceModel.clipStyle
@@ -129,7 +130,33 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
+
+        MaterialThemeSection {
+            width: parent.width
+
+            density: appearanceModel.m3Density
+            reducedMotion: appearanceModel.m3ReducedMotion
+
+            navigation.section: root.navigationSection
+            navigation.order: root.navigationOrderStart + 3
+
+            onDensityChangeRequested: function (level) {
+                appearanceModel.m3Density = level
+            }
+
+            onReducedMotionChangeRequested: function (enabled) {
+                appearanceModel.m3ReducedMotion = enabled
+            }
+
+            onFocusChanged: {
+                if (activeFocus) {
+                    root.ensureContentVisibleRequested(Qt.rect(x, y, width, height))
+                }
+            }
+        }
+
+        M3Divider {}
 
         UiFontSection {
             allFonts: appearanceModel.allFonts()

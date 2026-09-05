@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
 import Audacity.AppShell
 
 ColumnLayout {
@@ -24,6 +25,8 @@ ColumnLayout {
         readonly property int contentMargin: 16
         readonly property int contentTextMargin: 12
         readonly property int contentTextSpacing: 8
+
+        readonly property string buildUpdatedAtLabel: qsTrc("appshell/about", "Updated at %1 (%2)")
 
         readonly property string versionSubtitle: qsTrc("appshell/about", "Audacity the free, open source, cross-platform software for recording and editing sounds.")
     }
@@ -54,22 +57,40 @@ ColumnLayout {
 
         spacing: prv.versionTextSpacing
 
-        StyledTextLabel {
+        Text {
             Layout.fillWidth: true
 
             horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
 
             text: root.model.appVersion()
-            font: ui.theme.tabBoldFont
+            font: M3.typography.titleMedium
+            color: M3.color.onSurface
         }
 
-        StyledTextLabel {
+        Text {
             Layout.fillWidth: true
 
             horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+
+            //! NOTE Build provenance, fixed when the build was configured.
+            text: prv.buildUpdatedAtLabel.arg(root.model.buildUpdatedAtLocal()).arg(root.model.buildUpdatedAtUtc())
+            visible: root.model.buildUpdatedAtLocal() !== ""
+
+            font: M3.typography.bodySmall
+            color: M3.color.onSurfaceVariant
+        }
+
+        Text {
+            Layout.fillWidth: true
+
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
 
             text: prv.versionSubtitle
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
+            color: M3.color.onSurfaceVariant
         }
     }
 
@@ -91,7 +112,8 @@ ColumnLayout {
 
             height: creditsInner.height + prv.contentTextMargin * 2
 
-            color: ui.theme.backgroundSecondaryColor
+            color: M3.color.surfaceContainerLow
+            radius: M3.shape.medium
 
             Column {
                 id: creditsInner
@@ -104,10 +126,11 @@ ColumnLayout {
 
                 spacing: prv.contentTextSpacing
 
-                StyledTextLabel {
+                Text {
                     width: parent.width
                     text: qsTrc("appshell/about", "Credits")
-                    font: ui.theme.largeBodyBoldFont
+                    font: M3.typography.titleMedium
+                    color: M3.color.onSurface
                     horizontalAlignment: Text.AlignLeft
                 }
 
@@ -128,13 +151,15 @@ ColumnLayout {
                             Component {
                                 id: titleOnly
 
-                                StyledTextLabel {
+                                Text {
                                     width: parent.width
 
                                     horizontalAlignment: Text.AlignLeft
+                                    wrapMode: Text.WordWrap
 
                                     text: modelData.title
-                                    font: ui.theme.bodyBoldFont
+                                    font: M3.typography.titleSmall
+                                    color: M3.color.onSurface
                                 }
                             }
 
@@ -145,34 +170,40 @@ ColumnLayout {
                                     width: parent.width
                                     spacing: prv.contentTextSpacing
 
-                                    StyledTextLabel {
+                                    Text {
                                         width: parent.width
 
                                         horizontalAlignment: Text.AlignLeft
+                                        wrapMode: Text.WordWrap
 
                                         text: modelData.title
-                                        font: ui.theme.bodyBoldFont
+                                        font: M3.typography.titleSmall
+                                        color: M3.color.onSurface
                                     }
 
-                                    StyledTextLabel {
+                                    Text {
                                         width: parent.width
 
                                         horizontalAlignment: Text.AlignLeft
+                                        wrapMode: Text.WordWrap
 
                                         text: modelData.subtitle
-                                        font: ui.theme.bodyFont
+                                        font: M3.typography.bodyMedium
+                                        color: M3.color.onSurfaceVariant
                                     }
                                 }
                             }
                         }
 
-                        StyledTextLabel {
+                        Text {
                             width: parent.width
 
                             horizontalAlignment: Text.AlignLeft
                             wrapMode: Text.WordWrap
                             textFormat: Text.RichText
-                            font: ui.theme.bodyFont
+                            font: M3.typography.bodyMedium
+                            color: M3.color.onSurfaceVariant
+                            linkColor: M3.color.primary
 
                             text: modelData.credits.map(function (c) {
                                 let isRaw = c.raw && c.raw.length > 0
@@ -191,26 +222,40 @@ ColumnLayout {
                     }
                 }
 
-                StyledTextLabel {
+                Text {
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.RichText
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
+
                     text: {
                         let websiteUrl = root.model.appUrl()
                         return qsTrc("appshell/about", "Audacity website: %1").arg('<a href="' + websiteUrl.url + '">' + websiteUrl.displayName + '</a>')
                     }
-                    font: ui.theme.bodyFont
+                    font: M3.typography.bodyMedium
                 }
 
                 Column {
                     width: parent.width
                     spacing: 0
 
-                    StyledTextLabel {
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        textFormat: Text.RichText
                         text: qsTrc("appshell/about", "<b>Audacity®</b> software is copyright © 1999-%1 Audacity Team.").arg(new Date().getFullYear())
-                        font: ui.theme.bodyFont
+                        font: M3.typography.bodyMedium
+                        color: M3.color.onSurfaceVariant
                     }
 
-                    StyledTextLabel {
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        textFormat: Text.RichText
                         text: qsTrc("appshell/about", "The name <b>Audacity</b> is a registered trademark.")
-                        font: ui.theme.bodyFont
+                        font: M3.typography.bodyMedium
+                        color: M3.color.onSurfaceVariant
                     }
                 }
             }

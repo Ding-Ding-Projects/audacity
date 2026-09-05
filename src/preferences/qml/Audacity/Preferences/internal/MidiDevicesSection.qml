@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -75,7 +76,7 @@ BaseSection {
         }
     }
 
-    CheckBox {
+    M3Switch {
         id: useMIDI20OutputCheckbox
 
         text: qsTrc("appshell", "Produce MIDI 2.0 output if supported by the receiver")
@@ -84,8 +85,8 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 3
 
-        onClicked: {
-            root.useMIDI20OutputChangeRequested(!checked)
+        onToggled: {
+            root.useMIDI20OutputChangeRequested(checked)
         }
     }
 }

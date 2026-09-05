@@ -27,6 +27,7 @@ import Muse.UiComponents
 import Audacity.Project 1.0
 
 import "internal/ProjectsPage"
+import Audacity.M3
 
 Item {
     id: root
@@ -34,7 +35,7 @@ Item {
     property AbstractItemModel model
     property string searchText
 
-    property color backgroundColor: ui.theme.backgroundSecondaryColor
+    property color backgroundColor: M3.color.surfaceContainer
     property real sideMargin: 46
     property string placeholder: ""
     property Component indicatorButton: null

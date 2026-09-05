@@ -27,11 +27,16 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.Extensions 1.0
 
+import Audacity.M3
+
 FocusScope {
     id: root
 
     property alias color: background.color
     property string section: ""
+
+    //! NOTE Hook for the regex builder, attached by the search lane.
+    signal regexBuilderRequested
 
     QtObject {
         id: prv
@@ -62,7 +67,7 @@ FocusScope {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: ui.theme.backgroundSecondaryColor
+        color: M3.color.surface
     }
 
     NavigationPanel {
@@ -90,34 +95,45 @@ FocusScope {
 
             spacing: 12
 
-            StyledTextLabel {
+            Text {
                 id: pageTitle
                 Layout.fillWidth: true
 
                 text: qsTrc("appshell", "Plugins")
-                font: ui.theme.titleBoldFont
+                font: M3.typography.headlineSmall
+                color: M3.color.onSurface
                 horizontalAlignment: Text.AlignLeft
             }
 
-            SearchField {
+            M3SearchBar {
                 id: searchField
 
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 260
+
+                placeholder: qsTrc("appshell", "Search plugins")
+                accessibleName: qsTrc("appshell", "Plugins search")
+                showRegexBuilder: true
 
                 navigation.name: "PluginsSearch"
                 navigation.panel: navTopPanel
                 navigation.order: 1
-                accessible.name: qsTrc("appshell", "Plugins search")
 
                 onSearchTextChanged: {
                     categoryDropdown.selectedCategory = ""
                 }
+
+                //! NOTE Hook for the regex builder, attached by the search lane.
+                onRegexBuilderRequested: {
+                    root.regexBuilderRequested()
+                }
             }
 
-            StyledDropdown {
+            M3Dropdown {
                 id: categoryDropdown
 
-                width: searchField.width
+                Layout.preferredWidth: searchField.width
+
+                label: qsTrc("appshell", "Category")
 
                 navigation.name: "CategoryDropdown"
                 navigation.panel: navTopPanel
@@ -126,8 +142,7 @@ FocusScope {
                 readonly property string allCategoryValue: "ALL_CATEGORY"
                 property string selectedCategory: (currentValue !== allCategoryValue) ? currentValue : ""
 
-                displayText: qsTrc("appshell", "Category:") + " " + categoryDropdown.currentText
-                currentIndex: indexOfValue(allCategoryValue)
+                currentIndex: 0
 
                 function initModel() {
                     var categories = pluginsPage.categories()
@@ -160,14 +175,14 @@ FocusScope {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: reloadButton
 
             anchors.right: parent.right
 
             text: qsTrc("extensions", "Reload plugins")
             icon: IconCode.UPDATE
-            orientation: Qt.Horizontal
+            variant: "tonal"
 
             navigation.name: "PluginsReloadButton"
             navigation.panel: navTopPanel

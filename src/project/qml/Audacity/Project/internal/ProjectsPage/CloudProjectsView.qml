@@ -10,6 +10,7 @@ import Muse.UiComponents
 
 import Audacity.Project 1.0
 import Audacity.Cloud 1.0
+import Audacity.M3
 
 ProjectsView {
     id: root
@@ -246,7 +247,8 @@ ProjectsView {
                         accessible.name: qsTrc("cloud", "Sign in buttons")
                     }
 
-                    FlatButton {
+                    M3Button {
+                        variant: "tonal"
                         navigation.panel: navPanel
                         navigation.order: 1
 
@@ -256,7 +258,8 @@ ProjectsView {
                         }
                     }
 
-                    FlatButton {
+                    M3Button {
+                        variant: "tonal"
                         navigation.panel: navPanel
                         navigation.order: 2
 

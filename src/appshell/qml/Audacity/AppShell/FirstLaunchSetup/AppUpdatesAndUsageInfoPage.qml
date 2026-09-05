@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 import Audacity.AppShell
 
 Page {
@@ -106,19 +107,25 @@ Page {
 
             spacing: prv.titleTextSpacing
 
-            StyledTextLabel {
+            Text {
                 text: prv.updatesTitleText
-                font: ui.theme.largeBodyBoldFont
+                font: M3.typography.titleMedium
+                color: M3.color.onSurface
             }
 
             Column {
                 width: parent.width
                 spacing: prv.contentTextSpacing
 
-                StyledTextLabel {
+                Text {
                     width: parent.width
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
+                    textFormat: Text.RichText
+
+                    font: M3.typography.bodyMedium
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
 
                     text: prv.updatesBodyText1
                 }
@@ -128,9 +135,9 @@ Page {
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
 
-                    color: ui.theme.fontPrimaryColor
-                    linkColor: ui.theme.linkColor
-                    font: ui.theme.bodyFont
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
+                    font: M3.typography.bodyMedium
 
                     text: prv.updatesBodyText2
 
@@ -154,19 +161,25 @@ Page {
 
             spacing: prv.titleTextSpacing
 
-            StyledTextLabel {
+            Text {
                 text: prv.crashReportsTitleText
-                font: ui.theme.largeBodyBoldFont
+                font: M3.typography.titleMedium
+                color: M3.color.onSurface
             }
 
             Column {
                 width: parent.width
                 spacing: prv.contentTextSpacing
 
-                StyledTextLabel {
+                Text {
                     width: parent.width
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
+                    textFormat: Text.RichText
+
+                    font: M3.typography.bodyMedium
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
 
                     text: prv.crashReportsBodyText1
                 }
@@ -176,9 +189,9 @@ Page {
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
 
-                    color: ui.theme.fontPrimaryColor
-                    linkColor: ui.theme.linkColor
-                    font: ui.theme.bodyFont
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
+                    font: M3.typography.bodyMedium
 
                     text: prv.crashReportsBodyText2
 
@@ -202,19 +215,25 @@ Page {
 
             spacing: prv.titleTextSpacing
 
-            StyledTextLabel {
+            Text {
                 text: prv.usageInfoTitleText
-                font: ui.theme.largeBodyBoldFont
+                font: M3.typography.titleMedium
+                color: M3.color.onSurface
             }
 
             Column {
                 width: parent.width
                 spacing: prv.contentTextSpacing
 
-                StyledTextLabel {
+                Text {
                     width: parent.width
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
+                    textFormat: Text.RichText
+
+                    font: M3.typography.bodyMedium
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
 
                     text: prv.usageInfoBodyText1
                 }
@@ -224,9 +243,9 @@ Page {
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
 
-                    color: ui.theme.fontPrimaryColor
-                    linkColor: ui.theme.linkColor
-                    font: ui.theme.bodyFont
+                    color: M3.color.onSurfaceVariant
+                    linkColor: M3.color.primary
+                    font: M3.typography.bodyMedium
 
                     text: prv.usageInfoBodyText2
 

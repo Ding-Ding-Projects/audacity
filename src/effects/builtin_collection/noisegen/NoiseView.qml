@@ -11,6 +11,7 @@ import Audacity.UiComponents
 
 // TODO: move to common controls
 import Audacity.Preferences
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -48,10 +49,6 @@ BuiltinEffectBase {
             textRole: "text"
             valueRole: "value"
             currentIndex: noise.types.findIndex(type => type.value === noise.type)
-
-            control.background.color: ui.theme.backgroundPrimaryColor
-            control.background.border.width: 1
-            control.itemColor: "transparent"
 
             navigation.panel: root.controlsNavigationPanel
             navigation.order: 0
@@ -97,13 +94,13 @@ BuiltinEffectBase {
                 Layout.fillHeight: false
 
                 border: Border {
-                    color: ui.theme.strokeColor
+                    color: M3.color.outlineVariant
                     width: 1
                 }
 
                 arrowSpacing: -2
-                backgroundColor: ui.theme.backgroundSecondaryColor
-                textColor: ui.theme.fontPrimaryColor
+                backgroundColor: M3.color.surfaceContainer
+                textColor: M3.color.onSurface
                 value: noise.duration
                 mode: TimecodeModeSelector.Duration
                 currentFormatStr: noise.durationFormat

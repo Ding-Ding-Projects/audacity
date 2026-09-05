@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.UiComponents
 import Audacity.Project 1.0
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -46,7 +47,7 @@ StyledDialogView {
             Layout.alignment: Qt.AlignHCenter
 
             text: qsTrc("project", "Saving online…")
-            font: ui.theme.largeBodyBoldFont
+            font: M3.typography.titleMedium
         }
     }
 }

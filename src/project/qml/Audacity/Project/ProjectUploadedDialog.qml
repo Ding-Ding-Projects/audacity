@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -102,7 +103,7 @@ StyledDialogView {
                 Layout.fillWidth: true
 
                 text: qsTrc("global", "Success!")
-                font: ui.theme.tabBoldFont
+                font: M3.typography.titleSmall
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.Wrap
             }
@@ -137,7 +138,7 @@ StyledDialogView {
                     Rectangle {
                         anchors.fill: parent
 
-                        color: ui.theme.buttonColor
+                        color: M3.color.secondaryContainer
                         opacity: 0.4
                         radius: 3
                     }
@@ -156,7 +157,7 @@ StyledDialogView {
                             Layout.fillWidth: true
 
                             text: qsTrc("project", "Publish your finished projects on Audio.com")
-                            font: ui.theme.largeBodyBoldFont
+                            font: M3.typography.titleMedium
                             horizontalAlignment: Text.AlignLeft
                             wrapMode: Text.Wrap
                         }
@@ -192,7 +193,7 @@ StyledDialogView {
                                         height: width
                                         radius: width / 2
 
-                                        color: ui.theme.accentColor
+                                        color: M3.color.primary
                                     }
 
                                     StyledTextLabel {
@@ -206,12 +207,12 @@ StyledDialogView {
                             }
                         }
 
-                        FlatButton {
+                        M3Button {
                             id: watchVideoButton
+                            variant: "filled"
 
                             Layout.alignment: Qt.AlignLeft
 
-                            accentButton: true
                             text: qsTrc("project", "Watch video")
 
                             navigation.panel: buttonsNavPanel
@@ -239,7 +240,8 @@ StyledDialogView {
 
                 spacing: 10
 
-                FlatButton {
+                M3Button {
+                    variant: "tonal"
                     text: qsTrc("project", "View project online")
 
                     navigation.panel: buttonsNavPanel
@@ -254,7 +256,8 @@ StyledDialogView {
                     }
                 }
 
-                FlatButton {
+                M3Button {
+                    variant: "tonal"
                     text: qsTrc("global", "Close")
 
                     navigation.panel: buttonsNavPanel

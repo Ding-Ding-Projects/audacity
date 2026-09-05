@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
+import Audacity.M3
 
 RoundedRectangle {
     id: root
@@ -16,9 +17,9 @@ RoundedRectangle {
 
     property NavigationPanel navPanel: NavigationPanel {}
 
-    color: ui.theme.backgroundSecondaryColor
+    color: M3.color.surfaceContainer
     radius: 4
-    border.color: ui.theme.strokeColor
+    border.color: M3.color.outlineVariant
     border.width: 1
 
     readonly property int valueFieldWidth: 64
@@ -31,7 +32,7 @@ RoundedRectangle {
 
         StyledTextLabel {
             id: titleLabel
-            font: ui.theme.bodyBoldFont
+            font: M3.typography.titleSmall
         }
 
         Loader {

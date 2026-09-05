@@ -7,6 +7,7 @@ import Muse.UiComponents
 import Audacity.BuiltinEffectsCollection
 
 import "./meters"
+import Audacity.M3
 
 Item {
     id: root
@@ -328,8 +329,8 @@ Item {
 
                 FontMetrics {
                     id: fontMetrics
-                    font.family: ui.theme.bodyFont.family
-                    font.pixelSize: ui.theme.bodyFont.pixelSize
+                    font.family: M3.typography.bodyMedium.family
+                    font.pixelSize: M3.typography.bodyMedium.pixelSize
                 }
 
                 Repeater {

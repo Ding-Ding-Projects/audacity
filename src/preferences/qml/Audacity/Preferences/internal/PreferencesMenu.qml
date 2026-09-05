@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.UiComponents.LegacyTreeView
+import Audacity.M3
 
 Item {
     id: root
@@ -56,7 +57,7 @@ Item {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: ui.theme.backgroundPrimaryColor
+        color: M3.color.surface
     }
 
     LegacyTreeView {
@@ -96,8 +97,8 @@ Item {
             spacing: 16
             leftPadding: spacing * (styleData.depth + 1)
 
-            normalStateFont: ui.theme.bodyFont
-            selectedStateFont: ui.theme.bodyBoldFont
+            normalStateFont: M3.typography.bodyMedium
+            selectedStateFont: M3.typography.titleSmall
 
             title: Boolean(model) ? model.itemRole.title : ""
             checked: Boolean(model) && Boolean(model.itemRole) ? model.itemRole.id === treeView.model.currentPageId : false

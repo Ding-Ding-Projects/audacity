@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.UiComponents
 
 import Audacity.UiComponents 1.0
+import Audacity.M3
 
 BaseSection {
     id: root
@@ -35,7 +36,7 @@ BaseSection {
 
     signal meiImportLayoutChangeRequested(bool meiImportLayout)
 
-    CheckBox {
+    M3Switch {
         id: meiImportLayoutBox
         width: parent.width
 
@@ -45,8 +46,8 @@ BaseSection {
         navigation.panel: root.navigation
         navigation.row: 0
 
-        onClicked: {
-            root.meiImportLayoutChangeRequested(!checked)
+        onToggled: {
+            root.meiImportLayoutChangeRequested(checked)
         }
     }
 }

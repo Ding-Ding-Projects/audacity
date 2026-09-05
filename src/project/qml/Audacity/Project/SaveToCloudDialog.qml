@@ -9,6 +9,7 @@ import Muse.UiComponents
 import Muse.Cloud 1.0
 
 import Audacity.Cloud 1.0
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -66,7 +67,7 @@ StyledDialogView {
 
     Component.onCompleted: {
         model.init()
-        Qt.callLater(projectNameField.ensureActiveFocus)
+        Qt.callLater(projectNameField.forceActiveFocus)
     }
 
     ColumnLayout {
@@ -100,7 +101,7 @@ StyledDialogView {
             StyledTextLabel {
                 Layout.fillWidth: true
 
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
                 text: model.isAuthorized ? model.displayName : prv.notSignedInText
 
                 horizontalAlignment: Text.AlignLeft
@@ -110,8 +111,9 @@ StyledDialogView {
                 Layout.fillWidth: true
             }
 
-            FlatButton {
+            M3Button {
                 id: signoutButton
+                variant: "tonal"
 
                 Layout.preferredHeight: prv.signoutButtonHeight
                 Layout.preferredWidth: prv.signoutButtonWidth
@@ -129,7 +131,7 @@ StyledDialogView {
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             Layout.fillWidth: true
         }
 
@@ -144,7 +146,7 @@ StyledDialogView {
             StyledTextLabel {
                 Layout.fillWidth: true
 
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
                 text: root.formTitle
 
                 horizontalAlignment: Text.AlignLeft
@@ -159,7 +161,7 @@ StyledDialogView {
                 order: 2
             }
 
-            TextInputField {
+            M3TextField {
                 id: projectNameField
 
                 property string value: ""
@@ -171,7 +173,7 @@ StyledDialogView {
                 navigation.panel: projectNameNavPanel
                 navigation.order: 1
 
-                onTextChanged: function (newTextValue) {
+                onTextEdited: function (newTextValue) {
                     value = newTextValue
                 }
 
@@ -179,13 +181,13 @@ StyledDialogView {
                     if (prv.canTrigger) {
                         prv.onTriggered()
                     } else {
-                        Qt.callLater(projectNameField.ensureActiveFocus)
+                        Qt.callLater(projectNameField.forceActiveFocus)
                     }
                 }
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             Layout.fillWidth: true
         }
 

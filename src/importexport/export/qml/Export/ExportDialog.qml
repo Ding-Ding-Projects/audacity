@@ -12,6 +12,7 @@ import Audacity.UiComponents 1.0
 import Audacity.Export 1.0
 
 import "internal"
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -95,15 +96,25 @@ StyledDialogView {
                         }
                     }
 
-                    StyledDropdown {
+                    M3Dropdown {
                         id: typeDropdown
+                        function indexOfValue(value) {
+                            var items = typeDropdown.model
+                            for (var i = 0; i < items.length; ++i) {
+                                var item = items[i]
+                                var candidate = (typeof item === "object" && item !== null) ? item[typeDropdown.valueRole] : item
+                                if (candidate === value) {
+                                    return i
+                                }
+                            }
+                            return -1
+                        }
 
                         Layout.preferredWidth: root.dropdownWidth
 
                         textRole: "name"
                         valueRole: "code"
 
-                        popupItemsCount: 11
                         currentIndex: indexOfValue(exportPreferencesModel.currentProcess)
                         model: exportPreferencesModel.processList
 
@@ -112,8 +123,6 @@ StyledDialogView {
                         navigation.order: 1
                         navigation.accessible.name: typeLabel.text + ": " + currentText
 
-                        indeterminateText: ""
-
                         onActivated: function (index, value) {
                             exportPreferencesModel.setCurrentProcess(value)
                         }
@@ -121,7 +130,7 @@ StyledDialogView {
                 }
             }
 
-            SeparatorLine {}
+            M3Divider {}
 
             BaseSection {
                 id: fileSection
@@ -146,7 +155,7 @@ StyledDialogView {
                         }
                     }
 
-                    TextInputField {
+                    M3TextField {
                         id: filenameField
 
                         Layout.fillWidth: true
@@ -161,7 +170,7 @@ StyledDialogView {
                         navigation.order: 1
                         navigation.accessible.name: filenameLabel.text + ": " + currentText
 
-                        onTextChanged: function (newTextValue) {
+                        onTextEdited: function (newTextValue) {
                             exportPreferencesModel.setFilename(newTextValue)
                         }
                     }
@@ -192,7 +201,7 @@ StyledDialogView {
                             dir: exportPreferencesModel.suggestedFilePath
                         }
 
-                        TextInputField {
+                        M3TextField {
                             id: dirField
 
                             Layout.fillWidth: true
@@ -212,14 +221,12 @@ StyledDialogView {
                             }
                         }
 
-                        FlatButton {
+                        M3Button {
                             id: dirBrowseButton
+                            variant: "tonal"
 
                             icon: IconCode.OPEN_FILE
                             text: qsTrc("ui", "Browse")
-
-                            buttonType: FlatButton.Horizontal
-                            orientation: Qt.Horizontal
 
                             navigation.name: "FolderBrowseButton"
                             navigation.panel: fileSection.navigation
@@ -248,15 +255,25 @@ StyledDialogView {
                         }
                     }
 
-                    StyledDropdown {
+                    M3Dropdown {
                         id: formatDropdown
+                        function indexOfValue(value) {
+                            var items = formatDropdown.model
+                            for (var i = 0; i < items.length; ++i) {
+                                var item = items[i]
+                                var candidate = (typeof item === "object" && item !== null) ? item[formatDropdown.valueRole] : item
+                                if (candidate === value) {
+                                    return i
+                                }
+                            }
+                            return -1
+                        }
 
                         Layout.preferredWidth: root.smallDropdownWidth
 
                         textRole: "name"
                         valueRole: "code"
 
-                        popupItemsCount: 11
                         currentIndex: indexOfValue(exportPreferencesModel.currentFormat)
                         model: exportPreferencesModel.formatsList
 
@@ -265,8 +282,6 @@ StyledDialogView {
                         navigation.order: dirBrowseButton.navigation.order + 1
                         navigation.accessible.name: formatLabel.text + ": " + currentText
 
-                        indeterminateText: ""
-
                         onActivated: function (index, value) {
                             exportPreferencesModel.setCurrentFormat(value)
                         }
@@ -274,7 +289,7 @@ StyledDialogView {
                 }
             }
 
-            SeparatorLine {}
+            M3Divider {}
 
             BaseSection {
                 id: audioSection
@@ -316,14 +331,12 @@ StyledDialogView {
                             width: parent.width
                             spacing: 10
 
-                            RoundedRadioButton {
+                            M3RadioButton {
                                 id: monoBtn
 
                                 checked: exportPreferencesModel.exportChannelsType == ExportChannels.MONO
                                 enabled: exportPreferencesModel.maxExportChannels > 0
                                 text: qsTrc("export", "Mono")
-
-                                spacing: 8
 
                                 navigation.name: "MonoBox"
                                 navigation.panel: audioSection.navigation
@@ -334,14 +347,12 @@ StyledDialogView {
                                 }
                             }
 
-                            RoundedRadioButton {
+                            M3RadioButton {
                                 id: stereoBtn
 
                                 checked: exportPreferencesModel.exportChannelsType == ExportChannels.STEREO
                                 enabled: exportPreferencesModel.maxExportChannels > 1
                                 text: qsTrc("export", "Stereo")
-
-                                spacing: 8
 
                                 navigation.name: "StereoBox"
                                 navigation.panel: audioSection.navigation
@@ -352,14 +363,12 @@ StyledDialogView {
                                 }
                             }
 
-                            RoundedRadioButton {
+                            M3RadioButton {
                                 id: customBtn
 
                                 checked: exportPreferencesModel.exportChannelsType == ExportChannels.CUSTOM
                                 text: qsTrc("export", "Custom mapping")
                                 enabled: exportPreferencesModel.maxExportChannels > 2
-
-                                spacing: 8
 
                                 navigation.name: "CustomBox"
                                 navigation.panel: audioSection.navigation
@@ -380,8 +389,9 @@ StyledDialogView {
                         width: root.labelColumnWidth
                     }
 
-                    FlatButton {
+                    M3Button {
                         id: customMappingBtn
+                        variant: "tonal"
 
                         Layout.preferredWidth: 100
 
@@ -409,15 +419,25 @@ StyledDialogView {
                         }
                     }
 
-                    StyledDropdown {
+                    M3Dropdown {
                         id: sampleRateDropdown
+                        function indexOfValue(value) {
+                            var items = sampleRateDropdown.model
+                            for (var i = 0; i < items.length; ++i) {
+                                var item = items[i]
+                                var candidate = (typeof item === "object" && item !== null) ? item[sampleRateDropdown.valueRole] : item
+                                if (candidate === value) {
+                                    return i
+                                }
+                            }
+                            return -1
+                        }
 
                         Layout.preferredWidth: root.smallDropdownWidth
 
                         textRole: "name"
                         valueRole: "code"
 
-                        popupItemsCount: 11
                         currentIndex: indexOfValue(exportPreferencesModel.exportSampleRate)
                         model: exportPreferencesModel.exportSampleRateList
 
@@ -425,8 +445,6 @@ StyledDialogView {
                         navigation.panel: audioSection.navigation
                         navigation.order: customMappingBtn.navigation.order + 1
                         navigation.accessible.name: formatLabel.text + ": " + currentText
-
-                        indeterminateText: ""
 
                         onActivated: function (index, value) {
                             exportPreferencesModel.setExportSampleRate(value)
@@ -444,7 +462,8 @@ StyledDialogView {
                             width: root.labelColumnWidth
                         }
 
-                        FlatButton {
+                        M3Button {
+                            variant: "tonal"
 
                             Layout.preferredWidth: root.smallDropdownWidth
 
@@ -473,7 +492,7 @@ StyledDialogView {
                             }
                         }
 
-                        TextInputField {
+                        M3TextField {
                             id: formatField
 
                             implicitWidth: root.smallDropdownWidth
@@ -497,7 +516,7 @@ StyledDialogView {
                             }
                         }
 
-                        TextInputField {
+                        M3TextField {
                             id: codecField
 
                             implicitWidth: root.smallDropdownWidth
@@ -591,7 +610,7 @@ StyledDialogView {
                 }
             }
 
-            SeparatorLine {}
+            M3Divider {}
 
             BaseSection {
                 id: renderingSection
@@ -601,7 +620,7 @@ StyledDialogView {
                 navigation.order: audioSection.navigation.order + 1
 
                 ColumnLayout {
-                    CheckBox {
+                    M3Switch {
                         id: trimBlankSpaceCheckBox
                         width: parent.width
 
@@ -613,32 +632,39 @@ StyledDialogView {
                         navigation.order: 1
                         navigation.accessible.name: text
 
-                        onClicked: exportPreferencesModel.trimBlankSpace = !exportPreferencesModel.trimBlankSpace
+                        onToggled: {
+                            exportPreferencesModel.trimBlankSpace = !exportPreferencesModel.trimBlankSpace
+                            trimBlankSpaceCheckBox.checked = Qt.binding(function () {
+                                return exportPreferencesModel.trimBlankSpace
+                            })
+                        }
                     }
                 }
             }
         }
 
-        SeparatorLine {
+        M3Divider {
             Layout.margins: -root.margins
             width: root.contentWidth + 2 * root.margins
         }
 
-        ButtonBox {
+        RowLayout {
             id: buttonBox
 
             Layout.fillWidth: true
 
             spacing: 8
 
-            navigationPanel.section: root.navigationSection
-            navigationPanel.order: audioSection.navigation.order + 2
+            property NavigationPanel navigationPanel: NavigationPanel {
+                name: "ExportDialogButtons"
+                direction: NavigationPanel.Horizontal
+                section: root.navigationSection
+                order: audioSection.navigation.order + 2
+            }
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("appshell/preferences", "Edit metadata")
-                buttonRole: ButtonBoxModel.CustomRole
-                buttonId: ButtonBoxModel.CustomButton + 1
-                isLeftSide: true
+                variant: "text"
                 enabled: exportPreferencesModel.hasMetadata
 
                 navigation.panel: buttonBox.navigationPanel
@@ -649,11 +675,14 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            Item {
+                Layout.fillWidth: true
+            }
+
+            M3Button {
                 id: cancelBtn
                 text: qsTrc("global", "Cancel")
-                buttonRole: ButtonBoxModel.RejectRole
-                buttonId: ButtonBoxModel.Cancel
+                variant: "text"
                 minWidth: 80
 
                 navigation.panel: buttonBox.navigationPanel
@@ -666,14 +695,12 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: okBtn
                 //: Label of the button that starts the export
                 text: qsTrc("global", "Export")
-                buttonRole: ButtonBoxModel.AcceptRole
-                buttonId: ButtonBoxModel.Apply
+                variant: "filled"
                 minWidth: 80
-                accentButton: true
 
                 navigation.panel: buttonBox.navigationPanel
                 navigation.order: 3
@@ -692,7 +719,7 @@ StyledDialogView {
 
     Component {
         id: enumComp
-        StyledDropdown {
+        M3Dropdown {
             property var option
 
             model: option.names
@@ -710,7 +737,8 @@ StyledDialogView {
 
     Component {
         id: boolComp
-        CheckBox {
+        M3Switch {
+            id: m3Switch1
             property var option
 
             checked: Boolean(option.value)
@@ -719,7 +747,12 @@ StyledDialogView {
             navigation.order: sampleRateDropdown.navigation.order + 1 + option.index
             navigation.accessible.name: option.title
 
-            onClicked: dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), checked, ExportOptionType.ValueRole)
+            onToggled: {
+                dynamicOptionsModel.setData(dynamicOptionsModel.index(option.index, 0), !checked, ExportOptionType.ValueRole)
+                m3Switch1.checked = Qt.binding(function () {
+                    return Boolean(option.value)
+                })
+            }
         }
     }
 
@@ -740,7 +773,7 @@ StyledDialogView {
         id: sliderComp
         // TODO: test it when Ogg/Opus is supported
         // TODO: add tooltip
-        StyledSlider {
+        M3Slider {
             property var option
 
             from: option.min
@@ -757,7 +790,7 @@ StyledDialogView {
     Component {
         id: spinComp
 
-        IncrementalPropertyControl {
+        M3NumberField {
             property var option
 
             decimals: 0

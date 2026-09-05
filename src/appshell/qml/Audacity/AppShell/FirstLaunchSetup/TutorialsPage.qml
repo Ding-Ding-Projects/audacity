@@ -25,6 +25,7 @@ import QtQuick.Window 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 import Muse.GraphicalEffects 1.0
+import Audacity.M3
 import Audacity.AppShell
 
 Page {
@@ -42,7 +43,7 @@ Page {
 
         layer.enabled: true
         layer.effect: RoundedCornersEffect {
-            radius: 3
+            radius: M3.shape.medium
         }
     }
 }

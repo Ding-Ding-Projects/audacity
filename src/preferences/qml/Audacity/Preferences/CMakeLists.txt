@@ -72,6 +72,7 @@ qt_add_qml_module(preferences_qml
         internal/LeadInRecordingSection.qml
         internal/LanguagesSection.qml
         internal/M3NumberField.qml
+        internal/MaterialThemeSection.qml
         internal/MeiSection.qml
         internal/MeterDbRangeSection.qml
         internal/MiscellaneousSection.qml

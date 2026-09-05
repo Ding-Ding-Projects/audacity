@@ -6,6 +6,8 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 Rectangle {
     id: root
 
@@ -43,7 +45,7 @@ Rectangle {
         anchors.fill: parent
         spacing: 8
 
-        FlatButton {
+        M3Button {
             id: btn1
             navigation.panel: keynavsec
             navigation.order: 1
@@ -54,7 +56,7 @@ Rectangle {
             onClicked: root.doClicked(text)
         }
 
-        FlatButton {
+        M3Button {
             id: btn2
             navigation.panel: keynavsec
             navigation.order: 2
@@ -65,7 +67,7 @@ Rectangle {
             onClicked: root.doClicked(text)
         }
 
-        FlatButton {
+        M3Button {
             id: btn3
             navigation.panel: keynavsec
             navigation.order: 3

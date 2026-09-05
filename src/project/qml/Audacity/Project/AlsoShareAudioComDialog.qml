@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.15
 
 import Muse.Ui 1.0
 import Muse.UiComponents
+import Audacity.M3
 
 StyledDialogView {
     id: root
@@ -115,7 +116,7 @@ StyledDialogView {
                 Layout.fillWidth: true
 
                 text: qsTrc("project/cloud", "Would you also like to share your music on Audio.com?")
-                font: ui.theme.largeBodyBoldFont
+                font: M3.typography.titleMedium
             }
 
             StyledTextLabel {
@@ -124,7 +125,7 @@ StyledDialogView {
                 Layout.fillWidth: true
 
                 text: qsTrc("project/cloud", "Share your project’s audio with millions of listeners on this free streaming platform")
-                font: ui.theme.bodyFont
+                font: M3.typography.bodyMedium
             }
         }
 
@@ -143,13 +144,13 @@ StyledDialogView {
             horizontalAlignment: Text.AlignLeft
 
             text: qsTrc("project/cloud", "You can change this setting in Preferences at any time.")
-            font: ui.theme.bodyFont
+            font: M3.typography.bodyMedium
         }
 
         RowLayout {
             id: options
 
-            CheckBox {
+            M3Switch {
                 id: checkbox
 
                 Layout.fillWidth: true
@@ -166,8 +167,11 @@ StyledDialogView {
 
                 checked: root.rememberChoice
 
-                onClicked: {
-                    checked = !checked
+                onToggled: {
+                    root.rememberChoice = checked
+                    checkbox.checked = Qt.binding(function () {
+                        return root.rememberChoice
+                    })
                 }
             }
 

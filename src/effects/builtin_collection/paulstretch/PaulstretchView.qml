@@ -4,6 +4,7 @@ import Muse.UiComponents
 import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.BuiltinEffectsCollection
+import Audacity.M3
 
 BuiltinEffectBase {
     id: root
@@ -42,7 +43,7 @@ BuiltinEffectBase {
                 text: paulstretch.stretchFactorLabel
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: stretchFactorControl
 
                 Layout.fillWidth: true
@@ -73,7 +74,7 @@ BuiltinEffectBase {
                 text: paulstretch.timeResolutionLabel
             }
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: timeResolutionControl
 
                 Layout.fillWidth: true

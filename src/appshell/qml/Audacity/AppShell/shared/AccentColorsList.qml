@@ -19,16 +19,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
 
-import Muse.Ui 1.0
+/*
+ * The Material 3 seed colour picker. The preset swatches sit in a row and an
+ * optional "Custom" swatch opens the full M3ColorPicker.
+ */
+pragma ComponentBehavior: Bound
+
+import QtQuick
+
+import Muse.Ui
 import Muse.UiComponents
 
-RadioButtonGroup {
+import Audacity.M3
+
+Item {
     id: root
 
-    property alias colors: root.model
-    property alias currentColorIndex: root.currentIndex
+    property var colors: []
+    property int currentColorIndex: 0
+
+    // Shows the trailing swatch that opens the Material 3 colour picker so the
+    // seed colour can be chosen freely.
+    property bool showCustom: false
 
     property NavigationPanel navigationPanel: NavigationPanel {
         name: "AccentColorsList"
@@ -37,70 +50,169 @@ RadioButtonGroup {
 
         onNavigationEvent: function (event) {
             if (event.type === NavigationEvent.AboutActive) {
-                event.setData("controlIndex", [navigationRow, navigationColumnStart + root.currentIndex])
+                event.setData("controlIndex", [navigationRow, navigationColumnStart + root.currentColorIndex])
             }
         }
     }
 
     property int navigationRow: -1
     property int navigationColumnStart: 0
-    property int navigationColumnEnd: navigationColumnStart + count
+    readonly property int count: root.colors ? root.colors.length : 0
+    property int navigationColumnEnd: navigationColumnStart + root.count
 
     property real sampleSize: 20
-    readonly property real totalSampleSize: sampleSize + 2
+    readonly property real totalSampleSize: sampleSize + 12
+
+    property real spacing: 6
 
     signal accentColorChangeRequested(var newColorIndex)
 
-    implicitWidth: count * totalSampleSize + (count - 1) * spacing
-    implicitHeight: totalSampleSize
-    spacing: 6
+    // Emitted with the colour chosen in the picker, as a hexadecimal string.
+    signal seedColorChangeRequested(string seedColor)
 
-    delegate: RoundedRadioButton {
-        id: button
+    implicitWidth: swatchRow.implicitWidth
+    implicitHeight: Math.max(root.totalSampleSize, swatchRow.implicitHeight)
 
-        width: root.totalSampleSize
-        height: width
+    Row {
+        id: swatchRow
 
-        checked: root.currentIndex === model.index
+        anchors.centerIn: parent
 
-        property color accentColor: modelData
+        spacing: root.spacing
 
-        navigation.name: "AccentColorButton"
-        navigation.panel: root.navigationPanel
-        navigation.row: root.navigationRow
-        navigation.column: root.navigationColumnStart + model.index
-        navigation.accessible.name: Utils.accessibleColorDescription(accentColor)
+        Repeater {
+            model: root.colors
 
-        onToggled: {
-            root.accentColorChangeRequested(model.index)
+            delegate: Item {
+                id: swatch
+
+                required property int index
+                required property var modelData
+
+                readonly property bool selected: root.currentColorIndex === swatch.index
+
+                width: root.totalSampleSize
+                height: root.totalSampleSize
+
+                NavigationControl {
+                    id: navCtrl
+
+                    name: "AccentColorButton"
+                    panel: root.navigationPanel
+                    row: root.navigationRow
+                    column: root.navigationColumnStart + swatch.index
+                    enabled: root.enabled && root.visible
+
+                    accessible.role: MUAccessible.RadioButton
+                    accessible.name: Utils.accessibleColorDescription(swatch.modelData)
+                    accessible.checked: swatch.selected
+                    accessible.visualItem: ring
+
+                    onTriggered: {
+                        root.accentColorChangeRequested(swatch.index)
+                    }
+                }
+
+                Rectangle {
+                    id: ring
+
+                    anchors.fill: parent
+
+                    color: "transparent"
+                    radius: width / 2
+                    border.width: swatch.selected ? 2 : 0
+                    border.color: M3.color.primary
+
+                    Behavior on border.width {
+                        NumberAnimation {
+                            duration: M3.motion.short3
+                            easing: M3.motion.standard
+                        }
+                    }
+                }
+
+                M3StateLayer {
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: M3.color.onSurface
+                    hovered: mouseArea.containsMouse
+                    pressed: mouseArea.containsPress
+                    focused: navCtrl.highlight
+                }
+
+                M3FocusRing {
+                    anchors.fill: parent
+                    shapeRadius: width / 2
+                    visible: navCtrl.highlight
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+
+                    width: root.sampleSize
+                    height: width
+                    radius: width / 2
+
+                    border.color: M3.color.outlineVariant
+                    border.width: 1
+
+                    //! NOTE The swatch shows the seed colour itself, so it is
+                    //! data rather than a Material 3 role.
+                    color: swatch.modelData
+                }
+
+                MouseArea {
+                    id: mouseArea
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onClicked: {
+                        root.accentColorChangeRequested(swatch.index)
+                    }
+                }
+            }
         }
 
-        indicator: Rectangle {
+        M3Button {
+            anchors.verticalCenter: parent.verticalCenter
+
+            visible: root.showCustom
+
+            variant: "text"
+            text: qsTrc("appshell/gettingstarted", "Custom")
+
+            navigation.panel: root.navigationPanel
+            navigation.row: root.navigationRow
+            navigation.column: root.navigationColumnEnd
+
+            onClicked: {
+                colorPickerPopup.open()
+            }
+        }
+    }
+
+    StyledPopupView {
+        id: colorPickerPopup
+
+        contentWidth: 320
+        contentHeight: 420
+
+        M3ColorPicker {
+            id: colorPicker
+
             anchors.fill: parent
 
-            color: "transparent"
-            border.color: ui.theme.fontPrimaryColor
-            border.width: parent.checked ? 1 : 0
-            radius: width / 2
+            allowRainbow: false
+            selection: M3.seedColor.toString()
 
-            NavigationFocusBorder {
-                navigationCtrl: button.navigation
-            }
+            navigationPanel: root.navigationPanel
 
-            Rectangle {
-                anchors.centerIn: parent
-
-                width: root.sampleSize
-                height: width
-                radius: width / 2
-
-                border.color: ui.theme.strokeColor
-                border.width: 1
-
-                color: button.accentColor
+            onAccepted: {
+                M3.seedColor = colorPicker.selection
+                root.seedColorChangeRequested(colorPicker.selection)
+                colorPickerPopup.close()
             }
         }
-
-        background: Item {}
     }
 }

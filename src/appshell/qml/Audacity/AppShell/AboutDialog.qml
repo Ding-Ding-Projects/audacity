@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
 import Audacity.AppShell
 
 StyledDialogView {
@@ -21,6 +22,28 @@ StyledDialogView {
         id: aboutModel
     }
 
+    NavigationPanel {
+        id: tabsNavPanel
+        name: "AboutDialogTabs"
+        section: root.navigationSection
+        order: 1
+        direction: NavigationPanel.Horizontal
+        accessible.name: qsTrc("appshell/about", "About Audacity")
+    }
+
+    NavigationPanel {
+        id: buttonsNavPanel
+        name: "AboutDialogButtons"
+        section: root.navigationSection
+        order: 2
+        direction: NavigationPanel.Horizontal
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surface
+    }
+
     QtObject {
         id: prv
 
@@ -33,18 +56,26 @@ StyledDialogView {
         anchors.fill: parent
         spacing: prv.tabSpacing
 
-        StyledTabBar {
-            id: tabBar
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 48
 
-            Layout.alignment: Qt.AlignHCenter
-            spacing: prv.tabButtonSpacing
+            M3Tabs {
+                id: tabBar
 
-            StyledTabButton {
-                text: qsTrc("appshell/about", "Audacity")
-            }
+                width: parent.width
+                height: parent.height
 
-            StyledTabButton {
-                text: qsTrc("appshell/about", "Legal")
+                model: [
+                    {
+                        "text": qsTrc("appshell/about", "Audacity")
+                    },
+                    {
+                        "text": qsTrc("appshell/about", "Legal")
+                    }
+                ]
+
+                navigationPanel: tabsNavPanel
             }
         }
 
@@ -69,16 +100,20 @@ StyledDialogView {
             Layout.fillWidth: true
             spacing: 0
 
-            SeparatorLine {
+            M3Divider {
                 Layout.fillWidth: true
             }
 
-            FlatButton {
+            M3Button {
                 Layout.alignment: Qt.AlignRight
                 Layout.margins: prv.btnMargins
 
+                variant: "filled"
+
                 //: Label of a dialog button
                 text: qsTrc("global", "Close")
+
+                navigation.panel: buttonsNavPanel
 
                 onClicked: {
                     root.hide()

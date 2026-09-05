@@ -25,6 +25,7 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 import Audacity.Project 1.0
+import Audacity.M3
 
 Item {
     id: root
@@ -63,7 +64,7 @@ Item {
         anchors.topMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
 
-        font: ui.theme.largeBodyBoldFont
+        font: M3.typography.titleMedium
         text: qsTrc("project/newscore", "Additional project information")
     }
 
@@ -89,7 +90,7 @@ Item {
         //     navigationPanel.order: 1
         // }
 
-        SeparatorLine {}
+        M3Divider {}
 
         GeneralInfoView {
             id: generalInfo

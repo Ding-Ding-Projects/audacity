@@ -19,13 +19,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 
-import Muse.Ui 1.0
+/*
+ * The home page navigation, drawn as a Material 3 navigation rail when the
+ * panel is collapsed and as a Material 3 navigation list when it is expanded.
+ */
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import QtQuick.Layouts
+
+import Muse.Ui
 import Muse.UiComponents
-import Muse.Cloud 1.0
+
+import Audacity.M3
 
 Item {
     id: root
@@ -35,6 +42,38 @@ Item {
     property bool cloudEnabled: false
 
     signal selected(string name)
+
+    readonly property var destinations: {
+        var items = []
+
+        if (root.cloudEnabled) {
+            items.push({
+                "name": "account",
+                "title": qsTrc("appshell", "Cloud account"),
+                "text": qsTrc("appshell", "Cloud account"),
+                "icon": IconCode.ACCOUNT
+            })
+        }
+
+        items.push({
+            "name": "projects",
+            "title": qsTrc("appshell", "Project"),
+            "text": qsTrc("appshell", "Project"),
+            "icon": IconCode.NEW_FILE
+        })
+
+        return items
+    }
+
+    function indexOfCurrent() {
+        for (var i = 0; i < root.destinations.length; ++i) {
+            if (root.destinations[i].name === root.currentPageName) {
+                return i
+            }
+        }
+
+        return 0
+    }
 
     NavigationSection {
         id: navSec
@@ -54,81 +93,67 @@ Item {
         accessible.name: qsTrc("appshell", "Home menu") + " " + navPanel.directionInfo
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: M3.color.surfaceContainer
+    }
+
+    M3NavigationRail {
+        id: rail
+
+        anchors.fill: parent
+        anchors.topMargin: 12
+
+        visible: root.iconsOnly
+
+        model: root.destinations
+        currentIndex: root.indexOfCurrent()
+        showLabels: false
+
+        navigationPanel: navPanel
+
+        onActivated: function (index) {
+            root.selected(root.destinations[index].name)
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
+        anchors.topMargin: 12
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
 
-        spacing: 0
+        spacing: 4
 
-        AccountInfoButton {
-            visible: root.cloudEnabled
-            title: qsTrc("appshell", "Cloud account")
+        visible: !root.iconsOnly
 
-            Layout.fillWidth: true
-            Layout.preferredHeight: 60
-            Layout.topMargin: 20
+        Repeater {
+            model: root.destinations
 
-            navigation.name: "AccountInfo"
-            navigation.panel: navPanel
-            navigation.row: 1
+            delegate: M3ListItem {
+                id: destination
 
-            checked: root.currentPageName === "account"
-            iconOnly: root.iconsOnly
+                required property int index
+                required property var modelData
 
-            onToggled: {
-                root.selected("account")
+                Layout.fillWidth: true
+
+                headline: destination.modelData.title
+                leadingIcon: destination.modelData.icon
+                selected: destination.modelData.name === root.currentPageName
+
+                navigation.panel: navPanel
+                navigation.row: destination.index
+
+                onClicked: {
+                    root.selected(destination.modelData.name)
+                }
             }
         }
 
-        RadioButtonGroup {
-            id: radioButtonList
-
+        Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
-
-            orientation: ListView.Vertical
-            spacing: 0
-
-            model: [
-                {
-                    "name": "projects",
-                    "title": qsTrc("appshell", "Project"),
-                    "icon": IconCode.NEW_FILE,
-                    "enabled": true
-                }
-            ]
-
-            currentIndex: 0
-
-            delegate: PageTabButton {
-                id: radioButtonDelegate
-
-                enabled: modelData["enabled"]
-
-                width: radioButtonList.width
-
-                navigation.name: title
-                navigation.panel: navPanel
-                navigation.row: 2 + model.index
-
-                spacing: 30
-                leftPadding: spacing
-
-                ButtonGroup.group: radioButtonList.radioButtonGroup
-                orientation: Qt.Horizontal
-                checked: modelData["name"] === root.currentPageName
-
-                title: modelData["title"]
-                iconOnly: root.iconsOnly
-
-                iconComponent: StyledIconLabel {
-                    iconCode: modelData["icon"]
-                }
-
-                onToggled: {
-                    radioButtonList.currentIndex = index
-                    root.selected(modelData["name"])
-                }
-            }
         }
     }
 }

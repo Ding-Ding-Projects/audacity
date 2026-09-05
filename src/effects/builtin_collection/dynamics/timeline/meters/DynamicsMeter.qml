@@ -3,6 +3,7 @@
  */
 import QtQuick 2.15
 import Muse.Ui
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -15,8 +16,8 @@ Rectangle {
 
     signal clicked
 
-    color: ui.theme.backgroundSecondaryColor
-    border.color: ui.theme.strokeColor
+    color: M3.color.surfaceContainer
+    border.color: M3.color.outlineVariant
     border.width: 1
     clip: true
 

@@ -8,6 +8,7 @@ import Muse.UiComponents
 
 import Audacity.AppShell
 import Audacity.Preferences
+import Audacity.M3
 
 PreferencesPage {
     id: root
@@ -40,7 +41,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         DeleteBehaviorSection {
             id: deleteBehaviorSection
@@ -58,7 +59,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         PasteBehaviorSection {
             id: pasteBehaviorSection
@@ -76,7 +77,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         AsymmetricStereoHeightsSection {
             id: asymmetricStereoHeightsSection
@@ -93,7 +94,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         MonoStereoConversionSection {
             id: monoStereoConversionSection
@@ -114,7 +115,7 @@ PreferencesPage {
             }
         }
 
-        SeparatorLine {}
+        M3Divider {}
 
         ZoomToggleSection {
             id: zoomToggleSection

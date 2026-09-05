@@ -7,6 +7,8 @@ import Muse.Ui
 import Muse.UiComponents
 import Muse.Cloud
 
+import Audacity.M3
+
 Item {
     id: root
 
@@ -28,7 +30,7 @@ Item {
             } else {
                 accessibleInfo.ignored = true
                 accessibleInfo.focused = false
-                firstButton.accessible.ignored = true
+                firstButton.navigation.accessible.ignored = true
             }
         }
     }
@@ -55,7 +57,7 @@ Item {
         }
     }
 
-    StyledTextLabel {
+    Text {
         id: cloudTitleLabel
 
         anchors.left: parent.left
@@ -63,8 +65,10 @@ Item {
 
         text: root.cloudTitle
 
-        font: ui.theme.tabBoldFont
+        font: M3.typography.titleMedium
+        color: M3.color.onSurface
         horizontalAlignment: Text.AlignLeft
+        elide: Text.ElideRight
     }
 
     Rectangle {
@@ -74,11 +78,11 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
-        color: ui.theme.backgroundPrimaryColor
+        color: M3.color.surfaceContainerLow
 
-        radius: 12
+        radius: M3.shape.large
         border.width: 1
-        border.color: ui.theme.strokeColor
+        border.color: M3.color.outlineVariant
 
         Item {
             anchors.fill: parent
@@ -99,24 +103,28 @@ Item {
 
                 spacing: 12
 
-                StyledTextLabel {
+                Text {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
                     text: Boolean(root.userIsAuthorized) ? root.userName : qsTrc("cloud", "Not signed in")
 
-                    font: ui.theme.headerBoldFont
+                    font: M3.typography.headlineSmall
+                    color: M3.color.onSurface
                     horizontalAlignment: Text.AlignLeft
+                    elide: Text.ElideRight
                 }
 
-                StyledTextLabel {
+                Text {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
                     text: Boolean(root.userIsAuthorized) ? root.userCollectionUrl : root.cloudTitle
 
-                    font: ui.theme.tabFont
+                    font: M3.typography.bodyMedium
+                    color: M3.color.onSurfaceVariant
                     horizontalAlignment: Text.AlignLeft
+                    elide: Text.ElideRight
                 }
             }
 
@@ -128,13 +136,13 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                FlatButton {
+                M3Button {
                     id: firstButton
 
                     width: (parent.width - parent.spacing) / 2
 
                     text: Boolean(root.userIsAuthorized) ? qsTrc("cloud", "My profile") : qsTrc("cloud", "Sign in")
-                    accentButton: true
+                    variant: "filled"
 
                     navigation.panel: root.navigationPanel
                     navigation.name: "FirstButton"
@@ -142,7 +150,7 @@ Item {
                     navigation.accessible.ignored: true
                     navigation.onActiveChanged: {
                         if (!navigation.active) {
-                            accessible.ignored = false
+                            navigation.accessible.ignored = false
                             accessibleInfo.ignored = true
                         }
                     }
@@ -156,13 +164,13 @@ Item {
                     }
                 }
 
-                FlatButton {
+                M3Button {
                     id: secondButton
 
                     width: (parent.width - parent.spacing) / 2
 
                     text: Boolean(root.userIsAuthorized) ? qsTrc("cloud", "Sign out") : qsTrc("cloud", "Create account")
-                    accentButton: !Boolean(root.userIsAuthorized)
+                    variant: Boolean(root.userIsAuthorized) ? "outlined" : "filled"
 
                     navigation.panel: root.navigationPanel
                     navigation.name: "SecondButton"
