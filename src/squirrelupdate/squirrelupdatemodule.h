@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "framework/global/modularity/imodulesetup.h"
+#include "framework/actions/actionable.h"
 
 namespace au::squirrelupdate {
 class SquirrelUpdateConfiguration;
@@ -37,18 +38,25 @@ private:
 };
 
 //! Registers the "check-squirrel-update" action so the Help menu and the
-//! shortcut table can reach it. Lives in the module context, the same place
-//! the command palette action is registered from in the companion module.
-class SquirrelUpdateContext : public muse::modularity::IContextSetup
+//! shortcut table can reach it, and dispatches it to the one global service.
+//!
+//! Action dispatch is a context scoped facility (muse::actions::
+//! IActionsDispatcher is a MODULE_CONTEXT_INTERFACE), while
+//! ISquirrelUpdateService is a single global export, so the registration has
+//! to happen here rather than inside the service itself.
+class SquirrelUpdateContext : public muse::modularity::IContextSetup, public muse::actions::Actionable
 {
 public:
-    SquirrelUpdateContext(const muse::modularity::ContextPtr& ctx)
-        : muse::modularity::IContextSetup(ctx) {}
+    SquirrelUpdateContext(const muse::modularity::ContextPtr& ctx, const std::shared_ptr<SquirrelUpdateService>& service)
+        : muse::modularity::IContextSetup(ctx), m_service(service) {}
 
     void registerExports() override;
     void onInit(const muse::IApplication::RunMode& mode) override;
 
 private:
+    void onCheckForUpdate();
+
     std::shared_ptr<SquirrelUpdateUiActions> m_uiActions;
+    std::shared_ptr<SquirrelUpdateService> m_service;
 };
 }

@@ -6,6 +6,7 @@
 #include "framework/global/modularity/ioc.h"
 
 #include "ui/iuiactionsregister.h"
+#include "actions/iactionsdispatcher.h"
 
 #include "internal/squirrelupdateconfiguration.h"
 #include "internal/squirrelupdateservice.h"
@@ -48,7 +49,7 @@ void SquirrelUpdateModule::onInit(const muse::IApplication::RunMode& mode)
 
 muse::modularity::IContextSetup* SquirrelUpdateModule::newContext(const muse::modularity::ContextPtr& ctx) const
 {
-    return new SquirrelUpdateContext(ctx);
+    return new SquirrelUpdateContext(ctx, m_service);
 }
 
 void SquirrelUpdateContext::registerExports()
@@ -65,6 +66,18 @@ void SquirrelUpdateContext::onInit(const muse::IApplication::RunMode& mode)
     auto actionsRegister = ioc()->resolve<muse::ui::IUiActionsRegister>(mname);
     if (actionsRegister) {
         actionsRegister->reg(m_uiActions);
+    }
+
+    auto dispatcher = ioc()->resolve<muse::actions::IActionsDispatcher>(mname);
+    if (dispatcher) {
+        dispatcher->reg(this, "check-squirrel-update", this, &SquirrelUpdateContext::onCheckForUpdate);
+    }
+}
+
+void SquirrelUpdateContext::onCheckForUpdate()
+{
+    if (m_service) {
+        m_service->checkForUpdate();
     }
 }
 }

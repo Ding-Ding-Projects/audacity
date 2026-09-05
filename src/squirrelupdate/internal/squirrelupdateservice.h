@@ -9,8 +9,6 @@
 #include "framework/global/modularity/ioc.h"
 #include "framework/global/async/asyncable.h"
 #include "framework/network/inetworkmanagercreator.h"
-#include "framework/actions/actionable.h"
-#include "framework/actions/iactionsdispatcher.h"
 
 #include "isquirrelupdateconfiguration.h"
 #include "isquirrelupdateservice.h"
@@ -18,13 +16,17 @@
 class QTimer;
 
 namespace au::squirrelupdate {
-class SquirrelUpdateService : public QObject, public ISquirrelUpdateService, public muse::async::Asyncable, public muse::actions::Actionable
+//! Dispatcher registration for "check-squirrel-update" lives in
+//! SquirrelUpdateContext (see squirrelupdatemodule.h), not here: dispatching
+//! is a context scoped facility, while this service is a single global
+//! export, and mixing the two triggers the modularity layer's own "the
+//! interface must be global" assertion.
+class SquirrelUpdateService : public QObject, public ISquirrelUpdateService, public muse::async::Asyncable
 {
     Q_OBJECT
 
     muse::GlobalInject<ISquirrelUpdateConfiguration> configuration;
     muse::GlobalInject<muse::network::INetworkManagerCreator> networkManagerCreator;
-    muse::GlobalInject<muse::actions::IActionsDispatcher> dispatcher;
 
 public:
     explicit SquirrelUpdateService(QObject* parent = nullptr);

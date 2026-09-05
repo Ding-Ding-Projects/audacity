@@ -3,6 +3,8 @@
 */
 #include "squirrelupdateservice.h"
 
+#include <string>
+
 #include <QBuffer>
 #include <QCoreApplication>
 #include <QDir>
@@ -36,8 +38,6 @@ SquirrelUpdateService::~SquirrelUpdateService() = default;
 
 void SquirrelUpdateService::init()
 {
-    dispatcher()->reg(this, "check-squirrel-update", this, &SquirrelUpdateService::checkForUpdate);
-
 #ifdef Q_OS_WIN
     if (!isSupported()) {
         LOGI() << "Not a Squirrel.Windows installation, the feed checker stays off";
@@ -164,7 +164,7 @@ void SquirrelUpdateService::checkForUpdate()
     m_lastError.clear();
 
     auto buffer = std::make_shared<QBuffer>();
-    const RetVal<Progress> progress = m_networkManager->get(url, buffer);
+    RetVal<Progress> progress = m_networkManager->get(url, buffer);
     if (!progress.ret) {
         finishWithError(QString::fromStdString(progress.ret.toString()));
         return;
@@ -229,7 +229,7 @@ void SquirrelUpdateService::downloadPackage(const ReleaseEntry& entry)
     }
 
     auto buffer = std::make_shared<QBuffer>();
-    const RetVal<Progress> progress = m_networkManager->get(packageUrl, buffer);
+    RetVal<Progress> progress = m_networkManager->get(packageUrl, buffer);
     if (!progress.ret) {
         finishWithError(QString::fromStdString(progress.ret.toString()));
         return;
@@ -285,17 +285,17 @@ void SquirrelUpdateService::finishWithError(const QString& error)
 Ret SquirrelUpdateService::restartToUpdate()
 {
     if (!isSupported()) {
-        return make_ret(Ret::Code::NotSupported, "Squirrel.Windows updates are available on Windows only");
+        return make_ret(Ret::Code::NotSupported, std::string("Squirrel.Windows updates are available on Windows only"));
     }
 
     const AvailableUpdate update = availableUpdate();
     if (!update.available) {
-        return make_ret(Ret::Code::UnknownError, "There is no verified update to apply");
+        return make_ret(Ret::Code::UnknownError, std::string("There is no verified update to apply"));
     }
 
     const QString updater = updaterPath();
     if (updater.isEmpty() || !QFileInfo::exists(updater)) {
-        return make_ret(Ret::Code::UnknownError, "Update.exe was not found beside the installation");
+        return make_ret(Ret::Code::UnknownError, std::string("Update.exe was not found beside the installation"));
     }
 
     // Squirrel takes the directory that holds RELEASES, not the RELEASES file.
@@ -309,7 +309,7 @@ Ret SquirrelUpdateService::restartToUpdate()
     QProcess applyProcess;
     applyProcess.start(updater, { "--update=" + feedDir });
     if (!applyProcess.waitForStarted()) {
-        return make_ret(Ret::Code::UnknownError, "Update.exe could not be started");
+        return make_ret(Ret::Code::UnknownError, std::string("Update.exe could not be started"));
     }
 
     // Squirrel applies the package it already downloaded into SquirrelTemp, so
@@ -317,17 +317,17 @@ Ret SquirrelUpdateService::restartToUpdate()
     // freeze the application for ever.
     if (!applyProcess.waitForFinished(10 * 60 * 1000)) {
         applyProcess.kill();
-        return make_ret(Ret::Code::UnknownError, "Update.exe did not finish in time");
+        return make_ret(Ret::Code::UnknownError, std::string("Update.exe did not finish in time"));
     }
 
     if (applyProcess.exitCode() != 0) {
-        return make_ret(Ret::Code::UnknownError, "Update.exe reported a failure");
+        return make_ret(Ret::Code::UnknownError, std::string("Update.exe reported a failure"));
     }
 
     // The shortcut launcher sits at the package root, which is what
     // --processStart expects to find.
     if (!QProcess::startDetached(updater, { "--processStart", "MaterialAudacity.exe" })) {
-        return make_ret(Ret::Code::UnknownError, "The updated application could not be started");
+        return make_ret(Ret::Code::UnknownError, std::string("The updated application could not be started"));
     }
 
     QCoreApplication::quit();
