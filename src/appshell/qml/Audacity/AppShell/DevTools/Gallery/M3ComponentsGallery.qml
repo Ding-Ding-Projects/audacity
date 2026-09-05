@@ -236,7 +236,6 @@ Rectangle {
 
         Column {
             spacing: 24
-            implicitHeight: childrenRect.height
 
             Repeater {
                 model: ["filled", "tonal", "outlined", "text", "elevated"]
@@ -293,7 +292,6 @@ Rectangle {
 
         Column {
             spacing: 16
-            implicitHeight: childrenRect.height
 
             Repeater {
                 model: ["standard", "filled", "tonal", "outlined"]
@@ -368,7 +366,6 @@ Rectangle {
 
         Column {
             spacing: 16
-            implicitHeight: childrenRect.height
 
             M3SegmentedButton {
                 model: ["Day", "Week", "Month"]
@@ -391,7 +388,6 @@ Rectangle {
 
         Column {
             spacing: 16
-            implicitHeight: childrenRect.height
 
             M3Switch { text: "On with icon"; checked: true; navigation.panel: contentPanel }
             M3Switch { text: "Off with icon" }
@@ -406,7 +402,6 @@ Rectangle {
 
         Column {
             spacing: 8
-            implicitHeight: childrenRect.height
 
             M3Checkbox { text: "Unchecked"; navigation.panel: contentPanel }
             M3Checkbox { text: "Checked"; checked: true }
@@ -421,7 +416,6 @@ Rectangle {
 
         Column {
             spacing: 8
-            implicitHeight: childrenRect.height
 
             M3RadioButton { text: "Selected"; checked: true; navigation.panel: contentPanel }
             M3RadioButton { text: "Not selected" }
@@ -498,7 +492,6 @@ Rectangle {
 
         Column {
             spacing: 20
-            implicitHeight: childrenRect.height
 
             M3TextField {
                 width: 280
@@ -556,7 +549,6 @@ Rectangle {
 
         Column {
             spacing: 16
-            implicitHeight: childrenRect.height
 
             M3SearchBar {
                 width: 360
@@ -638,7 +630,6 @@ Rectangle {
 
         Column {
             spacing: 16
-            implicitHeight: childrenRect.height
 
             Row {
                 spacing: 8
@@ -846,7 +837,6 @@ Rectangle {
 
         Column {
             spacing: 24
-            implicitHeight: childrenRect.height
 
             Repeater {
                 model: ["small", "centerAligned", "medium", "large"]
@@ -982,7 +972,6 @@ Rectangle {
 
         Column {
             spacing: 0
-            implicitHeight: childrenRect.height
 
             M3ListItem {
                 width: 400
@@ -1130,7 +1119,6 @@ Rectangle {
 
         Column {
             spacing: 16
-            implicitHeight: childrenRect.height
 
             StyledTextLabel {
                 horizontalAlignment: Text.AlignLeft

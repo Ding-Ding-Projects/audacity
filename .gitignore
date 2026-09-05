@@ -277,3 +277,12 @@ CMakeUserPresets.json
 
 .claude/settings.local.json
 _deps/
+
+# Material Audacity local installer output
+dist/
+
+# Material Audacity one-click scripts (exceptions to the build* patterns above)
+!build.bat
+!build.sh
+!build-installer.bat
+!download-dependencies.bat

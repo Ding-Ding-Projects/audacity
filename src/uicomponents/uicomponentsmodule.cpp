@@ -73,7 +73,7 @@ void UiComponentsModule::registerUiTypes()
     qmlRegisterType<TableSortFilterProxyModel>("Audacity.UiComponents", 1, 0, "TableSortFilterProxyModel");
 }
 
-void UiComponentsModule::onInit(const muse::IApplication::RunMode& mode)
+void UiComponentsModule::onPreInit(const muse::IApplication::RunMode& mode)
 {
     UNUSED(mode);
 
@@ -81,20 +81,26 @@ void UiComponentsModule::onInit(const muse::IApplication::RunMode& mode)
      * Make Roboto Flex the default user interface font.
      *
      * The framework picks the platform font in UiConfiguration::init. Rather
-     * than change the framework, Audacity replaces the default value here,
-     * after the framework has started. A family the user chose themselves is
-     * stored as a user value and still wins over this default, so nobody's
-     * preference is overwritten.
+     * than change the framework, Audacity replaces the default value here.
+     * Every module runs onPreInit before any module runs onInit, so the
+     * framework reads this value instead of the platform one. A family the
+     * user chose themselves is stored as a user value and still wins over
+     * this default, so nobody's preference is overwritten.
      */
     static const muse::Settings::Key UI_FONT_FAMILY_KEY("ui", "ui/theme/fontFamily");
     static const QString M3_FONT_FAMILY("Roboto Flex");
 
-    if (QFontDatabase::families().contains(M3_FONT_FAMILY)) {
+    if (QFontDatabase::hasFamily(M3_FONT_FAMILY)) {
         muse::settings()->setDefaultValue(UI_FONT_FAMILY_KEY,
                                           muse::Val(M3_FONT_FAMILY.toStdString()));
     } else {
         LOGW() << "Roboto Flex is not available, keeping the platform user interface font";
     }
+}
+
+void UiComponentsModule::onInit(const muse::IApplication::RunMode& mode)
+{
+    UNUSED(mode);
 }
 
 void UiComponentsModule::onDeinit()
