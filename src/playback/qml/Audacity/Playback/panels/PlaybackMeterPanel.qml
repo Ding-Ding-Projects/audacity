@@ -8,6 +8,8 @@ import QtQuick.Controls
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 import Audacity.ProjectScene 1.0
 import Audacity.Playback 1.0
 
@@ -49,7 +51,7 @@ Item {
         anchors.bottomMargin: 2
         spacing: 0
 
-        FlatButton {
+        M3IconButton {
             id: meterOptionsBtn
 
             Layout.preferredWidth: 28
@@ -61,7 +63,7 @@ Item {
             icon: IconCode.AUDIO
             //: Tooltip of the playback meter settings button
             toolTipTitle: qsTrc("playback", "Playback meter settings")
-            accentButton: popup.isOpened
+            variant: popup.isOpened ? "filled" : "standard"
 
             navigation.name: "PlaybackMeterSettings"
             navigation.panel: navPanel

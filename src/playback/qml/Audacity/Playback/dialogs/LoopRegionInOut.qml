@@ -156,7 +156,7 @@ StyledDialogView {
             Layout.rightMargin: 8
             Layout.bottomMargin: 8
 
-            FlatButton {
+            M3Button {
                 id: cancelBtn
                 text: qsTrc("global", "Cancel")
                 buttonRole: ButtonBoxModel.RejectRole
@@ -168,7 +168,7 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: applyBtn
                 text: qsTrc("global", "Apply")
                 buttonRole: ButtonBoxModel.AcceptRole

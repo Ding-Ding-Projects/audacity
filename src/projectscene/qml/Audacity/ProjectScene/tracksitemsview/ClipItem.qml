@@ -1107,7 +1107,7 @@ Rectangle {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: accessibilitySelectBtn
 
             anchors.horizontalCenter: viewsColumn.horizontalCenter
@@ -1120,9 +1120,11 @@ Rectangle {
 
             width: 55
             height: 20
+            minWidth: 0
+            horizontalPadding: 4
             text: !root.clipSelected ? qsTrc("clips", "Select") : qsTrc("clips", "Deselect")
             visible: root.clipNavigationPanel.highlight
-            normalColor: ui.theme.extra["accessibility_clip_select_button_color"]
+            variant: "filled"
 
             onClicked: {
                 if (!root.clipSelected) {

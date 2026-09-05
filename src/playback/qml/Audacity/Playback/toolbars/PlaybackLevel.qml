@@ -7,6 +7,8 @@ import QtQuick.Layouts 1.15
 import Muse.UiComponents
 import Muse.Ui 1.0
 
+import Audacity.M3
+
 import Audacity.Playback 1.0
 
 Item {
@@ -50,7 +52,7 @@ Item {
         anchors.fill: parent
         spacing: 0
 
-        FlatButton {
+        M3IconButton {
             id: popupButton
 
             Layout.preferredWidth: root.height
@@ -59,7 +61,7 @@ Item {
 
             icon: IconCode.AUDIO
             toolTipTitle: qsTrc("playback", "Playback meter settings")
-            accentButton: popup.isOpened
+            variant: popup.isOpened ? "filled" : "standard"
 
             onClicked: {
                 popup.toggleOpened()
@@ -187,7 +189,7 @@ Item {
             }
         }
 
-        FlatButton {
+        M3IconButton {
             id: resizeGrip
 
             Layout.preferredWidth: 16
@@ -214,7 +216,7 @@ Item {
                 resizeGrip.isDragging = false
             }
 
-            transparent: true
+            variant: "standard"
             icon: IconCode.DOUBLE_BAR_LINE
         }
     }
