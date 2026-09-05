@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/Audacity/Chronicle/qmldir</file>
+        <file>qml/Audacity/Chronicle/ChangelogDialog.qml</file>
+        <file>qml/Audacity/Chronicle/CloseTabsPopup.qml</file>
+        <file>qml/Audacity/Chronicle/TabGroupAppearancePopup.qml</file>
+        <file>qml/Audacity/Chronicle/TabSearchPopup.qml</file>
+        <file>qml/Audacity/Chronicle/TabStrip.qml</file>
+        <file>qml/Audacity/Chronicle/TabStripItem.qml</file>
+        <file>qml/Audacity/Chronicle/VersionHistoryPanel.qml</file>
+    </qresource>
+    <qresource prefix="/chronicle">
+        <file alias="CHANGELOG.md">../../CHANGELOG.md</file>
+    </qresource>
+</RCC>

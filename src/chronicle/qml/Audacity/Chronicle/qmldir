@@ -1,0 +1,13 @@
+# The chronicle component library: the local version history, the changelog
+# viewer and the browser style tab strip. The models are registered from C++
+# into the same Audacity.Chronicle module, see src/chronicle/chroniclemodule.cpp.
+
+depends QtQuick 2.0
+
+ChangelogDialog 1.0 ChangelogDialog.qml
+CloseTabsPopup 1.0 CloseTabsPopup.qml
+TabGroupAppearancePopup 1.0 TabGroupAppearancePopup.qml
+TabSearchPopup 1.0 TabSearchPopup.qml
+TabStrip 1.0 TabStrip.qml
+TabStripItem 1.0 TabStripItem.qml
+VersionHistoryPanel 1.0 VersionHistoryPanel.qml
