@@ -3,26 +3,34 @@ import QtQuick.Layouts
 
 import Muse.Ui
 import Muse.UiComponents
-import Muse.GraphicalEffects
 
 import Audacity.ProjectScene
 
 import Audacity.M3
 
-FlatButton {
+Item {
     id: root
 
+    property int icon: IconCode.NONE
+    property string text: ""
     property color textColor: M3.color.onSurface
+    property color iconColor: M3.color.onSurface
+
+    property alias mouseArea: clipPropertyMouseArea
+
+    signal clicked(var mouse)
 
     anchors.verticalCenter: parent.verticalCenter
     height: 16
-    margins: 2
+    implicitWidth: content.implicitWidth + 4
 
-    transparent: true
-    orientation: Qt.Horizontal
+    Accessible.role: Accessible.Button
+    Accessible.name: root.text
 
-    contentItem: RowLayout {
-        width: Math.min(implicitWidth, root.width)
+    RowLayout {
+        id: content
+
+        anchors.fill: parent
         spacing: 2
 
         StyledIconLabel {
@@ -42,5 +50,25 @@ FlatButton {
             text: root.text
             color: root.textColor
         }
+    }
+
+    MouseArea {
+        id: clipPropertyMouseArea
+
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
+
+        onClicked: function (mouse) {
+            root.clicked(mouse)
+        }
+    }
+
+    M3StateLayer {
+        anchors.fill: parent
+        color: root.textColor
+        active: root.enabled
+        hovered: clipPropertyMouseArea.containsMouse
+        pressed: clipPropertyMouseArea.containsPress
     }
 }

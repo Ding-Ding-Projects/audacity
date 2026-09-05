@@ -51,6 +51,18 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   restart banner, a manual "Check for updates" action, and an Updates
   preferences page; unsigned by design, verified only against the release
   feed's own hash
+- A hand written canonical feature completeness inventory
+  (`docs/inventory/completeness-inventory.md`) and a configure-time guard
+  (`buildscripts/checks/completeness_guard.py`) that fails when a row's
+  referenced implementation, documentation, test or capture path does not
+  exist on disk, plus a negative regression proving the guard actually goes
+  red before it is trusted; a design parity inventory skeleton
+  (`docs/inventory/design-parity-inventory.md`) naming the Material Design 3
+  specification as the project's design reference in the absence of a
+  checked-in design reference folder; and a status reporting article
+  (`docs/features/status-reporting.md`) explaining why this public
+  repository reports status through its release workflow and changelog
+  rather than a private status integration
 
 ### Changed
 

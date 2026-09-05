@@ -211,6 +211,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/buildscripts/cmake/ValidateChangelog.cmake)
 au_validate_changelog(${CMAKE_CURRENT_LIST_DIR}/CHANGELOG.md)
 
 ###########################################
+# The hand written canonical feature completeness inventory is checked
+# at configure time. See docs/inventory/completeness-inventory.md.
+include(${CMAKE_CURRENT_LIST_DIR}/buildscripts/cmake/CompletenessInventory.cmake)
+
+###########################################
 # Add source tree
 ###########################################
 if (MUSE_ENABLE_UNIT_TESTS)

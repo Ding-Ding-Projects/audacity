@@ -42,7 +42,7 @@ PreferencesPage {
 
         StyledTextLabel {
             width: parent.width
-            font: M3.type.titleMedium
+            font: M3.typography.titleMedium
             color: M3.color.onSurface
             text: qsTrc("preferences", "Automatic updates")
         }
@@ -50,7 +50,7 @@ PreferencesPage {
         StyledTextLabel {
             width: parent.width
             wrapMode: Text.WordWrap
-            font: M3.type.bodyMedium
+            font: M3.typography.bodyMedium
             color: M3.color.onSurfaceVariant
             visible: updateModel.state === root.stateNotApplicable
             text: qsTrc("preferences", "Automatic updates are not applicable on this platform. Material Audacity is packaged with Squirrel.Windows, a Windows only installer, so this build must be replaced by hand.")
@@ -75,7 +75,7 @@ PreferencesPage {
             StyledTextLabel {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                font: M3.type.bodySmall
+                font: M3.typography.bodySmall
                 color: M3.color.onSurfaceVariant
                 text: qsTrc("preferences", "This build is unsigned. A check downloads a small release feed over HTTPS and compares its hash, and never claims to verify a signature.")
             }
@@ -83,7 +83,7 @@ PreferencesPage {
             StyledTextLabel {
                 width: parent.width
                 text: qsTrc("preferences", "Feed URL: %1").arg(updateModel.feedUrl)
-                font: M3.type.bodySmall
+                font: M3.typography.bodySmall
                 color: M3.color.onSurfaceVariant
                 wrapMode: Text.WrapAnywhere
             }
@@ -91,14 +91,14 @@ PreferencesPage {
             StyledTextLabel {
                 width: parent.width
                 text: qsTrc("preferences", "Check interval: every %1 hours").arg(updateModel.checkIntervalHours)
-                font: M3.type.bodySmall
+                font: M3.typography.bodySmall
                 color: M3.color.onSurfaceVariant
             }
 
             StyledTextLabel {
                 width: parent.width
                 text: qsTrc("preferences", "Last check: %1").arg(updateModel.lastCheckDisplay)
-                font: M3.type.bodySmall
+                font: M3.typography.bodySmall
                 color: M3.color.onSurfaceVariant
             }
 
@@ -107,7 +107,7 @@ PreferencesPage {
                 wrapMode: Text.WordWrap
                 visible: updateModel.state === root.stateFailed
                 text: qsTrc("preferences", "The last check failed: %1").arg(updateModel.lastError)
-                font: M3.type.bodySmall
+                font: M3.typography.bodySmall
                 color: M3.color.error
             }
 
@@ -116,7 +116,7 @@ PreferencesPage {
                 wrapMode: Text.WordWrap
                 visible: updateModel.state === root.stateReady
                 text: qsTrc("preferences", "Version %1 is downloaded, verified and ready to install.").arg(updateModel.availableVersion)
-                font: M3.type.bodySmall
+                font: M3.typography.bodySmall
                 color: M3.color.primary
             }
 

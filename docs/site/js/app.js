@@ -315,6 +315,9 @@
     { id: 'language-modes', title: 'Language modes', file: 'docs/language-modes.md' },
     { id: 'funny-levels', title: 'Funny levels', file: 'docs/funny-levels.md' },
     { id: 'attention-support-modes', title: 'Attention support modes', file: 'docs/attention-support-modes.md' },
+    { id: 'dim-sum-surprise', title: 'Dim sum surprise', file: 'docs/dim-sum-surprise.md' },
+    { id: 'school-mode', title: 'School mode', file: 'docs/school-mode.md' },
+    { id: 'narrator', title: 'Narrator', file: 'docs/narrator.md' },
     { id: 'scheduled-settings', title: 'Scheduled settings', file: 'docs/scheduled-settings.md' },
     { id: 'personal-vocabulary', title: 'Personal vocabulary', file: 'docs/personal-vocabulary.md' },
     { id: 'notifications', title: 'Notifications', file: 'docs/notifications.md' },
@@ -334,6 +337,7 @@
     { id: 'local-history', title: 'Local version history', file: 'docs/local-history.md' },
     { id: 'emoji-switch', title: 'Emoji switch', file: 'docs/emoji-switch.md' },
     { id: 'changelog', title: 'Changelog and what is new', file: 'docs/changelog.md' },
+    { id: 'status-reporting', title: 'Status reporting', file: 'docs/status-reporting.md' },
   ];
   const LS_TABS = 'ma.docTabs.v1';
   function loadTabState() {

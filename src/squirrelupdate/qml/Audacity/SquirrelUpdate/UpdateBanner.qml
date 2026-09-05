@@ -40,7 +40,7 @@ M3Card {
 
         StyledTextLabel {
             width: parent.width
-            font: M3.type.titleSmall
+            font: M3.typography.titleSmall
             color: M3.color.onSurface
             wrapMode: Text.WordWrap
             text: qsTrc("squirrelupdate", "Material Audacity %1 is ready to install").arg(model ? model.availableVersion : "")
@@ -48,7 +48,7 @@ M3Card {
 
         StyledTextLabel {
             width: parent.width
-            font: M3.type.bodySmall
+            font: M3.typography.bodySmall
             color: M3.color.onSurfaceVariant
             wrapMode: Text.WordWrap
             text: qsTrc("squirrelupdate", "This build is unsigned. No signature is checked, only the file's own hash from the release feed.")
