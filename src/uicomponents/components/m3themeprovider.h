@@ -134,7 +134,8 @@ class M3TypographyTokens : public QObject
     Q_PROPERTY(qreal NAME##LineHeight READ NAME##LineHeight NOTIFY changed) \
     Q_PROPERTY(qreal NAME##LetterSpacing READ NAME##LetterSpacing NOTIFY changed) \
 public: \
-    QFont NAME() const { return font(QStringLiteral(#NAME)); } \
+    QFont NAME() const { return font(QStringLiteral(#NAME)); \
+    } \
     qreal NAME##LineHeight() const { return lineHeight(QStringLiteral(#NAME)); } \
     qreal NAME##LetterSpacing() const { return letterSpacing(QStringLiteral(#NAME)); } \
 private:
@@ -226,7 +227,8 @@ class M3MotionTokens : public QObject
 #define M3_DURATION(NAME, VALUE) \
     Q_PROPERTY(int NAME READ NAME NOTIFY changed) \
 public: \
-    int NAME() const { return m_reducedMotion ? 0 : VALUE; } \
+    int NAME() const { return m_reducedMotion ? 0 : VALUE; \
+    } \
 private:
 
     M3_DURATION(short1, 50)

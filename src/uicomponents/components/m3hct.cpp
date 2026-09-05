@@ -142,7 +142,7 @@ ViewingConditions ViewingConditions::make(double adaptingLuminance, double backg
 
     const double f = 0.8 + surround / 10.0;
     const double c = (f >= 0.9) ? lerp(0.59, 0.69, (f - 0.9) * 10.0)
-                    : lerp(0.525, 0.59, (f - 0.8) * 10.0);
+                     : lerp(0.525, 0.59, (f - 0.8) * 10.0);
 
     double d = discountingIlluminant
                ? 1.0
@@ -567,7 +567,9 @@ Palettes buildPalettes(unsigned int seedArgb, Variant variant)
 }
 
 namespace {
-enum class PaletteKey { Primary, Secondary, Tertiary, Error, Neutral, NeutralVariant };
+enum class PaletteKey {
+    Primary, Secondary, Tertiary, Error, Neutral, NeutralVariant
+};
 
 struct RoleTone
 {

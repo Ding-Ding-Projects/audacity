@@ -38,8 +38,7 @@ struct ViewingConditions
     double flRoot = 0.0;
     double z = 0.0;
 
-    static ViewingConditions make(double adaptingLuminance, double backgroundLstar,
-                                  double surround, bool discountingIlluminant);
+    static ViewingConditions make(double adaptingLuminance, double backgroundLstar, double surround, bool discountingIlluminant);
     static const ViewingConditions& sRgb();
 };
 
