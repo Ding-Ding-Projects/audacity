@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/Audacity/Personalize/qmldir</file>
+        <file>qml/Audacity/Personalize/PersonalizableItem.qml</file>
+        <file>qml/Audacity/Personalize/AppearanceEditorPopover.qml</file>
+        <file>qml/Audacity/Personalize/LockWizardPopover.qml</file>
+        <file>qml/Audacity/Personalize/LockUnlockPopover.qml</file>
+        <file>qml/Audacity/Personalize/QrCodeImage.qml</file>
+        <file>qml/Audacity/Personalize/SupportTicketsPage.qml</file>
+        <file>qml/Audacity/Personalize/AuthenticatorPage.qml</file>
+    </qresource>
+</RCC>

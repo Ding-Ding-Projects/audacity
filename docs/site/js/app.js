@@ -325,6 +325,11 @@
     { id: 'external-editor', title: 'External editor integration', file: 'docs/external-editor.md' },
     { id: 'docs-browser', title: 'In-app documentation browser', file: 'docs/docs-browser.md' },
     { id: 'automatic-updates', title: 'Automatic updates', file: 'docs/automatic-updates.md' },
+    { id: 'appearance-editor', title: 'Per element appearance editor', file: 'docs/appearance-editor.md' },
+    { id: 'app-rename', title: 'Renaming the application', file: 'docs/app-rename.md' },
+    { id: 'toy-locks', title: 'Toy locks', file: 'docs/toy-locks.md' },
+    { id: 'support-tickets', title: 'Support Tickets', file: 'docs/support-tickets.md' },
+    { id: 'authenticator', title: 'Built in authenticator', file: 'docs/authenticator.md' },
   ];
   const LS_TABS = 'ma.docTabs.v1';
   function loadTabState() {

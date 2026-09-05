@@ -115,9 +115,9 @@ QString TotpEngine::hotp(const QByteArray& secret, quint64 counter, int digits, 
 
     int offset = hash.at(hash.size() - 1) & 0x0F;
     quint32 binary = ((static_cast<quint32>(hash.at(offset)) & 0x7F) << 24)
-                      | ((static_cast<quint32>(hash.at(offset + 1)) & 0xFF) << 16)
-                      | ((static_cast<quint32>(hash.at(offset + 2)) & 0xFF) << 8)
-                      | (static_cast<quint32>(hash.at(offset + 3)) & 0xFF);
+                     | ((static_cast<quint32>(hash.at(offset + 1)) & 0xFF) << 16)
+                     | ((static_cast<quint32>(hash.at(offset + 2)) & 0xFF) << 8)
+                     | (static_cast<quint32>(hash.at(offset + 3)) & 0xFF);
 
     quint32 mod = 1;
     for (int i = 0; i < digits; ++i) {
@@ -135,7 +135,7 @@ QString TotpEngine::totp(const QByteArray& secret, qint64 unixSeconds, int digit
 }
 
 bool TotpEngine::verify(const QByteArray& secret, const QString& code, qint64 unixSeconds, int digits, int periodSeconds,
-                         Algorithm algorithm, int skewSteps)
+                        Algorithm algorithm, int skewSteps)
 {
     QString trimmed = code.trimmed();
     if (trimmed.size() != digits) {
@@ -154,7 +154,7 @@ bool TotpEngine::verify(const QByteArray& secret, const QString& code, qint64 un
 }
 
 QString TotpEngine::otpauthUri(const QString& issuer, const QString& account, const QByteArray& secret, int digits,
-                                int periodSeconds, Algorithm algorithm)
+                               int periodSeconds, Algorithm algorithm)
 {
     QString label = issuer.isEmpty() ? account : (issuer + ":" + account);
 

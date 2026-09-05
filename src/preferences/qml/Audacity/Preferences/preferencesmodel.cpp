@@ -237,6 +237,9 @@ void PreferencesModel::load(const QString& currentPageId)
         makeItem("updates", QT_TRANSLATE_NOOP("preferences", "Updates"), IconCode::Code::UPDATE,
                  "Preferences/UpdatesPreferencesPage.qml"),
 
+        makeItem("personalize", QT_TRANSLATE_NOOP("preferences", "Personalize"), IconCode::Code::CONFIGURE,
+                 "Preferences/PersonalizePreferencesPage.qml"),
+
         // makeItem("advanced", QT_TRANSLATE_NOOP("preferences", "Advanced options"), IconCode::Code::SETTINGS_COG, ""),
     };
 

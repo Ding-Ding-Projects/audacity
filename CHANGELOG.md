@@ -10,6 +10,14 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Personalize module: a per element appearance editor reachable from every
+  element's right click menu and Shift+right-click (typography, colour with
+  the animated rainbow option, corner radius, and per state overrides), an
+  application display name setting, toy locks with six credential policies
+  and a shared PIN keypad, a joke Support Tickets desk whose one real action
+  opens the application data folder, and a local offline authenticator with
+  an in-process rendered QR code and RFC 6238 codes, all reachable from a
+  new Personalize preferences page
 - Toolkit module: a local model manager for the Ollama HTTP API (health,
   installed models, catalog browsing, hardware fit verdicts, a batch pull
   cart with no payment concept, streaming chat, allowlisted harness

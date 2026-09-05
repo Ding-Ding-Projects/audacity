@@ -1,0 +1,16 @@
+# Audacity personalize surfaces: the per element appearance editor, the toy
+# lock wizard, the joke support desk, and the built in authenticator page.
+# AppearanceOverrides, DisplayNameSettings, LockRegistry, MutationHistory,
+# QrCodeModel, AuthenticatorModel and SupportTickets are registered into this
+# same Audacity.Personalize module from C++, see
+# src/personalize/personalizemodule.cpp.
+
+depends QtQuick 2.0
+
+PersonalizableItem 1.0 PersonalizableItem.qml
+AppearanceEditorPopover 1.0 AppearanceEditorPopover.qml
+LockWizardPopover 1.0 LockWizardPopover.qml
+LockUnlockPopover 1.0 LockUnlockPopover.qml
+QrCodeImage 1.0 QrCodeImage.qml
+SupportTicketsPage 1.0 SupportTicketsPage.qml
+AuthenticatorPage 1.0 AuthenticatorPage.qml

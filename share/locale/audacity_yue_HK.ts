@@ -4118,6 +4118,66 @@ This action 唔會 刪除 any of your 專案.</translation>
         <source>Wed</source>
         <translation>三</translation>
     </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Export as JSON</source>
+        <translation>匯出做 JSON</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Export the notifications shown here as JSON, copied to the clipboard</source>
+        <translation>將呢度顯示嘅通知匯出做 JSON，複製咗去剪貼簿</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>Hold a window open, and restore the setting when it ends</source>
+        <translation>打開一個時段，時段完咗自動變返做原本嘅設定</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>Starts from</source>
+        <translation>由邊日開始</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>Any day, no start</source>
+        <translation>邊日都得，未定開始</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>Keeps going, no end</source>
+        <translation>一直落去，未定完結</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>Where the value comes from</source>
+        <translation>數值嘅來源</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>This computer</source>
+        <translation>呢部電腦</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>An HTTPS API</source>
+        <translation>一個 HTTPS API</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>A Home Assistant switch</source>
+        <translation>一個 Home Assistant 開關</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/ScheduleEditSheet.qml" line="1" />
+        <source>Source</source>
+        <translation>來源</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/internal/personalvocabulary.cpp" line="1" />
+        <source>An entry is longer than 200 characters.</source>
+        <translation>有一項超過 200 個字。</translation>
+    </message>
 </context>
 <context>
     <name>appshell-menu-align</name>
@@ -17577,6 +17637,66 @@ It 唔會 be 載入咗.</translation>
         <translation>數值</translation>
     </message>
     <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="27" />
+        <source>Rename</source>
+        <translation>改名</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="28" />
+        <source>Locks</source>
+        <translation>鎖</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="29" />
+        <source>Authenticator</source>
+        <translation>驗證器</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="30" />
+        <source>Support Tickets</source>
+        <translation>支援案</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="41" />
+        <source>Personalize</source>
+        <translation>個人化</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="59" />
+        <source>This changes only what the title bar, About and notifications say. It never touches this application's data folder, its installer identity or its update feed.</source>
+        <translation>呢個淨係改標題欄、關於同通知講嘅名，唔會郁到呢個程式嘅數據夾、安裝程式身份或者更新來源。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="67" />
+        <source>Application name</source>
+        <translation>程式名稱</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="75" />
+        <source>Reset to "%1"</source>
+        <translation>重設做「%1」</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="94" />
+        <source>Toy locks are just for fun, never a security boundary. Recovery for any of them is deleting this folder:</source>
+        <translation>呢啲鎖淨係玩下，從來唔係保安措施。想解鎖就刪除呢個資料夾：</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="109" />
+        <source>Find a lock</source>
+        <translation>搵個鎖</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="110" />
+        <source>Element name</source>
+        <translation>元件名稱</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="126" />
+        <source>Remove</source>
+        <translation>移除</translation>
+    </message>
+    <message>
         <location filename="../../src/preferences/qml/Audacity/Preferences/internal/AdvancedTopSection.qml" line="46" />
         <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ThemeAdditionalOptionsSection.qml" line="52" />
         <source>Reset to default</source>
@@ -18586,6 +18706,26 @@ It 唔會 be 載入咗.</translation>
         <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
         <source>Check for updates</source>
         <translation>check 下有冇新版</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>A row that reads a Home Assistant switch needs this instance's long lived access token. It stays on this computer, is never shown again once entered, and is never logged.</source>
+        <translation>揀讀取 Home Assistant 開關嘅一行，要呢個 instance 嘅長期存取 token。呢個 token 淨係留喺呢部電腦，一入咗就唔會再顯示，亦都唔會寫入記錄。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>Home Assistant access token</source>
+        <translation>Home Assistant 存取 token</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>A token is stored.</source>
+        <translation>已經有一個 token 存咗喺度。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceScheduleSection.qml" line="1" />
+        <source>No token is stored.</source>
+        <translation>未有存任何 token。</translation>
     </message>
 </context>
 <context>
@@ -23821,6 +23961,320 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilderSheet.qml" line="129" />
         <source>Regular expression builder</source>
         <translation>正則表達式建構器</translation>
+    </message>
+</context>
+<context>
+    <name>personalize</name>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/PersonalizableItem.qml" line="52" />
+        <source>Edit appearance…</source>
+        <translation>編輯外觀…</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/PersonalizableItem.qml" line="53" />
+        <source>Lock again…</source>
+        <translation>再鎖一次…</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/PersonalizableItem.qml" line="55" />
+        <source>Remove lock…</source>
+        <translation>解除呢個鎖…</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/PersonalizableItem.qml" line="57" />
+        <source>Lock this element…</source>
+        <translation>鎖住呢個元件…</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/PersonalizableItem.qml" line="81" />
+        <source>Locked, just for fun</source>
+        <translation>鎖咗，純粹玩下</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="30" />
+        <source>Edit appearance</source>
+        <translation>編輯外觀</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="70" />
+        <source>Element: %1</source>
+        <translation>元件：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="79" />
+        <source>Find a property</source>
+        <translation>搵一個屬性</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="96" />
+        <source>Typography</source>
+        <translation>字體排版</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="101" />
+        <source>Font family</source>
+        <translation>字體</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="118" />
+        <source>Size</source>
+        <translation>大細</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="126" />
+        <source>Letter spacing</source>
+        <translation>字距</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="139" />
+        <source>Italic</source>
+        <translation>斜體</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="145" />
+        <source>Underline</source>
+        <translation>底線</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="151" />
+        <source>Strikethrough</source>
+        <translation>刪除線</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="157" />
+        <source>Small caps</source>
+        <translation>小型大寫字</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="163" />
+        <source>Colour</source>
+        <translation>顏色</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="177" />
+        <source>Shape and spacing</source>
+        <translation>形狀同間距</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="182" />
+        <source>Corner radius</source>
+        <translation>角半徑</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="189" />
+        <source>A property with no visible control here is a property this small editor does not yet cover.</source>
+        <translation>呢度冇控制項嘅屬性，即係呢個細細個編輯器仲未搞得掂。</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="198" />
+        <source>Reset this state</source>
+        <translation>重設呢個狀態</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AppearanceEditorPopover.qml" line="212" />
+        <source>Reset element</source>
+        <translation>重設成個元件</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="28" />
+        <source>PIN</source>
+        <translation>PIN 碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="29" />
+        <source>Password</source>
+        <translation>密碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="30" />
+        <source>PIN and password</source>
+        <translation>PIN 碼加密碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="31" />
+        <source>Password and one time code</source>
+        <translation>密碼加一次性驗證碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="32" />
+        <source>PIN and one time code</source>
+        <translation>PIN 碼加一次性驗證碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="33" />
+        <source>Password, PIN and one time code</source>
+        <translation>密碼、PIN 碼加一次性驗證碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="43" />
+        <source>Lock this element</source>
+        <translation>鎖住呢個元件</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="64" />
+        <source>This is just for fun, not security: anyone with access to this computer can undo it by deleting the application's data folder. It never encrypts anything.</source>
+        <translation>純粹玩下，唔係做保安：邊個用緊呢部機都可以刪除應用程式嘅數據夾嚟解鎖，佢從來冇加密過任何嘢。</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="86" />
+        <source>One time code secret (base32)</source>
+        <translation>一次性驗證碼密鑰（base32）</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="87" />
+        <source>Set this up from the authenticator page, then paste the secret here</source>
+        <translation>去驗證器頁面設定好，然後將密鑰貼喺呢度</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="93" />
+        <source>Unlock duration in minutes (0 means until the app closes)</source>
+        <translation>解鎖持續分鐘數（0 即係去到程式關咗為止）</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="98" />
+        <source>Locked again every time the application starts</source>
+        <translation>每次開程式都自動再鎖一次</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="119" />
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="112" />
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockWizardPopover.qml" line="125" />
+        <source>Create lock</source>
+        <translation>整個鎖</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="29" />
+        <source>Unlock</source>
+        <translation>解鎖</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="45" />
+        <source>That did not match. Recovery is deleting the application's data folder, shown on the Personalize preferences page.</source>
+        <translation>啱唔到。想解鎖不如刪除應用程式嘅數據夾，呢個路徑喺 Personalize 偏好設定頁見到。</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="60" />
+        <source>PIN (leave blank if not required)</source>
+        <translation>PIN 碼（唔使就留空）</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="76" />
+        <source>Del</source>
+        <translation>刪</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="92" />
+        <source>Password (leave blank if not required)</source>
+        <translation>密碼（唔使就留空）</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/LockUnlockPopover.qml" line="97" />
+        <source>One time code (leave blank if not required)</source>
+        <translation>一次性驗證碼（唔使就留空）</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="37" />
+        <source>Support Tickets</source>
+        <translation>支援案</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="59" />
+        <source>Category</source>
+        <translation>類別</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="60" />
+        <source>Locked out</source>
+        <translation>俾自己鎖咗出去</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="65" />
+        <source>Describe the problem</source>
+        <translation>講吓問題係咩</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="70" />
+        <source>Open a ticket</source>
+        <translation>開個案</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="94" />
+        <source>Ticket %1, resolved</source>
+        <translation>案 %1，已解決</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="122" />
+        <source>Open the application data folder</source>
+        <translation>開應用程式數據夾</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/SupportTicketsPage.qml" line="127" />
+        <source>Copy the data folder path</source>
+        <translation>複製數據夾路徑</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="49" />
+        <source>Authenticator</source>
+        <translation>驗證器</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="56" />
+        <source>This machine's clock looks unusual. One time codes depend on the clock; if they are rejected everywhere, check the date and time first.</source>
+        <translation>呢部機個時鐘睇落怪怪哋。一次性驗證碼靠個鐘計，如果周圍都話唔啱，先檢查下日期時間。</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="104" />
+        <source>%1 seconds left, next code %2</source>
+        <translation>仲有 %1 秒，下個碼係 %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="107" />
+        <source>Remove</source>
+        <translation>移除</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="112" />
+        <source>Add an entry</source>
+        <translation>加一項</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="120" />
+        <source>Scan this with your authenticator, or type the secret in by hand.</source>
+        <translation>用你嘅驗證器嚟掃，或者自己打個密鑰入去都得。</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="139" />
+        <source>Issuer</source>
+        <translation>發行方</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="147" />
+        <source>Account</source>
+        <translation>帳戶</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="154" />
+        <source>Type the current code to confirm pairing</source>
+        <translation>打入而家個碼嚟確認配對</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="164" />
+        <source>Confirm and add</source>
+        <translation>確認並加入</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="180" />
+        <source>Or paste an otpauth:// link</source>
+        <translation>或者貼個 otpauth:// 連結</translation>
+    </message>
+    <message>
+        <location filename="../../src/personalize/qml/Audacity/Personalize/AuthenticatorPage.qml" line="184" />
+        <source>Import</source>
+        <translation>匯入</translation>
     </message>
 </context>
 <context>

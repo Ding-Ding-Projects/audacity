@@ -44,6 +44,7 @@ qt_add_qml_module(preferences_qml
         ExperiencePreferencesPage.qml
         ExportPreferencesPage.qml
         GeneralPreferencesPage.qml
+        PersonalizePreferencesPage.qml
         internal/AccentColorsSection.qml
         internal/AdvancedTopSection.qml
         internal/AsioSection.qml

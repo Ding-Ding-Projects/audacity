@@ -18,7 +18,9 @@ namespace au::personalize {
 class TotpEngine
 {
 public:
-    enum class Algorithm { Sha1, Sha256, Sha512 };
+    enum class Algorithm {
+        Sha1, Sha256, Sha512
+    };
 
     //! Decodes a base32 secret (RFC 4648, case insensitive, padding optional).
     static QByteArray base32Decode(const QString& base32);
@@ -38,11 +40,11 @@ public:
     //! True if `code` matches the TOTP at `unixSeconds` within `skewSteps`
     //! periods either side, allowing for ordinary clock drift.
     static bool verify(const QByteArray& secret, const QString& code, qint64 unixSeconds, int digits, int periodSeconds,
-                        Algorithm algorithm, int skewSteps = 1);
+                       Algorithm algorithm, int skewSteps = 1);
 
     //! Builds an otpauth://totp/ URI for QR pairing.
-    static QString otpauthUri(const QString& issuer, const QString& account, const QByteArray& secret, int digits,
-                               int periodSeconds, Algorithm algorithm);
+    static QString otpauthUri(const QString& issuer, const QString& account, const QByteArray& secret, int digits, int periodSeconds,
+                              Algorithm algorithm);
 
     static QCryptographicHash::Algorithm qtAlgorithm(Algorithm algorithm);
     static QString algorithmName(Algorithm algorithm);

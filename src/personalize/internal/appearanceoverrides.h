@@ -33,9 +33,8 @@ public:
     explicit AppearanceOverrides(QObject* parent = nullptr);
 
     Q_INVOKABLE void setProperty(const QString& elementId, const QString& property, const QVariant& value,
-                                  const QString& state = QString());
-    Q_INVOKABLE QVariant getProperty(const QString& elementId, const QString& property,
-                                      const QString& state = QString()) const;
+                                 const QString& state = QString());
+    Q_INVOKABLE QVariant getProperty(const QString& elementId, const QString& property, const QString& state = QString()) const;
     Q_INVOKABLE bool hasProperty(const QString& elementId, const QString& property, const QString& state = QString()) const;
 
     Q_INVOKABLE void resetProperty(const QString& elementId, const QString& property, const QString& state = QString());

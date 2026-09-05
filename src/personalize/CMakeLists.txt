@@ -38,6 +38,7 @@ set(MODULE_LINK
     muse::uicomponents_qml
     muse::ui
     muse::global
+    Qt::Gui
 )
 
 setup_module()
