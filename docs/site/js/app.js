@@ -319,6 +319,12 @@
     { id: 'personal-vocabulary', title: 'Personal vocabulary', file: 'docs/personal-vocabulary.md' },
     { id: 'notifications', title: 'Notifications', file: 'docs/notifications.md' },
     { id: 'super-confirmation', title: 'Super confirmation', file: 'docs/super-confirmation.md' },
+    { id: 'ollama-suite-manager', title: 'Local model manager', file: 'docs/ollama-suite-manager.md' },
+    { id: 'exports', title: 'Universal export', file: 'docs/exports.md' },
+    { id: 'bulk-actions', title: 'Bulk actions', file: 'docs/bulk-actions.md' },
+    { id: 'external-editor', title: 'External editor integration', file: 'docs/external-editor.md' },
+    { id: 'docs-browser', title: 'In-app documentation browser', file: 'docs/docs-browser.md' },
+    { id: 'automatic-updates', title: 'Automatic updates', file: 'docs/automatic-updates.md' },
   ];
   const LS_TABS = 'ma.docTabs.v1';
   function loadTabState() {

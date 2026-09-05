@@ -41,6 +41,8 @@ that its file does not carry.
 | Tab search, this strip | `src/chronicle/qml/Audacity/Chronicle/TabSearchPopup.qml` | `TabSearchStripQuery` | forwarded | the tab strip that opened the popup |
 | Tab search, inside a group | `src/chronicle/qml/Audacity/Chronicle/TabSearchPopup.qml` | `TabSearchGroupQuery` | forwarded | the tab strip that opened the popup |
 | Tab search, groups by name | `src/chronicle/qml/Audacity/Chronicle/TabSearchPopup.qml` | `TabSearchGroupsQuery` | forwarded | the tab strip that opened the popup |
+| Toolkit, local model manager search | `src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml` | `OllamaModelSearch` | yes | `toolkit-ollama` |
+| Toolkit, documentation browser search | `src/toolkit/qml/Audacity/Toolkit/DocsBrowserPage.qml` | `DocsBrowserSearch` | yes | `toolkit-docs` |
 | Tab search, every strip | `src/chronicle/qml/Audacity/Chronicle/TabSearchPopup.qml` | `TabSearchAllQuery` | forwarded | the tab strip that opened the popup |
 | Notification centre | `src/experience/qml/Audacity/Experience/NotificationCentre.qml` | `NotificationCentreSearch` | forwarded | the application window that opens the centre |
 | Component gallery, plain search bar | `src/appshell/qml/Audacity/AppShell/DevTools/Gallery/M3ComponentsGallery.qml` | `GallerySearchBarPlain` | demonstration | component demonstration, no builder by design |

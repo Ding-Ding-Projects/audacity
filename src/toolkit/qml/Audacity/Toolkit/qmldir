@@ -1,0 +1,17 @@
+# Audacity toolkit surfaces: the local model manager, universal export, bulk
+# selection, external editor handoff, the in-app documentation browser and
+# reusable failure recovery. OllamaClient, BulkSelectionModel, PullCartModel,
+# DocsIndex and ExternalEditorService are registered into this same
+# Audacity.Toolkit module from C++, see src/toolkit/toolkitmodule.cpp.
+
+module Audacity.Toolkit
+
+depends QtQuick 2.0
+depends Audacity.M3 1.0
+depends Audacity.Companion 1.0
+
+OllamaPage 1.0 OllamaPage.qml
+ExportSheet 1.0 ExportSheet.qml
+BulkSelectionController 1.0 BulkSelectionController.qml
+DocsBrowserPage 1.0 DocsBrowserPage.qml
+RecoveryCard 1.0 RecoveryCard.qml

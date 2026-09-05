@@ -77,6 +77,8 @@ add_subdirectory(uicomponents)
 
 add_subdirectory(companion)
 
+add_subdirectory(toolkit)
+
 add_subdirectory(chronicle)
 
 add_subdirectory(personalize)

@@ -10,6 +10,15 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Toolkit module: a local model manager for the Ollama HTTP API (health,
+  installed models, catalog browsing, hardware fit verdicts, a batch pull
+  cart with no payment concept, streaming chat, allowlisted harness
+  profiles), a universal export service (JSON, JSON Lines, YAML, TOML, XML,
+  CSV, TSV, Markdown, HTML, SQL and a store-only ZIP archive) with
+  field-dropping disclosure, a reusable bulk selection control, external
+  code editor detection and handoff, an in-app documentation browser
+  bundling the feature articles for offline reading, and a reusable failure
+  recovery card, all reachable from a new Toolkit preferences page
 - Language mode setting with English, playful Hong Kong Cantonese and a
   bilingual mode, applied live to the interface translator where the platform
   allows it
@@ -24,6 +33,16 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 - A super confirmation gate for destructive actions, with two independent
   keys, a full range slider and an emergency exit
 - A "Language and accessibility" preferences page collecting all of the above
+- A command palette on Ctrl+Shift+F that indexes every action, preferences
+  page, setting and appearance control, with rich inline controls and
+  teleport to the exact destination
+- A regular expression builder workbench with guided and raw construction,
+  live matches and captures, saved test cases and snippets, anchored beside
+  every search field that offers it
+- A background Squirrel.Windows update checker with a non-blocking ready to
+  restart banner, a manual "Check for updates" action, and an Updates
+  preferences page; unsigned by design, verified only against the release
+  feed's own hash
 
 ## 4.0.0-material.1 - 2026-09-05
 

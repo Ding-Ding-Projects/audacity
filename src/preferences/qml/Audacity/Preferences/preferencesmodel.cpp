@@ -231,6 +231,12 @@ void PreferencesModel::load(const QString& currentPageId)
         makeItem("plugin", QT_TRANSLATE_NOOP("preferences",
                                              "Plugins"), IconCode::Code::PLUGIN, "Preferences/PluginPreferencesPage.qml"),
 
+        makeItem("toolkit", QT_TRANSLATE_NOOP("preferences",
+                                              "Toolkit"), IconCode::Code::CONFIGURE, "Preferences/ToolkitPreferencesPage.qml"),
+
+        makeItem("updates", QT_TRANSLATE_NOOP("preferences", "Updates"), IconCode::Code::UPDATE,
+                 "Preferences/UpdatesPreferencesPage.qml"),
+
         // makeItem("advanced", QT_TRANSLATE_NOOP("preferences", "Advanced options"), IconCode::Code::SETTINGS_COG, ""),
     };
 

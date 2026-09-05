@@ -2061,6 +2061,12 @@
         <source>Create new workspace</source>
         <translation>Create 新嘅 workspace</translation>
     </message>
+    <message>
+        <location filename="../../src/squirrelupdate/internal/squirrelupdateuiactions.cpp" line="18" />
+        <source>Check for updates</source>
+        <extracomment>Action title: shown as a menu item; keep it short</extracomment>
+        <translation>check 下有冇新版</translation>
+    </message>
 </context>
 <context>
     <name>action_description</name>
@@ -3633,6 +3639,12 @@
         <source>Change track sample rate</source>
         <translation>Change 音軌 取樣率</translation>
     </message>
+    <message>
+        <location filename="../../src/squirrelupdate/internal/squirrelupdateuiactions.cpp" line="20" />
+        <source>Checks the unsigned Squirrel.Windows release feed for a newer version</source>
+        <extracomment>Action description: shown as a tooltip; can be a full sentence</extracomment>
+        <translation>check 吓冇簽名嘅 Squirrel.Windows release feed 有冇新版本</translation>
+    </message>
 </context>
 <context>
     <name>appshell</name>
@@ -3841,8 +3853,16 @@ This action 唔會 刪除 any of your 專案.</translation>
     </message>
     <message>
         <location filename="../../src/appshell/qml/Audacity/AppShell/maintoolbarmodel.cpp" line="94" />
+        <location filename="../../src/appshell/qml/Audacity/AppShell/WindowContent.qml" line="138" />
         <source>Home</source>
         <translation>首頁</translation>
+    </message>
+    <message>
+        <location filename="../../src/appshell/qml/Audacity/AppShell/WindowContent.qml" line="139" />
+        <location filename="../../src/appshell/qml/Audacity/AppShell/WindowContent.qml" line="144" />
+        <location filename="../../src/appshell/qml/Audacity/AppShell/WindowContent.qml" line="149" />
+        <source>Window</source>
+        <translation>視窗</translation>
     </message>
     <message>
         <location filename="../../src/appshell/qml/Audacity/AppShell/maintoolbarmodel.cpp" line="99" />
@@ -18507,6 +18527,66 @@ It 唔會 be 載入咗.</translation>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/preferencesmodel.cpp" line="237" />
+        <source>Updates</source>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Automatic updates</source>
+        <translation>自動更新</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Automatic updates are not applicable on this platform. Material Audacity is packaged with Squirrel.Windows, a Windows only installer, so this build must be replaced by hand.</source>
+        <translation>呢個平台唔支援自動更新。Material Audacity 用 Squirrel.Windows 打包，係 Windows 專屬安裝程式，所以呢個版本要自己手動換。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Check for updates automatically</source>
+        <translation>自動 check 新版</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>This build is unsigned. A check downloads a small release feed over HTTPS and compares its hash, and never claims to verify a signature.</source>
+        <translation>呢個版本冇簽名。check 新版只係用 HTTPS download 一個細細嘅 release feed 對哈希，從來冇話幫你驗簽名。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Feed URL: %1</source>
+        <translation>Feed 網址：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Check interval: every %1 hours</source>
+        <translation>每 %1 個鐘 check 一次</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Last check: %1</source>
+        <translation>上次 check：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>The last check failed: %1</source>
+        <translation>上次 check 失敗：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Version %1 is downloaded, verified and ready to install.</source>
+        <translation>版本 %1 已經 download 同驗證好，可以安裝喇。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Checking…</source>
+        <translation>check 緊……</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml" line="1" />
+        <source>Check for updates</source>
+        <translation>check 下有冇新版</translation>
+    </message>
 </context>
 <context>
     <name>preferences/spectrogram</name>
@@ -23477,6 +23557,471 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <location filename="../../au3/libraries/au3-xml/XMLFileReader.cpp" line="173" />
         <source>Could not parse XML</source>
         <translation>搞唔掂,冇辦法 parse XML</translation>
+    </message>
+</context>
+<context>
+    <name>companion</name>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="113" />
+        <source>Pattern</source>
+        <translation>樣式</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="114" />
+        <source>Type a pattern, or build one below</source>
+        <translation>打個樣式,或者落面砌一個</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="117" />
+        <source>%1 at offset %2</source>
+        <translation>第 %2 個位有 %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="118" />
+        <source>Applies to: %1</source>
+        <translation>應用喺: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="133" />
+        <source>Use this pattern</source>
+        <translation>用呢個樣式</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="142" />
+        <source>Escape as literal</source>
+        <translation>當做原字轉義</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="156" />
+        <source>Flags</source>
+        <translation>旗標</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="168" />
+        <source>Ignore case</source>
+        <translation>唔理大小楷</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="178" />
+        <source>Multiline</source>
+        <translation>多行</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="188" />
+        <source>Dot matches newline</source>
+        <translation>句號都撈埋換行</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="198" />
+        <source>Extended</source>
+        <translation>擴展模式</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="208" />
+        <source>Unicode properties</source>
+        <translation>Unicode 屬性</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="227" />
+        <source>Build</source>
+        <translation>起樣式</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="281" />
+        <source>Wrap in a capture group</source>
+        <translation>包一個捕捉群組</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="287" />
+        <source>Wrap in an atomic group</source>
+        <translation>包一個原子群組</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="303" />
+        <source>What this pattern says</source>
+        <translation>呢個樣式想講咩</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="351" />
+        <source>Parse tree</source>
+        <translation>解析樹</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="380" />
+        <source>No pattern yet.</source>
+        <translation>仲未有樣式。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="387" />
+        <source>(the brackets in this pattern are not balanced)</source>
+        <translation>(呢個樣式嘅括號冇對齊)</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="403" />
+        <source>Sample text</source>
+        <translation>樣本文字</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="413" />
+        <source>Sample</source>
+        <translation>樣本</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="415" />
+        <source>The sample was shortened before it was matched.</source>
+        <translation>樣本喺配對之前已經被截短。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="427" />
+        <source>%1 matches in %2 ms</source>
+        <translation>喺 %2 毫秒內揾到 %1 個配對</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="427" />
+        <source>The pattern is not valid, so nothing was matched.</source>
+        <translation>樣式唔啱,乜都冇配到。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="453" />
+        <source>Match %1 at %2: %3</source>
+        <translation>配對 %1,喺 %2:%3</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="468" />
+        <source>Group %1 %2: %3</source>
+        <translation>群組 %1 %2:%3</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="468" />
+        <source>did not participate</source>
+        <translation>冇參與</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="489" />
+        <source>Replacement template</source>
+        <translation>取代範本</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="492" />
+        <source>Use \\1 or \\g&lt;name&gt; to insert a captured group.</source>
+        <translation>用 \1 或者 \g&lt;name&gt; 嚟插入一個捕捉群組。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="519" />
+        <source>Backtracking risk</source>
+        <translation>回溯風險</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="531" />
+        <source>Nothing in this pattern looks likely to backtrack badly.</source>
+        <translation>呢個樣式睇落唔似會嚴重回溯。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="569" />
+        <source>Adversarial input warning: a pattern like this one can be made to take an unbounded </source>
+        <translation>惡意輸入警告:呢種樣式可以俾人搞到要花無限</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="584" />
+        <source>Saved test cases</source>
+        <translation>已儲存嘅測試個案</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="597" />
+        <source>Name</source>
+        <translation>名</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="601" />
+        <source>Save</source>
+        <translation>儲存</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="629" />
+        <source>Load</source>
+        <translation>載入</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="636" />
+        <source>Remove this test case</source>
+        <translation>移除呢個測試個案</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="647" />
+        <source>Export JSON</source>
+        <translation>匯出 JSON</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="655" />
+        <source>Import JSON</source>
+        <translation>匯入 JSON</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="661" />
+        <source>That is not a valid workbench document.</source>
+        <translation>呢個唔係有效嘅工作台文件。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="676" />
+        <source>Workbench JSON</source>
+        <translation>工作台 JSON</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilder.qml" line="677" />
+        <source>Saved test cases live in %1</source>
+        <translation>已儲存嘅測試個案放喺 %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="176" />
+        <source>Search commands, settings, panels and documentation</source>
+        <translation>搵指令、設定、面板同文件</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="193" />
+        <source>Regex</source>
+        <translation>正則</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="195" />
+        <source>Match the search box as a regular expression</source>
+        <translation>將搜尋框當正則表達式嚟配對</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="206" />
+        <source>Show the palette as a card</source>
+        <translation>將面板顯示做卡片</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="206" />
+        <source>Show the palette as a full window</source>
+        <translation>將面板顯示做全螢幕</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="224" />
+        <source>That regular expression is not valid: %1</source>
+        <translation>呢個正則表達式唔啱:%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="286" />
+        <source>Nothing matches that search.</source>
+        <translation>搵唔到符合嘅嘢。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="294" />
+        <source>%1 results. Arrow keys move, Enter activates, Tab reaches the inline controls, Escape closes.</source>
+        <translation>搵到 %1 個結果。方向鍵移動,Enter 啟動,Tab 去到內嵌控制項,Escape 關閉。</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/CommandPalette.qml" line="315" />
+        <source>Command palette search</source>
+        <translation>指令面板搜尋</translation>
+    </message>
+    <message>
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilderSheet.qml" line="74" />
+        <location filename="../../src/companion/qml/Audacity/Companion/RegexBuilderSheet.qml" line="129" />
+        <source>Regular expression builder</source>
+        <translation>正則表達式建構器</translation>
+    </message>
+</context>
+<context>
+    <name>toolkit</name>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="60" />
+        <source>Local model manager</source>
+        <translation>本機模型管家</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="63" />
+        <source>Not connected</source>
+        <translation>未連線</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="77" />
+        <source>Refresh</source>
+        <translation>重新整理</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="90" />
+        <source>The local model runtime is not reachable at %1. Install it and start it, then retry.</source>
+        <translation>本機模型引擎喺 %1 揾唔到。裝好、開返佢，再試多次。</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="98" />
+        <source>Search installed and catalog models</source>
+        <translation>搜尋已裝同目錄入面嘅模型</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="112" />
+        <source>Installed models</source>
+        <translation>已安裝嘅模型</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="126" />
+        <source>No installed models were found yet. Connect to the local runtime to list them.</source>
+        <translation>暫時未搵到已裝嘅模型。連返本機引擎先睇到清單。</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="133" />
+        <source>Cart: %1 model(s) queued for pull</source>
+        <translation>下載籃：排咗 %1 個模型等落載</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/OllamaPage.qml" line="139" />
+        <source>Add a catalog model to schedule a local download. Nothing here is bought or sold.</source>
+        <translation>喺目錄揀個模型就會安排本機落載。呢度冇買賣，淨係落載。</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="27" />
+        <source>That did not work.</source>
+        <translation>呢次唔work喎。</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="62" />
+        <source>Retry</source>
+        <translation>再試一次</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="63" />
+        <source>Retry the failed operation</source>
+        <translation>重試啱啱失敗嘅操作</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="69" />
+        <source>Open logs folder</source>
+        <translation>開日誌資料夾</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="70" />
+        <source>Open the folder holding the diagnostic logs</source>
+        <translation>開返裝住診斷日誌嘅資料夾</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="77" />
+        <source>Copy diagnostic</source>
+        <translation>複製診斷資料</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml" line="78" />
+        <source>Copy the diagnostic details to the clipboard</source>
+        <translation>將診斷詳情複製去剪貼簿</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/ExportSheet.qml" line="64" />
+        <source>Export</source>
+        <translation>匯出</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/ExportSheet.qml" line="69" />
+        <source>%1 row(s) will be exported.</source>
+        <translation>將會匯出 %1 行資料。</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/ExportSheet.qml" line="99" />
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/ExportSheet.qml" line="104" />
+        <source>Choose destination and export</source>
+        <translation>揀個地方然後匯出</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="46" />
+        <source>%1 selected (every match)</source>
+        <translation>已揀 %1 樣（全部符合嘅）</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="48" />
+        <source>%1 selected</source>
+        <translation>已揀 %1 樣</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="52" />
+        <source>Select page</source>
+        <translation>揀晒呢版</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="58" />
+        <source>Select all matches</source>
+        <translation>揀晒全部符合嘅</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="64" />
+        <source>Invert</source>
+        <translation>反選</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="70" />
+        <source>Clear</source>
+        <translation>清空</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="78" />
+        <source>Export selected</source>
+        <translation>匯出已揀嘅</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/BulkSelectionController.qml" line="32" />
+        <source>Delete</source>
+        <translation>刪除</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/DocsBrowserPage.qml" line="46" />
+        <source>Search articles</source>
+        <translation>搜尋文章</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/DocsBrowserPage.qml" line="65" />
+        <source>Remove bookmark</source>
+        <translation>移除書籤</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/DocsBrowserPage.qml" line="107" />
+        <source>Choose an article</source>
+        <translation>揀篇文章睇下</translation>
+    </message>
+    <message>
+        <location filename="../../src/toolkit/qml/Audacity/Toolkit/DocsBrowserPage.qml" line="129" />
+        <source>Suggested articles</source>
+        <translation>建議睇埋呢啲</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/ToolkitPreferencesPage.qml" line="30" />
+        <source>Documentation</source>
+        <translation>使用說明</translation>
+    </message>
+</context>
+<context>
+    <name>squirrelupdate</name>
+    <message>
+        <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/UpdateBanner.qml" line="1" />
+        <source>Update ready. %1</source>
+        <translation>新版整好喇。%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/UpdateBanner.qml" line="1" />
+        <source>Material Audacity %1 is ready to install</source>
+        <translation>Material Audacity %1 已經 ready，可以裝喇</translation>
+    </message>
+    <message>
+        <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/UpdateBanner.qml" line="1" />
+        <source>This build is unsigned. No signature is checked, only the file's own hash from the release feed.</source>
+        <translation>呢個版本冇簽名。冇 check 簽名，淨係對 release feed 度個檔案哈希。</translation>
+    </message>
+    <message>
+        <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/UpdateBanner.qml" line="1" />
+        <source>Restart to install update</source>
+        <translation>重新啟動嚟裝新版</translation>
+    </message>
+    <message>
+        <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/UpdateBanner.qml" line="1" />
+        <source>Later</source>
+        <translation>遲啲先</translation>
+    </message>
+    <message>
+        <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/squirrelupdatemodel.cpp" line="1" />
+        <source>No check has run yet in this session.</source>
+        <translation>今次開機仲未 check 過。</translation>
     </message>
 </context>
 </TS>

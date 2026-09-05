@@ -114,6 +114,15 @@ GROUPS = [
         ],
     ),
     (
+        "0010-m3-list-table-and-avatar",
+        "Material Design 3 tables, page indicators and account avatars",
+        [
+            "framework/uicomponents/qml/Muse/UiComponents/StyledTableView.qml",
+            "framework/uicomponents/qml/Muse/UiComponents/PageIndicator.qml",
+            "framework/cloud/qml/Muse/Cloud/AccountAvatar.qml",
+        ],
+    ),
+    (
         "0007-m3-interactive-dialogs",
         "Material Design 3 standard message dialogs",
         [

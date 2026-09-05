@@ -48,11 +48,13 @@
 #include "playback/playbackmodule.h"
 #include "trackedit/trackeditmodule.h"
 #include "spectrogram/spectrogrammodule.h"
+#include "squirrelupdate/squirrelupdatemodule.h"
 #include "experience/experiencemodule.h"
 #include "record/recordmodule.h"
 #include "uicomponents/uicomponentsmodule.h"
 #include "chronicle/chroniclemodule.h"
 #include "companion/companionmodule.h"
+#include "toolkit/toolkitmodule.h"
 #include "personalize/personalizemodule.h"
 #include "effects/effects_base/effectsmodule.h"
 #include "effects/builtin/builtineffectsmodule.h"
@@ -171,6 +173,7 @@ std::shared_ptr<muse::IApplication> AppFactory::newGuiApp(const std::shared_ptr<
     app->addModule(new au::preferences::PreferencesModule());
     app->addModule(new au::uicomponents::UiComponentsModule());
     app->addModule(new au::companion::CompanionModule());
+    app->addModule(new au::toolkit::ToolkitModule());
     app->addModule(new au::personalize::PersonalizeModule());
     app->addModule(new au::extensions::AudacityExtensionsModule());
     app->addModule(new au::effects::AudioUnitEffectsModule());
@@ -186,6 +189,7 @@ std::shared_ptr<muse::IApplication> AppFactory::newGuiApp(const std::shared_ptr<
     app->addModule(new au::record::RecordModule());
     app->addModule(new au::trackedit::TrackeditModule());
     app->addModule(new au::spectrogram::SpectrogramModule());
+    app->addModule(new au::squirrelupdate::SquirrelUpdateModule());
     app->addModule(new au::experience::ExperienceModule());
     app->addModule(new au::project::ProjectModule());
     app->addModule(new au::importexport::ExporterModule());

@@ -119,7 +119,9 @@ qt_add_qml_module(preferences_qml
         PreferencesPage.qml
         ShortcutsPreferencesPage.qml
         SpectrogramPreferencesPage.qml
+        ToolkitPreferencesPage.qml
         UpdatePreferencesPage.qml
+        UpdatesPreferencesPage.qml
     RESOURCES
         resources/AsymmetricStereoHeights.svg
         resources/StereoHeightsCursor.png
@@ -131,4 +133,4 @@ qt_add_qml_module(preferences_qml
 
 fixup_qml_module_dependencies(preferences_qml)
 
-target_link_libraries(preferences_qml PRIVATE audacity_extensions experience_qml)
+target_link_libraries(preferences_qml PRIVATE audacity_extensions experience_qml squirrelupdate_qml)
