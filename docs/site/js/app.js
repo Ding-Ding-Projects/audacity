@@ -330,6 +330,10 @@
     { id: 'toy-locks', title: 'Toy locks', file: 'docs/toy-locks.md' },
     { id: 'support-tickets', title: 'Support Tickets', file: 'docs/support-tickets.md' },
     { id: 'authenticator', title: 'Built in authenticator', file: 'docs/authenticator.md' },
+    { id: 'tab-navigation', title: 'Tab navigation', file: 'docs/tab-navigation.md' },
+    { id: 'local-history', title: 'Local version history', file: 'docs/local-history.md' },
+    { id: 'emoji-switch', title: 'Emoji switch', file: 'docs/emoji-switch.md' },
+    { id: 'changelog', title: 'Changelog and what is new', file: 'docs/changelog.md' },
   ];
   const LS_TABS = 'ma.docTabs.v1';
   function loadTabState() {
