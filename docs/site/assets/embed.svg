@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96" role="img" aria-label="Material Audacity">
+  <rect x="0" y="0" width="320" height="96" rx="16" fill="#1F1A20"/>
+  <g transform="translate(8,8)">
+    <rect x="0" y="0" width="80" height="80" rx="22" fill="#F6DAF7"/>
+    <g fill="none" stroke="#6748BE" stroke-width="6" stroke-linecap="round" transform="translate(6,4)">
+      <path d="M12 40 L12 40"/>
+      <path d="M18 33 L18 47"/>
+      <path d="M26 23 L26 57"/>
+      <path d="M34 15 L34 65"/>
+      <path d="M42 28 L42 52"/>
+      <path d="M50 20 L50 60"/>
+      <path d="M58 33 L58 47"/>
+      <path d="M66 38 L66 42"/>
+    </g>
+  </g>
+  <text x="104" y="46" font-family="Georgia, serif" font-size="24" fill="#FFF3F5">Material Audacity</text>
+  <text x="104" y="70" font-family="sans-serif" font-size="13" fill="#D8C0CC">Material 3 rewrite of Audacity 4</text>
+</svg>

@@ -1,0 +1,10 @@
+{
+  "tag": "unreleased",
+  "name": "Material Audacity (development build)",
+  "updatedAt": "2026-09-05T00:00:00Z",
+  "commit": "16f2713979809abe7308b4e1e0d487afeece84f2",
+  "notes": "No tagged release has been published yet. This page will list Windows Squirrel Setup.exe, RELEASES, full .nupkg, delta packages, and Linux build assets as soon as a release is cut.",
+  "unsigned": true,
+  "unsignedReason": "Material Audacity ships without code signing. The public builder that produces these installers holds no certificate and code signing is permanently disabled in the release pipeline, so Windows SmartScreen and antivirus tools may warn on first run. Verify the SHA-256 checksum below against the one printed in the release notes before installing.",
+  "assets": []
+}

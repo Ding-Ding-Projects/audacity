@@ -1,0 +1,172 @@
+[
+  {
+    "file": "home-light-desktop.png",
+    "route": "home",
+    "theme": "light",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "home-dark-desktop.png",
+    "route": "home",
+    "theme": "dark",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "home-light-mobile.png",
+    "route": "home",
+    "theme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "home-dark-mobile.png",
+    "route": "home",
+    "theme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "features-light-desktop.png",
+    "route": "features",
+    "theme": "light",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "features-dark-desktop.png",
+    "route": "features",
+    "theme": "dark",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "features-light-mobile.png",
+    "route": "features",
+    "theme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "settings-light-desktop.png",
+    "route": "settings",
+    "theme": "light",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "settings-dark-desktop.png",
+    "route": "settings",
+    "theme": "dark",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "settings-light-mobile.png",
+    "route": "settings",
+    "theme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "docs-tabs-light-desktop.png",
+    "route": "docs",
+    "theme": "light",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "docs-tabs-dark-desktop.png",
+    "route": "docs",
+    "theme": "dark",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "docs-tabs-light-mobile.png",
+    "route": "docs",
+    "theme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "palette-open-light-desktop.png",
+    "route": "home",
+    "theme": "light",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "palette-open-dark-desktop.png",
+    "route": "home",
+    "theme": "dark",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "regex-builder-open-light-desktop.png",
+    "route": "settings",
+    "theme": "light",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  },
+  {
+    "file": "regex-builder-open-dark-desktop.png",
+    "route": "settings",
+    "theme": "dark",
+    "viewport": [
+      1280,
+      800
+    ],
+    "commit": "16f2713979809abe7308b4e1e0d487afeece84f2"
+  }
+]

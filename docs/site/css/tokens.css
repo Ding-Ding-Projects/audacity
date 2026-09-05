@@ -1,0 +1,49 @@
+/* M3 design tokens: color roles (set at runtime by app.js from m3-color.js),
+   type scale, shape scale, and motion tokens. */
+:root {
+  --md-font-display: "Fraunces", Georgia, "Noto Serif HK", serif;
+  --md-font-body: "Atkinson Hyperlegible Next", "Noto Sans HK", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  /* Type scale (M3) */
+  --md-type-display-large: 700 57px/64px var(--md-font-display);
+  --md-type-display-medium: 700 45px/52px var(--md-font-display);
+  --md-type-display-small: 700 36px/44px var(--md-font-display);
+  --md-type-headline-large: 600 32px/40px var(--md-font-display);
+  --md-type-headline-medium: 600 28px/36px var(--md-font-display);
+  --md-type-headline-small: 600 24px/32px var(--md-font-display);
+  --md-type-title-large: 500 22px/28px var(--md-font-body);
+  --md-type-title-medium: 500 16px/24px var(--md-font-body);
+  --md-type-title-small: 500 14px/20px var(--md-font-body);
+  --md-type-body-large: 400 16px/24px var(--md-font-body);
+  --md-type-body-medium: 400 14px/20px var(--md-font-body);
+  --md-type-body-small: 400 12px/16px var(--md-font-body);
+  --md-type-label-large: 500 14px/20px var(--md-font-body);
+  --md-type-label-medium: 500 12px/16px var(--md-font-body);
+  --md-type-label-small: 500 11px/16px var(--md-font-body);
+
+  /* Shape scale */
+  --md-shape-none: 0px;
+  --md-shape-xs: 4px;
+  --md-shape-sm: 8px;
+  --md-shape-md: 12px;
+  --md-shape-lg: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 999px;
+
+  /* Motion */
+  --md-motion-fast: 100ms;
+  --md-motion-standard: 250ms;
+  --md-motion-slow: 400ms;
+  --md-motion-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-motion-standard-easing: cubic-bezier(0.2, 0, 0, 1);
+
+  --md-font-scale: 1;
+  --md-density: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --md-motion-fast: 0ms; --md-motion-standard: 0ms; --md-motion-slow: 0ms; }
+}
+:root[data-reduced-motion="true"] {
+  --md-motion-fast: 0ms; --md-motion-standard: 0ms; --md-motion-slow: 0ms;
+}

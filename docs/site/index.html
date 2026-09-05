@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Audacity</title>
+<meta name="description" content="Material Audacity: a Material 3 rewrite of the Audacity 4 shell. Documentation, downloads, changelog, and settings.">
+<meta property="og:title" content="Material Audacity">
+<meta property="og:description" content="A Material 3 rewrite of the Audacity 4 shell.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/embed.svg">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="app-shell">
+  <nav class="nav-rail" aria-label="Primary">
+    <a class="nav-item" data-route="home" href="#home"><span aria-hidden="true">⌂</span>Home</a>
+    <a class="nav-item" data-route="features" href="#features"><span aria-hidden="true">✦</span>Features</a>
+    <a class="nav-item" data-route="downloads" href="#downloads"><span aria-hidden="true">⇩</span>Downloads</a>
+    <a class="nav-item" data-route="changelog" href="#changelog"><span aria-hidden="true">≡</span>Changelog</a>
+    <a class="nav-item" data-route="docs" href="#docs"><span aria-hidden="true">▤</span>Docs</a>
+    <a class="nav-item" data-route="accessibility" href="#accessibility"><span aria-hidden="true">♿</span>A11y</a>
+    <a class="nav-item" data-route="privacy" href="#privacy"><span aria-hidden="true">🔒</span>Privacy</a>
+    <a class="nav-item" data-route="settings" href="#settings"><span aria-hidden="true">⚙</span>Settings</a>
+  </nav>
+
+  <main id="main" class="main-content">
+    <div class="top-bar">
+      <img class="logo" src="assets/logo.svg" alt="Material Audacity logo">
+      <div class="site-title">Material Audacity</div>
+      <button type="button" class="md-icon-button" id="notif-btn" aria-haspopup="true" data-tooltip="Notifications">🔔</button>
+      <button type="button" class="md-text-button" id="palette-btn" data-tooltip="Ctrl+Shift+F">Search (Ctrl+Shift+F)</button>
+    </div>
+    <div id="route-outlet"></div>
+  </main>
+</div>
+
+<nav class="nav-bar" aria-label="Primary">
+  <a class="nav-item" data-route="home" href="#home">⌂</a>
+  <a class="nav-item" data-route="features" href="#features">✦</a>
+  <a class="nav-item" data-route="downloads" href="#downloads">⇩</a>
+  <a class="nav-item" data-route="docs" href="#docs">▤</a>
+  <a class="nav-item" data-route="settings" href="#settings">⚙</a>
+</nav>
+
+<div class="palette-backdrop" id="palette-backdrop" hidden>
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="palette-input-row">
+      <span aria-hidden="true">🔎</span>
+      <input type="text" id="palette-input" placeholder="Search sections, docs, settings…" autocomplete="off" aria-label="Search sections, documentation, and settings">
+    </div>
+    <div class="palette-results" id="palette-results" role="listbox" aria-label="Results"></div>
+  </div>
+</div>
+
+<div class="notif-panel" id="notif-panel" aria-label="Notification centre">
+  <h2>Notifications</h2>
+  <div id="notif-list"></div>
+  <button type="button" class="md-text-button" id="notif-close">Close</button>
+</div>
+
+<div class="snackbar-stack" id="snackbar-stack" aria-live="polite"></div>
+
+<script src="js/m3-color.js"></script>
+<script src="js/markdown.js"></script>
+<script src="js/regex-builder.js"></script>
+<script src="js/search-inventory.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

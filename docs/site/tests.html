@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search inventory tests</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 24px; background: #fff3f5; color: #1f1a20; }
+  .pass { color: #146c2e; }
+  .fail { color: #b3261e; font-weight: 700; }
+  li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<h1>Search field / regex builder inventory check</h1>
+<p>This page loads every section that owns a search/filter field, then checks
+that every field in <code>search-inventory.js</code> actually has a regex
+builder attached (a sibling <code>.rgx-anchor</code>), and that no field with
+a regex builder is missing from the inventory.</p>
+<div id="result">Running…</div>
+<iframe id="host" src="index.html" style="width:1px;height:1px;border:0;position:absolute;left:-9999px" title="app host"></iframe>
+<script src="js/search-inventory.js"></script>
+<script>
+  const routesToVisit = ['home', 'features', 'downloads', 'changelog', 'docs', 'settings'];
+  const frame = document.getElementById('host');
+  const resultEl = document.getElementById('result');
+
+  frame.addEventListener('load', () => {
+    const win = frame.contentWindow;
+    const doc = frame.contentDocument;
+    const found = {}; // inventory id -> true if builder confirmed present
+    const extraAnchors = []; // builder present but not in inventory
+
+    function checkCurrentRoute() {
+      window.SEARCH_INVENTORY.forEach((row) => {
+        if (found[row.id]) return;
+        const field = doc.querySelector(row.selector);
+        if (!field) return;
+        const anchor = field.nextElementSibling;
+        if (anchor && anchor.classList.contains('rgx-anchor')) found[row.id] = true;
+      });
+      const inventorySelectors = window.SEARCH_INVENTORY.map((r) => r.selector);
+      doc.querySelectorAll('.rgx-anchor').forEach((a) => {
+        const field = a.previousElementSibling;
+        if (field && field.id && !inventorySelectors.includes('#' + field.id)) {
+          const msg = 'Field #' + field.id + ' has a regex builder but is missing from search-inventory.js';
+          if (!extraAnchors.includes(msg)) extraAnchors.push(msg);
+        }
+      });
+    }
+
+    function visitAllChecking(i, done) {
+      if (i >= routesToVisit.length) { done(); return; }
+      win.location.hash = '#' + routesToVisit[i];
+      setTimeout(() => { checkCurrentRoute(); visitAllChecking(i + 1, done); }, 200);
+    }
+
+    setTimeout(() => {
+      checkCurrentRoute();
+      visitAllChecking(0, () => {
+        setTimeout(() => {
+          const failures = [];
+          const passes = [];
+          window.SEARCH_INVENTORY.forEach((row) => {
+            if (found[row.id]) passes.push(row.id + ': builder present');
+            else failures.push(row.id + ': field/builder not found in any visited route (selector ' + row.selector + ')');
+          });
+          extraAnchors.forEach((m) => failures.push(m));
+          const html = ['<h2>' + (failures.length ? '<span class="fail">FAIL (' + failures.length + ')</span>' : '<span class="pass">PASS</span>') + '</h2>'];
+          html.push('<h3>Passes</h3><ul>' + passes.map((p) => '<li class="pass">' + p + '</li>').join('') + '</ul>');
+          if (failures.length) html.push('<h3>Failures</h3><ul>' + failures.map((f) => '<li class="fail">' + f + '</li>').join('') + '</ul>');
+          resultEl.innerHTML = html.join('');
+        }, 300);
+      });
+    }, 300);
+  });
+</script>
+</body>
+</html>
