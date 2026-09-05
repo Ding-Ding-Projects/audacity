@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>@PACKAGE_ID@</id>
+    <title>@PACKAGE_TITLE@</title>
+    <version>@PACKAGE_VERSION@</version>
+    <authors>@PACKAGE_AUTHORS@</authors>
+    <owners>@PACKAGE_AUTHORS@</owners>
+    <projectUrl>@PACKAGE_PROJECT_URL@</projectUrl>
+    <iconUrl>@PACKAGE_ICON_URL@</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>@PACKAGE_DESCRIPTION@</description>
+    <copyright>@PACKAGE_COPYRIGHT@</copyright>
+  </metadata>
+  <files>
+    <file src="lib\net45\**" target="lib\net45" />
+  </files>
+</package>

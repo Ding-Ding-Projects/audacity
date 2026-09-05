@@ -36,7 +36,10 @@ static void app_init_qrc()
  * Roboto Flex carries the Material Design 3 type scale. Noto Sans HK is the
  * fallback that keeps Chinese, Japanese and Korean text readable in the same
  * interface. Both are loaded before the application starts so that the theme
- * can name them straight away. The uicomponents module makes Roboto Flex the
+ * can name them straight away. Registration happens right after the
+ * QApplication is created, because the font database needs a running
+ * QGuiApplication, and before any user interface is created. The
+ * uicomponents module makes Roboto Flex the
  * default user interface font once the framework has started, see
  * src/uicomponents/uicomponentsmodule.cpp.
  */
@@ -92,7 +95,6 @@ int main(int argc, char** argv)
     // Setup global Qt application variables
     // ====================================================
     app_init_qrc();
-    app_register_fonts();
 
     qputenv("QT_STYLE_OVERRIDE", "Fusion");
     qputenv("QML_DISABLE_DISK_CACHE", "true");
@@ -232,6 +234,11 @@ int main(int argc, char** argv)
         QApplication* guiApp = new QApplication(argcFinal, argvFinal);
         guiApp->setQuitOnLastWindowClosed(false);
         qApplication = guiApp;
+
+        //! NOTE The font database needs a QGuiApplication, so the bundled
+        //! user interface fonts are registered here rather than earlier,
+        //! and still well before any user interface is created.
+        app_register_fonts();
     }
 
     commandLineParser.processBuiltinArgs(*qApplication);

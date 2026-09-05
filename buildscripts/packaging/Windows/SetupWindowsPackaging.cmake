@@ -41,49 +41,16 @@ endif(MUSE_APP_UNSTABLE)
 set(CPACK_PACKAGE_FILE_NAME "${MUSE_APP_NAME}-${MUSE_APP_VERSION}${git_date_string}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${MUSE_APP_NAME_VERSION})
 
+# Packaging generator
+#
+# The Windows installer for this project is produced exclusively by
+# Squirrel.Windows through buildscripts/ci/windows/package_squirrel.ps1.
+# CPack is kept only for the plain archive used by developer builds, so the
+# WiX generator, its templates and every code signing hook have been removed.
+# Code signing is permanently prohibited: do not reintroduce signtool here.
+set(CPACK_GENERATOR "ZIP")
+
 set(MUSE_EXECUTABLE_NAME ${MUSE_APP_NAME}${MUSE_APP_VERSION_MAJOR})
-
-# Wix-specific options
-set(CPACK_GENERATOR "WIX")
-
-file(TO_CMAKE_PATH $ENV{PROGRAMFILES} PROGRAMFILES)
-set(CPACK_WIX_ROOT "${PROGRAMFILES}/WiX Toolset v3.11")
-
-# Use custom version of WIX.template.in
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildscripts/packaging/Windows/Installer" ${CMAKE_MODULE_PATH})
-
-if(NOT CPACK_WIX_PRODUCT_GUID)
-    set(CPACK_WIX_PRODUCT_GUID "00000000-0000-0000-0000-000000000000")
-endif()
-
-message(STATUS "[SetupWindowsPackaging.cmake] CPACK_WIX_PRODUCT_GUID: ${CPACK_WIX_PRODUCT_GUID}")
-
-if(NOT CPACK_WIX_UPGRADE_GUID)
-    set(CPACK_WIX_UPGRADE_GUID "11111111-1111-1111-1111-111111111111")
-endif()
-
-message(STATUS "[SetupWindowsPackaging.cmake] CPACK_WIX_UPGRADE_GUID: ${CPACK_WIX_UPGRADE_GUID}")
-
-set(CPACK_WIX_LICENSE_RTF "${PROJECT_SOURCE_DIR}/buildscripts/packaging/Windows/Installer/LICENSE.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/share/icons/AppIcon/AU4_AppIcon.ico")
-set(CPACK_WIX_UI_BANNER "${PROJECT_SOURCE_DIR}/buildscripts/packaging/Windows/Installer/installer_banner_wix.png")
-set(CPACK_WIX_UI_DIALOG "${PROJECT_SOURCE_DIR}/buildscripts/packaging/Windows/Installer/installer_background_wix.png")
-set(CPACK_WIX_PROGRAM_MENU_FOLDER "${MUSE_APP_TITLE_VERSION}")
-set(CPACK_WIX_EXTENSIONS "WixUtilExtension")
-
-# Extra CPack variables
-list(APPEND CPACK_WIX_CANDLE_EXTRA_FLAGS
-    "-I${PROJECT_SOURCE_DIR}/buildscripts/packaging/Windows/Installer"
-    "-dMUSE_APP_TITLE_VERSION=${MUSE_APP_TITLE_VERSION}"
-    "-dMUSE_APP_TITLE=${MUSE_APP_TITLE}"
-    "-dMUSE_EXECUTABLE_NAME=${MUSE_EXECUTABLE_NAME}"
-    "-dMUSE_APP_RELEASE_CHANNEL=${MUSE_APP_RELEASE_CHANNEL}"
-    "-dCPACK_PACKAGE_VERSION_MAJOR=${CPACK_PACKAGE_VERSION_MAJOR}"
-)
-
-if (MUSE_APP_IS_PRERELEASE)
-    list(APPEND CPACK_WIX_CANDLE_EXTRA_FLAGS "-dMUSE_APP_IS_PRERELEASE=ON")
-endif()
 
 message(STATUS "========== Audacity Packaging Variables ==========")
   message(STATUS "MUSE_APP_TITLE='${MUSE_APP_TITLE}'")
@@ -97,13 +64,6 @@ message(STATUS "========== Audacity Packaging Variables ==========")
   message(STATUS "CPACK_PACKAGE_VERSION_PATCH='${CPACK_PACKAGE_VERSION_PATCH}'")
   message(STATUS "CPACK_PACKAGE_EXECUTABLES='${CPACK_PACKAGE_EXECUTABLES}'")
   message(STATUS "CPACK_CREATE_DESKTOP_LINKS='${CPACK_CREATE_DESKTOP_LINKS}'")
-  message(STATUS "CPACK_WIX_PROGRAM_MENU_FOLDER='${CPACK_WIX_PROGRAM_MENU_FOLDER}'")
-  message(STATUS "CPACK_WIX_PRODUCT_ICON='${CPACK_WIX_PRODUCT_ICON}'")
-  message(STATUS "CPACK_WIX_UI_BANNER='${CPACK_WIX_UI_BANNER}'")
-  message(STATUS "CPACK_WIX_UI_DIALOG='${CPACK_WIX_UI_DIALOG}'")
-  message(STATUS "CPACK_WIX_TEMPLATE='${CPACK_WIX_TEMPLATE}'")
-  message(STATUS "CPACK_WIX_EXTENSIONS='${CPACK_WIX_EXTENSIONS}'")
-  message(STATUS "CPACK_WIX_CANDLE_EXTRA_FLAGS='${CPACK_WIX_CANDLE_EXTRA_FLAGS}'")
   message(STATUS "==================================================")
 
 
