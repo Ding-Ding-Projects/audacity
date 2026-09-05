@@ -76,12 +76,20 @@ Rectangle {
             "component": rangeSliderPage
         },
         {
+            "name": "M3Knob",
+            "component": knobPage
+        },
+        {
             "name": "M3TextField",
             "component": textFieldPage
         },
         {
             "name": "M3SearchBar",
             "component": searchBarPage
+        },
+        {
+            "name": "M3FilePicker",
+            "component": filePickerPage
         },
         {
             "name": "M3Menu",
@@ -658,6 +666,106 @@ Rectangle {
     }
 
     Component {
+        id: knobPage
+
+        Row {
+            spacing: 48
+
+            Column {
+                spacing: 8
+
+                M3Knob {
+                    id: gainKnob
+
+                    radius: 24
+                    from: 0
+                    to: 100
+                    stepSize: 1
+                    value: 65
+                    showValueIndicator: true
+                    accessibleName: "Gain"
+                    navigation.panel: contentPanel
+
+                    onNewValueRequested: function (newValue) {
+                        gainKnob.value = newValue
+                    }
+                }
+
+                StyledTextLabel {
+                    text: "Unidirectional"
+                    font: M3.typography.labelMedium
+                }
+            }
+
+            Column {
+                spacing: 8
+
+                M3Knob {
+                    id: panKnob
+
+                    radius: 24
+                    from: -100
+                    to: 100
+                    stepSize: 1
+                    value: -40
+                    bidirectional: true
+                    showValueIndicator: true
+                    accessibleName: "Pan"
+
+                    onNewValueRequested: function (newValue) {
+                        panKnob.value = newValue
+                    }
+                }
+
+                StyledTextLabel {
+                    text: "Bidirectional"
+                    font: M3.typography.labelMedium
+                }
+            }
+
+            Column {
+                spacing: 8
+
+                M3Knob {
+                    radius: 24
+                    value: 0.3
+                    enabled: false
+                    accessibleName: "Disabled"
+                }
+
+                StyledTextLabel {
+                    text: "Disabled"
+                    font: M3.typography.labelMedium
+                }
+            }
+        }
+    }
+
+    Component {
+        id: filePickerPage
+
+        Column {
+            spacing: 24
+
+            M3FilePicker {
+                width: 360
+                path: "/home/user/audio/session.wav"
+                pathFieldTitle: "Project file"
+                navigation: contentPanel
+            }
+
+            M3FilePicker {
+                width: 360
+                pickerType: M3FilePicker.PickerType.Directory
+                path: "/home/user/audio"
+                pathFieldTitle: "Recording folder"
+                buttonOrientation: Qt.Horizontal
+                navigation: contentPanel
+            }
+        }
+    }
+
+    Component {
         id: rangeSliderPage
 
         Column {
@@ -743,11 +851,15 @@ Rectangle {
             spacing: 16
 
             M3SearchBar {
+                objectName: "GallerySearchBarPlain"
+
                 width: 360
                 navigation.panel: contentPanel
             }
 
             M3SearchBar {
+                objectName: "GallerySearchBarWithRegexBuilder"
+
                 width: 360
                 searchText: "reverb"
                 showRegexBuilder: true

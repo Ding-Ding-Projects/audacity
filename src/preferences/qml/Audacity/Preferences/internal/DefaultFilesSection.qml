@@ -25,6 +25,8 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 import Audacity.UiComponents 1.0
 
 BaseSection {
@@ -58,7 +60,7 @@ BaseSection {
                 horizontalAlignment: Text.AlignLeft
             }
 
-            FilePicker {
+            M3FilePicker {
                 Layout.fillWidth: true
 
                 dialogTitle: model.chooseTitle

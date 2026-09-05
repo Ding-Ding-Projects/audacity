@@ -10,7 +10,8 @@
 * Replaces: Muse.UiComponents CheckBox.
 *
 * API:
-*     checked, indeterminate, text, enabled, clicked(), navigation
+*     checked, indeterminate, text, enabled, touchTargetSize, clicked(),
+*     navigation
 */
 pragma ComponentBehavior: Bound
 
@@ -30,14 +31,19 @@ FocusScope {
     property string text: ""
     property string accessibleName: root.text
 
+    // Size of the state layer and of the hit area around the 18 pixel box.
+    // Stays at the Material minimum of 40 unless a dense toolbar row asks for
+    // less.
+    property real touchTargetSize: 40
+
     property alias navigation: navCtrl
 
     signal clicked
 
     readonly property bool marked: root.checked || root.indeterminate
 
-    implicitHeight: Math.max(40, label.implicitHeight)
-    implicitWidth: 40 + (label.visible ? label.implicitWidth + 4 : 0)
+    implicitHeight: Math.max(root.touchTargetSize, label.implicitHeight)
+    implicitWidth: root.touchTargetSize + (label.visible ? label.implicitWidth + 4 : 0)
 
     NavigationControl {
         id: navCtrl
@@ -60,14 +66,14 @@ FocusScope {
     Item {
         id: boxArea
 
-        width: 40
-        height: 40
+        width: root.touchTargetSize
+        height: root.touchTargetSize
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
 
         M3StateLayer {
             anchors.fill: parent
-            radius: 20
+            radius: root.touchTargetSize / 2
             color: root.marked ? M3.color.primary : M3.color.onSurface
             active: root.enabled
             hovered: mouseArea.containsMouse

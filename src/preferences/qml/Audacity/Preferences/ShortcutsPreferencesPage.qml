@@ -25,6 +25,7 @@ import QtQuick.Controls 2.15
 import Muse.Shortcuts 1.0
 
 import Audacity.AppShell
+import Audacity.Companion
 
 PreferencesPage {
     id: root
@@ -48,5 +49,25 @@ PreferencesPage {
 
         navigationSection: root.navigationSection
         navigationOrderStart: root.navigationOrderStart
+
+        onRegexBuilderRequested: {
+            regexBuilder.open()
+        }
+    }
+
+    // The regular expression builder for the shortcut search field. Each search
+    // surface owns its own instance, so its pattern, flags, sample and saved
+    // test cases are isolated from every other search field in the application.
+    RegexBuilderSheet {
+        id: regexBuilder
+
+        anchors.fill: parent
+
+        storeName: "shortcuts-preferences"
+        fieldLabel: qsTrc("shortcuts", "Search shortcut")
+
+        onPatternAccepted: function (pattern) {
+            page.setSearchText(pattern)
+        }
     }
 }

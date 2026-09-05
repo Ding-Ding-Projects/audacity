@@ -96,6 +96,24 @@ GROUPS = [
         ],
     ),
     (
+        "0008-m3-button-box",
+        "Let a button box hold a host application button component",
+        [
+            "framework/uicomponents/qml/Muse/UiComponents/ButtonBox.qml",
+        ],
+    ),
+    (
+        "0009-m3-shortcuts-page",
+        "Material Design 3 shortcut preferences page",
+        [
+            "framework/uicomponents/qml/Muse/UiComponents/ValueList.qml",
+            "framework/uicomponents/qml/Muse/UiComponents/internal/ValueListItem.qml",
+            "framework/shortcuts/qml/Muse/Shortcuts/ShortcutsPage.qml",
+            "framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsList.qml",
+            "framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsTopPanel.qml",
+        ],
+    ),
+    (
         "0007-m3-interactive-dialogs",
         "Material Design 3 standard message dialogs",
         [

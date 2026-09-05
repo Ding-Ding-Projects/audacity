@@ -74,6 +74,7 @@ option(AU_BUILD_CLOUD_AUDIOCOM "Build cloud audiocom module" ON)
 option(AU_BUILD_CONTEXT_TESTS "Build context tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_EFFECTS_MODULE "Build effects module" ON)
 option(AU_BUILD_EFFECTS_TESTS "Build effects tests" ${MUSE_ENABLE_UNIT_TESTS})
+option(AU_BUILD_EXPERIENCE_TESTS "Build experience tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_IMPORT_TESTS "Build import tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_PLAYBACK_MODULE "Build playback module" ON)
 option(AU_BUILD_PLAYBACK_TESTS "Build playback tests" ${MUSE_ENABLE_UNIT_TESTS})
@@ -86,6 +87,8 @@ option(AU_BUILD_RECORD_TESTS "Build record tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_SHARED_TESTS "Build shared tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_TRACKEDIT_TESTS "Build trackedit tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_UICOMPONENTS_TESTS "Build uicomponents tests" ${MUSE_ENABLE_UNIT_TESTS})
+option(AU_BUILD_COMPANION_TESTS "Build companion tests" ${MUSE_ENABLE_UNIT_TESTS})
+option(AU_BUILD_CHRONICLE_TESTS "Build chronicle tests" ${MUSE_ENABLE_UNIT_TESTS})
 option(AU_BUILD_USAGEINFO_MODULE "Build usage info module" ON)
 
 option(AU_MODULE_EFFECTS_VST "Build audacity vst module" ON)
@@ -196,6 +199,13 @@ include(SetupQt6)
 
 # This should be called after all options() are resolved
 include(SetupDependencies)
+
+###########################################
+# Changelog
+###########################################
+# Every commit hash named in the release facing changelog must exist here.
+include(${CMAKE_CURRENT_LIST_DIR}/buildscripts/cmake/ValidateChangelog.cmake)
+au_validate_changelog(${CMAKE_CURRENT_LIST_DIR}/CHANGELOG.md)
 
 ###########################################
 # Add source tree

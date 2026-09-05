@@ -35,7 +35,9 @@
         <file>qml/Audacity/M3/M3Elevation.qml</file>
         <file>qml/Audacity/M3/M3FAB.qml</file>
         <file>qml/Audacity/M3/M3FocusRing.qml</file>
+        <file>qml/Audacity/M3/M3FilePicker.qml</file>
         <file>qml/Audacity/M3/M3IconButton.qml</file>
+        <file>qml/Audacity/M3/M3Knob.qml</file>
         <file>qml/Audacity/M3/M3LinearProgress.qml</file>
         <file>qml/Audacity/M3/M3ListItem.qml</file>
         <file>qml/Audacity/M3/M3Menu.qml</file>

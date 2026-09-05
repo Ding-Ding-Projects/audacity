@@ -21,7 +21,12 @@
  */
 
 /*
- * The main page switcher, drawn as Material 3 primary tabs.
+ * The main page switcher, drawn as a browser style tab strip.
+ *
+ * The strip carries the fixed application pages, one tab per open project and
+ * one tab per dockable panel. Page switching still goes through the same
+ * selected(uri) signal the window content listens to, so nothing about the
+ * navigation between pages changed.
  */
 pragma ComponentBehavior: Bound
 
@@ -32,16 +37,21 @@ import Muse.UiComponents
 
 import Audacity.M3
 import Audacity.AppShell
+import Audacity.Chronicle
 
 Item {
     id: root
 
-    width: tabsRow.width
+    width: tabStrip.implicitWidth > 0 ? tabStrip.implicitWidth : 640
     height: M3.density.apply(48)
 
     property alias navigation: navPanel
 
     property string currentUri: "audacity://home"
+
+    // The dockable panels the strip should also offer as tabs, as a list of
+    // { id, title, uri }.
+    property var dockPanels: []
 
     signal selected(string uri)
 
@@ -73,34 +83,55 @@ Item {
         color: M3.color.surface
     }
 
-    Row {
-        id: tabsRow
+    readonly property var tabSources: {
+        var items = [];
 
-        height: parent.height
+        // The fixed application pages. They can be reordered, pinned and
+        // grouped like any other tab, but never closed.
+        for (var i = 0; i < toolBarModel.items.length; ++i) {
+            var page = toolBarModel.items[i]
+            items.push({
+                "id": String(page.uri),
+                "title": String(page.title),
+                "kind": "page",
+                "uri": String(page.uri),
+                "icon": IconCode.NONE,
+                "closable": false
+            })
+        }
 
-        Repeater {
-            model: toolBarModel.items
+        // One tab per dockable panel the host offers.
+        for (var j = 0; j < root.dockPanels.length; ++j) {
+            var panel = root.dockPanels[j]
+            items.push({
+                "id": "panel:" + String(panel.id),
+                "title": String(panel.title),
+                "kind": "panel",
+                "uri": panel.uri !== undefined ? String(panel.uri) : "",
+                "icon": IconCode.NONE,
+                "closable": true
+            })
+        }
 
-            delegate: M3Tab {
-                id: tab
+        return items
+    }
 
-                required property int index
-                required property var modelData
+    TabStrip {
+        id: tabStrip
 
-                height: tabsRow.height
+        anchors.fill: parent
 
-                primary: true
-                enabled: modelData.enabled
-                selected: modelData.uri === root.currentUri
-                text: modelData.title
-                accessibleName: modelData.title
+        surfaceId: "main"
+        defaultDockSide: "top"
+        sources: root.tabSources
+        currentTabId: root.currentUri
 
-                navigation.panel: navPanel
-                navigation.column: tab.index
+        navigationPanel.section: navPanel.section
+        navigationPanel.order: navPanel.order
 
-                onClicked: {
-                    root.selected(tab.modelData.uri)
-                }
+        onTabActivated: function (id, uri) {
+            if (uri !== "") {
+                root.selected(uri)
             }
         }
     }

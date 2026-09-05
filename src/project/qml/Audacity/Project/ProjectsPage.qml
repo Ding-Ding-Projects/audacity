@@ -29,6 +29,7 @@ import Muse.Cloud 1.0
 
 import "internal/ProjectsPage"
 import Audacity.M3
+import Audacity.Companion
 
 FocusScope {
     id: root
@@ -100,7 +101,15 @@ FocusScope {
 
         M3SearchBar {
             id: searchField
+
+            objectName: "ProjectsPageSearch"
+
             showRegexBuilder: true
+
+            onRegexBuilderRequested: {
+                regexBuilder.pattern = searchField.searchText
+                regexBuilder.open()
+            }
 
             Layout.preferredWidth: 220
 
@@ -123,16 +132,35 @@ FocusScope {
 
         spacing: 12
 
-        StyledTabBar {
+        M3Tabs {
             id: tabBar
 
             property bool completed: false
 
             Layout.fillWidth: true
 
+            navigationPanel: navTabPanel
+
+            model: [
+                {
+                    "text": qsTrc("project", "New & recent"),
+                    "name": "NewAndRecent"
+                },
+                {
+                    "text": qsTrc("project", "Cloud projects"),
+                    "name": "CloudProjects",
+                    "visible": projectsPageModel.cloudEnabled
+                },
+                {
+                    "text": qsTrc("project", "Cloud audio files"),
+                    "name": "CloudAudioFiles",
+                    "visible": projectsPageModel.cloudEnabled
+                }
+            ]
+
             onCurrentIndexChanged: {
-                if (completed) {
-                    projectsPageModel.tabIndex = currentIndex
+                if (tabBar.completed) {
+                    projectsPageModel.tabIndex = tabBar.currentIndex
                 }
             }
 
@@ -146,36 +174,10 @@ FocusScope {
                 enabled: tabBar.enabled && tabBar.visible
 
                 onNavigationEvent: function (event) {
-                    if (event.type === NavigationEvent.AboutActive) {
+                    if (event.type === NavigationEvent.AboutActive && Boolean(tabBar.currentItem)) {
                         event.setData("controlName", tabBar.currentItem.navigation.name)
                     }
                 }
-            }
-
-            StyledTabButton {
-                text: qsTrc("project", "New & recent")
-
-                navigation.name: "NewAndRecent"
-                navigation.panel: navTabPanel
-                navigation.column: 1
-            }
-
-            StyledTabButton {
-                text: qsTrc("project", "Cloud projects")
-                visible: projectsPageModel.cloudEnabled
-
-                navigation.name: "CloudProjects"
-                navigation.panel: navTabPanel
-                navigation.column: 2
-            }
-
-            StyledTabButton {
-                text: qsTrc("project", "Cloud audio files")
-                visible: projectsPageModel.cloudEnabled
-
-                navigation.name: "CloudAudioFiles"
-                navigation.panel: navTabPanel
-                navigation.column: 3
             }
         }
 
@@ -455,6 +457,22 @@ FocusScope {
                     Qt.callLater(projectsPageModel.openOther)
                 }
             }
+        }
+    }
+
+    // The regular expression builder for this field. Each search surface owns its
+    // own instance, so its pattern, flags, sample and saved test cases are
+    // isolated from every other search field in the application.
+    RegexBuilderSheet {
+        id: regexBuilder
+
+        anchors.fill: parent
+
+        storeName: "projects-page"
+        fieldLabel: "Recent projects"
+
+        onPatternAccepted: function (pattern) {
+            searchField.searchText = pattern
         }
     }
 }

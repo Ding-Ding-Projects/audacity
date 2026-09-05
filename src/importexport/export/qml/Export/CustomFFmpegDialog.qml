@@ -148,8 +148,9 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: mpegOptionsSection.navigationOrderEnd + 1
 
-            FlatButton {
+            M3Button {
                 id: cancelBtn
+                variant: "text"
 
                 minWidth: 80
 
@@ -160,8 +161,9 @@ StyledDialogView {
                 onClicked: root.reject()
             }
 
-            FlatButton {
+            M3Button {
                 id: okBtn
+                variant: "filled"
 
                 minWidth: 80
 

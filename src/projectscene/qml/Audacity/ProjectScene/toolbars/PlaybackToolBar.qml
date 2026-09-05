@@ -331,7 +331,7 @@ Item {
             DropdownWithTitle {
                 property var itemData: null
 
-                width: 143
+                width: 204
                 height: 28
 
                 //: Noun: label of the snapping control in the playback toolbar

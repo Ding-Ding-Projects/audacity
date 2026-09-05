@@ -102,7 +102,9 @@ StyledDialogView {
         navigationPanel.section: root.navigationSection
         navigationPanel.order: 2
 
-        FlatButton {
+        M3Button {
+            variant: "text"
+
             text: qsTrc("global", "Cancel")
             buttonRole: ButtonBoxModel.RejectRole
             buttonId: ButtonBoxModel.Cancel
@@ -113,7 +115,9 @@ StyledDialogView {
             }
         }
 
-        FlatButton {
+        M3Button {
+            variant: "filled"
+
             text: qsTrc("global", "OK")
             buttonRole: ButtonBoxModel.AcceptRole
             buttonId: ButtonBoxModel.Ok

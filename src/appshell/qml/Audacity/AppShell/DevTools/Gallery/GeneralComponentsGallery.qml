@@ -6,6 +6,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import Muse.UiComponents
+
+import Audacity.M3
 import Muse.Ui 1.0
 
 Rectangle {
@@ -113,7 +115,7 @@ Rectangle {
                         componentRole: searchFieldSample
                     },
                     {
-                        textRole: "FilePicker",
+                        textRole: "M3FilePicker",
                         componentRole: filePickerSample
                     },
                     {
@@ -909,7 +911,7 @@ Rectangle {
     Component {
         id: filePickerSample
 
-        FilePicker {
+        M3FilePicker {
             width: 220
 
             path: "/some/test/path/foo.txt"
@@ -923,10 +925,10 @@ Rectangle {
     Component {
         id: directoriesPickerSample
 
-        FilePicker {
+        M3FilePicker {
             width: 220
 
-            pickerType: FilePicker.PickerType.MultipleDirectories
+            pickerType: M3FilePicker.PickerType.MultipleDirectories
 
             path: "/some/test/path1;/some/test/path2"
 

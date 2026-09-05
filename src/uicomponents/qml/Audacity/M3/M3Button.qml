@@ -12,6 +12,10 @@
 * API:
 *     text, icon, variant, enabled, loading, accentButton, minWidth
 *     navigation (NavigationControl), clicked()
+*
+* buttonId, buttonRole and isLeftSide let the muse ButtonBox lay the button out
+* and wire the dialog accept and reject defaults, so a dialog can use Material
+* buttons without giving up the platform button order.
 */
 pragma ComponentBehavior: Bound
 
@@ -44,7 +48,17 @@ FocusScope {
     property real horizontalPadding: root.icon !== IconCode.NONE ? 16 : 24
 
     property alias navigation: navCtrl
+    property alias accessible: navCtrl.accessible
     property alias mouseArea: mouseArea
+
+    // Read by the muse ButtonBox and its model.
+    property int buttonId: 0
+    property int buttonRole: 0
+    property bool isLeftSide: false
+
+    // A button box asks for the accent button by this name. It is the filled
+    // variant in Material Design 3 terms.
+    property bool accentButton: false
 
     signal clicked
 

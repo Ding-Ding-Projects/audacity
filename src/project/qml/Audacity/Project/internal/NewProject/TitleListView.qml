@@ -24,6 +24,7 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 import Audacity.M3
+import Audacity.Companion
 
 Item {
     id: root
@@ -57,7 +58,15 @@ Item {
 
     M3SearchBar {
         id: searchField
+
+        objectName: "NewProjectTitleSearch"
+
         showRegexBuilder: true
+
+        onRegexBuilderRequested: {
+            regexBuilder.pattern = searchField.searchText
+            regexBuilder.open()
+        }
 
         anchors.top: title.bottom
         anchors.topMargin: 16
@@ -126,5 +135,21 @@ Item {
         text: qsTrc("global", "No results found")
 
         visible: view.count < 1
+    }
+
+    // The regular expression builder for this field. Each search surface owns its
+    // own instance, so its pattern, flags, sample and saved test cases are
+    // isolated from every other search field in the application.
+    RegexBuilderSheet {
+        id: regexBuilder
+
+        anchors.fill: parent
+
+        storeName: "new-project-titles"
+        fieldLabel: "New project templates"
+
+        onPatternAccepted: function (pattern) {
+            searchField.searchText = pattern
+        }
     }
 }

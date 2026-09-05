@@ -7,6 +7,7 @@ import Muse.UiComponents
 import Audacity.UiComponents
 import Audacity.Effects
 import Audacity.M3
+import Audacity.Companion
 
 Item {
     id: root
@@ -116,6 +117,9 @@ Item {
 
         M3SearchBar {
             id: searchField
+
+            objectName: "PluginManagerSearch"
+
             showRegexBuilder: true
 
             Layout.fillWidth: true
@@ -128,6 +132,27 @@ Item {
             onSearchTextChanged: {
                 root.searchTextChanged(searchField.searchText)
             }
+
+            onRegexBuilderRequested: {
+                regexBuilder.pattern = searchField.searchText
+                regexBuilder.open()
+            }
+        }
+    }
+
+    // The regular expression builder for this field. Each search surface owns its
+    // own instance, so its pattern, flags, sample and saved test cases are
+    // isolated from every other search field in the application.
+    RegexBuilderSheet {
+        id: regexBuilder
+
+        anchors.fill: parent
+
+        storeName: "plugin-manager"
+        fieldLabel: "Plugin manager"
+
+        onPatternAccepted: function (pattern) {
+            searchField.searchText = pattern
         }
     }
 }

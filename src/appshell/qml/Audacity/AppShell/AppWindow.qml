@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.Shortcuts 1.0
 
 import Audacity.M3
+import Audacity.Companion
 
 import Audacity.AppShell 1.0
 import Muse.Toast 1.0
@@ -83,7 +84,17 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
+    //! The command palette, raised by Ctrl+Shift+F from anywhere in the window.
+    CommandPaletteHost {}
+
     ToastProvider {}
+
+    // Companion overlay: notification toasts, the notification centre, the
+    // attention support layers and the super confirmation gate.
+    Loader {
+        anchors.fill: parent
+        source: "qrc:/qt/qml/Audacity/Experience/ExperienceOverlay.qml"
+    }
 
     function showMinimizedWithSavePreviousState() {
         bridge.showMinimizedWithSavePreviousState()

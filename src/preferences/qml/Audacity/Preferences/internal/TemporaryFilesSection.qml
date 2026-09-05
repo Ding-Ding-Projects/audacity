@@ -24,6 +24,8 @@ import QtQuick 2.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 import Audacity.UiComponents 1.0
 
 BaseSection {
@@ -47,10 +49,10 @@ BaseSection {
         }
 
         Row {
-            FilePicker {
+            M3FilePicker {
                 id: dirPicker
 
-                pickerType: FilePicker.PickerType.Directory
+                pickerType: M3FilePicker.PickerType.Directory
                 pathFieldWidth: root.columnWidth
                 spacing: root.columnSpacing
 

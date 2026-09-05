@@ -25,6 +25,8 @@ import QtQuick.Layouts 1.15
 import Muse.Ui 1.0
 import Muse.UiComponents
 
+import Audacity.M3
+
 import Audacity.UiComponents 1.0
 
 BaseSection {
@@ -58,10 +60,10 @@ BaseSection {
                 horizontalAlignment: Text.AlignLeft
             }
 
-            FilePicker {
+            M3FilePicker {
                 Layout.fillWidth: true
 
-                pickerType: model.isMultiDirectories ? FilePicker.PickerType.MultipleDirectories : FilePicker.PickerType.Directory
+                pickerType: model.isMultiDirectories ? M3FilePicker.PickerType.MultipleDirectories : M3FilePicker.PickerType.Directory
                 dialogTitle: qsTrc("appshell/preferences", "Choose %1 folder").arg(model.title)
                 dir: model.dir
 

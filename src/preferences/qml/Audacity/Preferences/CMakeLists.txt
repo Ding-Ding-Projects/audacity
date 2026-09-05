@@ -41,6 +41,7 @@ qt_add_qml_module(preferences_qml
         AppearancePreferencesPage.qml
         AudioPreferencesPage.qml
         EditPreferencesPage.qml
+        ExperiencePreferencesPage.qml
         ExportPreferencesPage.qml
         GeneralPreferencesPage.qml
         internal/AccentColorsSection.qml
@@ -62,6 +63,11 @@ qt_add_qml_module(preferences_qml
         internal/DeleteBehaviorSection.qml
         internal/EffectBehaviorSection.qml
         internal/EffectOptionsSection.qml
+        internal/ExperienceAttentionSection.qml
+        internal/ExperienceLanguageSection.qml
+        internal/ExperienceScheduleSection.qml
+        internal/ExperienceToneSection.qml
+        internal/ExperienceVocabularySection.qml
         internal/ExportBehaviorSection.qml
         internal/ExtensionPreferencesSection.qml
         internal/FFmpegLibrarySection.qml
@@ -125,4 +131,4 @@ qt_add_qml_module(preferences_qml
 
 fixup_qml_module_dependencies(preferences_qml)
 
-target_link_libraries(preferences_qml PRIVATE audacity_extensions)
+target_link_libraries(preferences_qml PRIVATE audacity_extensions experience_qml)

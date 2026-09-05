@@ -15,6 +15,10 @@
 *     model (list of { id, title, shortcut, icon, checkable, checked,
 *            separator, subitems }), searchable, filterText,
 *     handleMenuItem(id), regexBuilderRequested(), open(), close()
+*
+* The model may also be a muse MenuItemList. Those objects name the shortcut
+* text "shortcuts" and mark a separator by carrying no title, so both
+* spellings are accepted.
 */
 pragma ComponentBehavior: Bound
 
@@ -48,7 +52,7 @@ StyledPopupView {
         var result = []
         for (var i = 0; i < root.model.length; ++i) {
             var item = root.model[i]
-            if (item.separator === true) {
+            if (item.separator === true || !item.title) {
                 continue
             }
             var title = item.title !== undefined ? String(item.title) : ""
@@ -78,6 +82,7 @@ StyledPopupView {
 
         M3SearchBar {
             id: search
+            objectName: "M3MenuSearch"
 
             width: parent.width - 16
             anchors.horizontalCenter: parent.horizontalCenter
@@ -104,12 +109,18 @@ StyledPopupView {
 
                 text: item.modelData.title !== undefined ? item.modelData.title : ""
                 icon: item.modelData.icon !== undefined ? item.modelData.icon : IconCode.NONE
-                shortcut: item.modelData.shortcut !== undefined ? item.modelData.shortcut : ""
+                shortcut: {
+                    if (item.modelData.shortcut !== undefined) {
+                        return String(item.modelData.shortcut)
+                    }
+                    // A muse MenuItem spells the shortcut text "shortcuts".
+                    return item.modelData.shortcuts !== undefined ? String(item.modelData.shortcuts) : ""
+                }
                 checkable: item.modelData.checkable === true
                 checked: item.modelData.checked === true
                 enabled: item.modelData.enabled !== false
-                isSeparator: item.modelData.separator === true
-                hasSubMenu: item.modelData.subitems !== undefined && item.modelData.subitems.length > 0
+                isSeparator: item.modelData.separator === true || !item.modelData.title
+                hasSubMenu: item.modelData.subitems !== undefined && item.modelData.subitems !== null && item.modelData.subitems.length > 0
 
                 navigation.panel: root.navigationPanel
                 navigation.row: item.index

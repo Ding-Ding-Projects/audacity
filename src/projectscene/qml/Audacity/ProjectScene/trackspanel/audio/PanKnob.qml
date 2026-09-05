@@ -1,10 +1,9 @@
 /*
 * Audacity: A Digital Audio Editor
 */
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
 
-import Muse.Ui 1.0
+import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.UiComponents
@@ -20,7 +19,7 @@ KnobControl {
     signal newPanRequested(real pan, bool completed)
 
     onNewValueRequested: function (value) {
-        newPanRequested(value, false)
+        root.newPanRequested(value, false)
     }
 
     ValueTooltip {
@@ -48,6 +47,6 @@ KnobControl {
     }
 
     onMouseReleased: {
-        newPanRequested(root.value, true)
+        root.newPanRequested(root.value, true)
     }
 }

@@ -112,7 +112,9 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: 100
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
+
                 text: qsTrc("global", "Cancel")
                 buttonRole: ButtonBoxModel.CustomRole
                 buttonId: ButtonBoxModel.CustomButton + 1
@@ -122,7 +124,9 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
+
                 text: qsTrc("global", "Back")
                 buttonRole: ButtonBoxModel.CustomRole
                 buttonId: ButtonBoxModel.CustomButton + 2
@@ -133,7 +137,9 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
+
                 text: qsTrc("global", "Next")
                 buttonRole: ButtonBoxModel.CustomRole
                 buttonId: ButtonBoxModel.CustomButton + 3
@@ -145,7 +151,9 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
+                variant: "filled"
+
                 text: qsTrc("global", "Done")
                 buttonRole: ButtonBoxModel.AcceptRole
                 buttonId: ButtonBoxModel.Done

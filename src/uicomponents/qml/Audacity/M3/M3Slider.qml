@@ -13,6 +13,11 @@
 * API:
 *     value, from, to, stepSize, orientation, showTicks, showValueIndicator,
 *     valueText, moved(), navigation
+*
+* The three metrics of the anatomy are properties rather than constants, so a
+* compact slider in a track header can shrink the track and the handle without
+* the component being forked. handleItem gives a caller something to anchor a
+* value tooltip to.
 */
 pragma ComponentBehavior: Bound
 
@@ -50,9 +55,11 @@ FocusScope {
     readonly property real range: root.to - root.from
     readonly property real position: root.range === 0 ? 0 : (root.value - root.from) / root.range
 
-    readonly property real trackThickness: 16
-    readonly property real handleWidth: 4
-    readonly property real handleLength: 44
+    property real trackThickness: 16
+    property real handleWidth: 4
+    property real handleLength: 44
+
+    property alias handleItem: handle
 
     implicitWidth: root.horizontal ? 200 : root.handleLength
     implicitHeight: root.horizontal ? root.handleLength : 200

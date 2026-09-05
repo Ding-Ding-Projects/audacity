@@ -12,6 +12,12 @@
 * API:
 *     model, currentIndex, currentValue, currentText, textRole, valueRole,
 *     label, activated(index, value), navigation
+*
+* A dropdown whose choices are a hierarchical menu model rather than a flat
+* list sets menuModel instead of model. The field anatomy is identical and the
+* popup becomes an M3Menu, so grouped choices and submenus keep working.
+*
+*     menuModel, displayText, handleMenuItem(itemId), opened
 */
 pragma ComponentBehavior: Bound
 
@@ -34,13 +40,42 @@ FocusScope {
     property string label: ""
     property string placeholder: ""
 
+    // Hierarchical menu model. When set, the popup is an M3Menu and the flat
+    // list is not used.
+    property var menuModel: null
+
+    // Text shown in the field. Defaults to the current flat list entry.
+    property string displayText: root.currentText
+
+    // Height of the field when the label is not shown. A toolbar sets this to
+    // a dense value, a form leaves it at the Material default.
+    property real fieldHeight: M3.density.apply(56)
+
+    property NavigationPanel menuNavigationPanel: null
+
+    readonly property bool usesMenuModel: root.menuModel !== null && root.menuModel !== undefined
+    readonly property bool opened: root.usesMenuModel ? menu.isOpened : popup.isOpened
+
     property string accessibleName: root.label
 
     property alias navigation: navCtrl
 
     signal activated(int index, var value)
+    signal handleMenuItem(string itemId)
 
-    implicitHeight: M3.density.apply(56)
+    function toggleOpened() {
+        if (root.usesMenuModel) {
+            if (menu.isOpened) {
+                menu.close()
+            } else {
+                menu.open()
+            }
+        } else {
+            root.toggleOpened()
+        }
+    }
+
+    implicitHeight: root.fieldHeight
     implicitWidth: 200
 
     function itemAt(index) {
@@ -79,7 +114,7 @@ FocusScope {
         name: root.objectName !== "" ? root.objectName : "M3Dropdown"
         enabled: root.enabled && root.visible
         accessible.role: MUAccessible.ComboBox
-        accessible.name: root.accessibleName + " " + root.currentText
+        accessible.name: root.accessibleName + " " + root.displayText
         accessible.visualItem: background
 
         onActiveChanged: {
@@ -88,7 +123,7 @@ FocusScope {
             }
         }
 
-        onTriggered: popup.toggleOpened()
+        onTriggered: root.toggleOpened()
     }
 
     Rectangle {
@@ -99,12 +134,12 @@ FocusScope {
         antialiasing: true
         color: "transparent"
 
-        border.width: popup.isOpened ? 2 : 1
+        border.width: root.opened ? 2 : 1
         border.color: {
             if (!root.enabled) {
                 return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
             }
-            return popup.isOpened ? M3.color.primary : M3.color.outline
+            return root.opened ? M3.color.primary : M3.color.outline
         }
 
         M3StateLayer {
@@ -129,11 +164,11 @@ FocusScope {
 
         anchors.left: parent.left
         anchors.leftMargin: 16
-        y: root.currentIndex >= 0 ? 8 : (root.height - height) / 2
+        y: root.displayText !== "" ? 8 : (root.height - height) / 2
         visible: root.label !== ""
         text: root.label
-        font: root.currentIndex >= 0 ? M3.typography.bodySmall : M3.typography.bodyLarge
-        color: popup.isOpened ? M3.color.primary : M3.color.onSurfaceVariant
+        font: root.displayText !== "" ? M3.typography.bodySmall : M3.typography.bodyLarge
+        color: root.opened ? M3.color.primary : M3.color.onSurfaceVariant
 
         Behavior on y {
             NumberAnimation {
@@ -154,8 +189,8 @@ FocusScope {
 
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
-        text: root.currentIndex >= 0 ? root.currentText : root.placeholder
-        font: M3.typography.bodyLarge
+        text: root.displayText !== "" ? root.displayText : root.placeholder
+        font: root.height < 40 ? M3.typography.bodyMedium : M3.typography.bodyLarge
         color: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         elide: Text.ElideRight
     }
@@ -166,7 +201,7 @@ FocusScope {
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
-        iconCode: popup.isOpened ? IconCode.SMALL_ARROW_UP : IconCode.SMALL_ARROW_DOWN
+        iconCode: root.opened ? IconCode.SMALL_ARROW_UP : IconCode.SMALL_ARROW_DOWN
         color: M3.color.onSurfaceVariant
     }
 
@@ -180,7 +215,7 @@ FocusScope {
 
         onClicked: {
             navCtrl.requestActive()
-            popup.toggleOpened()
+            root.toggleOpened()
         }
     }
 
@@ -226,6 +261,21 @@ FocusScope {
                     popup.close()
                 }
             }
+        }
+    }
+
+    M3Menu {
+        id: menu
+
+        parent: root
+        y: root.height
+        x: 0
+
+        model: root.menuModel !== null && root.menuModel !== undefined ? root.menuModel : []
+        navigationPanel: root.menuNavigationPanel
+
+        onHandleMenuItem: function (itemId) {
+            root.handleMenuItem(itemId)
         }
     }
 }

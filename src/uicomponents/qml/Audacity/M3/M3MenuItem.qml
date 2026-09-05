@@ -42,7 +42,7 @@ FocusScope {
     signal subMenuRequested
 
     implicitHeight: root.isSeparator ? 9 : M3.density.apply(48)
-    implicitWidth: Math.max(112, contentRow.implicitWidth + 24)
+    implicitWidth: Math.max(112, 12 + (leadingIcon.visible ? leadingIcon.width + 12 : 0) + label.implicitWidth + (shortcutLabel.visible ? shortcutLabel.implicitWidth + 24 : 0) + (chevron.visible ? chevron.width + 12 : 0) + 12)
 
     readonly property color contentColor: root.enabled ? M3.color.onSurface : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
 
@@ -108,55 +108,61 @@ FocusScope {
         visible: navCtrl.highlight
     }
 
-    Row {
-        id: contentRow
+    /*
+     * The row is laid out with anchors rather than with a positioner, so that
+     * the label keeps its natural implicit width. A positioner would make the
+     * label width depend on the row width, which in turn depends on the menu
+     * width, and the menu would then have nothing to size itself from.
+     */
+    StyledIconLabel {
+        id: leadingIcon
 
-        visible: !root.isSeparator
         anchors.left: parent.left
         anchors.leftMargin: 12
+        anchors.verticalCenter: parent.verticalCenter
+        width: 24
+        iconCode: root.checkable && root.checked ? IconCode.TICK_RIGHT_ANGLE : root.icon
+        visible: !root.isSeparator && (root.checkable || root.icon !== IconCode.NONE)
+        color: root.contentColor
+    }
+
+    StyledIconLabel {
+        id: chevron
+
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 12
+        visible: !root.isSeparator && root.hasSubMenu
+        iconCode: IconCode.SMALL_ARROW_RIGHT
+        color: M3.color.onSurfaceVariant
+    }
 
-        StyledIconLabel {
-            anchors.verticalCenter: parent.verticalCenter
-            width: 24
-            iconCode: root.checkable && root.checked ? IconCode.TICK_RIGHT_ANGLE : root.icon
-            visible: root.checkable || root.icon !== IconCode.NONE
-            color: root.contentColor
-        }
+    StyledTextLabel {
+        id: shortcutLabel
 
-        StyledTextLabel {
-            id: label
+        anchors.right: chevron.visible ? chevron.left : parent.right
+        anchors.rightMargin: 12
+        anchors.verticalCenter: parent.verticalCenter
+        visible: !root.isSeparator && root.shortcut !== "" && !root.hasSubMenu
+        text: root.shortcut
+        font: M3.typography.labelLarge
+        color: M3.color.onSurfaceVariant
+    }
 
-            anchors.verticalCenter: parent.verticalCenter
-            width: contentRow.width - contentRow.spacing * 2 - (shortcutLabel.visible ? shortcutLabel.width + contentRow.spacing : 0) - (chevron.visible ? chevron.width + contentRow.spacing : 0) - 24
-            horizontalAlignment: Text.AlignLeft
-            text: root.text
-            font: M3.typography.labelLarge
-            color: root.contentColor
-            elide: Text.ElideRight
-        }
+    StyledTextLabel {
+        id: label
 
-        StyledTextLabel {
-            id: shortcutLabel
-
-            anchors.verticalCenter: parent.verticalCenter
-            visible: root.shortcut !== "" && !root.hasSubMenu
-            text: root.shortcut
-            font: M3.typography.labelLarge
-            color: M3.color.onSurfaceVariant
-        }
-
-        StyledIconLabel {
-            id: chevron
-
-            anchors.verticalCenter: parent.verticalCenter
-            visible: root.hasSubMenu
-            iconCode: IconCode.SMALL_ARROW_RIGHT
-            color: M3.color.onSurfaceVariant
-        }
+        anchors.left: leadingIcon.visible ? leadingIcon.right : parent.left
+        anchors.leftMargin: 12
+        anchors.right: shortcutLabel.visible ? shortcutLabel.left : (chevron.visible ? chevron.left : parent.right)
+        anchors.rightMargin: 12
+        anchors.verticalCenter: parent.verticalCenter
+        visible: !root.isSeparator
+        horizontalAlignment: Text.AlignLeft
+        text: root.text
+        font: M3.typography.labelLarge
+        color: root.contentColor
+        elide: Text.ElideRight
     }
 
     MouseArea {

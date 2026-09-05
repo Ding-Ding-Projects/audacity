@@ -1,0 +1,896 @@
+{
+  "format": "audacity-companion-settings-index",
+  "version": 1,
+  "comment": "Hand written index of every setting the command palette can find. One row per user visible control in the preferences dialog, plus the appearance controls the palette can drive directly. A row with a 'key' carries a live muse setting and the palette renders a working control inline; a row without one teleports to the surface that owns it. 'target' is the label the teleport highlighter looks for inside the page.",
+  "pages": [
+    {
+      "id": "general",
+      "title": "General",
+      "section": "Preferences"
+    },
+    {
+      "id": "appearance",
+      "title": "Appearance",
+      "section": "Preferences"
+    },
+    {
+      "id": "audio-settings",
+      "title": "Audio settings",
+      "section": "Preferences"
+    },
+    {
+      "id": "editing",
+      "title": "Audio editing",
+      "section": "Preferences"
+    },
+    {
+      "id": "playback-recording",
+      "title": "Playback/Recording",
+      "section": "Preferences"
+    },
+    {
+      "id": "spectral-display",
+      "title": "Spectral display",
+      "section": "Preferences"
+    },
+    {
+      "id": "music",
+      "title": "Music",
+      "section": "Preferences"
+    },
+    {
+      "id": "export",
+      "title": "Export",
+      "section": "Preferences"
+    },
+    {
+      "id": "experience",
+      "title": "Companion",
+      "section": "Preferences"
+    },
+    {
+      "id": "shortcuts",
+      "title": "Shortcuts",
+      "section": "Preferences"
+    },
+    {
+      "id": "plugin",
+      "title": "Plugins",
+      "section": "Preferences"
+    }
+  ],
+  "settings": [
+    {
+      "page": "general",
+      "group": "Language",
+      "label": "Language",
+      "control": "dropdown",
+      "key": "language",
+      "target": "Language",
+      "keywords": "locale translation interface language"
+    },
+    {
+      "page": "general",
+      "group": "Language",
+      "label": "Bilingual interface",
+      "control": "switch",
+      "key": "ui/language/bilingual",
+      "target": "Language",
+      "keywords": "bilingual dual language english cantonese"
+    },
+    {
+      "page": "general",
+      "group": "Number format",
+      "label": "Number format",
+      "control": "dropdown",
+      "target": "Number format",
+      "keywords": "thousands separator decimal point number format"
+    },
+    {
+      "page": "general",
+      "group": "Automatic update check",
+      "label": "Check to see if a new version of Audacity is available",
+      "control": "switch",
+      "target": "Check to see if a new version of Audacity is available",
+      "keywords": "update check version new release"
+    },
+    {
+      "page": "general",
+      "group": "Automatic crash reports",
+      "label": "Send crash reports",
+      "control": "switch",
+      "key": "diagnostics/is_dump_upload_allowed",
+      "target": "Send crash reports",
+      "keywords": "crash report diagnostics dump privacy"
+    },
+    {
+      "page": "general",
+      "group": "Usage info",
+      "label": "Send anonymous usage info",
+      "control": "switch",
+      "key": "application/sendAnonymousUsageInfo",
+      "target": "Send anonymous usage info",
+      "keywords": "telemetry analytics anonymous usage privacy"
+    },
+    {
+      "page": "general",
+      "group": "Temporary files",
+      "label": "Temporary files location",
+      "control": "text",
+      "key": "Directories/TempDir",
+      "target": "Temporary files location",
+      "keywords": "temporary folder scratch directory unsaved"
+    },
+    {
+      "page": "general",
+      "group": "Free space",
+      "label": "Free space",
+      "control": "info",
+      "target": "Free space",
+      "keywords": "disk space free available storage"
+    },
+    {
+      "page": "general",
+      "group": "FFmpeg library",
+      "label": "FFmpeg library location",
+      "control": "text",
+      "key": "application/ffmpegLibsDir",
+      "target": "FFmpeg library version:",
+      "keywords": "ffmpeg library import export codec"
+    },
+    {
+      "page": "appearance",
+      "group": "Theme",
+      "label": "Theme",
+      "control": "dropdown",
+      "key": "ui/application/currentThemeCode",
+      "target": "Theme",
+      "keywords": "theme light dark appearance colour scheme"
+    },
+    {
+      "page": "appearance",
+      "group": "Theme",
+      "label": "Follow system theme",
+      "control": "switch",
+      "key": "ui/application/followSystemTheme",
+      "target": "Follow system theme",
+      "keywords": "system theme follow automatic light dark"
+    },
+    {
+      "page": "appearance",
+      "group": "Theme",
+      "label": "Enable high-contrast",
+      "control": "switch",
+      "target": "Enable high-contrast",
+      "keywords": "high contrast accessibility legibility"
+    },
+    {
+      "page": "appearance",
+      "group": "Theme",
+      "label": "Accent color",
+      "control": "color",
+      "target": "Accent color",
+      "keywords": "accent colour highlight brand"
+    },
+    {
+      "page": "appearance",
+      "group": "UI colors",
+      "label": "UI colors",
+      "control": "color",
+      "key": "ui/application/customColors",
+      "target": "UI colors",
+      "keywords": "custom colours high contrast interface"
+    },
+    {
+      "page": "appearance",
+      "group": "Clip style",
+      "label": "Clip style",
+      "control": "radio",
+      "key": "projectscene/clipStyle",
+      "target": "Clip style",
+      "keywords": "clip style colorful classic waveform header"
+    },
+    {
+      "page": "appearance",
+      "group": "Material theme",
+      "label": "Seed colour",
+      "control": "color",
+      "key": "ui/m3/seedColor",
+      "target": "Seed colour",
+      "keywords": "seed colour material palette hct source"
+    },
+    {
+      "page": "appearance",
+      "group": "Material theme",
+      "label": "Scheme variant",
+      "control": "dropdown",
+      "key": "ui/m3/variant",
+      "options": [
+        "tonal_spot",
+        "vibrant",
+        "expressive",
+        "neutral",
+        "monochrome",
+        "fidelity"
+      ],
+      "target": "Scheme variant",
+      "keywords": "variant tonal spot vibrant expressive neutral monochrome fidelity"
+    },
+    {
+      "page": "appearance",
+      "group": "Material theme",
+      "label": "Density",
+      "control": "slider",
+      "key": "ui/m3/density",
+      "min": -3,
+      "max": 0,
+      "step": 1,
+      "target": "Density",
+      "keywords": "density compact comfortable spacing size"
+    },
+    {
+      "page": "appearance",
+      "group": "Material theme",
+      "label": "Reduce motion",
+      "control": "switch",
+      "key": "ui/m3/reducedMotion",
+      "target": "Reduce motion",
+      "keywords": "reduced motion animation accessibility vestibular"
+    },
+    {
+      "page": "appearance",
+      "group": "Appearance",
+      "label": "Font face",
+      "control": "dropdown",
+      "key": "ui/theme/fontFamily",
+      "target": "Font face",
+      "keywords": "font family typeface roboto interface text"
+    },
+    {
+      "page": "appearance",
+      "group": "Appearance",
+      "label": "Body text size",
+      "control": "slider",
+      "key": "ui/theme/fontSize",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "target": "Body text size",
+      "keywords": "font size body text scale legibility"
+    },
+    {
+      "page": "appearance",
+      "group": "Theme",
+      "label": "Invert project",
+      "control": "switch",
+      "target": "Invert project",
+      "keywords": "invert project colours theme"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Inputs and outputs",
+      "label": "Host",
+      "control": "dropdown",
+      "key": "AudioIO/Host",
+      "target": "Host",
+      "keywords": "audio host api alsa jack wasapi asio"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Inputs and outputs",
+      "label": "Recording device",
+      "control": "dropdown",
+      "key": "AudioIO/RecordingDevice",
+      "target": "Recording device",
+      "keywords": "input device microphone recording interface"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Inputs and outputs",
+      "label": "Playback device",
+      "control": "dropdown",
+      "key": "AudioIO/PlaybackDevice",
+      "target": "Playback device",
+      "keywords": "output device speakers playback interface"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Inputs and outputs",
+      "label": "Recording channels",
+      "control": "dropdown",
+      "key": "AudioIO/RecordChannels",
+      "target": "Recording channels",
+      "keywords": "channels mono stereo recording input"
+    },
+    {
+      "page": "audio-settings",
+      "group": "ASIO",
+      "label": "Use device sample rate",
+      "control": "switch",
+      "key": "AudioIO/ASIO/UseDeviceSampleRate",
+      "target": "Use device sample rate",
+      "keywords": "asio device sample rate windows driver"
+    },
+    {
+      "page": "audio-settings",
+      "group": "ASIO",
+      "label": "Driver settings",
+      "control": "action",
+      "target": "Driver settings",
+      "keywords": "asio driver control panel settings"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Sample rate",
+      "label": "Default sample rate",
+      "control": "dropdown",
+      "key": "SamplingRate/DefaultProjectSampleRate",
+      "target": "Default sample rate",
+      "keywords": "sample rate 44100 48000 project default"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Sample rate",
+      "label": "Default sample format",
+      "control": "dropdown",
+      "key": "SamplingRate/DefaultProjectSampleFormatChoice",
+      "target": "Default sample format",
+      "keywords": "sample format bit depth 16 24 32 float"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Sample rate",
+      "label": "Custom sample rate",
+      "control": "number",
+      "target": "Custom sample rate",
+      "keywords": "custom sample rate hertz"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Buffer and latency",
+      "label": "Buffer length",
+      "control": "number",
+      "key": "io/bufferSize",
+      "target": "Buffer length",
+      "keywords": "buffer length latency milliseconds audio"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Buffer and latency",
+      "label": "Latency compensation",
+      "control": "number",
+      "key": "AudioIO/LatencyCompensation",
+      "target": "Latency compensation",
+      "keywords": "latency compensation offset recording alignment"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Buffer and latency",
+      "label": "Automatic latency compensation",
+      "control": "switch",
+      "key": "AudioIO/AutomaticLatencyCompensation",
+      "target": "Automatic",
+      "keywords": "automatic latency compensation measure"
+    },
+    {
+      "page": "audio-settings",
+      "group": "Meter dB range",
+      "label": "dB range",
+      "control": "dropdown",
+      "target": "dB range",
+      "keywords": "meter decibel range floor scale"
+    },
+    {
+      "page": "editing",
+      "group": "Effect behavior",
+      "label": "Apply effects to all audio when no selection is made",
+      "control": "switch",
+      "target": "Apply effects to all audio when no selection is made",
+      "keywords": "effects selection apply all audio"
+    },
+    {
+      "page": "editing",
+      "group": "Delete behavior",
+      "label": "Delete behavior",
+      "control": "radio",
+      "target": "Delete behavior",
+      "keywords": "delete ripple close gap behaviour"
+    },
+    {
+      "page": "editing",
+      "group": "Paste behavior",
+      "label": "Always paste audio as a new clip",
+      "control": "switch",
+      "target": "Always paste audio as a new clip",
+      "keywords": "paste clip new behaviour"
+    },
+    {
+      "page": "editing",
+      "group": "Asymmetric stereo heights",
+      "label": "Dragging on the center line may adjust the height of the channel",
+      "control": "radio",
+      "target": "Dragging on the center line may adjust the height of the channel:",
+      "keywords": "asymmetric stereo heights channel drag centre line"
+    },
+    {
+      "page": "editing",
+      "group": "Mono & stereo conversion",
+      "label": "Always convert to mono without prompt",
+      "control": "switch",
+      "target": "Always convert to mono without prompt",
+      "keywords": "mono stereo conversion prompt"
+    },
+    {
+      "page": "editing",
+      "group": "Zoom toggle (magnifying glass)",
+      "label": "Zoom state 1",
+      "control": "dropdown",
+      "target": "Zoom state 1:",
+      "keywords": "zoom toggle state magnifying glass"
+    },
+    {
+      "page": "editing",
+      "group": "Zoom toggle (magnifying glass)",
+      "label": "Zoom state 2",
+      "control": "dropdown",
+      "target": "Zoom state 2:",
+      "keywords": "zoom toggle state magnifying glass"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Playback performance",
+      "label": "Playback quality",
+      "control": "dropdown",
+      "key": "/Quality/LibsoxrSampleRateConverterChoice",
+      "target": "Playback quality",
+      "keywords": "playback quality resampler soxr converter"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Playback performance",
+      "label": "Dithering",
+      "control": "dropdown",
+      "key": "Quality/DitherAlgorithmChoice",
+      "target": "Dithering",
+      "keywords": "dither noise shaping quantisation"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Move cursor along the timeline during playback",
+      "label": "Short skip",
+      "control": "number",
+      "target": "Short skip",
+      "keywords": "cursor skip short seek playback"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Move cursor along the timeline during playback",
+      "label": "Long skip",
+      "control": "number",
+      "target": "Long skip",
+      "keywords": "cursor skip long seek playback"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Recording behavior",
+      "label": "Turn on input monitoring (hear yourself while recording)",
+      "control": "switch",
+      "key": "record/inputMonitoring",
+      "target": "Turn on input monitoring (hear yourself while recording)",
+      "keywords": "input monitoring hear yourself recording"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Recording behavior",
+      "label": "Show mic metering when not recording",
+      "control": "switch",
+      "key": "record/micMetering",
+      "target": "Show mic metering when not recording",
+      "keywords": "microphone metering meter idle recording"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Recording lead-in time",
+      "label": "Lead-in time before recording starts",
+      "control": "number",
+      "key": "record/leadInTimeDuration",
+      "target": "Lead-in time before recording starts",
+      "keywords": "lead in count in recording delay"
+    },
+    {
+      "page": "playback-recording",
+      "group": "Recording lead-in time",
+      "label": "Crossfade",
+      "control": "number",
+      "key": "record/crossfadeDuration",
+      "target": "Crossfade",
+      "keywords": "crossfade punch in recording"
+    },
+    {
+      "page": "spectral-display",
+      "group": "Selection",
+      "label": "Enable spectral selection",
+      "control": "switch",
+      "target": "Enable spectral selection",
+      "keywords": "spectral selection frequency spectrogram"
+    },
+    {
+      "page": "spectral-display",
+      "group": "Scale",
+      "label": "Scale",
+      "control": "dropdown",
+      "target": "Scale",
+      "keywords": "spectrogram scale linear logarithmic mel bark"
+    },
+    {
+      "page": "spectral-display",
+      "group": "Colors",
+      "label": "Scheme",
+      "control": "dropdown",
+      "target": "Scheme",
+      "keywords": "spectrogram colour scheme roseus grayscale"
+    },
+    {
+      "page": "spectral-display",
+      "group": "Algorithm",
+      "label": "Algorithm",
+      "control": "dropdown",
+      "target": "Algorithm",
+      "keywords": "spectrogram algorithm fft window reassignment"
+    },
+    {
+      "page": "music",
+      "group": "Music imports",
+      "label": "Detect tempo in imported files",
+      "control": "radio",
+      "target": "Detect tempo in imported files:",
+      "keywords": "tempo detection import music bpm"
+    },
+    {
+      "page": "music",
+      "group": "When Audacity detects music in imported file",
+      "label": "Ask me each time",
+      "control": "switch",
+      "target": "Ask me each time",
+      "keywords": "ask prompt music import detection"
+    },
+    {
+      "page": "export",
+      "group": "Export behavior",
+      "label": "Show ‘How would you like to export?’ dialog",
+      "control": "switch",
+      "target": "Show ‘How would you like to export?’ dialog",
+      "keywords": "export dialog prompt how would you like"
+    },
+    {
+      "page": "export",
+      "group": "Save behavior",
+      "label": "Save behavior",
+      "control": "radio",
+      "target": "Always ask",
+      "keywords": "save cloud computer always ask behaviour"
+    },
+    {
+      "page": "shortcuts",
+      "group": "Shortcuts",
+      "label": "Keyboard shortcuts",
+      "control": "action",
+      "key": "shortcuts/currentPreset",
+      "target": "Shortcuts",
+      "keywords": "keyboard shortcuts keys bindings preset"
+    },
+    {
+      "page": "plugin",
+      "group": "Effect menu organization",
+      "label": "Group effects",
+      "control": "radio",
+      "target": "Group effects",
+      "keywords": "effects menu group flat list organisation"
+    },
+    {
+      "page": "plugin",
+      "group": "Custom LV2 plugins location",
+      "label": "Custom LV2 plugins location",
+      "control": "text",
+      "target": "Custom LV2 plugins location",
+      "keywords": "lv2 plugin path location custom"
+    },
+    {
+      "page": "plugin",
+      "group": "Custom VST3 plugins location",
+      "label": "Custom VST3 plugins location",
+      "control": "text",
+      "target": "Custom VST3 plugins location",
+      "keywords": "vst3 plugin path location custom"
+    },
+    {
+      "page": "experience",
+      "group": "Language mode",
+      "label": "Language mode",
+      "control": "dropdown",
+      "key": "experience/language/mode",
+      "target": "Language mode",
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "optionLabels": [
+        "English",
+        "Cantonese (Hong Kong)",
+        "Bilingual"
+      ],
+      "keywords": "language mode english cantonese bilingual"
+    },
+    {
+      "page": "experience",
+      "group": "Tone",
+      "label": "English funny level",
+      "control": "slider",
+      "key": "experience/funny/english",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "target": "English funny level",
+      "keywords": "funny level tone english humour"
+    },
+    {
+      "page": "experience",
+      "group": "Tone",
+      "label": "Cantonese funny level",
+      "control": "slider",
+      "key": "experience/funny/cantonese",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "target": "Cantonese funny level",
+      "keywords": "funny level tone cantonese humour"
+    },
+    {
+      "page": "experience",
+      "group": "Tone",
+      "label": "Emoji in dialogs and notifications",
+      "control": "switch",
+      "key": "experience/emoji/dialogs",
+      "target": "Emoji in dialogs and notifications",
+      "keywords": "emoji dialogs notifications tone"
+    },
+    {
+      "page": "experience",
+      "group": "Attention support",
+      "label": "Focus",
+      "control": "switch",
+      "key": "experience/modes/focus",
+      "target": "Focus",
+      "keywords": "focus attention support mode"
+    },
+    {
+      "page": "experience",
+      "group": "Attention support",
+      "label": "Low stimulation",
+      "control": "switch",
+      "key": "experience/modes/lowStimulation",
+      "target": "Low stimulation",
+      "keywords": "low stimulation attention reduced motion calm"
+    },
+    {
+      "page": "experience",
+      "group": "Attention support",
+      "label": "Time awareness",
+      "control": "switch",
+      "key": "experience/modes/timeAwareness",
+      "target": "Time awareness",
+      "keywords": "time awareness attention support mode"
+    },
+    {
+      "page": "experience",
+      "group": "Attention support",
+      "label": "One thing at a time",
+      "control": "switch",
+      "key": "experience/modes/oneThingAtATime",
+      "target": "One thing at a time",
+      "keywords": "one thing at a time attention support mode"
+    },
+    {
+      "page": "experience",
+      "group": "Attention support",
+      "label": "Momentum",
+      "control": "switch",
+      "key": "experience/modes/momentum",
+      "target": "Momentum",
+      "keywords": "momentum attention support mode"
+    },
+    {
+      "page": "experience",
+      "group": "Scheduled changes",
+      "label": "Scheduled changes",
+      "control": "action",
+      "key": "experience/schedule/entries",
+      "target": "Scheduled changes",
+      "keywords": "schedule scheduled change time of day automation"
+    },
+    {
+      "page": "experience",
+      "group": "Personal vocabulary",
+      "label": "Personal vocabulary",
+      "control": "action",
+      "key": "experience/vocabulary/fileName",
+      "target": "Personal vocabulary",
+      "keywords": "vocabulary personal words replace json"
+    },
+    {
+      "page": "music",
+      "group": "Workspaces and tempo detection",
+      "label": "Tempo detection per workspace",
+      "control": "radio",
+      "target": "Detect tempo in imported files:",
+      "keywords": "workspaces workspace tempo detection per workspace music import"
+    },
+    {
+      "page": "plugin",
+      "group": "Extension preferences",
+      "label": "Extension preferences",
+      "control": "action",
+      "target": "Custom LV2 plugins location",
+      "keywords": "extension extensions plugin provided preferences dynamic settings"
+    }
+  ],
+  "appearance": [
+    {
+      "label": "Seed colour",
+      "control": "color",
+      "key": "ui/m3/seedColor",
+      "page": "appearance",
+      "target": "Seed colour"
+    },
+    {
+      "label": "Scheme variant",
+      "control": "dropdown",
+      "key": "ui/m3/variant",
+      "options": [
+        "tonal_spot",
+        "vibrant",
+        "expressive",
+        "neutral",
+        "monochrome",
+        "fidelity"
+      ],
+      "page": "appearance",
+      "target": "Scheme variant"
+    },
+    {
+      "label": "Density",
+      "control": "slider",
+      "key": "ui/m3/density",
+      "min": -3,
+      "max": 0,
+      "step": 1,
+      "page": "appearance",
+      "target": "Density"
+    },
+    {
+      "label": "Reduce motion",
+      "control": "switch",
+      "key": "ui/m3/reducedMotion",
+      "page": "appearance",
+      "target": "Reduce motion"
+    },
+    {
+      "label": "Theme",
+      "control": "dropdown",
+      "key": "ui/application/currentThemeCode",
+      "options": [
+        "light",
+        "dark",
+        "high_contrast_white",
+        "high_contrast_black"
+      ],
+      "page": "appearance",
+      "target": "Theme"
+    },
+    {
+      "label": "Follow system theme",
+      "control": "switch",
+      "key": "ui/application/followSystemTheme",
+      "page": "appearance",
+      "target": "Follow system theme"
+    },
+    {
+      "label": "Interface font",
+      "control": "dropdown",
+      "key": "ui/theme/fontFamily",
+      "page": "appearance",
+      "target": "Font face"
+    },
+    {
+      "label": "Body text size",
+      "control": "slider",
+      "key": "ui/theme/fontSize",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "page": "appearance",
+      "target": "Body text size"
+    },
+    {
+      "label": "Clip style",
+      "control": "dropdown",
+      "key": "projectscene/clipStyle",
+      "options": [
+        "0",
+        "1"
+      ],
+      "optionLabels": [
+        "Colorful",
+        "Classic"
+      ],
+      "page": "appearance",
+      "target": "Clip style"
+    },
+    {
+      "label": "Language",
+      "control": "dropdown",
+      "key": "language",
+      "page": "general",
+      "target": "Language"
+    },
+    {
+      "label": "Bilingual interface",
+      "control": "switch",
+      "key": "ui/language/bilingual",
+      "page": "general",
+      "target": "Language"
+    },
+    {
+      "label": "Command palette opens as a full window",
+      "control": "switch",
+      "key": "companion/palette/fullWindow",
+      "page": "",
+      "target": ""
+    },
+    {
+      "label": "English funny level",
+      "control": "slider",
+      "key": "experience/funny/english",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "page": "experience",
+      "target": "English funny level"
+    },
+    {
+      "label": "Cantonese funny level",
+      "control": "slider",
+      "key": "experience/funny/cantonese",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "page": "experience",
+      "target": "Cantonese funny level"
+    },
+    {
+      "label": "Language mode",
+      "control": "dropdown",
+      "key": "experience/language/mode",
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "optionLabels": [
+        "English",
+        "Cantonese (Hong Kong)",
+        "Bilingual"
+      ],
+      "page": "experience",
+      "target": "Language mode"
+    },
+    {
+      "label": "Low stimulation",
+      "control": "switch",
+      "key": "experience/modes/lowStimulation",
+      "page": "experience",
+      "target": "Low stimulation"
+    }
+  ]
+}

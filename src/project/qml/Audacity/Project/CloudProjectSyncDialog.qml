@@ -72,7 +72,9 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: 1
 
-            FlatButton {
+            M3Button {
+                variant: "filled"
+
                 text: qsTrc("global", "Stop")
                 buttonRole: ButtonBoxModel.AcceptRole
                 accentButton: true

@@ -30,6 +30,8 @@ ColumnLayout {
     M3SearchBar {
         id: searchField
 
+        objectName: "DevToolsSettingsSearch"
+
         Layout.fillWidth: true
 
         placeholder: "Search settings"

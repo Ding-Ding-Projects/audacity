@@ -45,6 +45,8 @@ endif()
 
 add_subdirectory(spectrogram)
 
+add_subdirectory(experience)
+
 add_subdirectory(automation)
 
 add_subdirectory(extensions/native)
@@ -70,6 +72,10 @@ endif()
 add_subdirectory(importexport)
 
 add_subdirectory(uicomponents)
+
+add_subdirectory(companion)
+
+add_subdirectory(chronicle)
 
 # Stubs
 add_subdirectory(stubs)

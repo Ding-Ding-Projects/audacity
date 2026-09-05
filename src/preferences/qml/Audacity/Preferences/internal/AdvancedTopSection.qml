@@ -37,6 +37,10 @@ BaseSection {
 
     signal resetToDefaultRequested
 
+    //! Asks the page that owns this section to open its regular expression
+    //! builder on the given pattern.
+    signal regexBuilderRequested(string pattern)
+
     RowLayout {
         //! NOTE: Added to prevent components clipping when navigating
         width: root.width - root.padding * 2
@@ -63,7 +67,14 @@ BaseSection {
 
         M3SearchBar {
             id: searchField
+
+            objectName: "AdvancedPreferencesSearch"
+
             showRegexBuilder: true
+
+            onRegexBuilderRequested: {
+                root.regexBuilderRequested(searchField.searchText)
+            }
 
             Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: 160

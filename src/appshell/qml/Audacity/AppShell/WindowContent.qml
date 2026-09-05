@@ -70,6 +70,26 @@ DockWindow {
 
                 currentUri: root.currentPageUri
 
+                // The dockable panels the tab strip offers alongside the
+                // application pages.
+                dockPanels: [
+                    {
+                        "id": "tracks",
+                        "title": qsTrc("appshell", "Tracks"),
+                        "uri": ""
+                    },
+                    {
+                        "id": "history",
+                        "title": qsTrc("appshell", "History"),
+                        "uri": ""
+                    },
+                    {
+                        "id": "effects",
+                        "title": qsTrc("appshell", "Effects"),
+                        "uri": ""
+                    }
+                ]
+
                 navigation.onActiveChanged: {
                     if (navigation.active) {
                         mainToolBar.forceActiveFocus()

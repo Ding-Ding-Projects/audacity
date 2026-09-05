@@ -88,7 +88,7 @@ BaseSection {
             }
         }
 
-        FilePicker {
+        M3FilePicker {
             id: styleFilePicker
 
             pathFieldWidth: root.columnWidth

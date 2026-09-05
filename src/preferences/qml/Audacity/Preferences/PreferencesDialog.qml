@@ -27,6 +27,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.M3
+import Audacity.Companion
 
 M3Dialog {
     id: root
@@ -43,6 +44,10 @@ M3Dialog {
 
     property string currentPageId: ""
     property var params: null
+
+    //! The label of a control the command palette asked to be highlighted.
+    //! Passed as the "highlight" parameter of audacity://preferences.
+    property string highlight: ""
 
     signal regexBuilderRequested
 
@@ -206,8 +211,38 @@ M3Dialog {
     }
 
     Item {
+        id: dialogContent
+
         width: parent.width
         height: root.contentHeight - 172
+
+        // The receiving half of a command palette teleport: it finds the named
+        // control inside the page that is showing, scrolls it into view,
+        // focuses it and pulses a highlight over it.
+        TeleportHighlighter {
+            id: teleportHighlighter
+
+            searchRoot: stack
+            target: root.highlight
+        }
+
+        // The regular expression builder for the preferences search fields.
+        // A fresh builder is created on every open, and the store name says
+        // which field it belongs to, so no two fields share state.
+        RegexBuilderSheet {
+            id: regexBuilder
+
+            anchors.fill: parent
+
+            storeName: "preferences"
+            fieldLabel: qsTrc("preferences", "Search settings")
+
+            onPatternAccepted: function (pattern) {
+                searchBar.searchText = pattern
+                prv.searchText = pattern
+                prv.applyFilter()
+            }
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -215,6 +250,8 @@ M3Dialog {
 
             M3SearchBar {
                 id: searchBar
+
+                objectName: "PreferencesSearch"
 
                 Layout.fillWidth: true
 
@@ -233,6 +270,10 @@ M3Dialog {
                 }
 
                 onRegexBuilderRequested: {
+                    regexBuilder.storeName = "preferences"
+                    regexBuilder.fieldLabel = qsTrc("preferences", "Search settings")
+                    regexBuilder.pattern = searchBar.searchText
+                    regexBuilder.open()
                     root.regexBuilderRequested()
                 }
             }

@@ -155,15 +155,14 @@ StyledDialogView {
                     }
                 }
 
-                FilePicker {
+                M3FilePicker {
                     id: folderPicker
 
-                    pickerType: FilePicker.PickerType.Directory
+                    pickerType: M3FilePicker.PickerType.Directory
                     pathFieldWidth: prv.dropdownWidth
                     buttonWidth: fileSection.width - prv.labelColumnWidth - parent.spacing - pathFieldWidth - spacing
                     spacing: 8
 
-                    buttonType: FlatButton.Horizontal
                     buttonOrientation: Qt.Horizontal
 
                     path: exportModel.directoryPath
@@ -245,8 +244,9 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: labelTracksSectionContent.navigationPanelEndOrder + 1
 
-            FlatButton {
+            M3Button {
                 id: cancelBtn
+                variant: "text"
                 text: qsTrc("global", "Cancel")
                 buttonRole: ButtonBoxModel.RejectRole
                 buttonId: ButtonBoxModel.Cancel
@@ -260,8 +260,9 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: okBtn
+                variant: "filled"
                 text: qsTrc("global", "Export")
                 buttonRole: ButtonBoxModel.AcceptRole
                 buttonId: ButtonBoxModel.Apply

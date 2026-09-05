@@ -109,7 +109,9 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: 2
 
-            FlatButton {
+            M3Button {
+                variant: "tonal"
+
                 text: qsTrc("project", "New property")
                 buttonRole: ButtonBoxModel.CustomRole
                 buttonId: ButtonBoxModel.CustomButton + 1

@@ -1,0 +1,114 @@
+import QtQuick.tooling 1.2
+
+// Hand written type description for the two C++ types that
+// src/companion/companionmodule.cpp registers into Audacity.Companion.
+// It exists so that qmllint and QML tooling can resolve them. It is not read
+// by the QML engine at run time.
+Module {
+    Component {
+        name: "au::companion::CommandPaletteModel"
+        prototype: "QAbstractListModel"
+        exports: ["Audacity.Companion/CommandPaletteModel 1.0"]
+        exportMetaObjectRevisions: [256]
+
+        Property { name: "filter"; type: "QString" }
+        Property { name: "useRegex"; type: "bool" }
+        Property { name: "filterValid"; type: "bool"; isReadonly: true }
+        Property { name: "filterError"; type: "QString"; isReadonly: true }
+        Property { name: "count"; type: "int"; isReadonly: true }
+        Property { name: "fullWindow"; type: "bool" }
+
+        Signal { name: "teleportToPreferences"
+            Parameter { name: "pageId"; type: "QString" }
+            Parameter { name: "target"; type: "QString" }
+        }
+        Signal { name: "teleportToDocument"
+            Parameter { name: "path"; type: "QString" }
+        }
+        Signal { name: "teleportToContext"
+            Parameter { name: "payload"; type: "QVariantMap" }
+        }
+        Signal { name: "activated" }
+        Signal { name: "openRequested" }
+
+        Method { name: "registerAsPaletteHost" }
+        Method { name: "reload" }
+        Method { name: "setContextRows"
+            Parameter { name: "rows"; type: "QVariantList" }
+        }
+        Method { name: "activate"
+            Parameter { name: "row"; type: "int" }
+        }
+        Method { name: "settingValue"; type: "QVariant"
+            Parameter { name: "key"; type: "QString" }
+        }
+        Method { name: "setSettingValue"
+            Parameter { name: "key"; type: "QString" }
+            Parameter { name: "value"; type: "QVariant" }
+        }
+        Method { name: "indexedSettingKeys"; type: "QStringList" }
+        Method { name: "indexedTargets"; type: "QStringList" }
+        Method { name: "documentationRoot"; type: "QString" }
+    }
+
+    Component {
+        name: "au::companion::RegexEngine"
+        prototype: "QObject"
+        exports: ["Audacity.Companion/RegexEngine 1.0"]
+        exportMetaObjectRevisions: [256]
+
+        Property { name: "pattern"; type: "QString" }
+        Property { name: "sampleText"; type: "QString" }
+        Property { name: "replacement"; type: "QString" }
+        Property { name: "caseInsensitive"; type: "bool" }
+        Property { name: "multiline"; type: "bool" }
+        Property { name: "dotAll"; type: "bool" }
+        Property { name: "extended"; type: "bool" }
+        Property { name: "unicodeProperties"; type: "bool" }
+        Property { name: "valid"; type: "bool"; isReadonly: true }
+        Property { name: "errorString"; type: "QString"; isReadonly: true }
+        Property { name: "errorOffset"; type: "int"; isReadonly: true }
+        Property { name: "matches"; type: "QVariantList"; isReadonly: true }
+        Property { name: "matchCount"; type: "int"; isReadonly: true }
+        Property { name: "explanation"; type: "QVariantList"; isReadonly: true }
+        Property { name: "parseTree"; type: "QVariantMap"; isReadonly: true }
+        Property { name: "replacementPreview"; type: "QString"; isReadonly: true }
+        Property { name: "lastRunMilliseconds"; type: "double"; isReadonly: true }
+        Property { name: "truncated"; type: "bool"; isReadonly: true }
+        Property { name: "risks"; type: "QVariantList"; isReadonly: true }
+        Property { name: "riskLevel"; type: "int"; isReadonly: true }
+        Property { name: "dialect"; type: "QString"; isReadonly: true }
+        Property { name: "capabilities"; type: "QVariantList"; isReadonly: true }
+        Property { name: "testCases"; type: "QVariantList"; isReadonly: true }
+        Property { name: "storeName"; type: "QString" }
+
+        Method { name: "insertFragment"
+            Parameter { name: "fragment"; type: "QString" }
+            Parameter { name: "position"; type: "int" }
+        }
+        Method { name: "wrapSelection"; type: "QString"
+            Parameter { name: "kind"; type: "QString" }
+            Parameter { name: "name"; type: "QString" }
+            Parameter { name: "start"; type: "int" }
+            Parameter { name: "end"; type: "int" }
+        }
+        Method { name: "escapeLiteral"; type: "QString"
+            Parameter { name: "literal"; type: "QString" }
+        }
+        Method { name: "tokenCatalog"; type: "QVariantList" }
+        Method { name: "saveTestCase"
+            Parameter { name: "name"; type: "QString" }
+        }
+        Method { name: "loadTestCase"
+            Parameter { name: "index"; type: "int" }
+        }
+        Method { name: "removeTestCase"
+            Parameter { name: "index"; type: "int" }
+        }
+        Method { name: "exportJson"; type: "QString" }
+        Method { name: "importJson"; type: "bool"
+            Parameter { name: "json"; type: "QString" }
+        }
+        Method { name: "storePath"; type: "QString" }
+    }
+}

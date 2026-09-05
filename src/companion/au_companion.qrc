@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/Audacity/Companion/qmldir</file>
+        <file>qml/Audacity/Companion/audacity_companion.qmltypes</file>
+        <file>qml/Audacity/Companion/CommandPalette.qml</file>
+        <file>qml/Audacity/Companion/CommandPaletteHost.qml</file>
+        <file>qml/Audacity/Companion/CommandPaletteRow.qml</file>
+        <file>qml/Audacity/Companion/RegexBuilder.qml</file>
+        <file>qml/Audacity/Companion/RegexBuilderSheet.qml</file>
+        <file>qml/Audacity/Companion/TeleportHighlighter.qml</file>
+    </qresource>
+    <qresource prefix="/palette">
+        <file alias="settingsindex.json">palette/settingsindex.json</file>
+    </qresource>
+</RCC>

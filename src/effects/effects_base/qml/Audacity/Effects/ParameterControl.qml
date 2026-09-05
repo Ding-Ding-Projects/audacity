@@ -366,18 +366,18 @@ Item {
         RowLayout {
             spacing: prv.spaceL
 
-            FilePicker {
+            M3FilePicker {
                 id: filePicker
                 Layout.preferredWidth: prv.filePickerWidth
                 Layout.alignment: Qt.AlignVCenter
 
-                // FilePicker uses a different navigation API than the other
+                // M3FilePicker uses a different navigation API than the other
                 // Muse controls: it takes the panel directly via `navigation`
                 // (not `navigation.panel`) and accepts row/column orders.
                 navigation: root.navigationPanel
                 navigationRowOrderStart: root.navigationOrderStart
 
-                // FilePicker prepends pathFieldTitle to its inner pathField's
+                // M3FilePicker prepends pathFieldTitle to its inner pathField's
                 // accessible name, which is the only hook it exposes for the
                 // parameter label.
                 pathFieldTitle: parameterData ? parameterData.name : ""
@@ -386,22 +386,22 @@ Item {
 
                 pickerType: {
                     if (!parameterData) {
-                        return FilePicker.PickerType.File
+                        return M3FilePicker.PickerType.File
                     }
 
                     if (parameterData.isDirectory) {
-                        return FilePicker.PickerType.Directory
+                        return M3FilePicker.PickerType.Directory
                     }
 
                     // If "save" flag is set, use Any type (save dialog)
                     if (parameterData.isFileSave) {
-                        return FilePicker.PickerType.Any
+                        return M3FilePicker.PickerType.Any
                     }
 
                     // Otherwise use File type (open dialog)
                     // Note: Multiple file selection is not yet fully supported in the Framework
                     // but the flag is available for future implementation
-                    return FilePicker.PickerType.File
+                    return M3FilePicker.PickerType.File
                 }
 
                 enabled: parameterData ? !parameterData.isReadOnly : false

@@ -143,12 +143,12 @@ BaseSection {
     Component {
         id: directoryEditor
 
-        FilePicker {
+        M3FilePicker {
             readonly property var preference: parent.preference
             readonly property var section: parent.section
 
             width: 360
-            pickerType: FilePicker.PickerType.Directory
+            pickerType: M3FilePicker.PickerType.Directory
             path: preference.value ?? ""
             pathFieldTitle: preference.title
             dialogTitle: preference.title

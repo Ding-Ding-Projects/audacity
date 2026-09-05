@@ -19,7 +19,9 @@ M3Dropdown 1.0 M3Dropdown.qml
 M3Elevation 1.0 M3Elevation.qml
 M3FAB 1.0 M3FAB.qml
 M3FocusRing 1.0 M3FocusRing.qml
+M3FilePicker 1.0 M3FilePicker.qml
 M3IconButton 1.0 M3IconButton.qml
+M3Knob 1.0 M3Knob.qml
 M3LinearProgress 1.0 M3LinearProgress.qml
 M3ListItem 1.0 M3ListItem.qml
 M3Menu 1.0 M3Menu.qml

@@ -28,6 +28,7 @@ import Muse.UiComponents
 import Muse.Extensions 1.0
 
 import Audacity.M3
+import Audacity.Companion
 
 FocusScope {
     id: root
@@ -108,6 +109,8 @@ FocusScope {
             M3SearchBar {
                 id: searchField
 
+                objectName: "PluginsPageSearch"
+
                 Layout.preferredWidth: 260
 
                 placeholder: qsTrc("appshell", "Search plugins")
@@ -122,8 +125,9 @@ FocusScope {
                     categoryDropdown.selectedCategory = ""
                 }
 
-                //! NOTE Hook for the regex builder, attached by the search lane.
                 onRegexBuilderRequested: {
+                    regexBuilder.pattern = searchField.searchText
+                    regexBuilder.open()
                     root.regexBuilderRequested()
                 }
             }
@@ -210,5 +214,21 @@ FocusScope {
         sideMargin: prv.sideMargin
 
         navigationSection: navSec
+    }
+
+    // The regular expression builder for this field. Each search surface owns its
+    // own instance, so its pattern, flags, sample and saved test cases are
+    // isolated from every other search field in the application.
+    RegexBuilderSheet {
+        id: regexBuilder
+
+        anchors.fill: parent
+
+        storeName: "plugins-page"
+        fieldLabel: "Plugins"
+
+        onPatternAccepted: function (pattern) {
+            searchField.searchText = pattern
+        }
     }
 }

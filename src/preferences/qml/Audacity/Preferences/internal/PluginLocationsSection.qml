@@ -53,10 +53,10 @@ BaseSection {
                     width: parent.width
                     spacing: 4
 
-                    FilePicker {
+                    M3FilePicker {
                         Layout.fillWidth: true
 
-                        pickerType: FilePicker.PickerType.Directory
+                        pickerType: M3FilePicker.PickerType.Directory
                         dialogTitle: root.dialogTitle
                         path: modelData
 

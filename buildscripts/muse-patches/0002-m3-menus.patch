@@ -121,7 +121,7 @@ index 643897d..c78a9d8 100644
                  }
              }
 diff --git a/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml b/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml
-index e6d4dd9..7c5dfba 100644
+index e6d4dd9..f709530 100644
 --- a/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml
 +++ b/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml
 @@ -59,9 +59,10 @@ ListItemBlank {
@@ -146,15 +146,29 @@ index e6d4dd9..7c5dfba 100644
  
          spacing: 12
  
-@@ -220,6 +221,7 @@ ListItemBlank {
+@@ -215,19 +216,29 @@ ListItemBlank {
+             text: itemPrv.titleWithMnemonicUnderline
+ 
+             textFormat: Text.RichText
++
++            //! NOTE Material Design 3 label large
++            font.pixelSize: 14
++            font.weight: Font.Medium
+         }
+ 
          StyledTextLabel {
              id: shortcutsLabel
              Layout.alignment: Qt.AlignRight
 +            color: M3Roles.onSurfaceVariant
              text: itemPrv.shortcuts
              horizontalAlignment: Text.AlignRight
++
++            //! NOTE Material Design 3 label large
++            font.pixelSize: 14
++            font.weight: Font.Medium
              visible: !itemPrv.hasShortcuts || (root.reserveSpaceForShortcutsOrSubmenuIndicator)
-@@ -228,6 +230,7 @@ ListItemBlank {
+         }
+ 
          StyledIconLabel {
              id: submenuIndicator
              Layout.alignment: Qt.AlignRight

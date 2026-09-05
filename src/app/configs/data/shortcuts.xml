@@ -950,7 +950,12 @@
     </SC>
     <SC>
         <key>fit-v</key>
+        <seq>Ctrl+Shift+H</seq>
+    </SC>
+    <SC>
+        <key>companion-command-palette</key>
         <seq>Ctrl+Shift+F</seq>
+        <autorepeat>0</autorepeat>
     </SC>
     <SC>
         <key>collapse-all-tracks</key>

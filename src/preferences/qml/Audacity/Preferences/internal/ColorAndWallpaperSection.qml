@@ -105,7 +105,7 @@ BaseSection {
             }
         }
 
-        FilePicker {
+        M3FilePicker {
             id: wallpaperPicker
             pathFieldWidth: root.columnWidth
 

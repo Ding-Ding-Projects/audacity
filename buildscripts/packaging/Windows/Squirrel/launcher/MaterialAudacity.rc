@@ -1,0 +1,40 @@
+/*
+ * Resources for the Material Audacity shortcut launcher.
+ *
+ * @VERSION_COMMA@ and @VERSION_STRING@ are replaced by
+ * buildscripts/ci/windows/package_squirrel.ps1, which also copies the
+ * application icon next to this file as AppIcon.ico before invoking rc.exe.
+ */
+
+#include <windows.h>
+
+1 ICON "AppIcon.ico"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    @VERSION_COMMA@
+PRODUCTVERSION @VERSION_COMMA@
+FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+FILEFLAGS      0
+FILEOS         VOS_NT_WINDOWS32
+FILETYPE       VFT_APP
+FILESUBTYPE    VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName",      "Audacity contributors"
+            VALUE "FileDescription",  "Material Audacity"
+            VALUE "FileVersion",      "@VERSION_STRING@"
+            VALUE "InternalName",     "MaterialAudacity"
+            VALUE "LegalCopyright",   "Audacity contributors"
+            VALUE "OriginalFilename", "MaterialAudacity.exe"
+            VALUE "ProductName",      "Material Audacity"
+            VALUE "ProductVersion",   "@VERSION_STRING@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

@@ -202,8 +202,9 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: 3
 
-            FlatButton {
+            M3Button {
                 id: saveButton
+                variant: "tonal"
 
                 text: root.actionText
                 buttonRole: ButtonBoxModel.ApplyRole

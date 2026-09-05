@@ -22,7 +22,7 @@ method call does not re-evaluate when the theme changes.
 
 | Component | Public API | Replaces |
 | --- | --- | --- |
-| `M3Button` | `text`, `icon`, `variant` (`filled`, `tonal`, `outlined`, `text`, `elevated`), `loading`, `minWidth`, `horizontalPadding`, `toolTipTitle`, `toolTipDescription`, `toolTipShortcut`, `clicked()` | `FlatButton` |
+| `M3Button` | `text`, `icon`, `variant` (`filled`, `tonal`, `outlined`, `text`, `elevated`), `loading`, `minWidth`, `horizontalPadding`, `toolTipTitle`, `toolTipDescription`, `toolTipShortcut`, `accentButton`, `buttonId`, `buttonRole`, `isLeftSide`, `accessible`, `clicked()` | `FlatButton` |
 | `M3IconButton` | `icon`, `variant` (`standard`, `filled`, `tonal`, `outlined`), `checkable`, `checked`, `clicked()`, `toggled(checked)` | `FlatButton` with an icon and no text |
 | `M3FAB` | `icon`, `text`, `size` (`small`, `regular`, `large`, `extended`), `variant` (`primary`, `secondary`, `tertiary`, `surface`), `lowered`, `clicked()` | `FlatButton` used as a primary accent action |
 | `M3SegmentedButton` | `model`, `currentIndex`, `multiSelect`, `checkedIndexes`, `navigationPanel`, `navigationRowStart`, `activated(index)` | `RadioButtonGroup` used as a toolbar selector |
@@ -33,18 +33,20 @@ method call does not re-evaluate when the theme changes.
 | Component | Public API | Replaces |
 | --- | --- | --- |
 | `M3Switch` | `checked`, `showIcon`, `text`, `toggled(checked)` | `ToggleButton` |
-| `M3Checkbox` | `checked`, `indeterminate`, `text`, `clicked()` | `CheckBox` |
+| `M3Checkbox` | `checked`, `indeterminate`, `text`, `touchTargetSize`, `clicked()` | `CheckBox` |
 | `M3RadioButton` | `checked`, `text`, `toggled()` | `RoundedRadioButton` |
 
 ## Value entry
 
 | Component | Public API | Replaces |
 | --- | --- | --- |
-| `M3Slider` | `value`, `from`, `to`, `stepSize`, `orientation`, `showTicks`, `showValueIndicator`, `valueText`, `setValue(value)`, `step(direction)`, `moved()` | `StyledSlider` |
+| `M3Slider` | `value`, `from`, `to`, `stepSize`, `orientation`, `showTicks`, `showValueIndicator`, `valueText`, `trackThickness`, `handleWidth`, `handleLength`, `handleItem`, `setValue(value)`, `step(direction)`, `moved()` | `StyledSlider` |
 | `M3RangeSlider` | `first`, `second`, `from`, `to`, `stepSize`, `orientation`, `navigationPanel`, `moved()` | no direct muse equivalent |
+| `M3Knob` | `value`, `from`, `to`, `stepSize`, `radius`, `bidirectional`, `accentControl`, `valueText`, `showValueIndicator`, `mouseArea`, `newValueRequested(value)`, `moved()`, `mouseEntered()`, `mouseExited()`, `mousePressed()`, `mouseReleased()` | `KnobControl`, which was a `QtQuick.Controls` `Dial` |
 | `M3TextField` | `currentText`, `label`, `placeholder`, `supportingText`, `errorText`, `hasError`, `variant` (`filled`, `outlined`), `leadingIcon`, `trailingIcon`, `isPassword`, `readOnly`, `maximumLength`, `textEdited(text)`, `textEditingFinished(text)`, `trailingIconClicked()`, `clear()` | `TextInputField` |
-| `M3Dropdown` | `model`, `currentIndex`, `currentText`, `currentValue`, `textRole`, `valueRole`, `label`, `placeholder`, `activated(index, value)` | `StyledDropdown` |
+| `M3Dropdown` | `model`, `currentIndex`, `currentText`, `currentValue`, `textRole`, `valueRole`, `label`, `placeholder`, `menuModel`, `displayText`, `fieldHeight`, `menuNavigationPanel`, `opened`, `activated(index, value)`, `handleMenuItem(itemId)` | `StyledDropdown` |
 | `M3SearchBar` | `searchText`, `placeholder`, `showRegexBuilder`, `accepted()`, `regexBuilderRequested()`, `clear()` | `SearchField` |
+| `M3FilePicker` | `pickerType`, `path`, `dialogTitle`, `filter`, `dir`, `buttonText`, `buttonWidth`, `buttonOrientation`, `showPathField`, `pathFieldTitle`, `pathFieldWidth`, `spacing`, `navigation`, `navigationRowOrderStart`, `navigationColumnOrderStart`, `pathEdited(newPath)` | `FilePicker` |
 | `M3DatePicker` | `selectedDate`, `displayedMonth`, `minimumDate`, `maximumDate`, `navigationPanel`, `dateSelected(date)` | no muse equivalent |
 | `M3TimePicker` | `hours`, `minutes`, `use24Hour`, `navigationPanel`, `timeChanged(hours, minutes)` | no muse equivalent |
 | `M3ColorPicker` | `selection`, `allowRainbow`, `rainbowSpeed`, `contrastBackground`, `format`, `alpha`, `gamutClipped`, `navigationPanel`, `accepted()` | no muse equivalent |
@@ -92,7 +94,7 @@ provider still opens it by URI.
 | `M3TopAppBar` | `title`, `size` (`small`, `centerAligned`, `medium`, `large`), `navigationIcon`, `actions` slot, `flickable`, `navigationPanel`, `navigationIconTriggered()` | no muse equivalent |
 | `M3NavigationRail` | `model`, `currentIndex`, `showLabels`, `fabIcon`, `navigationPanel`, `activated(index)`, `fabTriggered()` | no muse equivalent |
 | `M3NavigationDrawer` | `model`, `currentIndex`, `headline`, `modal`, `opened`, `drawerWidth`, `navigationPanel`, `activated(index)`, `open()`, `close()` | no muse equivalent |
-| `M3Tabs` | `model`, `currentIndex`, `primary`, `orientation`, `navigationPanel`, `activated(index)` | `StyledTabBar` |
+| `M3Tabs` | `model`, `currentIndex`, `primary`, `orientation`, `navigationPanel`, `currentItem`, `activated(index)` | `StyledTabBar` |
 | `M3Tab` | `text`, `icon`, `selected`, `primary`, `orientation`, `badgeCount`, `clicked()` | `StyledTabButton` |
 
 `M3TopAppBar` collapses from the medium or large size down to the small size as
@@ -117,6 +119,57 @@ case, where a subhead, supporting text and actions are needed.
 
 A badge is decorative. The component that hosts it must fold `accessibleText`
 into its own accessible name so that the count is announced once, in context.
+
+## Where the overlay draws instead of a component
+
+Three surfaces reach the screen through the muse framework rather than through
+this module. In each case the Material Design 3 anatomy is produced by the
+patch overlay described in `MUSE_OVERLAY.md`, and the reason for that choice is
+recorded here.
+
+### Application menu bar
+
+`src/appshell/qml/Audacity/AppShell/platform/AppMenuBar.qml` draws its own top
+level items with Material chrome, but the dropdown itself is opened through
+`StyledMenuLoader`. Driving `M3Menu` from `AppMenuModel` instead was tried and
+set aside: the bar depends on `menuLoader.menu.subMenuLoader` to report the
+opened area back to the model, on the loader for hover switching between top
+level menus while a menu is open, and on the muse navigation section for
+mnemonic and arrow key handling. None of those exist on `M3Menu`, and adding
+them would duplicate the loader rather than replace it.
+
+The chosen route is therefore the overlay. Patch `0002-m3-menus` gives
+`StyledMenu` and `StyledMenuItem` the same anatomy as `M3Menu` and
+`M3MenuItem`: a 4 dp container corner, elevation level 2, 8 dp vertical
+padding, 48 dp rows, 12 dp horizontal padding, label large row and shortcut
+text, the shortcut and the submenu arrow in the on-surface-variant role,
+dividers in outline-variant, and hover, pressed and selected feedback drawn as
+Material state layers by the patched `ListItemBlank`.
+
+### Dialog button rows
+
+The nine dialogs listed in `MUSE_OVERLAY.md` keep the muse `ButtonBox`, and
+their buttons are now `M3Button`. `M3Button` carries `buttonId`, `buttonRole`,
+`isLeftSide`, `accentButton` and an `accessible` alias, which is everything the
+box and its C++ model read. Patch `0008-m3-button-box` removes the four
+`as FlatButton` casts the box used when it inspected its own children, so the
+cast no longer discards a host application button.
+
+Replacing the box with a plain row of buttons was the alternative. It was
+rejected because the box owns the platform button order, the accept and reject
+key defaults, the navigation panel and the first focus button, and a hand
+written row would have had to reproduce all of that.
+
+### Shortcut preferences page
+
+`ShortcutsPreferencesPage` hosts the muse `ShortcutsPage`, which owns the
+shortcut model, the sequence editor dialog and the fuzzy search filter. Patch
+`0009-m3-shortcuts-page` restyles it in place: key sequences are drawn as
+Material chips through a new `valueChips` property on `ValueList`, and the
+search field gained a regular expression builder action and a
+`regexBuilderRequested` signal that the page forwards. Audacity answers that
+signal with its own `RegexBuilderSheet`, so the shortcut search has the same
+regular expression builder as every other search surface in the application.
 
 ## Reusable primitives
 

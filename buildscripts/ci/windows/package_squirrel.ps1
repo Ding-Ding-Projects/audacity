@@ -52,7 +52,11 @@ param(
     # Preserve keeps the installed tree exactly as built (bin\ plus data
     # directories). Flat lifts the contents of bin\ to the package root.
     [ValidateSet("Preserve", "Flat")]
-    [string] $Layout = "Preserve"
+    [string] $Layout = "Preserve",
+
+    # Skips building the shortcut launcher. Only useful for local experiments:
+    # without the launcher Squirrel creates no Start Menu or desktop shortcut.
+    [switch] $SkipLauncher
 )
 
 $ErrorActionPreference = "Stop"
@@ -220,6 +224,130 @@ if ($Layout -eq "Flat") {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Shortcut launcher
+#
+# Squirrel creates Start Menu and desktop shortcuts for executables at the root
+# of the package payload only. The application itself lives in bin\, because it
+# resolves its resources relative to that layout, so a small native launcher is
+# compiled and placed at the payload root. Squirrel makes the shortcuts point at
+# the launcher, and the launcher starts bin\Audacity4.exe.
+# ---------------------------------------------------------------------------
+
+function Import-VsDeveloperEnvironment {
+    # ci_build.bat enters the Visual Studio environment through vswhere and
+    # vcvars64.bat. The same route is used here so cl.exe and rc.exe are found
+    # exactly where the application build finds them.
+    if (Get-Command cl.exe -ErrorAction SilentlyContinue) {
+        Write-Host "cl.exe is already on PATH, reusing the current environment."
+        return
+    }
+
+    $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+    if (-not (Test-Path -LiteralPath $vswhere)) {
+        throw "vswhere.exe not found at $vswhere, so the Visual Studio environment cannot be entered."
+    }
+
+    $installPath = & $vswhere -latest -products * `
+        -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+        -property installationPath
+    if ([string]::IsNullOrWhiteSpace($installPath)) {
+        throw "vswhere.exe found no Visual Studio installation with the x64 C++ toolset."
+    }
+
+    $vcvars = Join-Path $installPath "VC\Auxiliary\Build\vcvars64.bat"
+    if (-not (Test-Path -LiteralPath $vcvars)) {
+        throw "vcvars64.bat not found at $vcvars"
+    }
+
+    Write-Host "Entering the Visual Studio environment from $vcvars"
+    $output = & cmd.exe /c "call `"$vcvars`" >nul && set"
+    foreach ($line in $output) {
+        if ($line -match '^([^=]+)=(.*)$') {
+            Set-Item -Path ("Env:" + $Matches[1]) -Value $Matches[2] -ErrorAction SilentlyContinue
+        }
+    }
+
+    if (-not (Get-Command cl.exe -ErrorAction SilentlyContinue)) {
+        throw "cl.exe is still not available after entering the Visual Studio environment."
+    }
+}
+
+function New-ShortcutLauncher([string] $Destination) {
+    $launcherSrcDir = Join-Path $squirrelInputs "launcher"
+    $launcherC = Join-Path $launcherSrcDir "MaterialAudacity.c"
+    $launcherRc = Join-Path $launcherSrcDir "MaterialAudacity.rc"
+    foreach ($required in @($launcherC, $launcherRc)) {
+        if (-not (Test-Path -LiteralPath $required)) {
+            throw "Launcher source not found: $required"
+        }
+    }
+
+    Import-VsDeveloperEnvironment
+
+    $buildDir = Join-Path $ToolsDir "launcher"
+    if (Test-Path -LiteralPath $buildDir) {
+        Remove-Item -LiteralPath $buildDir -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
+
+    Copy-Item -LiteralPath $launcherC -Destination $buildDir -Force
+    Copy-Item -LiteralPath $iconSource -Destination (Join-Path $buildDir "AppIcon.ico") -Force
+
+    # The version resource carries the package version. The comma form needs
+    # four numeric fields, so the pre-release label is dropped from it.
+    $numeric = ($Version -split '-')[0]
+    $versionComma = ($numeric -replace '\.', ',') + ",0"
+    $rcText = (Get-Content -LiteralPath $launcherRc -Raw).
+        Replace("@VERSION_COMMA@", $versionComma).
+        Replace("@VERSION_STRING@", $Version)
+    $rcPath = Join-Path $buildDir "MaterialAudacity.rc"
+    Set-Content -LiteralPath $rcPath -Value $rcText -Encoding UTF8
+
+    Push-Location $buildDir
+    try {
+        & rc.exe /nologo /fo MaterialAudacity.res MaterialAudacity.rc
+        if ($LASTEXITCODE -ne 0) {
+            throw "rc.exe failed with exit code $LASTEXITCODE"
+        }
+
+        # /MT links the static CRT, so the launcher needs no Visual C++
+        # runtime beside it. Code signing is permanently prohibited, and no
+        # signing switch is passed here or anywhere else.
+        & cl.exe /nologo /W4 /O1 /MT /DUNICODE /D_UNICODE MaterialAudacity.c MaterialAudacity.res `
+            /link /SUBSYSTEM:WINDOWS /OUT:MaterialAudacity.exe kernel32.lib shell32.lib user32.lib
+        if ($LASTEXITCODE -ne 0) {
+            throw "cl.exe failed with exit code $LASTEXITCODE"
+        }
+    }
+    finally {
+        Pop-Location
+    }
+
+    $built = Join-Path $buildDir "MaterialAudacity.exe"
+    if (-not (Test-Path -LiteralPath $built)) {
+        throw "The launcher build produced no MaterialAudacity.exe"
+    }
+
+    Copy-Item -LiteralPath $built -Destination $Destination -Force
+    Write-Host "Built the shortcut launcher and placed it at the package root."
+}
+
+$iconSource = Join-Path $repoRoot "share\icons\AppIcon\AU4_AppIcon.ico"
+if (-not (Test-Path -LiteralPath $iconSource)) {
+    throw "Application icon not found: $iconSource"
+}
+
+$launcherExe = Join-Path $payloadDir "MaterialAudacity.exe"
+if ($SkipLauncher) {
+    Write-Warning ("SkipLauncher was requested. Squirrel will create no Start " +
+        "Menu or desktop shortcut for this package.")
+} elseif ($Layout -eq "Flat") {
+    Write-Host "Flat layout puts the application at the package root, so no launcher is needed."
+} else {
+    New-ShortcutLauncher -Destination $launcherExe
+}
+
 $appExe = Get-ChildItem -LiteralPath $payloadDir -Filter "*.exe" -Recurse |
     Where-Object { $_.Name -like "Audacity*" } |
     Select-Object -First 1
@@ -231,16 +359,22 @@ Write-Host "Application executable: $($appExe.FullName.Substring($payloadDir.Len
 $rootExe = Get-ChildItem -LiteralPath $payloadDir -Filter "*.exe" |
     Select-Object -First 1
 if (-not $rootExe) {
-    Write-Warning ("The application executable is not at the package root " +
-        "($Layout layout). Squirrel creates shortcuts for root level " +
-        "executables only, so shortcuts must be created from the installed " +
-        "path. See docs/design/RELEASE.md.")
+    Write-Warning ("No executable is at the package root ($Layout layout). " +
+        "Squirrel creates shortcuts for root level executables only, so this " +
+        "package produces no shortcut. See docs/design/RELEASE.md.")
+} else {
+    Write-Host "Package root executable for shortcuts: $($rootExe.Name)"
 }
 
-$iconSource = Join-Path $repoRoot "share\icons\AppIcon\AU4_AppIcon.ico"
-if (-not (Test-Path -LiteralPath $iconSource)) {
-    throw "Application icon not found: $iconSource"
+# The launcher is shipped, so it has to be unsigned like everything else.
+if (Test-Path -LiteralPath $launcherExe) {
+    $launcherStatus = (Get-AuthenticodeSignature -LiteralPath $launcherExe).Status
+    Write-Host ("Signature status of MaterialAudacity.exe: {0}" -f $launcherStatus)
+    if ($launcherStatus -ne "NotSigned") {
+        throw "MaterialAudacity.exe reports signature status '$launcherStatus'. Code signing is permanently prohibited."
+    }
 }
+
 $iconPath = Join-Path $stageDir "AU4_AppIcon.ico"
 Copy-Item -LiteralPath $iconSource -Destination $iconPath -Force
 
@@ -382,11 +516,21 @@ $nupkgZip = Join-Path $ToolsDir "verify-full.zip"
 Copy-Item -LiteralPath $fullNupkg[0].FullName -Destination $nupkgZip -Force
 Expand-Archive -LiteralPath $nupkgZip -DestinationPath $updateCheckDir -Force
 Remove-Item -LiteralPath $nupkgZip -Force
-foreach ($exe in Get-ChildItem -LiteralPath $updateCheckDir -Filter "Update.exe" -Recurse -File) {
-    $status = (Get-AuthenticodeSignature -LiteralPath $exe.FullName).Status
-    Write-Host ("Signature status of packaged {0}: {1}" -f $exe.Name, $status)
-    if ($status -ne "NotSigned") {
-        throw "Packaged Update.exe reports signature status '$status'. Code signing is permanently prohibited."
+$packagedChecks = @("Update.exe", "MaterialAudacity.exe")
+foreach ($name in $packagedChecks) {
+    foreach ($exe in Get-ChildItem -LiteralPath $updateCheckDir -Filter $name -Recurse -File) {
+        $status = (Get-AuthenticodeSignature -LiteralPath $exe.FullName).Status
+        Write-Host ("Signature status of packaged {0}: {1}" -f $exe.Name, $status)
+        if ($status -ne "NotSigned") {
+            throw "Packaged $name reports signature status '$status'. Code signing is permanently prohibited."
+        }
+    }
+}
+
+if (-not $SkipLauncher -and $Layout -eq "Preserve") {
+    $packagedLauncher = Get-ChildItem -LiteralPath $updateCheckDir -Filter "MaterialAudacity.exe" -Recurse -File
+    if (-not $packagedLauncher) {
+        throw "The full .nupkg contains no MaterialAudacity.exe, so Squirrel would create no shortcut."
     }
 }
 

@@ -67,8 +67,8 @@ touches has a complete reduced-motion path.
 
 - `internal/StyledMenu.qml`: 4 dp container corner (extra-small shape), elevation level 2,
   8 dp vertical padding of the item list, dividers drawn with the outline-variant role.
-- `internal/StyledMenuItem.qml`: 48 dp item height, 12 dp horizontal padding, trailing
-  shortcut text and submenu arrow in on-surface-variant.
+- `internal/StyledMenuItem.qml`: 48 dp item height, 12 dp horizontal padding, label large
+  row and shortcut text, trailing shortcut text and submenu arrow in on-surface-variant.
 - `ListItemBlank.qml`: hover, pressed and selected feedback rewritten as Material Design 3
   state layers (on-surface at 8 and 10 percent) with a secondary-container selected state.
 - `SeparatorLine.qml`: dividers use outline-variant.
@@ -116,6 +116,31 @@ touches has a complete reduced-motion path.
   outline-role border that becomes a 2 dp primary border on focus; the search field is fully
   rounded with 16 dp side padding.
 - `StyledDropdown.qml`: 40 dp outlined menu button with a state layer.
+
+### 0008-m3-button-box.patch
+
+- `ButtonBox.qml`: the four places where the box cast its own children to `FlatButton`
+  before reading `buttonId`, `buttonRole`, `isLeftSide`, `accentButton` and `navigation`
+  now read those properties without a cast. A host application can therefore put its own
+  button component in a button box and keep the platform button order, the accept and
+  reject defaults, the navigation panel and the first focus button. The nine Audacity
+  dialogs that use a button box hold `M3Button` children after this change. The button the
+  box creates itself for a standard button is still a `FlatButton`, which patch `0005`
+  already gives Material Design 3 anatomy.
+
+### 0009-m3-shortcuts-page.patch
+
+- `ValueList.qml` and `internal/ValueListItem.qml`: a new `valueChips` property draws a
+  read only value as a Material Design 3 chip, a 32 dp tall outline container with a 8 dp
+  corner and 12 dp side padding. It is off by default, so every other value list is
+  unchanged.
+- `internal/ShortcutsList.qml`: turns `valueChips` on, so a key sequence reads as a chip.
+- `internal/ShortcutsTopPanel.qml`: adds a regular expression builder action beside the
+  search field and a `regexBuilderRequested` signal.
+- `ShortcutsPage.qml`: forwards `regexBuilderRequested` and exposes `setSearchText`, so the
+  host application can open its own builder and write the accepted pattern back.
+  Audacity's `ShortcutsPreferencesPage` answers it with a `RegexBuilderSheet` under the
+  store name `shortcuts-preferences`.
 
 ### 0006-m3-dock-chrome.patch
 

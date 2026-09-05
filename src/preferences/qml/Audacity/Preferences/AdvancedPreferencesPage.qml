@@ -26,6 +26,7 @@ import Muse.Ui 1.0
 import Muse.UiComponents
 
 import Audacity.Preferences
+import Audacity.Companion
 
 PreferencesPage {
     id: root
@@ -46,6 +47,12 @@ PreferencesPage {
 
         AdvancedTopSection {
             id: topSection
+
+            onRegexBuilderRequested: function (pattern) {
+                regexBuilder.pattern = pattern
+                regexBuilder.open()
+            }
+
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
             Layout.preferredHeight: 30
@@ -90,6 +97,20 @@ PreferencesPage {
                     }
                 ]
             }
+        }
+    }
+    // The advanced preferences search has its own builder, separate from the
+    // dialog wide settings search beside it.
+    RegexBuilderSheet {
+        id: regexBuilder
+
+        anchors.fill: parent
+
+        storeName: "preferences-advanced"
+        fieldLabel: qsTrc("preferences", "Search advanced")
+
+        onPatternAccepted: function (pattern) {
+            topSection.searchText = pattern
         }
     }
 }

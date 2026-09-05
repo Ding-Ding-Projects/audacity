@@ -33,6 +33,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.M3
+import Audacity.AppShell
 
 Item {
     id: root
@@ -42,6 +43,23 @@ Item {
     property bool cloudEnabled: false
 
     signal selected(string name)
+
+    // Build provenance for the front screen. Both values are fixed when the
+    // build is configured, so this line never reports the time the
+    // application was started.
+    AboutModel {
+        id: aboutModel
+    }
+
+    readonly property string buildVersionLine: qsTrc("appshell", "Material Audacity %1").arg(aboutModel.buildVersion())
+
+    readonly property string buildUpdatedLine: {
+        var local = aboutModel.buildUpdatedAtLocal()
+        if (local === "") {
+            return qsTrc("appshell", "Build time unavailable")
+        }
+        return qsTrc("appshell", "Updated %1").arg(local)
+    }
 
     readonly property var destinations: {
         var items = []
@@ -155,5 +173,48 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
+
+        // The version and the build time, on the front screen rather than
+        // hidden away in the about dialog.
+        Column {
+            Layout.fillWidth: true
+            Layout.bottomMargin: 12
+
+            spacing: 2
+
+            StyledTextLabel {
+                width: parent.width
+                horizontalAlignment: Text.AlignLeft
+                elide: Text.ElideRight
+                text: root.buildVersionLine
+                font: M3.typography.labelLarge
+                color: M3.color.onSurface
+            }
+
+            StyledTextLabel {
+                width: parent.width
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.WordWrap
+                text: root.buildUpdatedLine
+                font: M3.typography.bodySmall
+                color: M3.color.onSurfaceVariant
+            }
+        }
+    }
+
+    // Just the version when the rail is collapsed to icons and there is no
+    // room for the full two lines.
+    StyledTextLabel {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 8
+
+        visible: root.iconsOnly
+        horizontalAlignment: Text.AlignHCenter
+        elide: Text.ElideRight
+        text: aboutModel.buildVersion()
+        font: M3.typography.labelSmall
+        color: M3.color.onSurfaceVariant
     }
 }

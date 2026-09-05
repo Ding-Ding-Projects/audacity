@@ -1,0 +1,15 @@
+# Audacity companion surfaces: the command palette and the regular expression
+# builder workbench. CommandPaletteModel and RegexEngine are registered into
+# the same Audacity.Companion module from C++, see
+# src/companion/companionmodule.cpp.
+
+depends QtQuick 2.0
+
+CommandPalette 1.0 CommandPalette.qml
+CommandPaletteHost 1.0 CommandPaletteHost.qml
+CommandPaletteRow 1.0 CommandPaletteRow.qml
+RegexBuilder 1.0 RegexBuilder.qml
+RegexBuilderSheet 1.0 RegexBuilderSheet.qml
+TeleportHighlighter 1.0 TeleportHighlighter.qml
+
+typeinfo audacity_companion.qmltypes
