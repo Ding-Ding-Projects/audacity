@@ -5,6 +5,8 @@ import QtQuick.Controls
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 import Audacity.ProjectScene
 
 import "internal"
@@ -118,7 +120,7 @@ StyledDialogView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("projectscene", "Become a partner")
                 buttonRole: ButtonBoxModel.CustomRole
                 buttonId: ButtonBoxModel.CustomButton

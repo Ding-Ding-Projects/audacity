@@ -60,15 +60,16 @@ StyledPopupView {
 
             spacing: uiModel.btnSpacing
 
-            FlatButton {
+            M3IconButton {
                 id: zoomInBtn
 
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: uiModel.zoomBtnWidth
 
-                normalColor: M3.color.secondaryContainer
+                variant: "tonal"
                 icon: IconCode.ZOOM_IN
+                accessibleName: qsTrc("trackruler", "Zoom in")
 
                 enabled: !isMaxZoom
 
@@ -77,15 +78,16 @@ StyledPopupView {
                 }
             }
 
-            FlatButton {
+            M3IconButton {
                 id: zoomOutBtn
 
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: uiModel.zoomBtnWidth
 
-                normalColor: M3.color.secondaryContainer
+                variant: "tonal"
                 icon: IconCode.ZOOM_OUT
+                accessibleName: qsTrc("trackruler", "Zoom out")
 
                 enabled: !isMinZoom
 
@@ -94,18 +96,15 @@ StyledPopupView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: resetBtn
 
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: uiModel.resetBtnWidth
 
-                normalColor: M3.color.secondaryContainer
+                variant: "tonal"
                 icon: IconCode.UNDO
-
-                orientation: Qt.Horizontal
-
                 text: qsTrc("trackruler", "Reset")
 
                 enabled: !isDefaultZoom

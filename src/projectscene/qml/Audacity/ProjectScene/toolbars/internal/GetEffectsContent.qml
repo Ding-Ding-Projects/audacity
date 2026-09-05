@@ -80,7 +80,7 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        FlatButton {
+        M3Button {
             Layout.alignment: Qt.AlignHCenter
             text: qsTrc("projectscene", "Try again")
 

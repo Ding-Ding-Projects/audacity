@@ -99,23 +99,25 @@ StyledDialogView {
             navigationPanel.section: root.navigationSection
             navigationPanel.order: 2
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("global", "Cancel")
                 buttonRole: ButtonBoxModel.RejectRole
                 buttonId: ButtonBoxModel.Cancel
-                isNarrow: true
+                minWidth: 0
+                horizontalPadding: 12
 
                 onClicked: {
                     root.hide()
                 }
             }
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("projectscene", "Confirm")
                 buttonRole: ButtonBoxModel.AcceptRole
                 buttonId: ButtonBoxModel.CustomButton
                 accentButton: true
-                isNarrow: true
+                minWidth: 0
+                horizontalPadding: 12
                 enabled: trackNameInput.inputField.text.trim() !== ""
 
                 onClicked: {

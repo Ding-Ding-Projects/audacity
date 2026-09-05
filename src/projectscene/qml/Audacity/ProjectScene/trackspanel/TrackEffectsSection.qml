@@ -117,7 +117,7 @@ Rectangle {
             visible: prv.enabled && !effectList.empty
         }
 
-        FlatButton {
+        M3Button {
             id: addEffectButton
             enabled: prv.enabled && effectList.trackSupportsEffects
             Layout.fillWidth: true

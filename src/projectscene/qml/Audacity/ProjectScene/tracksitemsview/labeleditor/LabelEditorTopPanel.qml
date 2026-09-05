@@ -65,14 +65,15 @@ Item {
             Layout.fillWidth: true
         }
 
-        FlatButton {
+        M3Button {
             id: importButton
 
             Layout.alignment: Qt.AlignRight
 
             //: Label of the button that imports labels from a file
             text: qsTrc("projectscene", "Import")
-            isNarrow: true
+            minWidth: 0
+            horizontalPadding: 12
 
             navigation.name: "ImportButton"
             navigation.panel: root.navigationPanel
@@ -83,14 +84,15 @@ Item {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: exportButton
 
             Layout.alignment: Qt.AlignRight
 
             //: Label of the button that exports labels to a file
             text: qsTrc("projectscene", "Export")
-            isNarrow: true
+            minWidth: 0
+            horizontalPadding: 12
 
             navigation.name: "ExportButton"
             navigation.panel: root.navigationPanel
@@ -103,14 +105,15 @@ Item {
 
         SeparatorLine {}
 
-        FlatButton {
+        M3Button {
             id: deleteButton
 
             Layout.alignment: Qt.AlignRight
 
             //: Label of the button that deletes the selected labels
             text: qsTrc("projectscene", "Delete")
-            isNarrow: true
+            minWidth: 0
+            horizontalPadding: 12
 
             navigation.name: "DeleteButton"
             navigation.panel: root.navigationPanel
@@ -121,13 +124,14 @@ Item {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: addButton
 
             Layout.alignment: Qt.AlignRight
 
             text: qsTrc("projectscene", "Add label")
-            isNarrow: true
+            minWidth: 0
+            horizontalPadding: 12
 
             navigation.name: "AddButton"
             navigation.panel: root.navigationPanel

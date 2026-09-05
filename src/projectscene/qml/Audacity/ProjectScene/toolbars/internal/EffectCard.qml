@@ -126,7 +126,7 @@ Rectangle {
                 Layout.fillHeight: true
             }
 
-            FlatButton {
+            M3Button {
                 id: getItButton
 
                 Layout.preferredHeight: prv.getItButtonHeight
