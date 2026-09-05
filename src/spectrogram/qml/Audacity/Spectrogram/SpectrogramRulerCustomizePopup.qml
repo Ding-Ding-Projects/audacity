@@ -54,7 +54,7 @@ StyledPopupView {
                 order: 0
             }
 
-            FlatButton {
+            M3IconButton {
                 id: zoomInBtn
 
                 anchors.top: parent.top
@@ -64,15 +64,16 @@ StyledPopupView {
                 navigation.panel: zoomNavigationPanel
                 navigation.order: 0
 
-                normalColor: M3.color.secondaryContainer
+                variant: "tonal"
                 icon: IconCode.ZOOM_IN
+                accessibleName: qsTrc("spectrogram", "Zoom in")
 
                 onClicked: {
                     rulerModel.zoomInFromPopup()
                 }
             }
 
-            FlatButton {
+            M3IconButton {
                 id: zoomOutBtn
 
                 anchors.top: parent.top
@@ -82,8 +83,9 @@ StyledPopupView {
                 navigation.panel: zoomNavigationPanel
                 navigation.order: zoomInBtn.navigation.order + 1
 
-                normalColor: M3.color.secondaryContainer
+                variant: "tonal"
                 icon: IconCode.ZOOM_OUT
+                accessibleName: qsTrc("spectrogram", "Zoom out")
 
                 enabled: !rulerModel.isMinZoom
 
@@ -92,7 +94,7 @@ StyledPopupView {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 id: resetBtn
 
                 anchors.top: parent.top
@@ -102,10 +104,8 @@ StyledPopupView {
                 navigation.panel: zoomNavigationPanel
                 navigation.order: zoomOutBtn.navigation.order + 1
 
-                normalColor: M3.color.secondaryContainer
+                variant: "tonal"
                 icon: IconCode.UNDO
-
-                orientation: Qt.Horizontal
 
                 text: qsTrc("spectrogram", "Reset")
 

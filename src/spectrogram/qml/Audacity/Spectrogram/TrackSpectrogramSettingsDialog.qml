@@ -6,6 +6,8 @@ import Muse.UiComponents
 import Audacity.Preferences
 import Audacity.Spectrogram
 
+import Audacity.M3
+
 import "."
 
 StyledDialogView {
@@ -100,7 +102,7 @@ StyledDialogView {
         padding: 12
         spacing: 8
 
-        FlatButton {
+        M3Button {
             id: cancelBtn
 
             height: prv.buttonHeight
@@ -119,7 +121,7 @@ StyledDialogView {
             }
         }
 
-        FlatButton {
+        M3Button {
             id: okBtn
 
             height: prv.buttonHeight

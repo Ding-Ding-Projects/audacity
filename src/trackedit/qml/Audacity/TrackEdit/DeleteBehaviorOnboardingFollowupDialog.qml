@@ -11,6 +11,8 @@ import Muse.UiComponents
 import Audacity.TrackEdit 1.0
 import Audacity.AppShell
 
+import Audacity.M3
+
 import "."
 
 StyledDialogView {
@@ -90,7 +92,7 @@ StyledDialogView {
 
         padding: 12
 
-        FlatButton {
+        M3Button {
             height: 28
             minWidth: 80
 

@@ -11,6 +11,8 @@ import Audacity.Effects
 import Audacity.BuiltinEffects
 import Audacity.Nyquist
 
+import Audacity.M3
+
 BuiltinEffectBase {
     id: root
 
@@ -65,9 +67,9 @@ BuiltinEffectBase {
                 horizontalAlignment: Text.AlignLeft
             }
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("effects", "Debug")
-                transparent: true
+                variant: "text"
 
                 navigation.panel: root.navPanel
                 navigation.order: 0
@@ -103,7 +105,7 @@ BuiltinEffectBase {
             Layout.alignment: Qt.AlignHCenter
             spacing: prv.spaceM
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("effects", "Load")
 
                 navigation.panel: root.navPanel
@@ -114,7 +116,7 @@ BuiltinEffectBase {
                 }
             }
 
-            FlatButton {
+            M3Button {
                 text: qsTrc("effects", "Save")
                 accentButton: true
 

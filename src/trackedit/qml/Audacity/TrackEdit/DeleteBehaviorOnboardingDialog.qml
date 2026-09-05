@@ -77,7 +77,7 @@ StyledDialogView {
         anchors.top: separatorLine.bottom
         anchors.right: parent.right
 
-        FlatButton {
+        M3Button {
 
             NavigationPanel {
                 id: applyPanel
