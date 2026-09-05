@@ -62,6 +62,28 @@ M3SideSheet {
 
                 onClicked: historyModel.clearHistory()
             }
+
+            M3Button {
+                text: qsTrc("experience", "Export as JSON")
+                variant: "text"
+                enabled: historyModel.count > 0
+                accessibleName: qsTrc("experience", "Export the notifications shown here as JSON, copied to the clipboard")
+
+                onClicked: {
+                    exportClipboard.text = historyModel.exportJson();
+                    exportClipboard.selectAll();
+                    exportClipboard.copy();
+                }
+            }
+        }
+
+        // A hidden field is the least surprising way to reach the system
+        // clipboard from QML: it never becomes visible, and it never takes
+        // keyboard focus away from the search field above it.
+        TextEdit {
+            id: exportClipboard
+
+            visible: false
         }
 
         StyledTextLabel {

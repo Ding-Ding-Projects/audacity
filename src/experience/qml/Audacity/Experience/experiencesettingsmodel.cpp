@@ -163,6 +163,17 @@ QString ExperienceSettingsModel::vocabularyError() const
     return m_vocabularyError;
 }
 
+bool ExperienceSettingsModel::homeAssistantTokenSet() const
+{
+    return !configuration()->homeAssistantToken().isEmpty();
+}
+
+void ExperienceSettingsModel::setHomeAssistantToken(const QString& token)
+{
+    configuration()->setHomeAssistantToken(token);
+    emit homeAssistantTokenChanged();
+}
+
 QString ExperienceSettingsModel::previewMessage(int kind, const QString& plainText) const
 {
     return styler()->style(static_cast<MessageKind>(kind), plainText);

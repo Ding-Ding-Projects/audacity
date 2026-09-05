@@ -107,6 +107,10 @@ PersonalVocabulary::ParseResult PersonalVocabulary::parse(const QByteArray& data
             result.error = muse::qtrc("experience", "An entry has an empty \"from\".");
             return result;
         }
+        if (from.size() > MAX_TERM_LENGTH || to.size() > MAX_TERM_LENGTH) {
+            result.error = muse::qtrc("experience", "An entry is longer than 200 characters.");
+            return result;
+        }
 
         if (seen.contains(from)) {
             result.error = muse::qtrc("experience", "The same \"from\" appears more than once.");

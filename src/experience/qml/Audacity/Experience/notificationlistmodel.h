@@ -56,6 +56,11 @@ public:
     Q_INVOKABLE void clearHistory();
     Q_INVOKABLE void triggerAction(int id);
 
+    //! The rows currently shown by this model (already filtered by search),
+    //! as an indented JSON array. Used for the notification centre's export
+    //! action.
+    Q_INVOKABLE QString exportJson() const;
+
 signals:
     void historyModeChanged();
     void searchTextChanged();

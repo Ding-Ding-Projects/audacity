@@ -4,6 +4,9 @@
 #include "notificationlistmodel.h"
 
 #include <QDateTime>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocale>
 #include <QRegularExpression>
 
@@ -168,5 +171,14 @@ void NotificationListModel::triggerAction(int id)
             return;
         }
     }
+}
+
+QString NotificationListModel::exportJson() const
+{
+    QJsonArray array;
+    for (const Notification& notification : m_rows) {
+        array.append(QJsonObject::fromVariantMap(notification.toMap()));
+    }
+    return QString::fromUtf8(QJsonDocument(array).toJson(QJsonDocument::Indented));
 }
 }

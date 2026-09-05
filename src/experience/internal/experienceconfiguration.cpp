@@ -29,6 +29,11 @@ static const Settings::Key MODE_MOMENTUM(moduleName, "experience/modes/momentum"
 static const Settings::Key SCHEDULE(moduleName, "experience/schedule/entries");
 static const Settings::Key VOCABULARY_FILE_NAME(moduleName, "experience/vocabulary/fileName");
 
+//! Kept in the local settings file only. Never included in export, sync, or
+//! local history, and never printed or logged; a scheduled row that needs
+//! it reads it directly through this configuration interface.
+static const Settings::Key HOME_ASSISTANT_TOKEN(moduleName, "experience/schedule/homeAssistantToken");
+
 static int clampLevel(int level)
 {
     return level < 1 ? 1 : (level > 5 ? 5 : level);
@@ -221,6 +226,16 @@ void ExperienceConfiguration::setSchedule(const std::vector<ScheduleEntry>& entr
 async::Notification ExperienceConfiguration::scheduleChanged() const
 {
     return m_scheduleChanged;
+}
+
+QString ExperienceConfiguration::homeAssistantToken() const
+{
+    return QString::fromStdString(settings()->value(HOME_ASSISTANT_TOKEN).toString());
+}
+
+void ExperienceConfiguration::setHomeAssistantToken(const QString& token)
+{
+    settings()->setLocalValue(HOME_ASSISTANT_TOKEN, Val(token.toStdString()));
 }
 
 QString ExperienceConfiguration::vocabularyFileName() const

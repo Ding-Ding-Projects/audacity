@@ -20,6 +20,8 @@ class PersonalVocabulary
 public:
     static constexpr int MAX_BYTES = 256 * 1024;
     static constexpr int MAX_ENTRIES = 2000;
+    //! Neither side of one entry may be longer than this, in characters.
+    static constexpr int MAX_TERM_LENGTH = 200;
 
     using Table = QVector<std::pair<QString, QString> >;
 

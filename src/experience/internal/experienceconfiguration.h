@@ -49,6 +49,9 @@ public:
     void setSchedule(const std::vector<ScheduleEntry>& entries) override;
     muse::async::Notification scheduleChanged() const override;
 
+    QString homeAssistantToken() const override;
+    void setHomeAssistantToken(const QString& token) override;
+
     QString vocabularyFileName() const override;
     void setVocabularyFileName(const QString& name) override;
     QString vocabularyStoragePath() const override;

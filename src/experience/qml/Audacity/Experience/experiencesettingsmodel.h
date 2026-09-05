@@ -40,6 +40,10 @@ class ExperienceSettingsModel : public QObject, public muse::Contextable, public
     Q_PROPERTY(int vocabularyEntryCount READ vocabularyEntryCount NOTIFY vocabularyChanged FINAL)
     Q_PROPERTY(QString vocabularyError READ vocabularyError NOTIFY vocabularyChanged FINAL)
 
+    //! Write only. The stored token is never read back into the interface,
+    //! the same way a stored password never is; this always reports empty.
+    Q_PROPERTY(bool homeAssistantTokenSet READ homeAssistantTokenSet NOTIFY homeAssistantTokenChanged FINAL)
+
     muse::GlobalInject<IExperienceConfiguration> configuration;
     muse::GlobalInject<IExperienceService> service;
     muse::GlobalInject<IMessageStyler> styler;
@@ -81,6 +85,10 @@ public:
     int vocabularyEntryCount() const;
     QString vocabularyError() const;
 
+    bool homeAssistantTokenSet() const;
+    //! Replaces the stored Home Assistant token. Passing an empty string clears it.
+    Q_INVOKABLE void setHomeAssistantToken(const QString& token);
+
     //! A live example of what the funny levels do to a message body.
     Q_INVOKABLE QString previewMessage(int kind, const QString& plainText) const;
 
@@ -98,6 +106,7 @@ signals:
     void attentionModesChanged();
     void restartRequiredChanged();
     void vocabularyChanged();
+    void homeAssistantTokenChanged();
 
 private:
     void retranslate();

@@ -30,7 +30,9 @@ target_sources(experience PRIVATE
     internal/settingsscheduler.h
 )
 
-target_link_libraries(experience PRIVATE muse::languages)
+find_package(Qt6 REQUIRED COMPONENTS Network)
+
+target_link_libraries(experience PRIVATE muse::languages Qt6::Network)
 
 # Several translation units in this module declare the same names in anonymous
 # namespaces (moduleName, clampLevel, M3_REDUCED_MOTION), which a unity build

@@ -13,6 +13,8 @@ import Audacity.Experience
 BaseSection {
     id: root
 
+    property var settingsModel: null
+
     title: qsTrc("preferences", "Scheduled changes")
 
     ScheduleListModel {
@@ -66,7 +68,7 @@ BaseSection {
                         accessibleName: qsTrc("preferences", "Scheduled change is on")
 
                         onToggled: function (checked) {
-                            scheduleListModel.setEnabled(scheduleRow.model.entryId, checked)
+                            scheduleListModel.setEnabled(scheduleRow.model.entryId, checked);
                         }
                     }
 
@@ -93,6 +95,52 @@ BaseSection {
         navigation.row: 1
 
         onClicked: editSheet.edit(scheduleListModel.row(""))
+    }
+
+    Column {
+        width: parent.width
+        spacing: 4
+        visible: root.settingsModel !== null
+
+        StyledTextLabel {
+            width: parent.width
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.WordWrap
+            color: M3.color.onSurfaceVariant
+            font: M3.typography.bodyMedium
+            text: qsTrc("preferences", "A row that reads a Home Assistant switch needs this instance's long lived access token. It stays on this computer, is never shown again once entered, and is never logged.")
+        }
+
+        Row {
+            spacing: 8
+
+            M3TextField {
+                id: haTokenField
+
+                width: 280
+                isPassword: true
+                label: qsTrc("preferences", "Home Assistant access token")
+                supportingText: root.settingsModel && root.settingsModel.homeAssistantTokenSet ? qsTrc("preferences", "A token is stored.") : qsTrc("preferences", "No token is stored.")
+
+                onTextEditingFinished: function (text) {
+                    if (root.settingsModel) {
+                        root.settingsModel.setHomeAssistantToken(text);
+                        haTokenField.currentText = "";
+                    }
+                }
+            }
+
+            M3Button {
+                text: qsTrc("preferences", "Clear")
+                variant: "text"
+                enabled: root.settingsModel && root.settingsModel.homeAssistantTokenSet
+
+                onClicked: {
+                    root.settingsModel.setHomeAssistantToken("");
+                    haTokenField.currentText = "";
+                }
+            }
+        }
     }
 
     ScheduleEditSheet {

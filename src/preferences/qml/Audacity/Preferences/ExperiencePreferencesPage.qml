@@ -53,6 +53,8 @@ PreferencesPage {
         M3Divider {}
 
         ExperienceScheduleSection {
+            settingsModel: settingsModel
+
             navigation.section: root.navigationSection
             navigation.order: root.navigationOrderStart + 4
         }

@@ -55,6 +55,14 @@ public:
     virtual void setSchedule(const std::vector<ScheduleEntry>& entries) = 0;
     virtual muse::async::Notification scheduleChanged() const = 0;
 
+    //! The long lived access token used to read a Home Assistant boolean
+    //! entity for a scheduled row. Kept in this module's own settings
+    //! namespace, never logged, and excluded from every export and from
+    //! local history. There is one token for the whole schedule table; every
+    //! Home Assistant row is expected to talk to the same instance.
+    virtual QString homeAssistantToken() const = 0;
+    virtual void setHomeAssistantToken(const QString& token) = 0;
+
     // Personal vocabulary
     virtual QString vocabularyFileName() const = 0;
     virtual void setVocabularyFileName(const QString& name) = 0;
