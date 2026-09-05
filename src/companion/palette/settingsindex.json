@@ -45,7 +45,7 @@
     },
     {
       "id": "experience",
-      "title": "Companion",
+      "title": "Language and accessibility",
       "section": "Preferences"
     },
     {
@@ -56,6 +56,16 @@
     {
       "id": "plugin",
       "title": "Plugins",
+      "section": "Preferences"
+    },
+    {
+      "id": "toolkit",
+      "title": "Toolkit",
+      "section": "Preferences"
+    },
+    {
+      "id": "updates",
+      "title": "Updates",
       "section": "Preferences"
     }
   ],
@@ -733,6 +743,14 @@
       "control": "action",
       "target": "Custom LV2 plugins location",
       "keywords": "extension extensions plugin provided preferences dynamic settings"
+    },
+    {
+      "page": "updates",
+      "group": "Automatic updates",
+      "label": "Check for updates automatically",
+      "control": "switch",
+      "target": "Check for updates automatically",
+      "keywords": "squirrel update automatic feed unsigned release"
     }
   ],
   "appearance": [
