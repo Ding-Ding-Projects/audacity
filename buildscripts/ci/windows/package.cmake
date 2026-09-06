@@ -88,9 +88,14 @@ if(PACK_TYPE STREQUAL "squirrel")
       -File "${SQUIRREL_SCRIPT}"
       -InstallDir "${INSTALL_DIR}"
       -OutDir "${SQUIRREL_OUT_DIR}"
-      -Tag "${RELEASE_TAG}"
       -RunNumber "${RUN_NUMBER}"
   )
+
+  # CMake list expansion drops empty arguments. Omit the optional parameter
+  # entirely so tagless workflow dispatches reach the RunNumber fallback.
+  if(NOT RELEASE_TAG STREQUAL "")
+    list(APPEND _squirrel_args -Tag "${RELEASE_TAG}")
+  endif()
 
   if(PREVIOUS_RELEASES_DIR)
     list(APPEND _squirrel_args -PreviousReleasesDir "${PREVIOUS_RELEASES_DIR}")
