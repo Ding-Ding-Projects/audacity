@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "writableConsumers": {
+    "src/experience/internal/schoolmode.cpp": 1,
+    "src/experience/internal/dimsumsurprise.cpp": 1,
+    "src/companion/regex/regexengine.cpp": 1,
+    "src/personalize/internal/appearanceoverrides.cpp": 1,
+    "src/personalize/internal/authenticatorstore.cpp": 2,
+    "src/personalize/internal/displaynamesettings.cpp": 1,
+    "src/personalize/internal/lockregistry.cpp": 2,
+    "src/personalize/internal/mutationhistory.cpp": 1,
+    "src/personalize/internal/supporttickets.cpp": 2,
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
+    "src/effects/nyquist/nyquistprompt/nyquistpromptviewmodel.cpp": 2
+  },
+  "temporaryConsumers": [
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp",
+    "src/chronicle/view/versionhistorymodel.cpp",
+    "src/importexport/import/internal/legacyaupimporter.cpp"
+  ],
+  "pendingParentConsumers": [
+    "src/toolkit/internal/bookmarkmodel.cpp",
+    "src/toolkit/internal/hardwarefitservice.cpp",
+    "src/toolkit/internal/hardwareprobe.cpp"
+  ]
+}

@@ -10,6 +10,7 @@
 #include <csignal>
 #include <cstring>
 
+#include "shared/profilepaths.h"
 #include "appfactory.h"
 #include "commandlineparser.h"
 #include "log.h"
@@ -230,6 +231,14 @@ int main(int argc, char** argv)
 
 #endif
 
+    QStringList profileArguments;
+    for (int i = 0; i < argcFinal; ++i) profileArguments.append(QString::fromUtf8(argvFinal[i]));
+    QString profileError;
+    if (!au::profile::Paths::initializeArguments(profileArguments, &profileError)) {
+        fprintf(stderr, "Isolated profile unavailable: %s\n", profileError.toUtf8().constData());
+        return EXIT_FAILURE;
+    }
+
     // ====================================================
     // Parse command line options
     // ====================================================
@@ -267,7 +276,7 @@ int main(int argc, char** argv)
             for (int i = 1; i < argcFinal; ++i) {
                 forwardedArgs.append(QString::fromUtf8(argvFinal[i]));
             }
-            if (muse::mi::activateExistingInstance(QString::fromLatin1(appName), forwardedArgs)) {
+            if (muse::mi::activateExistingInstance(au::profile::Paths::ipcName(QString::fromLatin1(appName)), forwardedArgs)) {
                 LOGI() << "existing Audacity instance activated";
                 LOGI() << "exiting";
                 return 0;

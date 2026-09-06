@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -249,7 +250,7 @@ int VersionHistoryModel::prune()
 
 bool VersionHistoryModel::openAsNewProject(const QString& revisionId)
 {
-    const QString tempDir = QDir::tempPath() + QStringLiteral("/chronicle-open-")
+    const QString tempDir = au::profile::Paths::temporaryPath() + QStringLiteral("/chronicle-open-")
                             + QUuid::createUuid().toString(QUuid::WithoutBraces);
     if (!service()->exportRevision(revisionId, tempDir)) {
         return false;

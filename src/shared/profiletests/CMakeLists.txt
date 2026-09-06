@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.24)
+project(AudacityProfileTests LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+find_package(Qt6 6.10 REQUIRED COMPONENTS Core)
+# Build the production provider as a DLL: both the executable and a consumer DLL
+# must resolve precisely the same installed state.
+add_library(profile_provider SHARED ../profilepaths.cpp)
+target_compile_definitions(profile_provider PRIVATE AUDACITY_PROFILEPATHS_BUILD PUBLIC AUDACITY_PROFILEPATHS_SHARED)
+target_link_libraries(profile_provider PUBLIC Qt6::Core)
+target_include_directories(profile_provider PUBLIC ..)
+add_library(profile_consumer SHARED consumer.cpp)
+target_link_libraries(profile_consumer PRIVATE profile_provider)
+add_executable(profile_tests tests.cpp)
+target_link_libraries(profile_tests PRIVATE profile_provider profile_consumer Qt6::Core)
+enable_testing()
+add_test(NAME profile_isolation COMMAND profile_tests)

@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
  * Audacity: A Digital Audio Editor
  */
@@ -93,7 +94,7 @@ DimSumSurpriseService::DimSumSurpriseService(QObject* parent)
 
 QString DimSumSurpriseService::cacheDirectory() const
 {
-    const QString base = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QString base = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation);
     const QString dir = base + QStringLiteral("/dimsum-cache");
     QDir().mkpath(dir);
     return dir;
@@ -110,6 +111,7 @@ QVector<DimSumDish> DimSumSurpriseService::cachedCatalog() const
 
 void DimSumSurpriseService::refreshCatalogAsync()
 {
+    if (au::profile::Paths::active()) { emit catalogRefreshed(false); return; }
     if (m_refreshInFlight) {
         return;
     }
@@ -202,6 +204,11 @@ void DimSumSurpriseService::refreshPhotoAsync(const DimSumDish& dish)
 void DimSumSurpriseService::startPhotoRequest(const QUrl& url, const QString& dishId,
                                               const QString& destinationPath, int redirectsRemaining)
 {
+    if (au::profile::Paths::active()) {
+        m_photoFetchesInFlight.removeAll(dishId);
+        emit photoRefreshed(dishId, false);
+        return;
+    }
     QNetworkRequest request { url };
     // Redirects are followed manually, one hop at a time, only after the
     // target has been checked against the exact allowed host list below.

@@ -2,6 +2,7 @@
  * Audacity: A Digital Audio Editor
  */
 #include "guiapp.h"
+#include "shared/profilepaths.h"
 
 #include <QCoreApplication>
 #include <optional>
@@ -130,7 +131,7 @@ void GuiApp::doSetup(const std::shared_ptr<muse::CmdOptions>& options)
         return;
     }
 
-    const QString appId = QCoreApplication::applicationName();
+    const QString appId = au::profile::Paths::ipcName(QCoreApplication::applicationName());
     if (!m_singleInstance.start(appId)) {
         return;
     }

@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -72,14 +73,14 @@ LockRegistry::LockRegistry(QObject* parent)
 
 QString LockRegistry::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     return dir + "/locks.json";
 }
 
 QString LockRegistry::dataFolderPath() const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    return au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
 void LockRegistry::load()

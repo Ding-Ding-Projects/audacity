@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
  * Audacity: A Digital Audio Editor
  */
@@ -72,6 +73,7 @@ private:
 namespace au::au3cloud {
 bool registerCustomScheme(const QString& scheme)
 {
+    if (au::profile::Paths::active()) return false;
     constexpr size_t kBufferSize = MAX_PATH + 1;
     wchar_t filenameBuffer[kBufferSize] = { 0 };
     const DWORD len = GetModuleFileNameW(nullptr, filenameBuffer, kBufferSize);

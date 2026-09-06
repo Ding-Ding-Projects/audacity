@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -21,6 +22,10 @@ using namespace au::au3cloud;
 
 void Au3CloudService::init()
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     syncUsageInfoPrefs();
     usageInfo()->usageInfoChanged().onNotify(this, [this]() {
         syncUsageInfoPrefs();
@@ -120,6 +125,10 @@ void Au3CloudService::init()
 
 void Au3CloudService::registerWithPassword(const std::string& email, const std::string& password)
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     m_authState.set(Authorizing());
     auto& oauthService = audacity::cloud::audiocom::GetOAuthService();
     oauthService.Register(email, password,
@@ -140,6 +149,10 @@ void Au3CloudService::registerWithPassword(const std::string& email, const std::
 
 void Au3CloudService::signInWithPassword(const std::string& email, const std::string& password)
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     m_authState.set(Authorizing());
 
     auto& oauthService = audacity::cloud::audiocom::GetOAuthService();
@@ -162,11 +175,19 @@ void Au3CloudService::signInWithPassword(const std::string& email, const std::st
 
 void Au3CloudService::signInWithSocial(const std::string& provider)
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     platformInteractive()->openUrl(buildOAuthRequestURL(provider));
 }
 
 void Au3CloudService::signOut()
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     auto& oauthService = audacity::cloud::audiocom::GetOAuthService();
     oauthService.UnlinkAccount(AudiocomTrace::ignore);
 }
@@ -194,6 +215,10 @@ muse::async::Notification Au3CloudService::accountInfoChanged() const
 //! The AU3 cloud code reads these prefs to fill anonymous usage request headers
 void Au3CloudService::syncUsageInfoPrefs()
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     SendAnonymousUsageInfo->Write(usageInfo()->getSendAnonymousUsageInfo());
     InstanceId->Write(wxString::FromUTF8(usageInfo()->instanceId()));
     gPrefs->Flush();
@@ -201,6 +226,10 @@ void Au3CloudService::syncUsageInfoPrefs()
 
 void Au3CloudService::openBrowserSession()
 {
+    if (au::profile::Paths::active()) {
+        m_authState.set(NotAuthorized("Cloud access is unavailable in an isolated verification profile."));
+        return;
+    }
     auto& serviceConfig = audacity::cloud::audiocom::GetServiceConfig();
     auto& authService = audacity::cloud::audiocom::GetOAuthService();
     const auto url = authService.MakeAudioComAuthorizeURL(m_accountInfo.id, serviceConfig.GetTourPage());

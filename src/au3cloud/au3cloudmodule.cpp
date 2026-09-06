@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -47,7 +48,7 @@ void Au3CloudModule::onInit(const muse::IApplication::RunMode&)
     m_cloudService->init();
     m_cloudConfiguration->init();
 
-    if (!registerCustomScheme(QStringLiteral("audacity"))) {
+    if (!au::profile::Paths::active() && !registerCustomScheme(QStringLiteral("audacity"))) {
         LOGW() << "Failed to register audacity:// URL scheme";
     }
 }

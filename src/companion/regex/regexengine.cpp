@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -1039,7 +1040,7 @@ void RegexEngine::setStoreName(const QString& name)
 
 QString RegexEngine::storePath() const
 {
-    const QString base = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QString base = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation);
     return base + QStringLiteral("/companion/regex/") + m_storeName + QStringLiteral(".json");
 }
 
