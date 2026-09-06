@@ -27,7 +27,7 @@ Column {
         width: 200
         height: 113
 
-        radius: 5
+        radius: M3.shape.extraSmall
         unaccentedBorderColor: addBorderToClipImageButton ? M3.color.outlineVariant : "transparent"
 
         onClicked: {

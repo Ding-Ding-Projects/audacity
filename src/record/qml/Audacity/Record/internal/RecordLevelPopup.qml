@@ -97,7 +97,7 @@ StyledPopupView {
             color: M3.color.surfaceContainer
             border.width: 1
             border.color: M3.color.outlineVariant
-            radius: 2
+            radius: M3.shape.extraSmall
 
             Item {
                 anchors.fill: parent
