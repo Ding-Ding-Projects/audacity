@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -13,12 +14,13 @@ using namespace au::toolkit;
 HardwareFitService::HardwareFitService(QObject* parent)
     : QObject(parent)
 {
-    const QString destination = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    const QString destination = au::profile::Paths::writableLocation(QStandardPaths::GenericDataLocation);
     m_evidence = HardwareProbe::measure(destination);
 }
 
 QString HardwareFitService::evidenceSummary() const
 {
+    if (au::profile::Paths::active()) return QStringLiteral("Hardware probing is unavailable in an isolated verification profile.");
     QStringList parts;
     if (m_evidence.totalRamBytes > 0) {
         parts << QStringLiteral("%1 GiB RAM").arg(m_evidence.totalRamBytes / (1024.0 * 1024.0 * 1024.0), 0, 'f', 1);

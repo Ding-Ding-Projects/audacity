@@ -45,8 +45,18 @@ dim-sum downloads, and the public legacy-cloud service entrypoints return failur
 an explicit unavailable state in the isolated profile. Service registration remains.
 These refusals do not verify those features' successful network behavior.
 
-The parent integration still owns toolkit storage consumers, external-editor and
-Ollama process/network suppression, and any required corresponding test linkage.
+Toolkit bookmarks and hardware path defaults now use the provider. Hardware
+measurements return unmeasured values and an explicit unavailable summary in an
+isolated profile. External editor discovery preserves installed-editor facts and
+adds `available=false` plus an unavailable reason; both launch operations return
+false before executable resolution. `profile_toolkit_tests` compiles these real
+consumers with a statically linked provider and checks bookmark persistence,
+measurement refusal, fit Unknown, and both editor launch refusals.
+
+The parent integration still owns Ollama network isolation in
+`src/toolkit/internal/ollamaclient.cpp`, whose version, tags, pull, and chat
+entrypoints use QNetworkAccessManager directly. They are not covered by the Muse
+network refusal. No broader toolkit network edit was included in this lane.
 External browser or shell routes include Muse `IPlatformInteractive`,
 `src/personalize/internal/supporttickets.cpp`, and toolkit external editors.
 Clipboard routes include `src/trackedit/internal/au3/au3trackeditclipboard.cpp`,

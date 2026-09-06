@@ -26,3 +26,14 @@ add_executable(profile_resource_tests resource_tests.cpp ${PROFILE_IPC_DIR}/ipcl
 target_include_directories(profile_resource_tests PRIVATE ${PROFILE_IPC_DIR})
 target_link_libraries(profile_resource_tests PRIVATE profile_provider_static profile_consumer_static Qt6::Core)
 add_test(NAME profile_resource_isolation COMMAND profile_resource_tests)
+
+set(PROFILE_TOOLKIT_DIR ${CMAKE_CURRENT_LIST_DIR}/../../toolkit/internal)
+add_executable(profile_toolkit_tests toolkit_tests.cpp
+    ${PROFILE_TOOLKIT_DIR}/bookmarkmodel.cpp ${PROFILE_TOOLKIT_DIR}/bookmarkmodel.h
+    ${PROFILE_TOOLKIT_DIR}/hardwarefitservice.cpp ${PROFILE_TOOLKIT_DIR}/hardwarefitservice.h
+    ${PROFILE_TOOLKIT_DIR}/hardwareprobe.cpp ${PROFILE_TOOLKIT_DIR}/hardwarefit.cpp
+    ${PROFILE_TOOLKIT_DIR}/externaleditorservice.cpp ${PROFILE_TOOLKIT_DIR}/externaleditorservice.h)
+set_target_properties(profile_toolkit_tests PROPERTIES AUTOMOC ON)
+target_include_directories(profile_toolkit_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../.. ${PROFILE_TOOLKIT_DIR})
+target_link_libraries(profile_toolkit_tests PRIVATE profile_provider_static Qt6::Core)
+add_test(NAME profile_toolkit_isolation COMMAND profile_toolkit_tests)

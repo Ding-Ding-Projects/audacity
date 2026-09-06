@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -78,6 +79,15 @@ QVariantList ExternalEditorService::detectEditors() const
         const_cast<ExternalEditorService*>(this)->noEditorFound();
     }
 
+    // Discovery and installation are separate from permission to launch.
+    // Keep installed-editor facts intact and expose why launching is unavailable.
+    for (QVariant& item : result) {
+        QVariantMap entry = item.toMap();
+        entry[QStringLiteral("available")] = !au::profile::Paths::active() && entry.value(QStringLiteral("found")).toBool();
+        entry[QStringLiteral("unavailableReason")] = au::profile::Paths::active()
+            ? QStringLiteral("External editors are unavailable in an isolated verification profile.") : QString();
+        item = entry;
+    }
     return result;
 }
 
@@ -112,6 +122,7 @@ QString executableForId(const QString& editorId, const QVariantList& customEdito
 
 bool ExternalEditorService::openFolder(const QString& editorId, const QString& folderPath)
 {
+    if (au::profile::Paths::active()) return false;
     const QString exe = executableForId(editorId, m_customEditors);
     if (exe.isEmpty()) {
         return false;
@@ -123,6 +134,7 @@ bool ExternalEditorService::openFolder(const QString& editorId, const QString& f
 
 bool ExternalEditorService::openFile(const QString& editorId, const QString& filePath)
 {
+    if (au::profile::Paths::active()) return false;
     const QString exe = executableForId(editorId, m_customEditors);
     if (exe.isEmpty()) {
         return false;

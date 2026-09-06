@@ -11,7 +11,10 @@
     "src/personalize/internal/mutationhistory.cpp": 1,
     "src/personalize/internal/supporttickets.cpp": 2,
     "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
-    "src/effects/nyquist/nyquistprompt/nyquistpromptviewmodel.cpp": 2
+    "src/effects/nyquist/nyquistprompt/nyquistpromptviewmodel.cpp": 2,
+    "src/toolkit/internal/bookmarkmodel.cpp": 1,
+    "src/toolkit/internal/hardwarefitservice.cpp": 1,
+    "src/toolkit/internal/hardwareprobe.cpp": 1
   },
   "temporaryConsumers": {
     "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
@@ -19,11 +22,7 @@
     "src/importexport/import/internal/legacyaupimporter.cpp": 1,
     "src/chronicle/internal/gitsnapshotstore.cpp": 2
   },
-  "pendingParentConsumers": [
-    "src/toolkit/internal/bookmarkmodel.cpp",
-    "src/toolkit/internal/hardwarefitservice.cpp",
-    "src/toolkit/internal/hardwareprobe.cpp"
-  ],
+  "pendingParentConsumers": [],
   "sideEffectGuards": {
     "src/squirrelupdate/internal/squirrelupdateservice.cpp": [
       "SquirrelUpdateService::init",
@@ -66,6 +65,20 @@
       "Au3AudioComService::getCloudAudioPage",
       "Au3AudioComService::getCloudProfilePage",
       "Au3AudioComService::getTourPage"
+    ],
+    "src/toolkit/internal/hardwareprobe.cpp": [
+      "HardwareProbe::measure",
+      "HardwareProbe::measureVramBytes"
+    ],
+    "src/toolkit/internal/externaleditorservice.cpp": [
+      "ExternalEditorService::openFile",
+      "ExternalEditorService::openFolder"
+    ],
+    "src/toolkit/internal/hardwarefitservice.cpp": [
+      "HardwareFitService::evidenceSummary"
     ]
-  }
+  },
+  "pendingNetworkConsumers": [
+    "src/toolkit/internal/ollamaclient.cpp"
+  ]
 }

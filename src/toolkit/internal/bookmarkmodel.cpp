@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -25,7 +26,7 @@ BookmarkModel::BookmarkModel(QObject* parent)
 
 QString BookmarkModel::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/toolkit";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/toolkit";
     QDir().mkpath(dir);
     return dir + "/docs-bookmarks.json";
 }

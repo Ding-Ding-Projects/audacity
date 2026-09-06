@@ -65,4 +65,7 @@ for path, names in inventory["sideEffectGuards"].items():
 for item in overlay_contracts:
     rejected(OVERLAY, files[OVERLAY].replace(item, "removed-boundary"))
 print(f"PASS {len(paths)} explicit consumer files; {mutations} omission/disabled-boundary red/restore-green regressions")
-print("PENDING parent consumer substitutions: " + ", ".join(inventory["pendingParentConsumers"]))
+if inventory["pendingParentConsumers"]:
+    print("PENDING parent consumer substitutions: " + ", ".join(inventory["pendingParentConsumers"]))
+if inventory.get("pendingNetworkConsumers"):
+    print("PENDING network consumer isolation: " + ", ".join(inventory["pendingNetworkConsumers"]))
