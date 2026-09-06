@@ -9,22 +9,25 @@ address; a public address is refused before any request is sent.
 
 - Health and version are read from `/api/version` and shown at the top of the
   page, with an honest "Not connected" state when the runtime is not running.
-- Installed and running models are read from `/api/tags`.
-- The catalog view is meant to be exhaustive: every model and every published
-  variant from the runtime's own public library pages, fetched with
-  pagination, carrying a revision identifier, a refresh timestamp and a
-  completeness verdict, so a partial fetch is visible rather than silently
-  presented as the whole catalog.
+- Installed models are read from `/api/tags`. The documented local API does
+  not provide an exhaustive public-library listing, so this surface never
+  presents the installed list as a catalog. It states that complete catalog
+  coverage is unknown until a separately verified official catalog snapshot
+  is available.
 - Every model gets one of four hardware fit verdicts: Runs well, Runs with
   limits, Unlikely, or Unknown. The verdict is computed only from measured
   evidence (system RAM from `/proc/meminfo`, free disk space at the download
   destination, and GPU memory from `nvidia-smi` when it is present). A model
   is never judged from its name; missing evidence always produces Unknown.
-- The batch pull cart schedules local downloads only. It has no price, no
-  checkout, no account and no payment concept anywhere in its model or its
-  wording, because adding a model to the cart never buys anything.
-- Chat streams over `/api/chat`, with an editable system prompt and
-  documented parameters, and sessions are kept locally.
+- Pulls use `/api/pull` and are scheduled by a bounded local queue (default
+  two concurrent requests, maximum four). Queued tag names persist locally
+  and are reissued only after the local runtime is reachable. The queue has
+  no price, checkout, account, or payment concept.
+- Chat streams over `/api/chat`, with an editable system prompt, the documented
+  `temperature` option, a bounded twenty-message request history, explicit
+  stop, and retry-from-last-message recovery. Prompt input is bounded to
+  16 KiB and the system prompt to 4 KiB. Attachments remain visibly unavailable
+  until verified capability metadata has been inspected from the local runtime.
 - Harness profiles describe one allowlisted executable and its literal
   arguments, never a shell command line. An argument or executable path that
   looks like a shell command (containing `|`, `&&`, `;`, backticks, `$(`, and
@@ -40,7 +43,8 @@ private network ranges before it is accepted.
 When the runtime is not reachable, the page shows a recovery card explaining
 the situation and offering Retry. Requests that fail for any other reason
 report the exact operation and the underlying error rather than a generic
-failure message.
+failure message. A cancelled streamed chat is retained as a visibly stopped
+partial local response instead of being represented as a successful answer.
 
 ## Security considerations
 
@@ -57,3 +61,7 @@ failure message.
   path is rejected.
 - `pullcart_tests.cpp` proves the cart's data model carries no payment
   field of any kind.
+- The focused toolkit build validates the client interface and QML imports.
+  Runtime verification still requires a local Ollama service because the
+  client intentionally does not invent installed tags, catalog metadata, or
+  capability claims.

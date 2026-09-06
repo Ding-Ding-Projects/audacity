@@ -4,8 +4,8 @@
 * OllamaPage
 *
 * The local Ollama suite manager: health and version, installed models,
-* a small hand-curated offline catalog with hardware fit verdicts, a
-* payment-free batch pull cart with progress, and bulk export of the
+* a locally verified installed-tag view, a bounded payment-free pull queue,
+* streamed chat with cancellation and recovery, and bulk export of the
 * installed-model list. Every request goes only to a loopback or private
 * network host; there is no cloud model service anywhere in this page.
 *
@@ -16,6 +16,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import Muse.Ui
 import Muse.UiComponents
@@ -29,6 +30,11 @@ Item {
 
     property bool offline: !ollama.reachable
     property var pullRows: ({})
+    property var chatMessages: []
+    property string activeReply: ""
+    property string chatFailure: ""
+    property string selectedModel: ""
+    property string systemPrompt: "You are a helpful local assistant."
 
     OllamaClient {
         id: ollama
@@ -40,6 +46,28 @@ Item {
         }
         onRequestFailed: function (what, reason) {
             recoveryCard.message = qsTrc("toolkit", "Could not %1: %2").arg(what).arg(reason)
+        }
+        onChatToken: function (token, done) {
+            root.activeReply += token
+            if (done) {
+                root.chatMessages = root.chatMessages.concat([{
+                    role: "assistant",
+                    content: root.activeReply
+                }])
+                root.activeReply = ""
+            }
+        }
+        onChatError: function (error) {
+            root.chatFailure = qsTrc("toolkit", "The local reply stopped: %1").arg(error)
+        }
+        onChatFinished: function (cancelled) {
+            if (cancelled && root.activeReply.length > 0) {
+                root.chatMessages = root.chatMessages.concat([{
+                    role: "assistant",
+                    content: root.activeReply + "\n[" + qsTrc("toolkit", "Stopped") + "]"
+                }])
+                root.activeReply = ""
+            }
         }
         onPullProgress: function (modelTag, completedBytes, totalBytes, status) {
             var rows = root.pullRows
@@ -60,7 +88,6 @@ Item {
                 done: true
             }
             root.pullRows = Object.assign({}, rows)
-            cart.removeModel(modelTag)
             if (success) {
                 ollama.refreshInstalledModels()
             }
@@ -69,10 +96,6 @@ Item {
 
     HardwareFitService {
         id: fitService
-    }
-
-    PullCartModel {
-        id: cart
     }
 
     property var filteredInstalled: {
@@ -90,23 +113,6 @@ Item {
         return list.filter(function (m) {
             var name = m.name !== undefined ? m.name : (m.model !== undefined ? m.model : "")
             return pattern ? pattern.test(name) : name.toLowerCase().indexOf(query.toLowerCase()) >= 0
-        })
-    }
-
-    property var filteredCatalog: {
-        var list = ollama.wellKnownCatalog()
-        var query = searchBar.searchText
-        if (!query || query.length === 0) {
-            return list
-        }
-        var pattern = null
-        try {
-            pattern = new RegExp(query, "i")
-        } catch (e) {
-            pattern = null
-        }
-        return list.filter(function (m) {
-            return pattern ? pattern.test(m.tag) : m.tag.toLowerCase().indexOf(query.toLowerCase()) >= 0
         })
     }
 
@@ -251,64 +257,46 @@ Item {
         }
 
         StyledTextLabel {
-            text: qsTrc("toolkit", "Catalog (small offline list, not the exhaustive live catalog)")
+            text: qsTrc("toolkit", "Model catalog")
             font: M3.typography.titleMedium
         }
 
-        ListView {
-            id: catalogList
-
+        StyledTextLabel {
             Layout.fillWidth: true
-            Layout.preferredHeight: Math.min(220, catalogList.contentHeight)
-            clip: true
-
-            model: root.filteredCatalog
-
-            delegate: M3ListItem {
-                required property var modelData
-
-                width: catalogList.width
-                headline: modelData.tag
-                supportingText: fitService.verdictFor(modelData.approxBytes) + " · " + qsTrc("toolkit", "~%1 GiB").arg((modelData.approxBytes / (1024 * 1024 * 1024)).toFixed(1))
-                trailingText: cart.contains(modelData.tag) ? qsTrc("toolkit", "In cart") : qsTrc("toolkit", "Add")
-
-                onClicked: {
-                    if (cart.contains(modelData.tag)) {
-                        cart.removeModel(modelData.tag)
-                    } else {
-                        cart.addModel(modelData.tag, modelData.approxBytes)
-                    }
-                }
-            }
+            wrapMode: Text.Wrap
+            text: qsTrc("toolkit", "This local API lists installed tags only. No complete official catalog snapshot is available in this build, so catalog completeness is unknown. Use an installed tag below to queue a verified local pull, or refresh after the runtime reports a new tag.")
+            color: M3.color.onSurfaceVariant
         }
 
         StyledTextLabel {
-            text: qsTrc("toolkit", "Cart: %1 model(s) queued for pull").arg(cart.items.length)
+            text: qsTrc("toolkit", "Bounded local pull queue")
             font: M3.typography.titleMedium
         }
 
         StyledTextLabel {
-            visible: cart.items.length === 0
-            text: qsTrc("toolkit", "Add a catalog model to schedule a local download. Nothing here is bought or sold.")
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            text: qsTrc("toolkit", "Pulling uses at most %1 simultaneous local requests. Queued tags survive a restart and are reconciled when the local runtime is available. Nothing here is bought or sold.").arg(ollama.pullConcurrency)
             color: M3.color.onSurfaceVariant
         }
 
         Repeater {
-            model: cart.items
+            model: root.filteredInstalled
 
             delegate: RowLayout {
                 id: cartRow
 
                 required property var modelData
 
-                readonly property var progress: root.pullRows[cartRow.modelData.tag]
+                readonly property string tag: cartRow.modelData.name !== undefined ? cartRow.modelData.name : cartRow.modelData.model
+                readonly property var progress: root.pullRows[cartRow.tag]
 
                 Layout.fillWidth: true
                 spacing: 8
 
                 StyledTextLabel {
                     Layout.fillWidth: true
-                    text: cartRow.modelData.tag
+                    text: cartRow.tag
                 }
 
                 StyledTextLabel {
@@ -320,18 +308,142 @@ Item {
                     text: qsTrc("toolkit", "Pull now")
                     variant: "outlined"
                     enabled: ollama.reachable
-                    onClicked: ollama.pullModel(cartRow.modelData.tag)
+                    onClicked: ollama.pullModel(cartRow.tag)
                 }
 
                 M3Button {
                     text: qsTrc("toolkit", "Cancel")
                     variant: "text"
                     onClicked: {
-                        ollama.cancelPull(cartRow.modelData.tag)
-                        cart.removeModel(cartRow.modelData.tag)
+                        ollama.cancelPull(cartRow.tag)
                     }
                 }
             }
+        }
+
+        StyledTextLabel {
+            text: qsTrc("toolkit", "Local chat")
+            font: M3.typography.titleMedium
+        }
+
+        StyledTextLabel {
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            visible: root.filteredInstalled.length === 0
+            text: qsTrc("toolkit", "Install and select a local model before starting a chat.")
+            color: M3.color.onSurfaceVariant
+        }
+
+        ListView {
+            id: modelPicker
+            visible: root.filteredInstalled.length > 0
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.min(112, modelPicker.contentHeight)
+            clip: true
+            model: root.filteredInstalled
+            delegate: M3ListItem {
+                required property var modelData
+                required property int index
+                readonly property string tag: modelData.name !== undefined ? modelData.name : modelData.model
+                width: modelPicker.width
+                headline: tag
+                supportingText: root.selectedModel === tag ? qsTrc("toolkit", "Selected for this local chat") : qsTrc("toolkit", "Select model")
+                onClicked: root.selectedModel = tag
+            }
+        }
+
+        StyledTextLabel {
+            Layout.fillWidth: true
+            visible: root.selectedModel.length > 0
+            text: qsTrc("toolkit", "Attachments are unavailable until this model's verified capability metadata is inspected by the local runtime.")
+            color: M3.color.onSurfaceVariant
+        }
+
+        TextArea {
+            id: systemPromptEditor
+            Layout.fillWidth: true
+            Layout.preferredHeight: 72
+            text: root.systemPrompt
+            placeholderText: qsTrc("toolkit", "System prompt")
+            onTextChanged: root.systemPrompt = text.slice(0, 4096)
+        }
+
+        ListView {
+            id: chatHistory
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.min(220, chatHistory.contentHeight)
+            clip: true
+            model: root.chatMessages
+            delegate: M3ListItem {
+                required property var modelData
+                width: chatHistory.width
+                headline: modelData.role === "user" ? qsTrc("toolkit", "You") : qsTrc("toolkit", "Local model")
+                supportingText: modelData.content
+            }
+        }
+
+        StyledTextLabel {
+            visible: root.activeReply.length > 0
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            text: root.activeReply
+        }
+
+        TextArea {
+            id: chatComposer
+            Layout.fillWidth: true
+            Layout.preferredHeight: 92
+            placeholderText: qsTrc("toolkit", "Write a local message")
+            enabled: root.selectedModel.length > 0 && !ollama.chatInFlight
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            M3Button {
+                text: qsTrc("toolkit", "Send")
+                variant: "filled"
+                enabled: !ollama.chatInFlight && root.selectedModel.length > 0 && chatComposer.text.trim().length > 0
+                onClicked: {
+                    var next = root.chatMessages.concat([{ role: "user", content: chatComposer.text.slice(0, 16384) }])
+                    var requestMessages = [{ role: "system", content: root.systemPrompt }]
+                    var historyStart = Math.max(0, next.length - 20)
+                    for (var historyIndex = historyStart; historyIndex < next.length; ++historyIndex) {
+                        requestMessages.push(next[historyIndex])
+                    }
+                    root.chatMessages = next
+                    root.chatFailure = ""
+                    ollama.sendChatMessage(root.selectedModel, requestMessages, { temperature: 0.7 })
+                    chatComposer.text = ""
+                }
+            }
+            M3Button {
+                text: qsTrc("toolkit", "Stop")
+                variant: "outlined"
+                enabled: ollama.chatInFlight
+                onClicked: ollama.cancelChat()
+            }
+            Item { Layout.fillWidth: true }
+            M3Button {
+                text: qsTrc("toolkit", "Retry last")
+                variant: "text"
+                enabled: !ollama.chatInFlight && root.chatMessages.length > 0 && root.selectedModel.length > 0
+                onClicked: {
+                    for (var i = root.chatMessages.length - 1; i >= 0; --i) {
+                        if (root.chatMessages[i].role === "user") {
+                            chatComposer.text = root.chatMessages[i].content
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        StyledTextLabel {
+            visible: root.chatFailure.length > 0
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            text: root.chatFailure
+            color: M3.color.error
         }
     }
 }
