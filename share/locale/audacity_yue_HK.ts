@@ -5880,7 +5880,7 @@ This action 唔會 刪除 any of your 專案.</translation>
         <source>Filters the menu items below. Plain text by default, or use the regular expression builder.</source>
         <translation>篩選下面呢啲選單項目。預設係普通文字,想玩正則表達式都得。</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../../src/uicomponents/qml/Audacity/M3/M3Menu.qml" line="169" />
         <source>%n result(s)</source>
         <translation>
