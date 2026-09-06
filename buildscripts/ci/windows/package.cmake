@@ -4,7 +4,7 @@ message(STATUS "Package")
 # Config
 set(ARTIFACTS_DIR "build.artifacts")
 set(BUILD_DIR "build.release")
-set(INSTALL_DIR "build.install")
+set(INSTALL_DIR "build.install" CACHE PATH "Existing installed application payload")
 
 # Options
 set(BUILD_MODE "" CACHE STRING "Build mode")
@@ -41,22 +41,15 @@ if (NOT PACKAGE_DRY_RUN)
     endif()
 endif()
 
-# Setup package type.
-# devel and nightly builds ship a plain archive; testing and stable builds ship
-# the Squirrel.Windows installer. There is no MSI, WiX or other fallback.
-set(PACK_TYPE "7z")
-if (BUILD_MODE STREQUAL "devel_build")
-  set(PACK_TYPE "7z")
-elseif(BUILD_MODE STREQUAL "nightly_build")
-  set(PACK_TYPE "7z")
-elseif(BUILD_MODE STREQUAL "testing_build")
-  set(PACK_TYPE "squirrel")
-elseif(BUILD_MODE STREQUAL "stable_build")
-  set(PACK_TYPE "squirrel")
+# Every supported delivery mode produces the same genuine installer format.
+set(_supported_modes devel_build nightly_build testing_build stable_build)
+list(FIND _supported_modes "${BUILD_MODE}" _mode_index)
+if(NOT PACKAGE_DRY_RUN AND _mode_index LESS 0)
+  message(FATAL_ERROR "Unsupported Windows package build mode: ${BUILD_MODE}")
 endif()
-
-if (PACK_TYPE_OVERRIDE)
-  set(PACK_TYPE "${PACK_TYPE_OVERRIDE}")
+set(PACK_TYPE "squirrel")
+if(PACK_TYPE_OVERRIDE AND NOT PACK_TYPE_OVERRIDE STREQUAL "squirrel")
+  message(FATAL_ERROR "Only genuine Squirrel.Windows packages are supported; archive-only overrides are prohibited")
 endif()
 
 if (PACKAGE_DRY_RUN)
@@ -66,17 +59,11 @@ endif()
 
 file(MAKE_DIRECTORY "${ARTIFACTS_DIR}")
 
-# PACK 7z
-if(PACK_TYPE STREQUAL "7z")
-  message(STATUS "Start 7z packing...")
-  set(ARTIFACT_NAME "Audacity-${BUILD_VERSION}-${PACKARCH}")
-
-  file(RENAME ${INSTALL_DIR} ${ARTIFACT_NAME})
-  file(ARCHIVE_CREATE OUTPUT ${ARTIFACTS_DIR}/${ARTIFACT_NAME}.7z PATHS ${ARTIFACT_NAME} FORMAT 7zip)
-
-  message(STATUS "Finished 7z packing")
-  return()
-endif()
+# Repair/verify the installed tool bundle again immediately before any package
+# consumes it, including when packaging is invoked without the build script.
+get_filename_component(INSTALL_DIR "${INSTALL_DIR}" ABSOLUTE)
+set(QPDF_INSTALL_ROOT "${INSTALL_DIR}")
+include("${CMAKE_CURRENT_LIST_DIR}/../../converter-tools/provision-qpdf.cmake")
 
 # PACK Squirrel.Windows
 if(PACK_TYPE STREQUAL "squirrel")
