@@ -176,7 +176,7 @@ index a8936d298..e9674980f 100644
          }
      }
 diff --git a/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp b/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp
-index f1d6ba511..a70bbf642 100644
+index f1d6ba511..ef27a8a05 100644
 --- a/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp
 +++ b/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp
 @@ -1,3 +1,4 @@
@@ -193,6 +193,15 @@ index f1d6ba511..a70bbf642 100644
      if (ok) {
          LOGI() << "success start: " << appPath << ", args: " << args;
      } else {
+@@ -386,7 +387,7 @@ muse::ipc::IpcLock* MultiProcessProvider::lock(const std::string& name)
+     if (it != m_locks.end()) {
+         return it->second;
+     }
+-    ipc::IpcLock* l = new ipc::IpcLock(QString::fromStdString(name));
++    ipc::IpcLock* l = new ipc::IpcLock(au::profile::Paths::ipcName(QString::fromStdString(name)));
+     m_locks[name] = l;
+     return l;
+ }
 diff --git a/framework/network/internal/networkmanager.cpp b/framework/network/internal/networkmanager.cpp
 index 804a066ce..c5072d3c9 100644
 --- a/framework/network/internal/networkmanager.cpp

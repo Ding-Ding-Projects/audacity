@@ -8,6 +8,7 @@ OVERLAY = "buildscripts/muse-patches/0011-isolated-profile.patch"
 overlay_contracts = ["target_sources(muse_global PRIVATE ${CMAKE_SOURCE_DIR}/src/shared/profilepaths.cpp)",
     "Paths::settingsAccessed();", "m_settings->setFallbacksEnabled(false)",
     "Paths::ipcName(SERVER_NAME)", "Paths::childArguments(args)",
+    "new ipc::IpcLock(au::profile::Paths::ipcName(QString::fromStdString(name)))",
     "Network requests are unavailable in an isolated verification profile."]
 
 def code(text):
@@ -23,8 +24,8 @@ def check(files):
         text = code(files[path])
         assert text.count("au::profile::Paths::writableLocation(") == count, path
         assert "QStandardPaths::writableLocation(" not in text, path
-    for path in inventory["temporaryConsumers"]:
-        assert code(files[path]).count("au::profile::Paths::temporaryPath()") == 1, path
+    for path, count in inventory["temporaryConsumers"].items():
+        assert code(files[path]).count("au::profile::Paths::temporaryPath()") == count, path
         assert "QDir::tempPath()" not in code(files[path]), path
     for path, names in inventory["sideEffectGuards"].items():
         for name in names:

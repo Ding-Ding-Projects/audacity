@@ -13,11 +13,12 @@
     "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
     "src/effects/nyquist/nyquistprompt/nyquistpromptviewmodel.cpp": 2
   },
-  "temporaryConsumers": [
-    "src/squirrelupdate/internal/squirrelupdateservice.cpp",
-    "src/chronicle/view/versionhistorymodel.cpp",
-    "src/importexport/import/internal/legacyaupimporter.cpp"
-  ],
+  "temporaryConsumers": {
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
+    "src/chronicle/view/versionhistorymodel.cpp": 1,
+    "src/importexport/import/internal/legacyaupimporter.cpp": 1,
+    "src/chronicle/internal/gitsnapshotstore.cpp": 2
+  },
   "pendingParentConsumers": [
     "src/toolkit/internal/bookmarkmodel.cpp",
     "src/toolkit/internal/hardwarefitservice.cpp",

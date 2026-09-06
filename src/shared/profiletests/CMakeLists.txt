@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.24)
 project(AudacityProfileTests LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 find_package(Qt6 6.10 REQUIRED COMPONENTS Core)
-# Build the production provider as a DLL: both the executable and a consumer DLL
-# must resolve precisely the same installed state.
+# Export/import mechanics test only. The Windows product links muse_global
+# statically (BUILD_SHARED_LIBS=OFF); this DLL target is not product-binary proof.
 add_library(profile_provider SHARED ../profilepaths.cpp)
 target_compile_definitions(profile_provider PRIVATE AUDACITY_PROFILEPATHS_BUILD PUBLIC AUDACITY_PROFILEPATHS_SHARED)
 target_link_libraries(profile_provider PUBLIC Qt6::Core)
@@ -14,3 +14,15 @@ add_executable(profile_tests tests.cpp)
 target_link_libraries(profile_tests PRIVATE profile_provider profile_consumer Qt6::Core)
 enable_testing()
 add_test(NAME profile_isolation COMMAND profile_tests)
+
+# Match the product's static provider linkage without building the whole product.
+add_library(profile_provider_static STATIC ../profilepaths.cpp)
+target_link_libraries(profile_provider_static PUBLIC Qt6::Core)
+target_include_directories(profile_provider_static PUBLIC ..)
+add_library(profile_consumer_static STATIC staticconsumer.cpp)
+target_link_libraries(profile_consumer_static PRIVATE profile_provider_static)
+set(PROFILE_IPC_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../muse/framework/multiwindows/internal/multiprocess/ipc)
+add_executable(profile_resource_tests resource_tests.cpp ${PROFILE_IPC_DIR}/ipclock.cpp)
+target_include_directories(profile_resource_tests PRIVATE ${PROFILE_IPC_DIR})
+target_link_libraries(profile_resource_tests PRIVATE profile_provider_static profile_consumer_static Qt6::Core)
+add_test(NAME profile_resource_isolation COMMAND profile_resource_tests)

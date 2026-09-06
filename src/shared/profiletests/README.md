@@ -4,10 +4,11 @@
 version-1 ownership-marked fixture before command parsing, application creation,
 and Muse settings initialization. The original Audacity application identity remains.
 The profile argument is inherited by Muse child windows; both single-instance
-activation and the multi-process resource bus use the canonical root hash.
+activation, the multi-process resource bus, and named resource locks use the canonical root hash.
 
 The provider source is compiled exactly once in `muse_global` by the committed
-`0011-isolated-profile.patch` overlay. It is not compiled into each consuming module.
+`0011-isolated-profile.patch` overlay. The Windows product uses static linkage
+(`BUILD_SHARED_LIBS=OFF`), not a provider DLL. It is not compiled into each consuming module.
 QSettings uses INI files in independent user and system directories. Portable settings
 must not replace those directories. Framework defaults and listed direct consumers
 use the provider. Existing fixtures reject symlinks and Windows reparse points.
@@ -22,8 +23,14 @@ from these source and pure Qt tests alone.
 ## Verification
 
 Configure this directory independently with CMake and Qt 6.10.1, build, then run
-`profile_tests` with the Qt bin directory on PATH. The production provider is built
-as a DLL and also called from a separate consumer DLL. Child processes verify
+`profile_tests` and `profile_resource_tests` with the Qt bin directory on PATH.
+The first target exercises provider export/import mechanics through separate DLLs.
+It does not prove the actual Windows product layout. The second builds the provider
+and its consumer with static linkage matching the product configuration, and runs
+the real Muse IpcLock implementation in two processes. Both profiles must acquire
+the same logical resource before either is released; each also creates a contained
+QTemporaryFile with the Chronicle template. Neither target proves the complete
+product binary because that binary has not been built in this lane. Child processes verify
 initialization order, redirected locations, both QSettings scopes, stable IPC,
 parallel profiles, ownership markers, protected folders, and Windows junctions.
 Run `python src/shared/profiletests/check_inventory.py` for explicit consumer
