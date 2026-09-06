@@ -3,11 +3,15 @@ name: 'Material Audacity: Documentation site'
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'docs/**'
       - '.github/workflows/material-audacity-pages.yml'
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Material Audacity: Build and release']
+    types: [completed]
+    branches: [main]
 
 concurrency:
   group: material-audacity-pages
@@ -18,13 +22,25 @@ permissions:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     name: Build documentation artifact
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
     steps:
       - name: Clone repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Stage documentation and verified release metadata
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        run: node docs/site/scripts/stage-site.mjs
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -34,12 +50,12 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs
+          path: build.site
 
   deploy:
     name: Deploy to GitHub Pages
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
     permissions:
       pages: write
       id-token: write

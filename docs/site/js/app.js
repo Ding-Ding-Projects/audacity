@@ -179,14 +179,28 @@
       '<div role="tablist" aria-label="About Material Audacity" class="md-tablist" id="home-tabs"></div>' +
       '<div id="home-tabpanels"></div>';
 
-    fetch('data/release.json').then((r) => r.json()).then((rel) => {
-      document.getElementById('release-line').textContent =
-        'Version: ' + rel.tag + ' · Updated: ' + new Date(rel.updatedAt).toDateString() + ' · Commit: ' + rel.commit.slice(0, 10);
-    }).catch(() => { document.getElementById('release-line').textContent = 'Release information is unavailable right now.'; });
+    const provenanceLine = root.querySelector('#release-line');
+    fetch('data/provenance.json').then((r) => {
+      if (!r.ok) throw new Error('Provenance is unavailable');
+      return r.json();
+    }).then((record) => {
+      if (record.schemaVersion !== 1 || record.provenanceKind !== 'source-commit'
+          || !/^[a-f0-9]{40}$/.test(record.commit || '')
+          || record.version !== 'source-' + record.commit.slice(0, 12)
+          || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(record.updatedAt || '')
+          || !Number.isFinite(Date.parse(record.updatedAt))) throw new Error('Invalid provenance');
+      const locale = settings.language === 'yue' ? 'zh-HK' : 'en-CA';
+      const localTime = new Intl.DateTimeFormat(locale, {
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit',
+        minute: '2-digit', second: '2-digit', timeZoneName: 'longOffset', hour12: false,
+      }).format(new Date(record.updatedAt));
+      provenanceLine.textContent = 'Documentation version: ' + record.version
+        + ' · Source updated: ' + localTime;
+    }).catch(() => { provenanceLine.textContent = 'Documentation version and source provenance are unavailable.'; });
 
     const tabs = [
       { id: 'about', label: 'About', body: '<p>Material Audacity brings Material 3 dynamic color, shape, motion, and components to the Audacity shell, plus a command palette, a regex builder everywhere search happens, personal vocabulary substitution, and local history.</p>' },
-      { id: 'build', label: 'Build', body: '<p>Windows packages are built with Squirrel.Windows through a public builder that never sees this project\'s name. Code signing is permanently disabled.</p>' },
+      { id: 'build', label: 'Build', body: '<p>Windows x64 packages use Squirrel.Windows. Code signing is permanently disabled. Each release records the build and verification evidence actually collected.</p>' },
       { id: 'features', label: 'Features', body: '<p>See the Features page for the full list: command palette, regex builder, tabs, languages and funny levels, personal vocabulary, local history, changelog, notifications, super confirmation, appearance editors, toy locks and authenticator, Ollama suite manager, ADHD modes, the dim sum surprise, School mode, the narrator, documentation browser bookmarks, no unsolicited nagging, and platform installers.</p>' },
       { id: 'downloads', label: 'Downloads', body: '<p>See the Downloads page for the latest assets and checksums.</p>' },
       { id: 'license', label: 'License', body: '<p>Material Audacity is distributed under the same license as Audacity (GPLv2 or later). See LICENSE.txt in the repository.</p>' },
