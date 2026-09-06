@@ -187,7 +187,7 @@ StyledPopupView {
                         horizontalAlignment: Text.AlignLeft
                     }
 
-                    IncrementalPropertyControl {
+                    M3NumberField {
                         id: control
 
                         width: 90
