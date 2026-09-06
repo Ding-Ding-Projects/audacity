@@ -155,7 +155,8 @@ ConversionResult ConversionEngine::convert(const ConversionRequest& request, con
     }
 
     QDir destinationDir = outputInfo.dir();
-    if (!destinationDir.exists() || !destinationDir.isReadable() || !destinationDir.isWritable()) {
+    const QFileInfo destinationDirectoryInfo(destinationDir.absolutePath());
+    if (!destinationDir.exists() || !destinationDirectoryInfo.isReadable() || !destinationDirectoryInfo.isWritable()) {
         return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The destination directory is not writable."));
     }
     QTemporaryFile temporary(destinationDir.filePath(QStringLiteral(".audacity-convert-XXXXXX.tmp")));
