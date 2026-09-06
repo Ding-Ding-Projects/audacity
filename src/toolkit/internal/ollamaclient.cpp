@@ -502,9 +502,17 @@ bool OllamaClient::importCatalogSnapshot(const QUrl& fileUrl)
     const QString revision = snapshot.value(QStringLiteral("revision")).toString();
     const int pageCount = snapshot.value(QStringLiteral("pageCount")).toInt(-1);
     const QJsonArray models = snapshot.value(QStringLiteral("models")).toArray();
-    if (origin != QStringLiteral("https://ollama.com/library") || revision.isEmpty() || pageCount < 1 || models.isEmpty()) {
-        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot is missing official origin, revision, page count, or model rows."));
+    if (origin != QStringLiteral("https://ollama.com/library") || revision.isEmpty() || pageCount < 1 || models.isEmpty()
+        || snapshot.value(QStringLiteral("completeness")).toString() != QStringLiteral("model-and-tag-terminal-verified")) {
+        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot lacks verified terminal model and tag coverage."));
         return false;
+    }
+    for (const QJsonValue& model : models) {
+        if (model.toObject().value(QStringLiteral("name")).toString().isEmpty()
+            || model.toObject().value(QStringLiteral("tags")).toArray().isEmpty()) {
+            emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot has a model without verified tag receipts."));
+            return false;
+        }
     }
     m_catalogSnapshot = snapshot.toVariantMap();
     m_catalogSnapshot.insert(QStringLiteral("importedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));

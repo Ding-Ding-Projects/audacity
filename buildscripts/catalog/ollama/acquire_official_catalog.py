@@ -51,6 +51,28 @@ def fetch(url: str) -> tuple[str, bytes]:
         return final_url, response.read(2 * 1024 * 1024 + 1)
 
 
+def detail_receipt(model: str) -> dict:
+    url, payload = fetch(canonical(f"https://ollama.com/library/{model}/tags"))
+    if len(payload) > 2 * 1024 * 1024:
+        raise ValueError("official tag page exceeded the 2 MiB receipt limit")
+    links = Links()
+    links.feed(payload.decode("utf-8", errors="strict"))
+    prefix = f"/library/{model}:"
+    tags = sorted({urllib.parse.urlparse(href).path.rsplit("/", 1)[1]
+                   for href in _hrefs(payload) if urllib.parse.urlparse(href).path.startswith(prefix)})
+    if links.next_url or not tags:
+        raise ValueError(f"tag receipt for {model} is paginated or empty; bounded tool cannot prove completeness")
+    return {"name": model, "tags": tags, "tagPage": {"url": url, "sha256": hashlib.sha256(payload).hexdigest()}}
+
+
+def _hrefs(payload: bytes) -> list[str]:
+    class Hrefs(HTMLParser):
+        def __init__(self): super().__init__(); self.values = []
+        def handle_starttag(self, tag, attrs):
+            if tag == "a": self.values.append(dict(attrs).get("href", ""))
+    parser = Hrefs(); parser.feed(payload.decode("utf-8", errors="strict")); return parser.values
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--first", required=True)
@@ -88,8 +110,8 @@ def main() -> int:
         "origin": "https://ollama.com/library",
         "revision": hashlib.sha256("".join(page["sha256"] for page in pages).encode()).hexdigest(),
         "pageCount": len(pages), "pages": pages,
-        "models": [{"name": name} for name in sorted(models)],
-        "completeness": "pagination-terminal-verified",
+        "models": [detail_receipt(name) for name in sorted(models)],
+        "completeness": "model-and-tag-terminal-verified",
     }
     with open(args.output, "w", encoding="utf-8", newline="\n") as output:
         json.dump(snapshot, output, indent=2, sort_keys=True)
