@@ -8,6 +8,7 @@ body {
   min-width: 320px;
 }
 a { color: var(--md-sys-color-primary, #6748be); }
+[data-language-pair] > span + span { display: block; }
 h1, h2, h3 { font-family: var(--md-font-display); margin: 0 0 0.5em; }
 h1 { font: var(--md-type-display-small); }
 h2 { font: var(--md-type-headline-medium); }

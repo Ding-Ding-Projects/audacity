@@ -1,5 +1,35 @@
 # Language modes
 
+## Documentation website
+
+The website has its own local setting, `ma.settings.v1.language`, with `en`,
+`yue`, and `bilingual` values. It does not depend on the installed desktop
+application. The maintained `locales/yue-HK.json` catalog and its checked browser
+copy provide authored interface translations. `js/presentation.js` composes
+language-labelled parts; the page inserts them as text, never HTML.
+
+English remains the document's default language. Translated Cantonese spans
+carry `lang="yue"`, and bilingual copy places each language in a separate span.
+Untranslated original text, exact release records, and documentation article
+content remain English. These retained articles are a known localization gap,
+not evidence of complete Cantonese documentation.
+
+Parameterized interface messages use bounded catalog templates. Their dynamic
+values remain literal data and are excluded from personal-vocabulary changes.
+The original English source stays in memory for reversible language changes;
+replacement output never becomes the source for another language. Personal
+vocabulary applies locally after translation to authored wording. English and
+Cantonese feedback levels are independent; control labels stay direct.
+
+Local verification uses `node --test docs/site/scripts/presentation.test.cjs
+docs/site/scripts/personal-vocabulary.test.cjs`. The current suites cover the
+browser/JSON catalog match, every catalog string in all three modes, feedback
+levels, missing-catalog fallback, exact provenance values, bounded templates,
+and vocabulary parsing/replacement. These source tests do not prove browser
+layout, screen-reader behavior, focus, or the complete interaction matrix.
+
+## Desktop application
+
 Material Audacity offers exactly three language modes. The setting is
 `experience/language/mode` and it is persisted through muse settings.
 

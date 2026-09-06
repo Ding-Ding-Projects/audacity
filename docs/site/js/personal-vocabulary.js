@@ -57,7 +57,7 @@
       for (const c of key) { if (!node.has(c)) node.set(c, new Map()); node = node.get(c); }
       node.value = value;
     }
-    const word = c => !!c && /[\p{L}\p{N}_]/u.test(c);
+    const word = c => !!c && /[A-Za-z0-9_]/u.test(c);
     return text => {
       if (text.length > LIMITS.text) return text;
       const chars = Array.from(text); const out = []; let length = 0;

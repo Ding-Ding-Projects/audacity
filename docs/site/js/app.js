@@ -68,7 +68,11 @@
     notifications.slice(0, 50).forEach((n) => {
       const div = document.createElement('div');
       div.className = 'notif-item';
-      div.textContent = new Date(n.at).toLocaleTimeString() + ' · ' + n.message;
+      const timestamp = document.createElement('time');
+      timestamp.dateTime = n.at; timestamp.textContent = new Date(n.at).toLocaleTimeString() + ' · ';
+      timestamp.dataset.vocabularyExclude = '';
+      const message = document.createElement('span'); message.textContent = n.message;
+      div.append(timestamp, message);
       list.appendChild(div);
     });
   }
@@ -91,7 +95,10 @@
     const reduceMotion = settings.reducedMotionOverride === 'reduce' ? true : settings.reducedMotionOverride === 'allow' ? false : null;
     if (reduceMotion === true) root.setAttribute('data-reduced-motion', 'true');
     else root.removeAttribute('data-reduced-motion');
-    root.lang = settings.language === 'yue' ? 'yue' : 'en';
+    // Source-owned records and unmatched fallback copy remain English.
+    // Translated text receives its language on the exact rendered span.
+    root.lang = 'en';
+    applyVocabularyBoundary();
   }
 
   // ---------- Personal vocabulary ----------
@@ -107,16 +114,65 @@
   let vocabularyLoadSequence = 0;
   const vocabularyTextState = new WeakMap();
   const vocabularyAttributeState = new WeakMap();
+  const languagePairState = new WeakMap();
   const vocabularyExcluded = 'script,style,code,pre,textarea,[contenteditable],#release-line,#assets-list,#docs-content,#changelog-list,.release-channel,.release-notes,.unsigned-note,[data-vocabulary-exclude]';
+  function presentedText(source, control = true) {
+    const parts = window.MaterialAudacityPresentation?.parts(source, Object.assign({}, settings, { control })) || [{ language: 'en', text: source }];
+    let lastLanguage;
+    return parts.map(part => {
+      const replaced = part.data ? part.text : replaceVocabulary(part.text);
+      const separator = lastLanguage && lastLanguage !== part.language ? ' / ' : '';
+      lastLanguage = part.language;
+      return separator + (control && !replaced.trim() ? part.text : replaced);
+    }).join('');
+  }
   function applyVocabularyBoundary() {
+    function updatePair(wrapper, state) {
+      const parts = window.MaterialAudacityPresentation.parts(state.original, Object.assign({}, settings, { control: state.control }));
+      const next = parts.map(part => {
+        const replaced = part.data ? part.text : replaceVocabulary(part.text);
+        return { language: part.language, data: !!part.data, dataLanguage: part.dataLanguage, text: state.control && !replaced.trim() ? part.text : replaced };
+      });
+      const signature = JSON.stringify(next);
+      if (state.signature === signature) return;
+      state.signature = signature;
+      wrapper.replaceChildren();
+      let group;
+      next.forEach(part => {
+        if (!group || group.lang !== part.language) {
+          group = document.createElement('span'); group.lang = part.language;
+          wrapper.appendChild(group);
+        }
+        const span = document.createElement('span');
+        span.textContent = part.text;
+        if (part.data) { span.dataset.vocabularyExclude = ''; span.lang = part.dataLanguage || 'en'; }
+        group.appendChild(span);
+      });
+    }
+    document.querySelectorAll('[data-language-pair]').forEach(wrapper => {
+      const state = languagePairState.get(wrapper);
+      if (state) updatePair(wrapper, state);
+    });
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const nodes = [];
     let node;
-    while ((node = walker.nextNode())) {
-      if (!node.parentElement || node.parentElement.closest(vocabularyExcluded)) continue;
+    while ((node = walker.nextNode())) nodes.push(node);
+    for (const node of nodes) {
+      if (!node.parentElement || node.parentElement.closest(vocabularyExcluded + ',[data-language-pair]')) continue;
       let state = vocabularyTextState.get(node);
       if (!state || node.nodeValue !== state.applied) state = { original: node.nodeValue };
-      let next = replaceVocabulary(state.original);
-      if (!next.trim() && node.parentElement.closest('button,a,label')) next = state.original;
+      if (window.MaterialAudacityPresentation?.has(state.original) && !node.parentElement.closest('option,title')) {
+        const wrapper = document.createElement('span');
+        wrapper.dataset.languagePair = '';
+        const pair = { original: state.original, control: !!node.parentElement.closest('button,a,label') };
+        languagePairState.set(wrapper, pair); updatePair(wrapper, pair);
+        node.replaceWith(wrapper);
+        continue;
+      }
+      const localized = window.MaterialAudacityPresentation?.text(state.original, Object.assign({}, settings, { control: !!node.parentElement.closest('button,a,label,option') })) || state.original;
+      let next = replaceVocabulary(localized);
+      if (!next.trim() && node.parentElement.closest('button,a,label,option')) next = localized;
+      if (node.parentElement.matches('option,title')) node.parentElement.lang = settings.language === 'yue' && window.MaterialAudacityPresentation?.has(state.original) ? 'yue' : 'en';
       state.applied = next; vocabularyTextState.set(node, state);
       if (node.nodeValue !== next) node.nodeValue = next;
     }
@@ -127,7 +183,7 @@
         if (!element.hasAttribute(name)) continue;
         const value = element.getAttribute(name);
         const state = !states[name] || value !== states[name].applied ? { original: value } : states[name];
-        state.applied = replaceVocabulary(state.original) || state.original;
+        state.applied = presentedText(state.original);
         if (value !== state.applied) element.setAttribute(name, state.applied);
         states[name] = state;
       }
@@ -224,8 +280,8 @@
         year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit',
         minute: '2-digit', second: '2-digit', timeZoneName: 'longOffset', hour12: false,
       }).format(new Date(record.updatedAt));
-      provenanceLine.textContent = 'Documentation version: ' + record.version
-        + ' · Source updated: ' + localTime;
+      provenanceLine.textContent = window.MaterialAudacityPresentation?.provenance(record.version, localTime, settings.language)
+        || 'Documentation version: ' + record.version + ' · Source updated: ' + localTime;
     }).catch(() => { provenanceLine.textContent = 'Documentation version and source provenance are unavailable.'; });
 
     const tabs = [
@@ -579,7 +635,7 @@
       if (!q) return;
       const matching = tabState.open.filter((id) => DOC_PAGES.find((p) => p.id === id).title.toLowerCase().includes(q.toLowerCase()));
       if (!matching.length) { notify('No tabs match "' + q + '"'); return; }
-      if (!confirm('Close ' + matching.length + ' tab(s) containing "' + q + '"?')) return;
+      if (!confirm(presentedText('Close ' + matching.length + ' tab(s) containing "' + q + '"?'))) return;
       tabState.open = tabState.open.filter((id) => !matching.includes(id));
       if (!tabState.open.includes(tabState.active)) tabState.active = tabState.open[0] || null;
       if (!tabState.open.length) { tabState.open = [DOC_PAGES[0].id]; tabState.active = DOC_PAGES[0].id; }
@@ -590,7 +646,7 @@
       if (!q) return;
       const matching = tabState.open.filter((id) => !DOC_PAGES.find((p) => p.id === id).title.toLowerCase().includes(q.toLowerCase()));
       if (!matching.length) { notify('No tabs would be closed'); return; }
-      if (!confirm('Close ' + matching.length + ' tab(s) not containing "' + q + '"?')) return;
+      if (!confirm(presentedText('Close ' + matching.length + ' tab(s) not containing "' + q + '"?'))) return;
       tabState.open = tabState.open.filter((id) => !matching.includes(id));
       if (!tabState.open.includes(tabState.active)) tabState.active = tabState.open[0] || null;
       if (!tabState.open.length) { tabState.open = [DOC_PAGES[0].id]; tabState.active = DOC_PAGES[0].id; }
@@ -794,7 +850,15 @@
       } else if (filterText) {
         filtered = list.filter((h) => h.action.toLowerCase().includes(filterText.toLowerCase()));
       }
-      el.innerHTML = filtered.slice(0, 200).map((h) => '<div class="history-item">' + new Date(h.at).toLocaleString() + ' · ' + h.action + '</div>').join('') || '<p>No history entries.</p>';
+      el.replaceChildren();
+      filtered.slice(0, 200).forEach(h => {
+        const row = document.createElement('div'); row.className = 'history-item';
+        const timestamp = document.createElement('time'); timestamp.dateTime = h.at;
+        timestamp.textContent = new Date(h.at).toLocaleString() + ' · '; timestamp.dataset.vocabularyExclude = '';
+        const action = document.createElement('span'); action.textContent = h.action;
+        row.append(timestamp, action); el.appendChild(row);
+      });
+      if (!filtered.length) { const empty = document.createElement('p'); empty.textContent = 'No history entries.'; el.appendChild(empty); }
     }
     let historyRegex = null;
     document.getElementById('history-search-input').addEventListener('input', (e) => renderHistory(e.target.value, historyRegex));
@@ -1063,6 +1127,7 @@
     initPalette();
     initNotifCentre();
     render();
+    if (settings.language !== 'en' && !window.MaterialAudacityPresentation?.ready) notify('Translation data is unavailable; original wording is shown.');
     applyVocabularyBoundary();
     new MutationObserver(applyVocabularyBoundary).observe(document.body, {
       childList: true, subtree: true, characterData: true, attributes: true,

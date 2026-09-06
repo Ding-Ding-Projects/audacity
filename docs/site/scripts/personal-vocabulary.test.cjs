@@ -52,6 +52,11 @@ test('HTML-looking replacements remain literal strings for text-node rendering',
   assert.equal(createReplacer(parse(encode({ Home: literal })))('Home'), literal);
 });
 
+test('Chinese literal edges match beside ASCII while ASCII words keep boundaries', () => {
+  const replace = createReplacer(parse(encode({ '聲音': 'Sound', Audio: 'Music' })));
+  assert.equal(replace('A聲音B Audio Audiobook'), 'ASoundB Music Audiobook');
+});
+
 test('replacement expansion is bounded and falls back to original text atomically', () => {
   const text = Array(100).fill('A').join(' ');
   assert.equal(createReplacer(parse(encode({ A: 'x'.repeat(1000) })))(text), text);

@@ -1,5 +1,22 @@
 # Handoff
 
+## Documentation language integration in progress
+
+The documentation branch adds an authored Cantonese catalog, independent
+English/Cantonese feedback levels, bilingual language-marked spans, reversible
+language and local-vocabulary rendering, and bounded dynamic message templates.
+Provider-owned release records and documentation articles remain unchanged.
+Dynamic template values are treated as data. Notification and history timestamps
+are separate from their translatable messages; history rows use text assignment
+instead of HTML interpolation.
+
+The focused presentation and personal-vocabulary suites pass 31 tests locally.
+The presentation suite also verifies that the browser catalog exactly matches
+the maintained JSON. Complete browser interaction, screen-reader, viewport,
+theme, and scale evidence is still missing. Documentation article translation,
+full dynamic-copy coverage, and other canonical website features remain open.
+This branch's current language work has not been deployed or accepted as complete.
+
 ## Current delivery integration
 
 The delivery workflow targets `main` and Windows x64. It builds and packages an unsigned Squirrel.Windows installer, then publishes one unique non-draft prerelease for the run. Tags do not trigger recursive delivery. Tests and lint remain local; their results are not workflow release prerequisites.
