@@ -61,10 +61,11 @@ struct Fixture {
 };
 // A directory mount-point reparse fixture does not require symbolic-link
 // privilege. Its payload is the documented REPARSE_DATA_BUFFER layout.
-bool junction(const QString& link, const QString& target)
+bool junction(const QString& link, const QString& target, DWORD access = GENERIC_WRITE)
 {
     if (!QDir().mkpath(link)) return false;
-    detail::Handle handle(CreateFileW(wide(QDir::toNativeSeparators(link)), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING,
+    detail::Handle handle(CreateFileW(wide(QDir::toNativeSeparators(link)), access,
+                                     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
                                      FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nullptr));
     if (!handle.valid()) return false;
     const QString substitute = QStringLiteral("\\??\\") + QDir::toNativeSeparators(target);
@@ -217,6 +218,35 @@ int main(int argc, char** argv)
                 }
             };
             f.converted(f.convert()); require(reached, "temporary barrier reached");
+        }},
+        {"empty parent redirected before temporary creation", [] {
+            Fixture f; const auto parent = f.directory.filePath(QStringLiteral("parent"));
+            const auto other = f.directory.filePath(QStringLiteral("other"));
+            require(QDir().mkpath(parent) && QDir().mkpath(other), "race directories");
+            f.output = parent + QStringLiteral("/out.bmp"); bool reached = false;
+            ConversionEngine::testHook = [&](auto phase) {
+                if (phase == ConversionEngine::TestPhase::DestinationPinned) {
+                    reached = true;
+                    require(junction(parent, other, FILE_WRITE_ATTRIBUTES), "attribute-only empty-parent redirection fixture");
+                }
+            };
+            require(f.convert().status == ConversionStatus::Failed && reached, "reject redirected temporary handle");
+            require(QDir(other).entryList(QDir::Files | QDir::Hidden).isEmpty(), "redirected temporary removed by handle");
+            require(RemoveDirectoryW(wide(parent)), "remove race junction");
+        }},
+        {"nonempty parent resists attribute-only reparse mutation", [] {
+            Fixture f; const auto parent = f.directory.filePath(QStringLiteral("parent"));
+            const auto other = f.directory.filePath(QStringLiteral("other"));
+            require(QDir().mkpath(parent) && QDir().mkpath(other), "race directories");
+            f.output = parent + QStringLiteral("/out.bmp"); bool reached = false;
+            ConversionEngine::testHook = [&](auto phase) {
+                if (phase == ConversionEngine::TestPhase::BeforePublish) {
+                    reached = true;
+                    require(!junction(parent, other, FILE_WRITE_ATTRIBUTES), "NTFS refuses reparse on parent containing exclusive temporary");
+                }
+            };
+            f.converted(f.convert()); require(reached, "reparse barrier reached");
+            require(QDir(other).entryList(QDir::Files | QDir::Hidden).isEmpty(), "no redirected output");
         }},
         {"oversized valid BMP dimensions rejected", [] {
             Fixture f; QByteArray header(54, 0); header[0] = 'B'; header[1] = 'M';

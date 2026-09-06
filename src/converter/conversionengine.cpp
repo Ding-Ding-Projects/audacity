@@ -130,6 +130,7 @@ ConversionResult ConversionEngine::convert(const ConversionRequest& request, con
     if (image.isNull() || image.size() != size || !source.unchanged()) {
         return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The image could not be decoded safely from the unchanged source."));
     }
+    CONVERSION_BARRIER(DestinationPinned);
     detail::HandleDevice temporary(outputPath.temporaryPath(), true, MaxOutputBytes, cancellationRequested);
     if (!temporary.isOpen()) {
         return result(ConversionStatus::Failed, sourceFormat, QStringLiteral("A private temporary output could not be created."));

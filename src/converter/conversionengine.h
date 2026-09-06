@@ -45,7 +45,7 @@ public:
     static constexpr qint64 MaxOutputBytes = 512LL * 1024 * 1024;
 
 #ifdef AU_CONVERTER_TEST_HOOKS
-    enum class TestPhase { SourceOpened, TemporaryOpened, BeforePublish };
+    enum class TestPhase { SourceOpened, DestinationPinned, TemporaryOpened, BeforePublish };
     // Deterministic race barriers, absent from product builds.
     static thread_local std::function<void(TestPhase)> testHook;
 #endif

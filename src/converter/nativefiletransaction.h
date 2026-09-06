@@ -44,9 +44,24 @@ inline bool sameIdentity(const BY_HANDLE_FILE_INFORMATION& a, const BY_HANDLE_FI
            && a.nFileIndexHigh == b.nFileIndexHigh && a.nFileIndexLow == b.nFileIndexLow;
 }
 
+inline QString resolvedPath(HANDLE handle)
+{
+    wchar_t path[32768] = {};
+    const DWORD length = GetFinalPathNameByHandleW(handle, path, 32768, FILE_NAME_NORMALIZED | VOLUME_NAME_GUID);
+    return length && length < 32768 ? QString::fromWCharArray(path, int(length)) : QString();
+}
+
+inline bool resolvesTo(HANDLE handle, const QString& expected)
+{
+    const QString actual = resolvedPath(handle);
+    return !actual.isEmpty() && actual.compare(expected, Qt::CaseInsensitive) == 0;
+}
+
 // Every ancestor remains open without write/delete sharing until publication.
-// This prevents renaming an ancestor or turning it into a reparse point between
-// validation and a Win32 path operation. Only local, fixed NTFS volumes are
+// This prevents renaming an ancestor. Resolved-path validation catches an empty
+// directory changed into a reparse point through attribute-only access before
+// its child opens. Once the child is open, NTFS refuses a reparse point on its
+// nonempty parent. Only local, fixed NTFS volumes are
 // supported; network, device, stream and ambiguous DOS path forms fail closed.
 class PinnedPath
 {
@@ -69,17 +84,14 @@ public:
                     && (stem[3].isDigit() || QStringLiteral("¹²³").contains(stem[3])))) return false;
         }
         const QString root = QDir::toNativeSeparators(path.left(3));
-        if (GetDriveTypeW(reinterpret_cast<LPCWSTR>(root.utf16())) != DRIVE_FIXED || !pin(root)) return false;
+        if (GetDriveTypeW(reinterpret_cast<LPCWSTR>(root.utf16())) != DRIVE_FIXED || !pin(root, false)) return false;
         wchar_t filesystem[32] = {};
         if (!GetVolumeInformationByHandleW(m_directories.back()->value, nullptr, 0, nullptr, nullptr, nullptr,
                                           filesystem, 32) || QString::fromWCharArray(filesystem) != QStringLiteral("NTFS")) return false;
         // Bind subsequent path resolution to the opened volume, not a mutable
         // drive-letter mapping. Keep the root handle alive with the other pins.
-        wchar_t volumePath[32768] = {};
-        const DWORD length = GetFinalPathNameByHandleW(m_directories.back()->value, volumePath, 32768,
-                                                       FILE_NAME_NORMALIZED | VOLUME_NAME_GUID);
-        if (!length || length >= 32768) return false;
-        m_parent = QString::fromWCharArray(volumePath, int(length));
+        m_parent = resolvedPath(m_directories.back()->value);
+        if (m_parent.isEmpty()) return false;
         if (!m_parent.endsWith(QLatin1Char('\\'))) m_parent += QLatin1Char('\\');
         for (int i = 0; i + 1 < parts.size(); ++i) {
             m_parent += parts[i];
@@ -92,13 +104,14 @@ public:
     QString path() const { return m_path; }
     QString temporaryPath() const { return m_parent + QStringLiteral(".audacity-convert-") + QUuid::createUuid().toString(QUuid::WithoutBraces) + QStringLiteral(".tmp"); }
 private:
-    bool pin(const QString& path)
+    bool pin(const QString& path, bool validatePath = true)
     {
         auto handle = std::make_unique<Handle>(CreateFileW(reinterpret_cast<LPCWSTR>(path.utf16()),
-              FILE_READ_ATTRIBUTES, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+              FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
               FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
         BY_HANDLE_FILE_INFORMATION info = {};
-        if (!handle->valid() || !information(handle->value, info, true)) return false;
+        if (!handle->valid() || !information(handle->value, info, true)
+            || (validatePath && !resolvesTo(handle->value, path))) return false;
         m_directories.push_back(std::move(handle));
         return true;
     }
@@ -119,7 +132,7 @@ public:
                    FILE_FLAG_OPEN_REPARSE_POINT | (temporary ? FILE_ATTRIBUTE_TEMPORARY : 0), nullptr)),
           m_temporary(temporary), m_limit(limit), m_cancellation(cancellation)
     {
-        if (!m_handle.valid() || !information(m_handle.value, m_initial, false)) return;
+        if (!m_handle.valid() || !information(m_handle.value, m_initial, false) || !resolvesTo(m_handle.value, path)) return;
         const qint64 length = size();
         if (length < 0 || length > limit || (!temporary && !length)) return;
         QIODevice::open((temporary ? ReadWrite : ReadOnly) | Unbuffered);
@@ -153,7 +166,9 @@ public:
     const BY_HANDLE_FILE_INFORMATION& identity() const { return m_initial; }
     bool publish(const QString& target)
     {
-        if (interrupted() || !FlushFileBuffers(m_handle.value)) return false;
+        BY_HANDLE_FILE_INFORMATION current = {};
+        if (interrupted() || !information(m_handle.value, current, false) || !sameIdentity(m_initial, current)
+            || !FlushFileBuffers(m_handle.value)) return false;
         const DWORD nameBytes = DWORD(target.size() * sizeof(wchar_t));
         std::vector<unsigned char> storage(sizeof(FILE_RENAME_INFO) + nameBytes, 0);
         auto* rename = reinterpret_cast<FILE_RENAME_INFO*>(storage.data());
@@ -173,14 +188,14 @@ protected:
         if (remaining <= 0) return 0;
         DWORD read = 0;
         const DWORD bounded = DWORD(std::min({ amount, remaining, qint64(1024 * 1024) }));
-        return ReadFile(m_handle.value, data, bounded, &read, nullptr) ? read : -1;
+        return ReadFile(m_handle.value, data, bounded, &read, nullptr) ? qint64(read) : qint64(-1);
     }
     qint64 writeData(const char* data, qint64 amount) override
     {
         if (interrupted() || amount < 0 || pos() < 0 || amount > m_limit - pos()) return -1;
         DWORD written = 0;
         const DWORD bounded = DWORD(std::min(amount, qint64(1024 * 1024)));
-        return WriteFile(m_handle.value, data, bounded, &written, nullptr) ? written : -1;
+        return WriteFile(m_handle.value, data, bounded, &written, nullptr) ? qint64(written) : qint64(-1);
     }
 private:
     bool interrupted() const { return m_cancellation && m_cancellation->load(std::memory_order_acquire); }
