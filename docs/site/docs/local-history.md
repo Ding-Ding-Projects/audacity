@@ -36,6 +36,7 @@ The History panel tells you which store your history is kept in.
 
 | Trigger | Action recorded | Example label |
 | ------- | --------------- | ------------- |
+| Any undoable edit (cut, paste, move a clip, apply an effect, add or delete a track, edit a label, an envelope point, and so on) | the real name the undo stack gave the edit, for example `Cut` or `Apply Amplify` | Cut |
 | The project is saved | `project-save` | Saved Interview take 2 |
 | The settings file changes | `settings-change` | Changed theme to dark |
 | A preset is saved | `preset-save` | Saved preset Warm vocals |
@@ -45,6 +46,44 @@ The History panel tells you which store your history is kept in.
 
 Settings changes are detected by watching the settings file and are debounced,
 so a page of preference changes produces one revision rather than one per key.
+
+### Every action commits
+
+Every edit pushed onto the project's own undo stack is recorded as a revision,
+named after the edit itself, in addition to the fixed triggers above. This is
+controlled by the `chronicle/commitOnEveryAction` setting, which defaults to
+on. Turning it off leaves saves, settings changes, presets and restores being
+recorded as before; only the per-edit revisions stop.
+
+The application already gives each undoable edit a real name (the same name
+shown next to Undo in the Edit menu), and `ProjectHistoryWatcher` listens to
+the project's own history channel for a `NewState` event and records that name
+directly, so a revision reads "Cut" or "Move clip" rather than a generic
+"Snapshot".
+
+A drag that Audacity's own undo stack consolidates into one entry (a
+`UndoPushType::CONSOLIDATE` push, the shape a clip drag or a fader drag
+already uses) produces only one `NewState` event, at the point the drag
+settles, so it becomes exactly one revision rather than one revision per
+intermediate frame. `Undo` and `Redo` themselves are not recorded; the states
+they move between are already on record, so recording the move too would only
+clutter the history.
+
+### Action families
+
+Every recorded action is grouped into one of ten families, so the filter
+chips read the way a user thinks about their own work rather than by a raw
+action name: **Edit, Clip, Track, Effect, Generate, Label, Envelope, Project
+settings, Save, Restore**. The fixed triggers map onto their family exactly
+(a save is always in the Save family); a free form undo action name is
+matched against the family it is most likely to belong to by the words in its
+name (`actionFamily()` in `versionhistoryservice.cpp`, with its mapping
+covered by `snapshotstore_tests.cpp`). An action that matches nothing
+recognised stays in Edit rather than being dropped, so it is still reachable
+through some filter chip.
+
+A save and a restore are also marked as milestones (`isMilestoneAction()`),
+which the panel can use to give them their own icon in the list.
 
 Discarding unsaved work is recorded **before** the work is gone, so the entry
 that describes the loss is itself part of the history.
@@ -129,3 +168,26 @@ the **Apply retention** button in the panel.
   into "Deleted track Vocals" or "Changed theme to dark".
 - The git backed test skips itself when `git` is not on `PATH`, and says so, so
   a skipped test is never mistaken for a passing one.
+- `ActionFamilyGroupsFixedActionsTheWayAUserThinksAboutThem`,
+  `ActionFamilyGuessesTheFamilyOfAFreeFormUndoActionName`,
+  `ActionFamilyTitlesAreHumanReadable` and `OnlySaveAndRestoreAreMilestones`
+  cover the family mapping and the milestone flag added above.
+
+## What this feature does not do yet
+
+Stated plainly rather than left as a silent gap:
+
+- The repository beside the application data directory is not yet embedded
+  into the `.aup4` project file itself, so the history does not currently
+  travel with the file to another machine. The project id is derived by
+  hashing the project's file path rather than being stored as a stable id in
+  the project file's own metadata, so moving or renaming a project file
+  currently starts a new history for it rather than continuing the old one.
+- The panel does not yet show a waveform thumbnail of the affected region, a
+  day by day timeline chip rail, a two revision compare view, or a repository
+  size and per track sample data storage panel. It does not yet let a version
+  be starred or pinned against retention, or opened as a separate project
+  without touching the one that is open.
+- These are the parts of the local history contract still open. The action
+  recording, the family grouping and the append only storage described above
+  are real and tested; the richer panel surfaces are not built.

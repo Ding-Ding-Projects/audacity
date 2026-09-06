@@ -182,3 +182,47 @@ TEST(ChronicleVersionHistory, ActionTitlesAreHumanReadable)
     EXPECT_EQ(actionTitle(actions::DiscardUnsaved), QString("Discarded unsaved work"));
     EXPECT_EQ(actionTitle("something-else"), QString("Snapshot"));
 }
+
+TEST(ChronicleVersionHistory, ActionFamilyGroupsFixedActionsTheWayAUserThinksAboutThem)
+{
+    EXPECT_EQ(actionFamily(actions::ProjectSave), QString("save"));
+    EXPECT_EQ(actionFamily(actions::Restore), QString("restore"));
+    EXPECT_EQ(actionFamily(actions::DiscardUnsaved), QString("restore"));
+    EXPECT_EQ(actionFamily(actions::SettingsChange), QString("project-settings"));
+    EXPECT_EQ(actionFamily(actions::PresetSave), QString("project-settings"));
+    EXPECT_EQ(actionFamily(actions::PresetDelete), QString("project-settings"));
+}
+
+TEST(ChronicleVersionHistory, ActionFamilyGuessesTheFamilyOfAFreeFormUndoActionName)
+{
+    // These are the kind of names Audacity's own undo stack actually carries,
+    // rather than the fixed identifiers this module defines itself.
+    EXPECT_EQ(actionFamily("Cut"), QString("edit"));
+    EXPECT_EQ(actionFamily("Paste"), QString("edit"));
+    EXPECT_EQ(actionFamily("Move clip \"Vocal take 2\""), QString("clip"));
+    EXPECT_EQ(actionFamily("Split"), QString("clip"));
+    EXPECT_EQ(actionFamily("Add track"), QString("track"));
+    EXPECT_EQ(actionFamily("Remove Track"), QString("track"));
+    EXPECT_EQ(actionFamily("Apply Amplify"), QString("effect"));
+    EXPECT_EQ(actionFamily("Noise Reduction"), QString("effect"));
+    EXPECT_EQ(actionFamily("Generate Tone"), QString("generate"));
+    EXPECT_EQ(actionFamily("Edit Labels"), QString("label"));
+    EXPECT_EQ(actionFamily("Envelope point added"), QString("envelope"));
+}
+
+TEST(ChronicleVersionHistory, ActionFamilyTitlesAreHumanReadable)
+{
+    EXPECT_EQ(actionFamilyTitle("clip"), QString("Clip"));
+    EXPECT_EQ(actionFamilyTitle("project-settings"), QString("Project settings"));
+    EXPECT_EQ(actionFamilyTitle("save"), QString("Save"));
+    EXPECT_EQ(actionFamilyTitle("restore"), QString("Restore"));
+    EXPECT_EQ(actionFamilyTitle("unknown-family"), QString("Edit"));
+}
+
+TEST(ChronicleVersionHistory, OnlySaveAndRestoreAreMilestones)
+{
+    EXPECT_TRUE(isMilestoneAction(actions::ProjectSave));
+    EXPECT_TRUE(isMilestoneAction(actions::Restore));
+    EXPECT_FALSE(isMilestoneAction(actions::DiscardUnsaved));
+    EXPECT_FALSE(isMilestoneAction("Cut"));
+}

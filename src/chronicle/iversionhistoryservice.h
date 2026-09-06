@@ -58,6 +58,13 @@ public:
     virtual int retentionDays() const = 0;
     virtual void setRetentionDays(int value) = 0;
 
+    //! When true (the default), a revision is recorded for every undoable
+    //! action pushed onto the project's undo stack, not only on save. A
+    //! continuous drag stays one revision because Audacity itself
+    //! consolidates it into one undo entry.
+    virtual bool commitOnEveryAction() const = 0;
+    virtual void setCommitOnEveryAction(bool value) = 0;
+
     virtual muse::async::Notification revisionsChanged() const = 0;
 };
 }

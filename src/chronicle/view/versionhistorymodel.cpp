@@ -31,6 +31,10 @@ bool VersionHistoryModel::passes(const Revision& revision) const
         return false;
     }
 
+    if (!m_selectedFamilies.isEmpty() && !m_selectedFamilies.contains(actionFamily(revision.action))) {
+        return false;
+    }
+
     if (!m_fromDate.isEmpty()) {
         const QDate from = QDate::fromString(m_fromDate, Qt::ISODate);
         if (from.isValid() && revision.timestamp.toLocalTime().date() < from) {
@@ -75,6 +79,9 @@ QVariantList VersionHistoryModel::revisions() const
         item.insert(QStringLiteral("label"), revision.label);
         item.insert(QStringLiteral("action"), revision.action);
         item.insert(QStringLiteral("actionTitle"), actionTitle(revision.action));
+        item.insert(QStringLiteral("actionFamily"), actionFamily(revision.action));
+        item.insert(QStringLiteral("actionFamilyTitle"), actionFamilyTitle(actionFamily(revision.action)));
+        item.insert(QStringLiteral("milestone"), isMilestoneAction(revision.action));
         item.insert(QStringLiteral("timestamp"),
                     revision.timestamp.toLocalTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
         item.insert(QStringLiteral("date"), revision.timestamp.toLocalTime().date().toString(Qt::ISODate));
@@ -95,6 +102,24 @@ QVariantList VersionHistoryModel::actionCounts() const
         QVariantMap item;
         item.insert(QStringLiteral("action"), it.key());
         item.insert(QStringLiteral("title"), actionTitle(it.key()));
+        item.insert(QStringLiteral("count"), it.value());
+        result.append(item);
+    }
+    return result;
+}
+
+QVariantList VersionHistoryModel::familyCounts() const
+{
+    QMap<QString, int> counts;
+    for (const Revision& revision : service()->revisions()) {
+        counts[actionFamily(revision.action)] += 1;
+    }
+
+    QVariantList result;
+    for (auto it = counts.begin(); it != counts.end(); ++it) {
+        QVariantMap item;
+        item.insert(QStringLiteral("family"), it.key());
+        item.insert(QStringLiteral("title"), actionFamilyTitle(it.key()));
         item.insert(QStringLiteral("count"), it.value());
         result.append(item);
     }
@@ -146,12 +171,23 @@ void VersionHistoryModel::setSelectedActions(const QStringList& value)
     emit revisionsChanged();
 }
 
+void VersionHistoryModel::setSelectedFamilies(const QStringList& value)
+{
+    if (m_selectedFamilies == value) {
+        return;
+    }
+    m_selectedFamilies = value;
+    emit filterChanged();
+    emit revisionsChanged();
+}
+
 void VersionHistoryModel::clearFilters()
 {
     m_searchText.clear();
     m_fromDate.clear();
     m_toDate.clear();
     m_selectedActions.clear();
+    m_selectedFamilies.clear();
     emit filterChanged();
     emit revisionsChanged();
 }

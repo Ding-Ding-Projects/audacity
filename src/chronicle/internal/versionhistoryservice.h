@@ -52,6 +52,9 @@ public:
     int retentionDays() const override;
     void setRetentionDays(int value) override;
 
+    bool commitOnEveryAction() const override;
+    void setCommitOnEveryAction(bool value) override;
+
     muse::async::Notification revisionsChanged() const override { return m_revisionsChanged; }
 
     //! Derives the label shown in the panel from the action and its detail.
