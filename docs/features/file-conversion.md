@@ -200,7 +200,7 @@ child executes. It limits the job to one process, bounds process committed memor
 to 512 MiB, kills the child on job closure, and refuses launch if these controls
 cannot be installed. Children are hidden and receive only a bundled-tool `PATH`
 and the actual `SystemRoot`, rather than inheriting the caller's environment; their
-working directory is the verified bundled tool directory. The shared deadline
+working directory is the verified read-only scratch directory. The shared deadline
 includes all qpdf calls in one request, with bounded startup and termination
 waits of five seconds each. Cancellation reaches inspection and output validation
 as well as transformation. Standard output streams to a bounded file handle;
@@ -208,9 +208,64 @@ diagnostic/query output is capped at 1 MiB and parser diagnostic content is not
 reflected into user-visible messages. Sources are limited to 256 MiB, each output
 to 512 MiB, inspected documents to 10,000 pages, merge requests to 32 sources,
 and split requests to 1,000 outputs. Metadata JSON shares the 1 MiB query-output
-cap. This is resource containment, not a security sandbox: the child retains
-the launching account's access rights. Source pinning and no-overwrite publication
-do not establish resistance to a compromised operating system or kernel.
+cap. The worker now runs in a Windows Low Privilege AppContainer (LPAC), not
+with the caller's ambient account rights. It receives exactly the `registryRead`
+capability, required for the pinned qpdf DLL's side-by-side activation context.
+It receives no Internet, private-network, broker, clipboard, or user-library
+capability, and no loopback exemption is installed. Ordinary AppContainer is not
+a fallback. Availability runs the actual pinned qpdf `--version` command under
+this boundary; profile, staging, attribute, identity, resource or loader failure
+makes the adapter unavailable rather than launching an unrestricted child.
+
+Each request creates a uniquely named AppContainer profile through the supported
+Windows API. Its newly created physical package directory is validated against
+that exact generated name, checked for redirection, and removed before any child
+launch. This prevents the worker from discovering and writing to default package
+storage despite a read-only working directory. The parent retains the unique
+registration until teardown and removes only the profile it successfully created;
+it never adopts or deletes an existing profile. No original source, existing
+profile, machine firewall or system ACL is modified.
+
+The parent copies the ten independently hash-pinned executable/DLL files into a
+new pinned scratch directory. Every parser input, metadata update and validation
+input is copied from an already pinned read handle using bounded chunks and a
+second SHA-256 readback. Only the fresh scratch directory and copies receive the
+per-request package SID read/execute ACL. The child has no granted file-write
+location and writes output only through inherited stdout/stderr pipes. Scratch
+copies are capped at 1 GiB total, including the runtime. Inputs for each command
+are removed before the next command so split validation cannot accumulate an
+unbounded set of copies. Cancellation and the shared deadline are checked while
+copying. Original selected files remain pinned and unchanged. Publication still
+uses the parent's existing handle-owned, no-overwrite NTFS transaction.
+
+The child is created suspended, hidden, and atomically assigned to the one-process
+Job. Before resume the parent verifies its AppContainer identity, exact SID,
+exact one-capability inventory and Job membership. A kernel `AccessCheck` on the
+child's duplicated identification token proves that an ALL APPLICATION PACKAGES
+read grant cannot authorize it. Plain token-group enumeration is insufficient
+for that distinction on the tested Windows host. The explicit inheritance list
+contains only the two output pipe handles. The environment contains the scratch
+`PATH`, `LOCALAPPDATA`, `TEMP`, `TMP`, and the OS-derived `SystemRoot`; no caller
+credential or unrelated environment value is inherited. A per-process CPU-time
+Job limit supplements the shared 60-second wall deadline and 512 MiB allocation
+cap. Output channels are drained in 64 KiB chunks so a noisy child cannot starve
+cancellation or the other channel.
+
+This is a bounded parser-process boundary, not a virtual machine or a claim of
+resistance to an OS/kernel compromise. Windows resources explicitly available
+to restricted application packages remain accessible, and `registryRead` exposes
+the OS registry read surface required for activation. It does not authorize
+networking or user credential access. The adapter does not promise that a host
+administrator's custom ACLs, registry policies, existing brokers, or a compromised
+kernel can be contained. A hard parent crash may leave an owned scratch directory
+or profile registration for subsequent recovery; the Job closes and terminates
+its worker when the parent handles close.
+
+Primary API references: [Microsoft AppContainer launch guidance](https://learn.microsoft.com/en-us/windows/win32/secauthz/implementing-an-appcontainer),
+[AppContainer isolation](https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-isolation),
+[process attributes](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute),
+and [AccessCheck](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-accesscheck).
+
 
 Queue persistence records versioned item state, paths, target format and the
 caller's overwrite choice, without input or output bytes. Queue reads are paged
@@ -222,7 +277,7 @@ Application integration must register `src/converter/CMakeLists.txt`, provide
 QML and localization, add adapter searches and their regex builders, bind
 progress/cancellation to bounded workers, provide storage-capacity preflight,
 prove bundled Qt plugins, implement safe approved overwrite, and integrate
-process isolation, execution limits and durable crash recovery.
+the bounded PDF worker and durable crash recovery.
 
 The full converter still requires packaged-artifact proof of the qpdf
 distribution and full application integration. It also requires audio/video and other
@@ -232,8 +287,17 @@ interaction and capture evidence. These are not implemented by this backend.
 
 ## Focused verification
 
-`src/converter/tests/standalone` builds three real Qt console executables:
+`src/converter/tests/standalone` builds four real Qt console executables plus one static native worker fixture:
 
+- `converter_process_containment`: a synthetic native worker proves actual
+  read/write refusal outside scratch, refusal of an ALL APPLICATION PACKAGES
+  canary, read-only staged input, no file creation or package-storage recreation,
+  second-process refusal, exclusion of an unrelated inheritable event, and
+  `WSAEACCES` against an owned ephemeral loopback listener that the parent first
+  reaches successfully. Deliberately omitting AppContainer, omitting LPAC, or
+  substituting an Internet capability must stop the worker before resume. Restored
+  isolation must then run successfully. The worker launches with `CREATE_NO_WINDOW`
+  and never opens a GUI or connects to an external host.
 - `converter_core_smoke`: successful JPEG conversion and full reopen, source
   collision, cancellation, queue persistence and restart.
 - `converter_native_transactions`: independently reported deterministic cases
@@ -254,7 +318,7 @@ Test barriers are compiled only with `AU_CONVERTER_TEST_HOOKS`; product builds
 contain no injection callback. Required plugin or fixture unavailability fails
 these executables rather than counting rejection as a successful conversion.
 The image/native executables have a 90-second CTest timeout and the PDF executable
-has a 180-second timeout. PDF test-only budgets can only reduce production limits;
+has a 180-second timeout. The containment executable has a 90-second timeout. PDF test-only budgets can only reduce production limits;
 they never replace qpdf with a stub or permit an unverified tool. Results go directly to stderr so
 host Qt logging rules cannot suppress their verdicts.
 

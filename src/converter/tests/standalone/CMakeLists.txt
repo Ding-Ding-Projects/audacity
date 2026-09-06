@@ -20,6 +20,18 @@ add_test(NAME converter_core_smoke COMMAND converter_core_smoke)
 set_tests_properties(converter_core_smoke PROPERTIES TIMEOUT 90)
 
 if(WIN32)
+    add_executable(containment_worker ../containment_worker.cpp)
+    target_link_libraries(containment_worker PRIVATE ws2_32)
+    set_target_properties(containment_worker PROPERTIES CXX_STANDARD 20 MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    add_executable(converter_process_containment ../processcontainment_tests.cpp)
+    target_include_directories(converter_process_containment PRIVATE ../..)
+    target_compile_definitions(converter_process_containment PRIVATE AU_CONVERTER_TEST_HOOKS)
+    target_link_libraries(converter_process_containment PRIVATE Qt6::Core ws2_32)
+    set_target_properties(converter_process_containment PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
+    add_dependencies(converter_process_containment containment_worker)
+    add_test(NAME converter_process_containment COMMAND converter_process_containment)
+    set_tests_properties(converter_process_containment PROPERTIES TIMEOUT 90)
+
     add_executable(converter_pdf_operations ../pdf_operations.cpp ../../pdfprocessor.cpp)
     target_include_directories(converter_pdf_operations PRIVATE ../..)
     target_compile_definitions(converter_pdf_operations PRIVATE AU_CONVERTER_TEST_HOOKS
