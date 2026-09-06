@@ -9,7 +9,7 @@ rem   build.bat /s     Silent mode: only warnings, errors and the summary.
 rem ---------------------------------------------------------------------------
 
 set "ROOT=%~dp0"
-set "ROOT_ARG=%~dp0."
+for %%I in ("%~dp0.") do set "ROOT_ARG=%%~sI"
 set "BUILD_DIR=%ROOT%build\windows"
 set "INSTALL_DIR=%ROOT%build.install"
 set "QT_DIR=%ROOT%build.tools\Qt\6.10.1\msvc2022_64"
