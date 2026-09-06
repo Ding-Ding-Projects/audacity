@@ -54,6 +54,11 @@ function Wait-Child($Process) {
     return $Process.ExitCode
 }
 $tests=[ordered]@{
+    'framework hashing works without Get-FileHash command resolution'={
+        function global:Get-FileHash { throw 'Unexpected Get-FileHash dependency' }
+        try { $destination=Fresh 'framework-hash'; Preserved $destination }
+        finally { Remove-Item Function:\Get-FileHash -ErrorAction SilentlyContinue }
+    }
     'cold archive miss and warm verification'={
         $destination=Fresh 'cold'
         Preserved $destination

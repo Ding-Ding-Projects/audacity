@@ -2,6 +2,15 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression
 
+function Get-QpdfFileHash([string]$Path) {
+    # Use framework cryptography directly. Nested Windows PowerShell module
+    # sessions do not consistently auto-load the Get-FileHash function.
+    $stream = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose(); $stream.Dispose() }
+}
+
 function Get-QpdfLock {
     $lock = Get-Content -Raw (Join-Path $PSScriptRoot 'qpdf.lock.json') | ConvertFrom-Json
     if ($lock.version -ne '12.3.2' -or @($lock.files.psobject.Properties).Count -ne 10) { throw 'Invalid qpdf lock inventory.' }
@@ -33,7 +42,7 @@ function Test-QpdfBundle([string]$Root, $Lock = (Get-QpdfLock)) {
         $path = Join-Path $Root $entry.Name
         if (!(Test-Path -LiteralPath $path -PathType Leaf)) { return $false }
         if ((Get-Item -LiteralPath $path -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { return $false }
-        if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $entry.Value) { return $false }
+        if ((Get-QpdfFileHash $path) -cne $entry.Value) { return $false }
     }
     return $true
 }
@@ -117,7 +126,7 @@ function Get-QpdfArchive([string]$CacheRoot, $Lock, [int]$LockTimeoutMillisecond
     try {
         if (Test-Path -LiteralPath $archive -PathType Leaf) {
             if ((Get-Item -LiteralPath $archive -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'The qpdf archive cache is a reparse point.' }
-            if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $Lock.archiveSha256) {
+            if ((Get-QpdfFileHash $archive) -ceq $Lock.archiveSha256) {
                 Write-Verbose 'Using the independently verified cached qpdf archive.'
                 return $archive
             }
@@ -125,7 +134,7 @@ function Get-QpdfArchive([string]$CacheRoot, $Lock, [int]$LockTimeoutMillisecond
         }
         $download = $archive + '.download-' + [guid]::NewGuid().ToString('N')
         Invoke-WebRequest -Uri $Lock.source -OutFile $download -UseBasicParsing -TimeoutSec 120
-        if ((Get-FileHash -LiteralPath $download -Algorithm SHA256).Hash.ToLowerInvariant() -cne $Lock.archiveSha256) {
+        if ((Get-QpdfFileHash $download) -cne $Lock.archiveSha256) {
             throw 'qpdf archive SHA-256 verification failed; the download was retained and not activated.'
         }
         [IO.File]::Move($download, $archive)

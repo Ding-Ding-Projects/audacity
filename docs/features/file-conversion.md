@@ -48,7 +48,8 @@ at `build.tools/converter-tools/qpdf`. `build.bat` invokes the same bootstrap af
 finds `build.install/bin/converter-tools/qpdf/qpdf.exe` through its application
 directory. A missing archive is fetched from the pinned official URL and hashed
 before extraction. Cache hits are independently hashed again, not trusted through
-a receipt alone. Both entry points fail if qpdf provisioning fails.
+a receipt alone. Hashing uses framework cryptography directly, without relying
+on child PowerShell command auto-loading. Both entry points fail if qpdf provisioning fails.
 
 `bootstrap-qpdf.ps1` calls the shared `qpdfbootstrap.psm1` implementation. An
 exclusive destination lock serializes every warm check, recovery, staging, and
