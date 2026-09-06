@@ -12,8 +12,8 @@
 #include <windows.h>
 #endif
 using au::profile::Paths;
-extern "C" Q_DECL_IMPORT bool consumerProfileActive();
-extern "C" Q_DECL_IMPORT QString consumerProfileRoot();
+Q_DECL_IMPORT bool consumerProfileActive();
+Q_DECL_IMPORT QString consumerProfileRoot();
 static int checks = 0;
 static void check(bool result, const char* name) {
     ++checks;
@@ -84,6 +84,17 @@ int main(int argc, char** argv) {
             QStandardPaths::GenericDataLocation, QStandardPaths::AppDataLocation,
             QStandardPaths::AppLocalDataLocation, QStandardPaths::AppConfigLocation})
         check(child(exe, {"reject", QStandardPaths::writableLocation(location)}), "real location rejected");
+    check(child(exe, {"reject", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/fixture"}), "real profile descendant rejected");
+#ifdef Q_OS_WIN
+    check(child(exe, {"reject", fixture.path() + "/ambiguous."}), "trailing dot rejected");
+    check(child(exe, {"reject", fixture.path() + "/ambiguous "}), "trailing space rejected");
+    check(child(exe, {"reject", fixture.path() + "/name:stream"}), "alternate data stream rejected");
+    const QString realHome = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    wchar_t shortName[32768];
+    const DWORD shortLength = GetShortPathNameW(reinterpret_cast<LPCWSTR>(realHome.utf16()), shortName, 32768);
+    check(shortLength > 0 && shortLength < 32768, "home short spelling available");
+    check(child(exe, {"reject", QString::fromWCharArray(shortName, shortLength)}), "home alternate spelling rejected");
+#endif
     QString occupied = fixture.path() + "/occupied"; QDir().mkpath(occupied);
     QFile sentinel(occupied + "/sentinel"); check(sentinel.open(QIODevice::WriteOnly), "sentinel"); sentinel.write("untouched"); sentinel.close();
     check(child(exe, {"reject", occupied}), "unowned directory rejected");

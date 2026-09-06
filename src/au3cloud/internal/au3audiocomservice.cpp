@@ -817,6 +817,7 @@ void Au3AudioComService::stopProjectSync()
 
 std::string Au3AudioComService::getCloudProjectPage(const std::string& projectId) const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -828,6 +829,7 @@ std::string Au3AudioComService::getCloudProjectPage(const std::string& projectId
 
 std::string Au3AudioComService::getCloudProjectPage(const muse::io::path_t& projectPath) const
 {
+    if (au::profile::Paths::active()) return {};
     auto dbProjectData = getProjectDataFromDatabase(projectPath);
     if (!dbProjectData || dbProjectData->ProjectId.empty()) {
         return {};
@@ -838,6 +840,7 @@ std::string Au3AudioComService::getCloudProjectPage(const muse::io::path_t& proj
 
 std::string Au3AudioComService::getCloudAudioPage(const std::string& slug) const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -849,6 +852,7 @@ std::string Au3AudioComService::getCloudAudioPage(const std::string& slug) const
 
 std::string Au3AudioComService::getCloudProfilePage() const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -860,6 +864,7 @@ std::string Au3AudioComService::getCloudProfilePage() const
 
 std::string Au3AudioComService::getTourPage() const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 

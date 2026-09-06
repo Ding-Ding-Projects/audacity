@@ -22,5 +22,49 @@
     "src/toolkit/internal/bookmarkmodel.cpp",
     "src/toolkit/internal/hardwarefitservice.cpp",
     "src/toolkit/internal/hardwareprobe.cpp"
-  ]
+  ],
+  "sideEffectGuards": {
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp": [
+      "SquirrelUpdateService::init",
+      "SquirrelUpdateService::isSupported",
+      "SquirrelUpdateService::restartToUpdate"
+    ],
+    "src/experience/internal/dimsumsurprise.cpp": [
+      "DimSumSurpriseService::refreshCatalogAsync",
+      "DimSumSurpriseService::startPhotoRequest"
+    ],
+    "src/project/internal/platform/windows/windowsrecentfilescontroller.cpp": [
+      "WindowsRecentFilesController::prependPlatformRecentFile"
+    ],
+    "src/au3cloud/internal/platform/win/customschemeregistrar.cpp": [
+      "registerCustomScheme"
+    ],
+    "src/au3cloud/internal/au3cloudservice.cpp": [
+      "Au3CloudService::init",
+      "Au3CloudService::registerWithPassword",
+      "Au3CloudService::signInWithPassword",
+      "Au3CloudService::signInWithSocial",
+      "Au3CloudService::signOut",
+      "Au3CloudService::syncUsageInfoPrefs",
+      "Au3CloudService::openBrowserSession"
+    ],
+    "src/au3cloud/internal/au3audiocomservice.cpp": [
+      "Au3AudioComService::enabled",
+      "Au3AudioComService::init",
+      "Au3AudioComService::deinit",
+      "Au3AudioComService::downloadProjectList",
+      "Au3AudioComService::downloadAudioList",
+      "Au3AudioComService::uploadProject",
+      "Au3AudioComService::updateAudioPreview",
+      "Au3AudioComService::resumeProjectSync",
+      "Au3AudioComService::downloadAudioFile",
+      "Au3AudioComService::openCloudProject",
+      "Au3AudioComService::shareAudio",
+      "Au3AudioComService::deleteCloudProject",
+      "Au3AudioComService::getCloudProjectPage",
+      "Au3AudioComService::getCloudAudioPage",
+      "Au3AudioComService::getCloudProfilePage",
+      "Au3AudioComService::getTourPage"
+    ]
+  }
 }

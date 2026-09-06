@@ -20,6 +20,34 @@ bool settingsStarted = false;
 bool initialized = false;
 const char* markerName = ".audacity-isolated-profile.json";
 QString normalized(const QString& p) { return QDir::cleanPath(QDir::fromNativeSeparators(p)); }
+QString canonicalPath(QString path)
+{
+    path = normalized(path);
+    QStringList suffix;
+    while (!QFileInfo::exists(path)) {
+        const QFileInfo info(path);
+        const QString parent = info.dir().absolutePath();
+        if (parent == path) return {};
+        suffix.prepend(info.fileName());
+        path = parent;
+    }
+#ifdef Q_OS_WIN
+    HANDLE handle = CreateFileW(reinterpret_cast<LPCWSTR>(path.utf16()), 0,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+    if (handle == INVALID_HANDLE_VALUE) return {};
+    wchar_t buffer[32768];
+    const DWORD length = GetFinalPathNameByHandleW(handle, buffer, 32768, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+    CloseHandle(handle);
+    if (length == 0 || length >= 32768) return {};
+    path = QString::fromWCharArray(buffer, int(length));
+    if (path.startsWith("\\\\?\\")) path.remove(0, 4);
+#else
+    path = QFileInfo(path).canonicalFilePath();
+#endif
+    if (!suffix.isEmpty()) path += '/' + suffix.join('/');
+    return normalized(path);
+}
 bool reparse(const QString& path)
 {
     if (QFileInfo(path).isSymLink()) return true;
@@ -80,26 +108,37 @@ bool Paths::initialize(const QString& requested, QString* error)
         return fail("The verification profile must be selected once, before application or settings initialization.");
     if (requested.isEmpty()) { initialized = true; return true; }
     if (!QDir::isAbsolutePath(requested)) return fail("The verification profile must be an absolute directory.");
-    const QString root = normalized(requested);
-    if (root.startsWith("//") || !safeAncestors(root))
+    const QString input = normalized(requested);
+#ifdef Q_OS_WIN
+    // Win32 strips trailing dots/spaces and interprets colons as data streams.
+    // Refuse ambiguous spellings before any directory is created.
+    const auto components = input.mid(3).split('/');
+    for (const QString& component : components)
+        if (component.endsWith('.') || component.endsWith(' ') || component.contains(':'))
+            return fail("The profile contains an ambiguous Windows path component.");
+#endif
+    if (input.startsWith("//") || !safeAncestors(input))
+        return fail("Network paths, symbolic links, and reparse points cannot own a verification profile.");
+    const QString root = canonicalPath(input);
+    if (root.isEmpty() || root.startsWith("//") || !safeAncestors(root))
         return fail("Network paths, symbolic links, and reparse points cannot own a verification profile.");
     // Container roots are protected themselves and as ancestors. A new scratch
     // child of Home or Temp is allowed; real application profile subtrees are not.
     for (auto location : { QStandardPaths::HomeLocation, QStandardPaths::DocumentsLocation,
                           QStandardPaths::GenericDataLocation, QStandardPaths::GenericConfigLocation,
                           QStandardPaths::TempLocation, QStandardPaths::DownloadLocation }) {
-        const QString p = QStandardPaths::writableLocation(location);
+        const QString p = canonicalPath(QStandardPaths::writableLocation(location));
         if (!p.isEmpty() && contains(root, p)) return fail("The selected directory contains a protected user location.");
     }
     QStringList profiles;
     for (auto location : { QStandardPaths::AppDataLocation, QStandardPaths::AppLocalDataLocation,
                           QStandardPaths::AppConfigLocation, QStandardPaths::CacheLocation }) {
-        profiles << QStandardPaths::writableLocation(location);
+        profiles << canonicalPath(QStandardPaths::writableLocation(location));
     }
     for (auto location : { QStandardPaths::GenericDataLocation, QStandardPaths::GenericConfigLocation }) {
         const QString base = QStandardPaths::writableLocation(location);
         for (const QString& name : { QString("Audacity"), QString("audacity"), QString("Audacity4"), QString("Audacity4Development") })
-            profiles << base + '/' + name;
+            profiles << canonicalPath(base + '/' + name);
     }
     for (const QString& p : profiles)
         if (!p.isEmpty() && (contains(root, p) || contains(p, root)))
