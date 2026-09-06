@@ -6,10 +6,12 @@ surface which must prove each feature. Missing built-artifact interaction,
 capture, or receipt evidence is written as `unverified`, never inferred from
 source code or a design image.
 
-`completeness_guard.py --completion` requires every row to be implemented and
-to carry implementation, documentation, localized copy, persistence, focused
-test, real interaction, capture, and capture-provenance evidence. It is a
-delivery check only, never an ordinary configure, build, or release requirement.
+This table is a narrative source-level record, not delivery proof. Concrete
+product/surface/feature coverage lives in `completion-evidence.json`, with its
+explicit surface registry in `concrete-surfaces.json`. Completion requires
+`completeness_guard.py --completion --candidate <full-audited-commit-sha>` and
+candidate-bound receipts described in `docs/features/completeness.md`. Multiple
+concrete surfaces may describe the same capability independently here.
 
 | Surface | Feature | Implementation | Documentation | Localized copy | Persistence | Focused test | Real interaction | Capture | Capture provenance | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

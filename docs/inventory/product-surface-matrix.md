@@ -4,6 +4,11 @@ This handwritten matrix is a separate completeness boundary. Every canonical
 feature must occur exactly once for the Desktop application and exactly once
 for the Documentation site. A desktop row can never satisfy the website row.
 
+These are narrative implementation states. They do not prove delivery. Every
+concrete nested surface requires its own candidate-bound evidence in
+`completion-evidence.json`, including all website surfaces. No status word in
+this matrix can satisfy that evidence requirement.
+
 | Product surface | Feature | Status | Notes |
 | --- | --- | --- | --- |
 | Desktop application | Language modes | implemented | See per-surface inventory. |

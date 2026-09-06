@@ -12,6 +12,7 @@ import argparse
 import json
 import re
 import sys
+from completion_evidence import validate as validate_completion_evidence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -119,29 +120,6 @@ def context_check(value: str, translation: str, label: str, line_no: int, failur
         failures.append(f"line {line_no}, {label}: localized context '{match.group(1)}' is absent")
 
 
-def validate_receipt(row: SurfaceRow, root: Path, label: str, failures: list[str]) -> None:
-    """Require a machine-readable receipt when a row claims a real capture."""
-    capture_paths, receipt_paths = paths(row.capture), paths(row.provenance)
-    if not capture_paths and not receipt_paths:
-        return
-    if len(capture_paths) != 1 or len(receipt_paths) != 1:
-        failures.append(f"line {row.line_no}, {label}: capture and provenance must each name one path")
-        return
-    capture, receipt = root / capture_paths[0], root / receipt_paths[0]
-    if not capture.exists() or not receipt.exists():
-        return
-    try:
-        value = json.loads(receipt.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        failures.append(f"line {row.line_no}, {label}: invalid capture receipt: {error}")
-        return
-    required_tuple = {"surface", "theme", "language", "viewport", "scale"}
-    if value.get("capture") != capture_paths[0]: failures.append(f"line {row.line_no}, {label}: receipt capture path does not match")
-    if not re.fullmatch(r"[0-9a-f]{40}", str(value.get("sourceCommit", ""))): failures.append(f"line {row.line_no}, {label}: receipt sourceCommit must be a full SHA")
-    if not isinstance(value.get("tuple"), dict) or not required_tuple <= set(value["tuple"]): failures.append(f"line {row.line_no}, {label}: receipt tuple is incomplete")
-    if value.get("privacy") is not True: failures.append(f"line {row.line_no}, {label}: receipt privacy must be true")
-    if value.get("current") is not True: failures.append(f"line {row.line_no}, {label}: receipt current must be true")
-
 
 def validate_features(rows: list[FeatureRow], root: Path, translation: str, failures: list[str]) -> None:
     for row in rows:
@@ -167,7 +145,6 @@ def validate_surfaces(rows: list[SurfaceRow], root: Path, translation: str, fail
         for field, value in (("implementation", row.implementation), ("documentation", row.documentation), ("test", row.test), ("capture", row.capture), ("capture provenance", row.provenance)):
             check_paths(value, root, field, label, row.line_no, failures)
         context_check(row.localized, translation, label, row.line_no, failures)
-        validate_receipt(row, root, label, failures)
 
 
 def completion_rows(features: list[FeatureRow], surfaces: list[SurfaceRow], matrix: list[MatrixRow]) -> list[str]:
@@ -182,7 +159,7 @@ def completion_rows(features: list[FeatureRow], surfaces: list[SurfaceRow], matr
     return failures
 
 
-def run(root: Path, completion: bool) -> tuple[list[str], list[str]]:
+def run(root: Path, completion: bool, candidate: str | None = None) -> tuple[list[str], list[str]]:
     failures, notices = [], []
     feature_path, surface_path, matrix_path = root / INVENTORY, root / SURFACES, root / MATRIX
     if not feature_path.exists(): return [f"feature inventory missing at {feature_path}"], notices
@@ -193,19 +170,33 @@ def run(root: Path, completion: bool) -> tuple[list[str], list[str]]:
     if not translation: failures.append(f"translation file missing or empty at {translation_path}")
     features, surfaces = feature_rows(feature_path.read_text(encoding="utf-8")), surface_rows(surface_path.read_text(encoding="utf-8"))
     matrix = matrix_rows(matrix_path.read_text(encoding="utf-8"))
-    exactly_once(features, "feature inventory", failures); exactly_once(surfaces, "per-surface inventory", failures)
+    exactly_once(features, "feature inventory", failures)
+    # Legacy narrative rows can name several surfaces for the same capability.
+    # Concrete coverage is independently enforced by completion_evidence.py.
+    seen = set()
+    for row in surfaces:
+        key = (row.surface, row.feature)
+        if key in seen: failures.append(f"duplicate narrative surface/feature: {key}")
+        if row.feature not in CANONICAL: failures.append(f"unknown narrative feature: {row.feature}")
+        seen.add(key)
+    for feature in CANONICAL:
+        if not any(row.feature == feature for row in surfaces):
+            failures.append(f"narrative surface inventory: canonical feature '{feature}' is absent")
     validate_features(features, root, translation, failures); validate_surfaces(surfaces, root, translation, failures)
     matrix_exactly_once(matrix, failures)
     notices = [f"{row.feature}: {row.status}" for row in features]
-    if completion: failures.extend(completion_rows(features, surfaces, matrix))
+    if completion:
+        failures.extend(completion_rows(features, surfaces, matrix))
+        failures.extend(validate_completion_evidence(root, CANONICAL, candidate))
     return failures, notices
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo-root"); parser.add_argument("--strict", action="store_true"); parser.add_argument("--completion", action="store_true")
+    parser.add_argument("--candidate", help="Exact audited source commit for --completion")
     args = parser.parse_args(); root = Path(args.repo_root).resolve() if args.repo_root else Path(__file__).resolve().parents[2]
-    failures, notices = run(root, args.completion); mode = "completion" if args.completion else "report-only"
+    failures, notices = run(root, args.completion, args.candidate); mode = "completion" if args.completion else "report-only"
     print(f"Completeness inventory guard ({mode}): {root}"); print(f"Checked {len(CANONICAL)} canonical features in two independent inventories.")
     for notice in notices: print(f"  - {notice}")
     if failures:

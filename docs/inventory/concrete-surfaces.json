@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "surfaces": [
+    {
+      "product": "desktop",
+      "surface": "front-screen",
+      "route": "app://front-screen"
+    },
+    {
+      "product": "desktop",
+      "surface": "preferences",
+      "route": "app://preferences"
+    },
+    {
+      "product": "desktop",
+      "surface": "schedule-editor",
+      "route": "app://schedule-editor"
+    },
+    {
+      "product": "desktop",
+      "surface": "experience-overlay",
+      "route": "app://experience-overlay"
+    },
+    {
+      "product": "desktop",
+      "surface": "search-popover",
+      "route": "app://search-popover"
+    },
+    {
+      "product": "desktop",
+      "surface": "notification-centre",
+      "route": "app://notification-centre"
+    },
+    {
+      "product": "desktop",
+      "surface": "appearance-editor",
+      "route": "app://appearance-editor"
+    },
+    {
+      "product": "desktop",
+      "surface": "project-tabs",
+      "route": "app://project-tabs"
+    },
+    {
+      "product": "desktop",
+      "surface": "documentation-browser",
+      "route": "app://documentation-browser"
+    },
+    {
+      "product": "desktop",
+      "surface": "command-palette",
+      "route": "app://command-palette"
+    },
+    {
+      "product": "desktop",
+      "surface": "confirmation-dialog",
+      "route": "app://confirmation-dialog"
+    },
+    {
+      "product": "desktop",
+      "surface": "version-history",
+      "route": "app://version-history"
+    },
+    {
+      "product": "desktop",
+      "surface": "changelog-dialog",
+      "route": "app://changelog-dialog"
+    },
+    {
+      "product": "desktop",
+      "surface": "external-editor-handoff",
+      "route": "app://external-editor-handoff"
+    },
+    {
+      "product": "desktop",
+      "surface": "export-sheet",
+      "route": "app://export-sheet"
+    },
+    {
+      "product": "desktop",
+      "surface": "personalize-locks",
+      "route": "app://personalize-locks"
+    },
+    {
+      "product": "desktop",
+      "surface": "support-tickets",
+      "route": "app://support-tickets"
+    },
+    {
+      "product": "desktop",
+      "surface": "account-recovery",
+      "route": "app://account-recovery"
+    },
+    {
+      "product": "desktop",
+      "surface": "personalize-settings",
+      "route": "app://personalize-settings"
+    },
+    {
+      "product": "desktop",
+      "surface": "file-converter",
+      "route": "app://file-converter"
+    },
+    {
+      "product": "desktop",
+      "surface": "local-model-manager",
+      "route": "app://local-model-manager"
+    },
+    {
+      "product": "desktop",
+      "surface": "update-banner",
+      "route": "app://update-banner"
+    },
+    {
+      "product": "desktop",
+      "surface": "status-surface",
+      "route": "app://status-surface"
+    },
+    {
+      "product": "desktop",
+      "surface": "authenticator",
+      "route": "app://authenticator"
+    },
+    {
+      "product": "website",
+      "surface": "front-page",
+      "route": "/front-page"
+    },
+    {
+      "product": "website",
+      "surface": "settings",
+      "route": "/settings"
+    },
+    {
+      "product": "website",
+      "surface": "table-of-contents",
+      "route": "/table-of-contents"
+    },
+    {
+      "product": "website",
+      "surface": "article",
+      "route": "/article"
+    },
+    {
+      "product": "website",
+      "surface": "search",
+      "route": "/search"
+    },
+    {
+      "product": "website",
+      "surface": "status",
+      "route": "/status"
+    }
+  ]
+}
