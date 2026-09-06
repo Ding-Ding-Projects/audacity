@@ -4,8 +4,8 @@
 
 .DESCRIPTION
     Builds a baseline package, then creates a second package using that baseline
-    for delta generation while deliberately pre-populating the second output
-    directory with the baseline full package. The second result must publish
+    for delta generation while pre-populating the second output directory with
+    the baseline's complete verified manifest-owned output. The second result must publish
     only its own full package, own delta package, own RELEASES entries, Setup,
     checksums, and manifest. No app rebuild is performed.
 #>
@@ -27,6 +27,9 @@ if (-not (Test-Path -LiteralPath (Join-Path $InstallDir "bin\\Audacity4.exe"))) 
 }
 
 $packageScript = Join-Path $PSScriptRoot "package_squirrel.ps1"
+. (Join-Path $PSScriptRoot 'squirrel_output.ps1')
+$applicationPath = Join-Path $InstallDir 'bin/Audacity4.exe'
+$applicationHash = (Get-FileHash -LiteralPath $applicationPath -Algorithm SHA256).Hash
 $scratch = Join-Path $repoRoot ("build\\squirrel-output-regression-" + [guid]::NewGuid().ToString("N"))
 $baseline = Join-Path $scratch "baseline"
 $candidate = Join-Path $scratch "candidate"
@@ -37,7 +40,10 @@ if ($LASTEXITCODE -ne 0) { throw "Baseline Squirrel packaging failed with exit c
 
 $baselineFull = Join-Path $baseline "Audacity-4.0.0-ci000901-full.nupkg"
 if (-not (Test-Path -LiteralPath $baselineFull)) { throw "Baseline full package was not produced" }
-Copy-Item -LiteralPath $baselineFull -Destination $candidate -Force
+foreach ($file in Get-ChildItem -LiteralPath $baseline -File) {
+    Copy-Item -LiteralPath $file.FullName -Destination $candidate
+}
+$null = Assert-SquirrelOutput $candidate '4.0.0-ci000901' 'Audacity'
 
 & $packageScript -InstallDir $InstallDir -OutDir $candidate -ToolsDir $ToolsDir `
     -PreviousReleasesDir $baseline -Version "4.0.0-ci000902"
@@ -70,5 +76,20 @@ foreach ($line in Get-Content -LiteralPath (Join-Path $candidate "RELEASES")) {
         throw "Published RELEASES leaked a baseline package reference: $line"
     }
 }
+
+$null = Assert-SquirrelOutput $candidate '4.0.0-ci000902' 'Audacity'
+if ((Get-FileHash -LiteralPath $applicationPath -Algorithm SHA256).Hash -cne $applicationHash) {
+    throw 'Packaging changed the immutable installed application executable.'
+}
+$collected = Join-Path $scratch 'collected'
+Copy-SquirrelReleaseAssets $candidate $collected '4.0.0-ci000902' 'Audacity'
+[ordered]@{
+    scope='Real full/delta packaging and collection, not installed-client update verification'
+    applicationSha256=$applicationHash
+    baseline=$baseline
+    candidate=$candidate
+    collected=$collected
+    outputManifestSha256=(Get-FileHash -LiteralPath (Join-Path $candidate 'package-output-manifest.json') -Algorithm SHA256).Hash
+} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $scratch 'results.json')
 
 Write-Host "Squirrel output-isolation regression passed: $candidate"

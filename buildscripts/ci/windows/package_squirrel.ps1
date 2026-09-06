@@ -68,6 +68,7 @@ function Write-Section([string] $Text) {
 }
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $scriptDir 'squirrel_output.ps1')
 $repoRoot = (Resolve-Path (Join-Path $scriptDir "..\..\..")).Path
 $squirrelInputs = Join-Path $repoRoot "buildscripts\packaging\Windows\Squirrel"
 
@@ -91,6 +92,17 @@ if (-not [System.IO.Path]::IsPathRooted($ToolsDir)) {
 if (-not (Test-Path -LiteralPath $InstallDir)) {
     throw "Install tree not found: $InstallDir. Run buildscripts/ci/windows/ci_build.cmake first."
 }
+
+# Recover before any packaging work. The activation lock is acquired again for
+# final publication, where existing output bytes are revalidated under the lock.
+$outputLock = Open-SquirrelOutputLock $OutDir
+try {
+    Restore-SquirrelOutputTransaction $OutDir
+    if ((Test-Path -LiteralPath $OutDir) -and @(Get-ChildItem -LiteralPath $OutDir -Force).Count) {
+        $null = Assert-SquirrelOutput $OutDir
+    }
+} finally { $outputLock.Dispose() }
+Assert-SquirrelLeafName $PackageId
 
 # ---------------------------------------------------------------------------
 # Version
@@ -157,6 +169,8 @@ Write-Section "Tools"
 $lock = Get-Content -LiteralPath (Join-Path $squirrelInputs "squirrel.lock.json") -Raw | ConvertFrom-Json
 
 New-Item -ItemType Directory -Force -Path $ToolsDir | Out-Null
+$workDir = Join-Path $ToolsDir ('package-run-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $workDir | Out-Null
 
 function Get-PinnedFile(
     [string] $Url,
@@ -230,11 +244,11 @@ Get-PinnedFile -Url $lock.nuget.url -Sha256 $lock.nuget.sha256 -Destination $nug
 $squirrelNupkg = Join-Path $ToolsDir "squirrel.windows.$($lock.squirrel.version).nupkg"
 Get-PinnedFile -Url $lock.squirrel.url -Sha256 $lock.squirrel.sha256 -Destination $squirrelNupkg
 
-$squirrelRoot = Join-Path $ToolsDir "squirrel.windows.$($lock.squirrel.version)"
+$squirrelRoot = Join-Path $workDir "squirrel.windows.$($lock.squirrel.version)"
 if (Test-Path -LiteralPath $squirrelRoot) {
     Remove-Item -LiteralPath $squirrelRoot -Recurse -Force
 }
-$squirrelZip = "$squirrelNupkg.zip"
+$squirrelZip = Join-Path $workDir 'squirrel.zip'
 Copy-Item -LiteralPath $squirrelNupkg -Destination $squirrelZip -Force
 Expand-Archive -LiteralPath $squirrelZip -DestinationPath $squirrelRoot -Force
 Remove-Item -LiteralPath $squirrelZip -Force
@@ -258,7 +272,7 @@ if (Test-Path -LiteralPath $bundledSigntool) {
 
 Write-Section "Stage payload"
 
-$stageDir = Join-Path $ToolsDir "stage"
+$stageDir = Join-Path $workDir "stage"
 if (Test-Path -LiteralPath $stageDir) {
     Remove-Item -LiteralPath $stageDir -Recurse -Force
 }
@@ -336,7 +350,7 @@ function New-ShortcutLauncher([string] $Destination) {
 
     Import-VsDeveloperEnvironment
 
-    $buildDir = Join-Path $ToolsDir "launcher"
+    $buildDir = Join-Path $workDir "launcher"
     if (Test-Path -LiteralPath $buildDir) {
         Remove-Item -LiteralPath $buildDir -Recurse -Force
     }
@@ -449,7 +463,7 @@ $nuspec = $nuspecTemplate.
 $nuspecPath = Join-Path $stageDir "$PackageId.nuspec"
 Set-Content -LiteralPath $nuspecPath -Value $nuspec -Encoding UTF8
 
-$packDir = Join-Path $ToolsDir "pack"
+$packDir = Join-Path $workDir "pack"
 if (Test-Path -LiteralPath $packDir) {
     Remove-Item -LiteralPath $packDir -Recurse -Force
 }
@@ -474,30 +488,8 @@ Write-Section "Releasify"
 
 $publishOutDir = $OutDir
 New-Item -ItemType Directory -Force -Path $ToolsDir | Out-Null
-$releasifyDir = Join-Path $ToolsDir ("releasify-" + [guid]::NewGuid().ToString("N"))
+$releasifyDir = Join-Path $workDir "releasify"
 New-Item -ItemType Directory -Force -Path $releasifyDir | Out-Null
-
-function Read-ReleaseEntries([string] $Path) {
-    if (-not (Test-Path -LiteralPath $Path)) {
-        throw "Squirrel RELEASES file is missing: $Path"
-    }
-    $entries = @()
-    foreach ($line in Get-Content -LiteralPath $Path) {
-        if ([string]::IsNullOrWhiteSpace($line)) { continue }
-        $match = [regex]::Match($line, '^(?<sha>[0-9A-Fa-f]{40})\s+(?<name>\S+)\s+(?<size>[0-9]+)$')
-        if (-not $match.Success) {
-            throw "Squirrel RELEASES contains an invalid entry: $line"
-        }
-        $entries += [pscustomobject]@{
-            Sha1 = $match.Groups['sha'].Value.ToUpperInvariant()
-            Name = $match.Groups['name'].Value
-            Size = [int64]$match.Groups['size'].Value
-            Line = $line.Trim()
-        }
-    }
-    if ($entries.Count -eq 0) { throw "Squirrel RELEASES contains no entries: $Path" }
-    return $entries
-}
 
 $hasPrevious = $false
 if (-not [string]::IsNullOrWhiteSpace($PreviousReleasesDir) -and
@@ -517,6 +509,8 @@ if (-not [string]::IsNullOrWhiteSpace($PreviousReleasesDir) -and
         Copy-Item -LiteralPath $seedPackage -Destination $releasifyDir -Force
     }
     Copy-Item -LiteralPath $seedReleases -Destination $releasifyDir -Force
+    # Validate the copied snapshot too, before Squirrel consumes it.
+    $null = Read-ReleaseEntries (Join-Path $releasifyDir 'RELEASES')
     $hasPrevious = $true
     Write-Host "Seeded $($seedEntries.Count) RELEASES-referenced baseline packages into a private delta workspace."
 }
@@ -624,11 +618,11 @@ foreach ($exe in $executables) {
 }
 
 # Update.exe travels inside the full package. Check it too.
-$updateCheckDir = Join-Path $ToolsDir "verify-nupkg"
+$updateCheckDir = Join-Path $workDir "verify-nupkg"
 if (Test-Path -LiteralPath $updateCheckDir) {
     Remove-Item -LiteralPath $updateCheckDir -Recurse -Force
 }
-$nupkgZip = Join-Path $ToolsDir "verify-full.zip"
+$nupkgZip = Join-Path $workDir "verify-full.zip"
 Copy-Item -LiteralPath $fullNupkg[0].FullName -Destination $nupkgZip -Force
 Expand-Archive -LiteralPath $nupkgZip -DestinationPath $updateCheckDir -Force
 Remove-Item -LiteralPath $nupkgZip -Force
@@ -674,25 +668,18 @@ $manifest = [ordered]@{
 $manifestPath = Join-Path $releasifyDir "package-output-manifest.json"
 $manifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
 
-# Only known generated files may be replaced in an existing publish directory.
-# This prevents a stale package from reaching the release collector without
-# deleting an unrelated file the caller put beside the outputs.
-New-Item -ItemType Directory -Force -Path $publishOutDir | Out-Null
-$existingPublishFiles = @(Get-ChildItem -LiteralPath $publishOutDir -File)
-foreach ($existing in $existingPublishFiles) {
-    if ($existing.Name -notin @("Setup.exe", "RELEASES", "SHA256SUMS", "package-output-manifest.json") -and
-        $existing.Extension -ne ".nupkg") {
-        throw "OutDir contains an unmanaged file and cannot be refreshed safely: $($existing.Name)"
-    }
-}
-foreach ($existing in $existingPublishFiles) { Remove-Item -LiteralPath $existing.FullName -Force }
-Copy-Item -LiteralPath $setupExe -Destination (Join-Path $publishOutDir "Setup.exe") -Force
-Copy-Item -LiteralPath $publishReleaseFile -Destination (Join-Path $publishOutDir "RELEASES") -Force
+# Construct the exact publish set separately from the private baseline workspace.
+# Publication validates both generations and retains the previous directory.
+$publishCandidate = Join-Path $workDir 'publish-candidate'
+New-Item -ItemType Directory -Path $publishCandidate | Out-Null
+Copy-Item -LiteralPath $setupExe -Destination (Join-Path $publishCandidate "Setup.exe")
+Copy-Item -LiteralPath $publishReleaseFile -Destination (Join-Path $publishCandidate "RELEASES")
 foreach ($package in @($fullNupkg) + @($deltaNupkg)) {
-    Copy-Item -LiteralPath $package.FullName -Destination $publishOutDir -Force
+    Copy-Item -LiteralPath $package.FullName -Destination $publishCandidate
 }
-Copy-Item -LiteralPath $checksums -Destination $publishOutDir -Force
-Copy-Item -LiteralPath $manifestPath -Destination $publishOutDir -Force
+Copy-Item -LiteralPath $checksums -Destination $publishCandidate
+Copy-Item -LiteralPath $manifestPath -Destination $publishCandidate
+Publish-SquirrelOutput -Candidate $publishCandidate -Directory $publishOutDir
 
 $OutDir = $publishOutDir
 Get-Content -LiteralPath (Join-Path $OutDir "SHA256SUMS") | Write-Host

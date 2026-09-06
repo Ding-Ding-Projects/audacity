@@ -112,6 +112,10 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $dir = 'build.artifacts/squirrel'
+          . ./buildscripts/ci/windows/squirrel_output.ps1
+          $tag = '${{ steps.configure.outputs.release_tag }}'
+          $version = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          $null = Assert-SquirrelOutput $dir $version 'Audacity'
           foreach ($path in @((Join-Path $dir 'Setup.exe'), (Join-Path $dir 'RELEASES'))) {
             if (-not (Test-Path -LiteralPath $path)) { throw "Missing required Squirrel asset: $path" }
           }
@@ -180,21 +184,13 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path release-assets,release-metadata | Out-Null
-          $allowed = @('Setup.exe', 'RELEASES')
-          $assets = Get-ChildItem downloaded-output -Recurse -File | Where-Object {
-            $_.Name -in $allowed -or $_.Name -like '*-full.nupkg' -or $_.Name -like '*-delta.nupkg'
-          }
-          foreach ($asset in $assets) {
-            Copy-Item -LiteralPath $asset.FullName -Destination (Join-Path release-assets $asset.Name) -Force
-          }
-          foreach ($required in @('Setup.exe', 'RELEASES')) {
-            if (-not (Test-Path -LiteralPath (Join-Path release-assets $required))) {
-              throw "Missing required Squirrel asset: $required"
-            }
-          }
-          if (@(Get-ChildItem release-assets -Filter '*-full.nupkg' -File).Count -ne 1) {
-            throw 'Expected exactly one Squirrel full package.'
-          }
+          . ./buildscripts/ci/windows/squirrel_output.ps1
+          $tag = '${{ needs.windows_x64.outputs.release_tag }}'
+          $version = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          # Read only the exact package directory, never recursive filename matches
+          # that might also collect a retained previous transaction generation.
+          Copy-SquirrelReleaseAssets -Source 'downloaded-output/build.artifacts/squirrel' `
+            -Destination 'release-assets' -Version $version -PackageId 'Audacity'
 
       - name: Resolve dim sum photo
         shell: pwsh
