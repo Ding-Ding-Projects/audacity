@@ -10,6 +10,13 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Local history: the panel gained real Material 3 surfaces for the timeline
+  grouping, storage numbers and revision compare that previously only
+  existed as model methods: a Timeline chip rail, a Storage card, and a
+  Compare two revisions picker with its own result card, each with its own
+  local search and regex builder. A new `AU_OPEN_HISTORY=versions` debug
+  environment variable makes the History panel start on its Versions
+  segment, documented in `docs/features/local-history.md`.
 - Local history: the panel gained **Open as new project**, **Star** and
   **Pin** buttons on every revision, backed by new model methods for a day
   by day timeline grouping, a two revision file-level compare, and storage

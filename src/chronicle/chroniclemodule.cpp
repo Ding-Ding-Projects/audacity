@@ -16,6 +16,7 @@
 #include "view/versionhistorymodel.h"
 #include "view/changelogmodel.h"
 #include "view/tabstripmodel.h"
+#include "view/chronicledebughooks.h"
 
 #include "log.h"
 
@@ -61,6 +62,10 @@ void ChronicleModule::registerUiTypes()
     qmlRegisterType<VersionHistoryModel>("Audacity.Chronicle", 1, 0, "VersionHistoryModel");
     qmlRegisterType<ChangelogModel>("Audacity.Chronicle", 1, 0, "ChangelogModel");
     qmlRegisterType<TabStripModel>("Audacity.Chronicle", 1, 0, "TabStripModel");
+    qmlRegisterSingletonType<ChronicleDebugHooks>("Audacity.Chronicle", 1, 0, "ChronicleDebugHooks",
+                                                  [](QQmlEngine*, QJSEngine*) -> QObject* {
+        return new ChronicleDebugHooks();
+    });
 }
 
 void ChronicleModule::onInit(const muse::IApplication::RunMode& mode)

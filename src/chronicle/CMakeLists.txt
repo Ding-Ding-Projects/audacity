@@ -35,6 +35,8 @@ set(MODULE_SRC
 
     ${CMAKE_CURRENT_LIST_DIR}/view/versionhistorymodel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/view/versionhistorymodel.h
+    ${CMAKE_CURRENT_LIST_DIR}/view/chronicledebughooks.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/view/chronicledebughooks.h
     ${CMAKE_CURRENT_LIST_DIR}/view/changelogmodel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/view/changelogmodel.h
     ${CMAKE_CURRENT_LIST_DIR}/view/tabstripmodel.cpp

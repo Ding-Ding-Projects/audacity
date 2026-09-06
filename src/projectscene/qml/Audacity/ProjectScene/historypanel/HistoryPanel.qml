@@ -37,8 +37,10 @@ Item {
         property string filterText: ""
 
         // The panel carries two views: the undo history of the open project,
-        // and the local version history that survives restarts.
-        property int currentView: 0
+        // and the local version history that survives restarts. Starting on
+        // the Versions view is a debug convenience (AU_OPEN_HISTORY=versions),
+        // documented in docs/features/local-history.md.
+        property int currentView: ChronicleDebugHooks.startOnVersions ? 1 : 0
 
         // A search term is used as a regular expression when it is one, and as
         // plain text otherwise, so a typed bracket never empties the list.
