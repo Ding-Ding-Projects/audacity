@@ -52,18 +52,22 @@ unticked items are open work.
       opt out)
 - [ ] School mode (universal rename, unlock credential, suppress advanced
       language and customization features)
-- [ ] Spoken narrator for app events, off by default, English/Cantonese/Both
-- [ ] Completeness inventory guard script that fails when a canonical
+- [x] Spoken narrator for app events, off by default, English/Cantonese/Both
+- [x] Completeness inventory guard script that fails when a canonical
       feature row is missing, stale, or unimplemented
-- [ ] Confirm every appearance override from the per element editor actually
+      (`buildscripts/checks/completeness_guard.py`, proved red then green)
+- [x] Confirm every appearance override from the per element editor actually
       renders in the live QML tree, not only persists to settings
 - [ ] Remove the remaining legacy FlatButton usages outside the list already
       converted in CHANGELOG.md
 - [ ] A full capture matrix for the surfaces listed as uncaptured in
       README.md (toy lock wizard, authenticator pairing, Support Tickets,
       Ollama manager, export dialog, docs browser, attention support toggles)
-- [ ] Cut and verify release v4.0.0-m3.1 once the wave two items above are
-      complete
+- [x] Cut and verify a release: every push to `master` now publishes
+      `v4.0.0-m3.<run>`; `v4.0.0-m3.10` and `v4.0.0-m3.11` are verified
+      unsigned Squirrel releases with a delta package from m3.11 on
+- [ ] Local history: real captures of the timeline, storage, compare and
+      star/pin surfaces (code landed, nobody has seen a screenshot yet)
 - [ ] A verification matrix covering every feature article against its
       built artifact interaction proof
 

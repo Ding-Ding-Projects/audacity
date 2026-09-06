@@ -1,51 +1,70 @@
 # Handoff
 
-Factual status of the Material Audacity rebuild, as of commit `c0e1cb4` on
-branch `claude/audacity-material-design-3-ui-voxy2f`.
+Factual status of the Material Audacity rebuild, as of commit `0b7c0f3` on
+`master` and `main` (2026-09-06 07:10 UTC).
 
 ## Branches
 
-- `claude/audacity-material-design-3-ui-voxy2f`: the active development
-  branch. Carries the full Material 3 rebuild plus the phase 2 companion
-  feature set described in `CHANGELOG.md` under Unreleased.
-- No merge into `master` has happened yet. `master` is the unmodified
-  upstream Audacity 4 tree.
+- `master` and `main`: identical, both at `0b7c0f3`. Every verified lane
+  commit is carried here by cherry-pick after both codestyle checks and
+  `lrelease` pass on a clean worktree. Every push to `master` publishes a
+  release (see Releases below).
+- `claude/audacity-material-design-3-ui-voxy2f`: the working branch and
+  draft PR record (PR #2). It carries the same content as `master` plus one
+  preservation commit (`1ae5390`, an unfinished layered appearance editor
+  lane that the owner stopped). Do not merge that commit into `master` as
+  is; the lane needs to be finished or dropped first.
+
+## Releases
+
+Every push to `master` runs `.github/workflows/material-audacity-release.yml`
+and publishes a non-draft release tagged `v4.0.0-m3.<run number>`:
+
+- `v4.0.0-m3.10` (commit `337add6`): first automatic release. Setup.exe,
+  RELEASES, full nupkg, AppImage, SHA256SUMS, dim sum photo. The
+  `Get-AuthenticodeSignature` step confirmed `NotSigned`. No delta package,
+  which is expected for the first release of the series.
+- `v4.0.0-m3.11` (commit `7530142`): first release with a delta package
+  (`Audacity-4.0.0-m3011-delta.nupkg`, 4.7 MB against the m3.10 full).
+- Run 9 (commit `b4303ba`) failed on both builds: `lrelease` rejected
+  `share/locale/audacity_yue_HK.ts` because a plural message lacked
+  `numerus="yes"`. Fixed in `337add6`. Always run
+  `lrelease share/locale/audacity_yue_HK.ts -qm /tmp/x.qm` before pushing a
+  translation change.
 
 ## Verified
 
-- The tree at `c0e1cb4` configures and builds on Linux with the module
-  targets used during this development pass (`cmake --build build/linux`).
-- The application reaches the home page under Xvfb
-  (`QT_QPA_PLATFORM=xcb AU_ALLOW_MULTIPLE_PROCESSES=1 xvfb-run`). Captures
-  from this route are under `docs/design/captures/phase2/` and the earlier
-  lane directories under `docs/design/captures/`.
-- The C++ and QML codestyle checks
-  (`buildscripts/ci/checkcodestyle/checkcodestyle.cmake` and
-  `buildscripts/ci/checkcodestyle/check_qml_codestyle.cmake`) pass on the
-  files touched during this development pass.
-- `buildscripts/ci/tools/count_lines.py` runs and its table is reproduced
-  in `README.md`.
+- `master` at `0b7c0f3` builds on GitHub Actions for Windows (MSVC 2022,
+  Qt 6.10.1) and Linux (Ubuntu 22.04), and packages through Squirrel.Windows
+  and AppImage (runs 10 and 11 green end to end).
+- Both codestyle checkers and `lrelease` pass on the `master` tree.
+- Local history (`src/chronicle`): 31/31 `chronicle_tests` and 4/4
+  `au3wrap` project metadata tests pass. Every project gets a stable id in
+  its own `.aup4` database, the complete history bundle is embedded in the
+  save file, starring and pinning survive retention, export and render are
+  milestones, and the panel has open-as-new-project, timeline, storage and
+  compare surfaces.
+- The Cantonese catalog now has a `chronicle` context (109 strings); it had
+  none before `32de312`.
+- The application reaches the home page under Xvfb; captures live under
+  `docs/design/captures/`.
 
 ## Not verified
 
-- A Windows build and run of `build.bat` / `build-installer.bat` has not
-  been performed on this machine (Linux only in this environment). The
-  scripts exist and are documented, but a fresh Windows machine has not
-  actually run them end to end during this pass.
-- Real captures of several phase 2 surfaces do not exist yet: the toy lock
-  wizard and PIN keypad, the built in authenticator's QR pairing screen,
-  the Support Tickets desk, the local model manager for Ollama, the
-  universal export dialog, the in app documentation browser, and the
-  attention support mode toggles. See `README.md`, Screenshots section.
+- The new history panel surfaces (timeline rail, storage card, compare view,
+  Star, Pin and Open as new project buttons) have no screenshot: the panel
+  opens as a separate top-level window that the headless session could not
+  raise. `AU_OPEN_HISTORY=versions` exists as a capture hook but has not yet
+  produced a viewed capture.
+- Six in-flight lanes (Material 3 residual controls U1 and U2, menu and
+  dropdown search X1, notifications and bulk actions X4, fixes Y, landing
+  page Z) were stopped by the owner before committing. Their edits exist
+  only as uncommitted files in the development checkout and are not on any
+  branch.
+- A fresh Windows machine has not run `build.bat` / `build-installer.bat`
+  end to end; only the CI path is proven.
 - No screen recording exists for any surface.
-- No tagged release has been cut. `docs/site/data/release.json` reflects
-  this honestly (`"tag": "unreleased"`, empty `assets`).
-- The completeness inventory guard script referenced in `ROADMAP.md` has
-  not been written; `docs/inventory/completeness-inventory.md` exists as a
-  hand written table only.
-- Dim sum surprise, School mode, and the spoken narrator (three canonical
-  features from the shared instructions) are not yet implemented. See
-  `ROADMAP.md`, wave two.
+- Remaining uncaptured surfaces are listed in `README.md`.
 
 ## Owner actions pending
 
