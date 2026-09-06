@@ -4,6 +4,7 @@
 
 depends QtQuick 2.0
 
+M3AppearanceLayers 1.0 M3AppearanceLayers.qml
 M3Badge 1.0 M3Badge.qml
 M3BottomSheet 1.0 M3BottomSheet.qml
 M3Button 1.0 M3Button.qml

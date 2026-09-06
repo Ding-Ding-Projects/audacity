@@ -28,6 +28,15 @@ Rectangle {
     property bool outlined: false
     property color outlineColor: M3.color.outlineVariant
 
+    // Identifies this surface to the personalize appearance editor's layer
+    // stack. Left empty (the default) no layer rendering happens at all, so
+    // an ordinary surface pays nothing for this. visualState picks which
+    // per-state stack is used ("hover", "pressed", and so on); it is left to
+    // the owning component to set, since M3Surface itself has no notion of
+    // interaction state.
+    property string elementId: ""
+    property string visualState: ""
+
     color: M3.surfaceAt(root.level)
     radius: M3.shape.none
     border.width: root.outlined ? 1 : 0
@@ -37,6 +46,13 @@ Rectangle {
     M3Elevation {
         anchors.fill: parent
         level: root.shadowVisible ? root.level : 0
+        radius: root.radius
+    }
+
+    M3AppearanceLayers {
+        anchors.fill: parent
+        elementId: root.elementId
+        state: root.visualState
         radius: root.radius
     }
 }

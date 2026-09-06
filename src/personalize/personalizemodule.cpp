@@ -8,6 +8,7 @@
 #include <QtQml>
 
 #include "internal/appearanceoverrides.h"
+#include "internal/appearancelayers.h"
 #include "internal/authenticatormodel.h"
 #include "internal/displaynamesettings.h"
 #include "internal/lockregistry.h"
@@ -56,6 +57,22 @@ void PersonalizeModule::registerUiTypes()
                                                   appearanceOverridesCreator);
     qmlRegisterSingletonType<AppearanceOverrides>("Audacity.M3", 1, 0, "AppearanceOverrides",
                                                   appearanceOverridesCreator);
+
+    // The layered style model, same sharing pattern as AppearanceOverrides
+    // above: one instance, registered into both modules, owned by C++.
+    auto appearanceLayersCreator = [](QQmlEngine*, QJSEngine*) -> QObject* {
+        static AppearanceLayers* instance = []() {
+            auto* layers = new AppearanceLayers();
+            QQmlEngine::setObjectOwnership(layers, QQmlEngine::CppOwnership);
+            return layers;
+        }();
+        return instance;
+    };
+    qmlRegisterSingletonType<AppearanceLayers>("Audacity.Personalize", 1, 0, "AppearanceLayers",
+                                               appearanceLayersCreator);
+    qmlRegisterSingletonType<AppearanceLayers>("Audacity.M3", 1, 0, "AppearanceLayers",
+                                               appearanceLayersCreator);
+
     qmlRegisterSingletonType<DisplayNameSettings>("Audacity.Personalize", 1, 0, "DisplayNameSettings",
                                                   [](QQmlEngine*, QJSEngine*) -> QObject* {
         return new DisplayNameSettings();
