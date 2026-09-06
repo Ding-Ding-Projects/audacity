@@ -135,7 +135,8 @@ bool Paths::initialize(const QString& requested, QString* error)
                           QStandardPaths::AppConfigLocation, QStandardPaths::CacheLocation }) {
         profiles << canonicalPath(QStandardPaths::writableLocation(location));
     }
-    for (auto location : { QStandardPaths::GenericDataLocation, QStandardPaths::GenericConfigLocation }) {
+    for (auto location : { QStandardPaths::GenericDataLocation, QStandardPaths::GenericConfigLocation,
+                          QStandardPaths::DocumentsLocation, QStandardPaths::GenericCacheLocation }) {
         const QString base = QStandardPaths::writableLocation(location);
         for (const QString& name : { QString("Audacity"), QString("audacity"), QString("Audacity4"), QString("Audacity4Development") })
             profiles << canonicalPath(base + '/' + name);

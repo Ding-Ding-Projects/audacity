@@ -95,6 +95,7 @@ int main(int argc, char** argv) {
     check(shortLength > 0 && shortLength < 32768, "home short spelling available");
     check(child(exe, {"reject", QString::fromWCharArray(shortName, shortLength)}), "home alternate spelling rejected");
 #endif
+    check(child(exe, {"reject", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/Audacity4"}), "real documents project root rejected");
     QString occupied = fixture.path() + "/occupied"; QDir().mkpath(occupied);
     QFile sentinel(occupied + "/sentinel"); check(sentinel.open(QIODevice::WriteOnly), "sentinel"); sentinel.write("untouched"); sentinel.close();
     check(child(exe, {"reject", occupied}), "unowned directory rejected");
