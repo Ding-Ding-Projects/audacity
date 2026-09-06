@@ -35,13 +35,16 @@ Substitution is applied by `ExperienceTranslator`, the same extra `QTranslator`
 that bilingual mode uses, so it reaches visible interface text rather than one
 particular widget.
 
-Matches are whole words. A term that begins or ends with a letter, digit or
-underscore is bounded by a look-around on both sides, so `track` matches
-`Add a track` but not `Tracking` and not `backtrack`. A term made of Chinese
-characters has no word boundary to speak of and is matched literally.
+Matches are literal and case-sensitive. A term that begins or ends with an
+ASCII letter, digit or underscore is bounded on that side, so `track` matches
+`Add a track` but not `Tracking` and not `backtrack`. Terms beginning or ending
+in Chinese or another non-ASCII script are matched literally, including next to
+ASCII text, because those scripts do not share the interface's ASCII word rule.
 
-Longer terms are applied first, so `audio track` is never cut in half by a
-shorter `audio` entry.
+The matcher reads the original text once. At one position, the longest literal
+match wins, so `audio track` is never cut in half by a shorter `audio` entry.
+Replacement text is never matched again during the same pass: a replacement
+cannot trigger another replacement.
 
 ## Where it is stored
 

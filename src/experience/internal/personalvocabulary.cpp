@@ -7,7 +7,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
-#include <QRegularExpression>
 #include <QSet>
 
 #include <algorithm>
@@ -15,30 +14,36 @@
 #include "framework/global/translation.h"
 
 namespace au::experience {
+class PersonalVocabulary::Matcher
+{
+public:
+    struct Entry {
+        QString from;
+        QString to;
+        bool startsWithAsciiWordCharacter = false;
+        bool endsWithAsciiWordCharacter = false;
+    };
+
+    struct Node {
+        QHash<ushort, int> children;
+        int entryIndex = -1;
+    };
+
+    QVector<Entry> entries;
+    QVector<Node> nodes { Node {} };
+};
+
 namespace {
-bool startsWithWordCharacter(const QString& text)
+bool isAsciiWordCharacter(const QChar ch)
 {
-    return !text.isEmpty() && (text.at(0).isLetterOrNumber() || text.at(0) == QLatin1Char('_'));
+    return (ch >= QLatin1Char('A') && ch <= QLatin1Char('Z')) || (ch >= QLatin1Char('a') && ch <= QLatin1Char('z'))
+           || (ch >= QLatin1Char('0') && ch <= QLatin1Char('9')) || ch == QLatin1Char('_');
 }
 
-bool endsWithWordCharacter(const QString& text)
+bool hasWholeWordBoundaries(const QString& text, const int start, const int end, const PersonalVocabulary::Matcher::Entry& entry)
 {
-    return !text.isEmpty() && (text.at(text.size() - 1).isLetterOrNumber() || text.at(text.size() - 1) == QLatin1Char('_'));
-}
-
-//! A word boundary is only meaningful where the term is bounded by letters or
-//! digits. Chinese text has no spaces, so a term made of Chinese characters is
-//! matched literally instead.
-QRegularExpression patternFor(const QString& from)
-{
-    QString pattern = QRegularExpression::escape(from);
-    if (startsWithWordCharacter(from)) {
-        pattern.prepend(QStringLiteral("(?<![0-9A-Za-z_])"));
-    }
-    if (endsWithWordCharacter(from)) {
-        pattern.append(QStringLiteral("(?![0-9A-Za-z_])"));
-    }
-    return QRegularExpression(pattern);
+    return (!entry.startsWithAsciiWordCharacter || start == 0 || !isAsciiWordCharacter(text.at(start - 1)))
+           && (!entry.endsWithAsciiWordCharacter || end == text.size() || !isAsciiWordCharacter(text.at(end)));
 }
 
 bool hasControl(const QString& text)
@@ -311,15 +316,86 @@ QByteArray PersonalVocabulary::serialize(const Table& entries)
     return QJsonDocument(root).toJson(QJsonDocument::Compact);
 }
 
+PersonalVocabulary::MatcherPtr PersonalVocabulary::compile(const Table& entries)
+{
+    if (entries.isEmpty()) {
+        return {};
+    }
+
+    auto matcher = std::make_shared<Matcher>();
+    matcher->entries.reserve(entries.size());
+    for (const auto& tableEntry : entries) {
+        if (tableEntry.first.isEmpty()) {
+            continue;
+        }
+
+        Matcher::Entry entry;
+        entry.from = tableEntry.first;
+        entry.to = tableEntry.second;
+        entry.startsWithAsciiWordCharacter = isAsciiWordCharacter(entry.from.at(0));
+        entry.endsWithAsciiWordCharacter = isAsciiWordCharacter(entry.from.at(entry.from.size() - 1));
+        const int entryIndex = matcher->entries.size();
+        matcher->entries.append(std::move(entry));
+
+        int nodeIndex = 0;
+        for (const QChar character : tableEntry.first) {
+            const ushort key = character.unicode();
+            const auto child = matcher->nodes.at(nodeIndex).children.constFind(key);
+            if (child == matcher->nodes.at(nodeIndex).children.constEnd()) {
+                const int nextNodeIndex = matcher->nodes.size();
+                matcher->nodes.append(Matcher::Node {});
+                matcher->nodes[nodeIndex].children.insert(key, nextNodeIndex);
+                nodeIndex = nextNodeIndex;
+            } else {
+                nodeIndex = child.value();
+            }
+        }
+        //! Keep the first duplicate table entry. Parsed documents cannot have
+        //! duplicates, and this makes the public Table API deterministic.
+        if (matcher->nodes[nodeIndex].entryIndex < 0) {
+            matcher->nodes[nodeIndex].entryIndex = entryIndex;
+        }
+    }
+    return matcher->entries.isEmpty() ? MatcherPtr {} : matcher;
+}
+
 QString PersonalVocabulary::apply(const QString& text, const Table& entries)
 {
-    if (text.isEmpty() || entries.isEmpty()) {
+    return apply(text, compile(entries));
+}
+
+QString PersonalVocabulary::apply(const QString& text, const MatcherPtr& matcher)
+{
+    if (text.isEmpty() || !matcher) {
         return text;
     }
 
-    QString result = text;
-    for (const auto& entry : entries) {
-        result.replace(patternFor(entry.first), entry.second);
+    QString result;
+    result.reserve(text.size());
+    for (int start = 0; start < text.size();) {
+        int nodeIndex = 0;
+        int bestEntryIndex = -1;
+        int bestEnd = start;
+        for (int end = start; end < text.size(); ++end) {
+            const auto child = matcher->nodes.at(nodeIndex).children.constFind(text.at(end).unicode());
+            if (child == matcher->nodes.at(nodeIndex).children.constEnd()) {
+                break;
+            }
+            nodeIndex = child.value();
+            const int entryIndex = matcher->nodes.at(nodeIndex).entryIndex;
+            if (entryIndex >= 0 && hasWholeWordBoundaries(text, start, end + 1, matcher->entries.at(entryIndex))) {
+                bestEntryIndex = entryIndex;
+                bestEnd = end + 1;
+            }
+        }
+
+        if (bestEntryIndex >= 0) {
+            result.append(matcher->entries.at(bestEntryIndex).to);
+            start = bestEnd;
+        } else {
+            result.append(text.at(start));
+            ++start;
+        }
     }
     return result;
 }

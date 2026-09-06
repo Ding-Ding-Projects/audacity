@@ -97,6 +97,9 @@ TEST(PersonalVocabularyTests, AcceptsExactlyTheEntryLimit)
     const PersonalVocabulary::ParseResult result = PersonalVocabulary::parse(data);
     ASSERT_TRUE(result.ok) << result.error.toStdString();
     EXPECT_EQ(result.entries.size(), PersonalVocabulary::MAX_ENTRIES);
+    const PersonalVocabulary::MatcherPtr matcher = PersonalVocabulary::compile(result.entries);
+    ASSERT_TRUE(matcher);
+    EXPECT_EQ(PersonalVocabulary::apply(QStringLiteral("term4095"), matcher), QStringLiteral("word4095"));
 }
 
 TEST(PersonalVocabularyTests, RejectsOneEntryTooMany)
@@ -136,6 +139,33 @@ TEST(PersonalVocabularyTests, LongerTermsWinOverShorterOnes)
     ASSERT_TRUE(result.ok);
 
     EXPECT_EQ(PersonalVocabulary::apply(QStringLiteral("audio track"), result.entries), QStringLiteral("sound lane"));
+}
+
+TEST(PersonalVocabularyTests, SubstitutesFromTheOriginalTextOnly)
+{
+    const PersonalVocabulary::Table table {
+        { QStringLiteral("Audio"), QStringLiteral("Sound") },
+        { QStringLiteral("Sound"), QStringLiteral("Noise") },
+    };
+
+    EXPECT_EQ(PersonalVocabulary::apply(QStringLiteral("Audio Sound"), table), QStringLiteral("Sound Noise"));
+}
+
+TEST(PersonalVocabularyTests, UsesTheLongestOverlappingPhraseAtOnePosition)
+{
+    const PersonalVocabulary::Table table {
+        { QStringLiteral("audio"), QStringLiteral("sound") },
+        { QStringLiteral("audio track"), QStringLiteral("sound lane") },
+    };
+
+    EXPECT_EQ(PersonalVocabulary::apply(QStringLiteral("audio track audio"), table), QStringLiteral("sound lane sound"));
+}
+
+TEST(PersonalVocabularyTests, MatchesChineseTermsLiterallyWithoutAsciiWordBoundaries)
+{
+    const PersonalVocabulary::Table table { { QStringLiteral("軌"), QStringLiteral("線") } };
+
+    EXPECT_EQ(PersonalVocabulary::apply(QStringLiteral("A軌B"), table), QStringLiteral("A線B"));
 }
 
 TEST(PersonalVocabularyTests, SerialisesBackToTheSameTable)

@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QString>
 #include <QVector>
+#include <memory>
 #include <utility>
 
 namespace au::experience {
@@ -23,6 +24,11 @@ public:
     static constexpr int MAX_REPLACEMENT_LENGTH = 1000;
 
     using Table = QVector<std::pair<QString, QString> >;
+
+    //! An immutable compiled lookup table. Build it when the vocabulary changes
+    //! and reuse it for each translation.
+    class Matcher;
+    using MatcherPtr = std::shared_ptr<const Matcher>;
 
     struct ParseResult
     {
@@ -43,8 +49,12 @@ public:
     //! Serialises a parsed table back to the stored form.
     static QByteArray serialize(const Table& entries);
 
+    //! Compiles a bounded, immutable matcher for a validated table.
+    static MatcherPtr compile(const Table& entries);
+
     //! Applies whole-word substitutions to one piece of visible text.
     //! Returns text unchanged when nothing matches.
     static QString apply(const QString& text, const Table& entries);
+    static QString apply(const QString& text, const MatcherPtr& matcher);
 };
 }
