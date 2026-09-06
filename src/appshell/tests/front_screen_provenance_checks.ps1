@@ -42,9 +42,10 @@ Assert-Contains $cmake 'add_custom_target\(appshell_build_provenance ALL' 'Build
 Assert-Contains $cmake 'add_dependencies\(appshell_qml appshell_build_provenance\)' 'The QML module must depend on generated provenance.'
 Assert-Contains $generator 'NOT AU_ACTUAL_SOURCE_REVISION STREQUAL AU_EXPECTED_SOURCE_REVISION' 'The generator must reject a source candidate mismatch.'
 Assert-Contains $generator 'show -s --format=%cI HEAD' 'The generated timestamp must come from the recorded candidate source.'
-Assert-Contains $generator 'diff --quiet --ignore-submodules' 'The generator must reject unstaged source dirt.'
-Assert-Contains $generator 'diff --cached --quiet --ignore-submodules' 'The generator must reject staged source dirt.'
+Assert-Contains $generator 'diff --quiet --ignore-submodules=dirty' 'The generator must reject changed submodule pins and unstaged source dirt.'
+Assert-Contains $generator 'diff --cached --quiet --ignore-submodules=dirty' 'The generator must reject staged changed submodule pins and source dirt.'
 Assert-Contains $generator 'ls-files --others --exclude-standard' 'The generator must reject untracked source dirt.'
+Assert-Contains $generator 'RESULT_VARIABLE AU_UNTRACKED_FILES_RESULT' 'The generator must reject an untracked-file scan failure.'
 
 Assert-RejectsMutation 'unavailable-state' ($homeMenu -replace 'Build provenance unavailable', 'removed') $homeAssertion
 Assert-RejectsMutation 'narrow-wrap' ($homeMenu -replace 'Text\.WrapAnywhere', 'Text.WordWrap') $homeAssertion

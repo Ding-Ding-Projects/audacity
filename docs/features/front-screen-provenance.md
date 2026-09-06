@@ -10,6 +10,12 @@ The generator compares the current Git revision with the revision CMake
 configured. A mismatch stops the build and asks for a reconfigure, so an
 incremental build cannot label a newer source tree with stale provenance.
 
+The candidate must also have no staged, unstaged, or untracked source changes.
+Changed submodule pins are rejected with `--ignore-submodules=dirty`; managed
+overlay content is allowed only when its separately tracked patch recipe is
+already part of the candidate, never by treating arbitrary nested dirt as
+clean provenance.
+
 The Home menu never uses launch time or a file timestamp.  If the configured
 timestamp is absent or invalid, it presents **Build provenance unavailable**.
 This is an honest state, rather than a guessed timestamp.

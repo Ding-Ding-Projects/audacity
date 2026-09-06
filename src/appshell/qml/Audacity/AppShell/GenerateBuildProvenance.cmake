@@ -17,13 +17,14 @@ if (NOT AU_ACTUAL_SOURCE_REVISION STREQUAL AU_EXPECTED_SOURCE_REVISION)
         "Build candidate revision changed from ${AU_EXPECTED_SOURCE_REVISION} to ${AU_ACTUAL_SOURCE_REVISION}; reconfigure before building")
 endif()
 
-execute_process(COMMAND git -C "${AU_SOURCE_DIR}" diff --quiet --ignore-submodules --
+execute_process(COMMAND git -C "${AU_SOURCE_DIR}" diff --quiet --ignore-submodules=dirty --
     RESULT_VARIABLE AU_UNSTAGED_DIRT_RESULT)
-execute_process(COMMAND git -C "${AU_SOURCE_DIR}" diff --cached --quiet --ignore-submodules --
+execute_process(COMMAND git -C "${AU_SOURCE_DIR}" diff --cached --quiet --ignore-submodules=dirty --
     RESULT_VARIABLE AU_STAGED_DIRT_RESULT)
 execute_process(COMMAND git -C "${AU_SOURCE_DIR}" ls-files --others --exclude-standard
-    OUTPUT_VARIABLE AU_UNTRACKED_FILES OUTPUT_STRIP_TRAILING_WHITESPACE)
-if (NOT AU_UNSTAGED_DIRT_RESULT EQUAL 0 OR NOT AU_STAGED_DIRT_RESULT EQUAL 0 OR NOT AU_UNTRACKED_FILES STREQUAL "")
+    OUTPUT_VARIABLE AU_UNTRACKED_FILES OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE AU_UNTRACKED_FILES_RESULT)
+if (NOT AU_UNSTAGED_DIRT_RESULT EQUAL 0 OR NOT AU_STAGED_DIRT_RESULT EQUAL 0 OR NOT AU_UNTRACKED_FILES_RESULT EQUAL 0 OR NOT AU_UNTRACKED_FILES STREQUAL "")
     message(FATAL_ERROR "Build provenance requires a clean configured candidate; commit, remove, or ignore source changes before building")
 endif()
 
