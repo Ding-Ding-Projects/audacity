@@ -196,9 +196,7 @@ int main(int argc, char** argv)
                 if (phase == ConversionEngine::TestPhase::TemporaryOpened) {
                     reached = true;
                     require(!MoveFileExW(wide(parent), wide(parent + QStringLiteral(".old")), 0), "directory rename blocked");
-                    detail::Handle writer(CreateFileW(wide(parent), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                                                     nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
-                    require(!writer.valid(), "directory reparse mutation access blocked");
+                    require(!junction(parent, f.directory.path(), FILE_WRITE_ATTRIBUTES), "nonempty pinned directory cannot become a junction");
                 }
             };
             f.converted(f.convert()); require(reached, "destination pin barrier reached");
@@ -254,7 +252,8 @@ int main(int argc, char** argv)
             qToLittleEndian<quint32>(40, header.data() + 14); qToLittleEndian<quint32>(50000, header.data() + 18);
             qToLittleEndian<quint32>(50000, header.data() + 22); qToLittleEndian<quint16>(1, header.data() + 26);
             qToLittleEndian<quint16>(24, header.data() + 28); put(f.source, header);
-            require(f.convert().status == ConversionStatus::Rejected, "reject header bomb");
+            const auto result = ConversionEngine().convert({f.source, f.output, QStringLiteral("png")});
+            require(result.status == ConversionStatus::Rejected && result.message.contains(QStringLiteral("dimensions")), "reject header bomb at dimension validation");
             require(!QFile::exists(f.output), "no oversized publication");
         }},
         {"oversized opened input rejected", [] {

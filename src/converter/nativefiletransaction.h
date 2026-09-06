@@ -57,7 +57,8 @@ inline bool resolvesTo(HANDLE handle, const QString& expected)
     return !actual.isEmpty() && actual.compare(expected, Qt::CaseInsensitive) == 0;
 }
 
-// Every ancestor remains open without write/delete sharing until publication.
+// Every ancestor remains open without delete sharing until publication. Write
+// sharing is necessary for the native rename's destination-directory open.
 // This prevents renaming an ancestor. Resolved-path validation catches an empty
 // directory changed into a reparse point through attribute-only access before
 // its child opens. Once the child is open, NTFS refuses a reparse point on its
@@ -107,7 +108,7 @@ private:
     bool pin(const QString& path, bool validatePath = true)
     {
         auto handle = std::make_unique<Handle>(CreateFileW(reinterpret_cast<LPCWSTR>(path.utf16()),
-              FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+              FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
               FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
         BY_HANDLE_FILE_INFORMATION info = {};
         if (!handle->valid() || !information(handle->value, info, true)
