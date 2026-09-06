@@ -416,3 +416,101 @@ int FileSnapshotStore::prune(int keepCount, int keepDays)
 
     return pruned;
 }
+
+QByteArray FileSnapshotStore::packHistory() const
+{
+    if (!m_open) {
+        return QByteArray();
+    }
+
+    QFile manifestFile(manifestPath());
+    QString manifestJson;
+    if (manifestFile.open(QIODevice::ReadOnly)) {
+        manifestJson = QString::fromUtf8(manifestFile.readAll());
+    }
+    if (manifestJson.trimmed().isEmpty()) {
+        // Nothing has been recorded yet, so there is nothing worth embedding.
+        return QByteArray();
+    }
+
+    QStringList relativePaths;
+    const QDir objectsDir(m_storePath + QStringLiteral("/objects"));
+    QDirIterator iterator(objectsDir.path(), QDir::Files, QDirIterator::Subdirectories);
+    while (iterator.hasNext()) {
+        iterator.next();
+        relativePaths.append(objectsDir.relativeFilePath(iterator.filePath()));
+    }
+    // Sorted so that packing the same store twice produces the same bytes.
+    relativePaths.sort();
+
+    QJsonObject objects;
+    for (const QString& relative : relativePaths) {
+        QFile object(objectsDir.filePath(relative));
+        if (!object.open(QIODevice::ReadOnly)) {
+            continue;
+        }
+        objects.insert(relative, QString::fromLatin1(object.readAll().toBase64()));
+    }
+
+    QJsonObject root;
+    root.insert(QStringLiteral("format"), QStringLiteral("chronicle-file-store-v1"));
+    root.insert(QStringLiteral("manifest"), manifestJson);
+    root.insert(QStringLiteral("objects"), objects);
+
+    return QJsonDocument(root).toJson(QJsonDocument::Compact);
+}
+
+bool FileSnapshotStore::unpackHistory(const QByteArray& data)
+{
+    if (!m_open || data.isEmpty()) {
+        return false;
+    }
+
+    const QJsonDocument document = QJsonDocument::fromJson(data);
+    if (!document.isObject()) {
+        return false;
+    }
+    const QJsonObject root = document.object();
+
+    const QJsonDocument incomingManifestDoc = QJsonDocument::fromJson(
+        root.value(QStringLiteral("manifest")).toString().toUtf8());
+    if (!incomingManifestDoc.isArray()) {
+        return false;
+    }
+    const QJsonArray incoming = incomingManifestDoc.array();
+    const QJsonArray local = readManifest();
+
+    // Fast forward only: the incoming manifest is adopted only when it opens
+    // with every revision the local manifest already has, in the same order,
+    // and adds at least one more. Anything else (an older bundle, an
+    // unrelated one, or a local history that has already moved on) leaves
+    // this store exactly as it was.
+    if (incoming.size() <= local.size()) {
+        return false;
+    }
+    for (int i = 0; i < local.size(); ++i) {
+        const QString localId = local.at(i).toObject().value(QStringLiteral("id")).toString();
+        const QString incomingId = incoming.at(i).toObject().value(QStringLiteral("id")).toString();
+        if (localId != incomingId) {
+            return false;
+        }
+    }
+
+    // Objects are content addressed, so writing one that is already there
+    // under the same name is always safe; this never loses local content.
+    const QJsonObject objects = root.value(QStringLiteral("objects")).toObject();
+    for (auto it = objects.constBegin(); it != objects.constEnd(); ++it) {
+        const QString destination = m_storePath + QStringLiteral("/objects/") + it.key();
+        if (QFileInfo::exists(destination)) {
+            continue;
+        }
+        QDir().mkpath(QFileInfo(destination).absolutePath());
+        QFile file(destination);
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(QByteArray::fromBase64(it.value().toString().toLatin1()));
+        }
+    }
+
+    writeManifest(incoming);
+    return true;
+}

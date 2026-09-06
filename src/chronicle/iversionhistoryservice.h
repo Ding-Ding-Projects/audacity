@@ -3,6 +3,8 @@
 */
 #pragma once
 
+#include <QByteArray>
+
 #include "framework/global/modularity/imoduleinterface.h"
 #include "framework/global/async/notification.h"
 
@@ -64,6 +66,26 @@ public:
     //! consolidates it into one undo entry.
     virtual bool commitOnEveryAction() const = 0;
     virtual void setCommitOnEveryAction(bool value) = 0;
+
+    //! When true (the default), the whole local history is packed and
+    //! embedded into the project's own save file on every save, so the
+    //! history follows the file to another machine.
+    virtual bool embedHistoryInSaveFile() const = 0;
+    virtual void setEmbedHistoryInSaveFile(bool value) = 0;
+
+    //! Packs the current project's history for embedding into its save
+    //! file. Returns an empty array when there is nothing to pack yet or
+    //! packing fails; a caller must never fail the save over that.
+    virtual QByteArray packHistoryForEmbedding() const = 0;
+
+    //! The format string to record alongside a call to
+    //! packHistoryForEmbedding(), naming which backend produced the bytes.
+    virtual QString embeddedHistoryFormat() const = 0;
+
+    //! Absorbs history embedded in a save file, adopting it only when it is
+    //! strictly ahead of what is already recorded here. Returns true when it
+    //! was adopted.
+    virtual bool absorbEmbeddedHistory(const QByteArray& data) = 0;
 
     virtual muse::async::Notification revisionsChanged() const = 0;
 };

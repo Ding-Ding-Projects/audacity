@@ -5,6 +5,8 @@
 
 #include <memory>
 
+#include <QByteArray>
+
 #include "types/chronicletypes.h"
 
 namespace au::chronicle {
@@ -59,6 +61,29 @@ public:
     //! their payload. Returns the number of revisions pruned. Never prunes
     //! the newest revision.
     virtual int prune(int keepCount, int keepDays) = 0;
+
+    //! Packs the entire history into one self-contained byte array, suitable
+    //! for embedding into the project's own save file so the history can
+    //! travel with it to another machine. Returns an empty array when there
+    //! is nothing to pack yet or packing itself fails; a caller must treat
+    //! either as "there is nothing to embed right now", never as a reason to
+    //! fail the save that asked for it.
+    virtual QByteArray packHistory() const = 0;
+
+    //! Absorbs history packed by packHistory() into this store. The merge is
+    //! fast forward only: it adopts the packed history when it is at least
+    //! as advanced as what this store already has, and otherwise leaves the
+    //! store untouched, so an older or unrelated bundle can never discard a
+    //! local revision.
+    //!
+    //! The return value means "no local revision was lost", not "something
+    //! new was gained": the content addressed store can tell in advance that
+    //! a bundle carries nothing new and returns false for it, while the git
+    //! backend cannot tell the difference between that case and a real
+    //! advance without inspecting a result its own tooling does not expose,
+    //! so it returns true for both. Either way, calling this again with a
+    //! bundle this store has already absorbed never loses anything.
+    virtual bool unpackHistory(const QByteArray& data) = 0;
 };
 
 using ISnapshotStorePtr = std::shared_ptr<ISnapshotStore>;

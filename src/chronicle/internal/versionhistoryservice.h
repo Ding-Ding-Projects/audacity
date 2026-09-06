@@ -55,6 +55,13 @@ public:
     bool commitOnEveryAction() const override;
     void setCommitOnEveryAction(bool value) override;
 
+    bool embedHistoryInSaveFile() const override;
+    void setEmbedHistoryInSaveFile(bool value) override;
+
+    QByteArray packHistoryForEmbedding() const override;
+    QString embeddedHistoryFormat() const override;
+    bool absorbEmbeddedHistory(const QByteArray& data) override;
+
     muse::async::Notification revisionsChanged() const override { return m_revisionsChanged; }
 
     //! Derives the label shown in the panel from the action and its detail.

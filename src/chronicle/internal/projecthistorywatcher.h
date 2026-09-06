@@ -8,6 +8,7 @@
 
 #include "context/iglobalcontext.h"
 #include "trackedit/iprojecthistory.h"
+#include "experience/inotificationcenter.h"
 
 #include "iversionhistoryservice.h"
 
@@ -25,6 +26,7 @@ class ProjectHistoryWatcher : public muse::async::Asyncable, public muse::Contex
     muse::ContextInject<au::context::IGlobalContext> globalContext { this };
     muse::ContextInject<au::trackedit::IProjectHistory> projectHistory { this };
     muse::GlobalInject<IVersionHistoryService> versionHistory;
+    muse::GlobalInject<au::experience::INotificationCenter> notificationCenter;
 
 public:
     explicit ProjectHistoryWatcher(const muse::modularity::ContextPtr& ctx)
@@ -35,6 +37,7 @@ public:
 private:
     void onCurrentProjectChanged();
     void onHistoryChanged(trackedit::HistoryEvent event);
+    void embedHistoryIfEnabled(const project::IAudacityProject& project);
 
     //! Guards against recording the same save twice when several
     //! notifications arrive for one action.

@@ -153,6 +153,47 @@ Two settings control pruning:
 The newest revision is never pruned. Retention is applied at start up and from
 the **Apply retention** button in the panel.
 
+## The history travels inside the save file
+
+Turning `chronicle/embedHistoryInSaveFile` on (the default) packs the whole
+local history and writes it into a `chronicle_bundle` table in the project's
+own aup4 database, right after the project itself finishes saving. The
+history a project has recorded is then part of the file: copy the file to
+another machine, and its history comes with it.
+
+### What is embedded, and how
+
+| Store | Format written | How it is produced |
+| ----- | --------------- | ------------------- |
+| Git | `git-bundle` | `git bundle create <file> --all` |
+| Content addressed | `chronicle-file-store-v1` | A single JSON document holding the manifest plus every object, base64 encoded |
+
+Both are produced by `ISnapshotStore::packHistory()` and consumed by
+`ISnapshotStore::unpackHistory()`, so the rest of the application never has to
+know which one is in use; only the format string travels alongside the bytes
+so a future reader knows which store to hand them to.
+
+### When it is read back
+
+Opening a project reads whatever is embedded and offers it to the local
+store through `unpackHistory()`. The merge is **fast forward only**: it is
+adopted when it is at least as advanced as what this machine already has for
+that project id, and otherwise the embedded copy is quietly ignored and the
+local history is left exactly as it was. This is what makes it safe to open
+the same project on two machines without either one's history ever
+overwriting or discarding the other's revisions; the one thing it does not
+attempt is combining two histories that have genuinely diverged into one.
+
+### The save itself always succeeds
+
+Embedding happens after the project has already saved, and it can fail on
+its own: `writeChronicleBundle()` returns false when the project's database
+cannot be reached or the write itself does not go through. A failure there
+never touches the save's own result. The user instead sees a non-blocking
+notification saying that the project saved correctly but its history could
+not be embedded this time, and whatever was embedded before, if anything, is
+left in place untouched.
+
 ## Failure modes
 
 | What goes wrong | What happens |
@@ -162,6 +203,8 @@ the **Apply retention** button in the panel.
 | A git command times out (30 s) | The process is killed, the snapshot fails and the failure is logged; the panel simply shows no new revision |
 | A history object is missing during a restore | The restore fails and reports it, and nothing in the working copy is left half written |
 | The staging copy fails | The revision records what could be staged; an empty revision is still recorded rather than silently skipped |
+| Embedding the history into the save file fails | The save itself has already succeeded; a non-blocking notification says the history was not embedded this time, and the previously embedded copy, if any, is left untouched |
+| An embedded bundle is older, unrelated, or already present | It is not adopted; the local history is left exactly as it was, and nothing is reported since nothing went wrong |
 
 ## Accessibility
 
@@ -187,17 +230,25 @@ the **Apply retention** button in the panel.
   `ActionFamilyGuessesTheFamilyOfAFreeFormUndoActionName`,
   `ActionFamilyTitlesAreHumanReadable` and `OnlySaveAndRestoreAreMilestones`
   cover the family mapping and the milestone flag added above.
+- `Au3ProjectMetadata.*` in `src/au3wrap/tests/projectmetadata_tests.cpp`
+  covers the stable project id (generated once, read back unchanged, distinct
+  per database, an unreachable database returning empty rather than crashing)
+  and the embedded bundle table (write and read round trip exactly, a second
+  write replaces rather than appends, reading with nothing embedded yet
+  returns empty, an unreachable database and an empty byte array are both
+  refused rather than crashing).
+- `FallbackStorePackAndUnpackRoundTripsTheWholeHistory` and
+  `GitBackedStorePackAndUnpackRoundTripsTheWholeHistory` in
+  `snapshotstore_tests.cpp` pack a store with two real revisions, unpack it
+  into a freshly opened second store, and assert every revision id and label
+  came across along with a genuinely restorable file (exported and read back
+  byte for byte), then re-apply the same bundle and assert nothing was lost
+  or duplicated by doing so again.
 
 ## What this feature does not do yet
 
 Stated plainly rather than left as a silent gap:
 
-- The repository beside the application data directory is not yet embedded
-  into the `.aup4` project file itself, so the history does not currently
-  travel with the file to another machine. The project id is derived by
-  hashing the project's file path rather than being stored as a stable id in
-  the project file's own metadata, so moving or renaming a project file
-  currently starts a new history for it rather than continuing the old one.
 - The panel does not yet show a waveform thumbnail of the affected region, a
   day by day timeline chip rail, a two revision compare view, or a repository
   size and per track sample data storage panel. It does not yet let a version

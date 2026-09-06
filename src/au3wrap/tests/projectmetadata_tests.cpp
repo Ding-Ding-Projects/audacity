@@ -73,3 +73,56 @@ TEST(Au3ProjectMetadata, AZeroProjectPointerReturnsAnEmptyIdRatherThanCrashing)
 {
     EXPECT_TRUE(chronicleStableProjectId(0).isEmpty());
 }
+
+TEST(Au3ProjectMetadata, WriteAndReadBundleRoundTripsExactly)
+{
+    ScopedInMemoryDb db;
+
+    const QByteArray original("a packed history bundle, standing in for real git bundle bytes");
+    ASSERT_TRUE(internal::writeChronicleBundleToDb(db.get(), original, "git-bundle"));
+
+    QString format;
+    const QByteArray readBack = internal::readChronicleBundleFromDb(db.get(), &format);
+    EXPECT_EQ(readBack, original);
+    EXPECT_EQ(format, QString("git-bundle"));
+}
+
+TEST(Au3ProjectMetadata, WritingASecondBundleReplacesTheFirstRatherThanAppending)
+{
+    ScopedInMemoryDb db;
+
+    ASSERT_TRUE(internal::writeChronicleBundleToDb(db.get(), "first bundle", "chronicle-file-store-v1"));
+    ASSERT_TRUE(internal::writeChronicleBundleToDb(db.get(), "second, newer bundle", "chronicle-file-store-v1"));
+
+    QString format;
+    const QByteArray readBack = internal::readChronicleBundleFromDb(db.get(), &format);
+    EXPECT_EQ(readBack, QByteArray("second, newer bundle"));
+}
+
+TEST(Au3ProjectMetadata, ReadingWithNothingEmbeddedReturnsAnEmptyArray)
+{
+    ScopedInMemoryDb db;
+
+    QString format;
+    EXPECT_TRUE(internal::readChronicleBundleFromDb(db.get(), &format).isEmpty());
+    EXPECT_TRUE(format.isEmpty());
+}
+
+TEST(Au3ProjectMetadata, WriteAndReadRejectAnUnreachableDatabaseRatherThanCrashing)
+{
+    EXPECT_FALSE(internal::writeChronicleBundleToDb(nullptr, "bytes", "git-bundle"));
+    EXPECT_TRUE(internal::readChronicleBundleFromDb(nullptr, nullptr).isEmpty());
+    EXPECT_TRUE(writeChronicleBundle(0, "bytes", "git-bundle") == false);
+    EXPECT_TRUE(readChronicleBundle(0, nullptr).isEmpty());
+}
+
+TEST(Au3ProjectMetadata, WritingAnEmptyByteArrayIsRefusedRatherThanClearingTheBundle)
+{
+    ScopedInMemoryDb db;
+
+    ASSERT_TRUE(internal::writeChronicleBundleToDb(db.get(), "a real bundle", "git-bundle"));
+    EXPECT_FALSE(internal::writeChronicleBundleToDb(db.get(), QByteArray(), "git-bundle"));
+
+    QString format;
+    EXPECT_EQ(internal::readChronicleBundleFromDb(db.get(), &format), QByteArray("a real bundle"));
+}
