@@ -54,12 +54,13 @@ function Wait-Child($Process) {
     return $Process.ExitCode
 }
 $tests=[ordered]@{
-    'framework hashing works without Get-FileHash command resolution'={
+    'cold archive miss works without Get-FileHash command resolution'={
+        Require (!(Test-Path -LiteralPath $cache)) 'The archive cache is absent before the cold run'
         function global:Get-FileHash { throw 'Unexpected Get-FileHash dependency' }
         try { $destination=Fresh 'framework-hash'; Preserved $destination }
         finally { Remove-Item Function:\Get-FileHash -ErrorAction SilentlyContinue }
     }
-    'cold archive miss and warm verification'={
+    'warm verification reuses one pinned archive'={
         $destination=Fresh 'cold'
         Preserved $destination
         Require (@(Get-ChildItem -LiteralPath $cache -Filter '*.zip').Count -eq 1) 'Exactly one verified archive was downloaded'
