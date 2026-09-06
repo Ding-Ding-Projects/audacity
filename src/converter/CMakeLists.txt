@@ -14,6 +14,8 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/conversionengine.h
     ${CMAKE_CURRENT_LIST_DIR}/conversionengine.cpp
     ${CMAKE_CURRENT_LIST_DIR}/nativefiletransaction.h
+    ${CMAKE_CURRENT_LIST_DIR}/pdfprocessor.h
+    ${CMAKE_CURRENT_LIST_DIR}/pdfprocessor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/conversionqueue.h
     ${CMAKE_CURRENT_LIST_DIR}/conversionqueue.cpp
 )

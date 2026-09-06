@@ -116,6 +116,9 @@ dox/
 
 # Executables
 *.exe
+!buildscripts/converter-tools/*.ps1
+# Pinned qpdf manifests and bootstrap code are source; downloaded tool binaries are not.
+buildscripts/converter-tools/output/
 *.app
 
 # Executable without extension

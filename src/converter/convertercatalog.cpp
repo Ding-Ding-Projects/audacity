@@ -3,6 +3,7 @@
 */
 
 #include "convertercatalog.h"
+#include "pdfprocessor.h"
 
 #include <QImageReader>
 #include <QImageWriter>
@@ -52,6 +53,20 @@ AdapterDescriptor unavailable(const QString& category, const QString& source, co
     descriptor.unavailableReason = reason;
     return descriptor;
 }
+
+AdapterDescriptor pdfAdapter()
+{
+    AdapterDescriptor descriptor;
+    descriptor.id = QStringLiteral("bundled-qpdf-document-operations");
+    descriptor.category = QStringLiteral("Documents/PDF");
+    descriptor.sourceFormat = QStringLiteral("PDF");
+    descriptor.targetFormat = QStringLiteral("PDF");
+    descriptor.displayName = QStringLiteral("PDF document operations");
+    descriptor.bundled = PdfProcessor::available();
+    descriptor.enabled = descriptor.bundled;
+    descriptor.unavailableReason = PdfProcessor::availabilityReason();
+    return descriptor;
+}
 }
 
 QVector<AdapterDescriptor> ConverterCatalog::adapters()
@@ -61,8 +76,7 @@ QVector<AdapterDescriptor> ConverterCatalog::adapters()
         imageAdapter("jpeg", "png", false),
         imageAdapter("png", "bmp", false),
         imageAdapter("bmp", "png", false),
-        unavailable(QStringLiteral("Documents/PDF"), QStringLiteral("PDF"), QStringLiteral("PDF"),
-                    QStringLiteral("No bundled offline PDF adapter is registered in this build.")),
+        pdfAdapter(),
         unavailable(QStringLiteral("Audio"), QStringLiteral("WAV"), QStringLiteral("MP3"),
                     QStringLiteral("No bundled offline audio conversion adapter is registered in this build.")),
         unavailable(QStringLiteral("Video"), QStringLiteral("MP4"), QStringLiteral("WEBM"),

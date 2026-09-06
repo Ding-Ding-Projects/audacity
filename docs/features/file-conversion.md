@@ -2,7 +2,7 @@
 
 This backend slice adds `src/converter`, an unregistered Qt module for a future
 local file-converter surface. It does not provide a user interface, application
-registration, translations, packaged-artifact proof, PDF tools, audio
+registration, translations, packaged-artifact proof, full PDF product integration, audio
 conversion, or video conversion.
 
 ## Current adapter catalog
@@ -13,7 +13,17 @@ report both decoding and encoding support. PDF, audio, video, archives,
 structured data, code/text and binary encodings remain visible as disabled
 adapters with precise reasons.
 
-The module does not search `PATH`, launch command-line tools or scripts, or use
+The PDF catalog entry is enabled only when the packaged `converter-tools/qpdf/qpdf.exe`
+matches the pinned SHA-256 in `buildscripts/converter-tools/qpdf.lock.json`. It
+never searches `PATH` or accepts a developer tool. The adapter runs fixed qpdf
+arguments only, has a 60-second process deadline, caps source and output files,
+rejects encrypted inputs that need credentials, writes a private temporary file,
+reopens it with `--check` and `--show-npages`, and never overwrites an existing
+destination. qpdf currently covers inspect, merge, extract, reorder, rotate,
+and split requests. Metadata editing is honestly disabled until a verified qpdf
+JSON profile is bundled, because a placeholder is not a document operation.
+
+The module does not search `PATH`, launch arbitrary command-line tools or scripts, or use
 network services. Runtime plugin presence is not packaged-application proof;
 the application integration must validate bundled plugin provenance before
 presenting these adapters as installed-product capabilities.
@@ -93,7 +103,9 @@ progress/cancellation to bounded workers, provide storage-capacity preflight,
 prove bundled Qt plugins, implement safe approved overwrite, and integrate
 process isolation, execution limits and durable crash recovery.
 
-The full converter also requires document/PDF operations, audio/video and other
+The full converter still requires package installation of the verified qpdf
+distribution, metadata JSON profile support, output-order/rotation/metadata
+semantic assertions, and full application integration. It also requires audio/video and other
 category adapters, batch history/exports, accessibility, responsive behavior,
 notifications, command-palette routing, and real packaged-application
 interaction and capture evidence. These are not implemented by this backend.

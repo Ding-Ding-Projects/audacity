@@ -4,6 +4,7 @@
 
 #include "conversionengine.h"
 #include "conversionqueue.h"
+#include "pdfprocessor.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -52,5 +53,8 @@ int main(int argc, char** argv)
     if (!expect(page.size() == 1 && queue.cancel(page.first().id), "paged cancellation")) return 1;
     ConversionQueue restarted(directory.filePath(QStringLiteral("queue")));
     if (!expect(restarted.load() && restarted.count() == 1, "durable restart")) return 1;
+    PdfProcessor pdf;
+    const PdfResult unavailable = pdf.process({ PdfOperation::Inspect, { directory.filePath(QStringLiteral("missing.pdf")) } });
+    if (!expect(!unavailable.ok && !unavailable.message.isEmpty(), "bounded PDF unavailable state")) return 1;
     return 0;
 }

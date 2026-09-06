@@ -9,6 +9,7 @@ add_executable(converter_core_smoke
     ../../convertercatalog.cpp
     ../../conversionengine.cpp
     ../../conversionqueue.cpp
+    ../../pdfprocessor.cpp
 )
 target_include_directories(converter_core_smoke PRIVATE ../..)
 target_link_libraries(converter_core_smoke PRIVATE Qt6::Core Qt6::Gui)
@@ -23,6 +24,7 @@ if(WIN32)
         ../native_transactions.cpp
         ../../convertercatalog.cpp
         ../../conversionengine.cpp
+        ../../pdfprocessor.cpp
     )
     target_include_directories(converter_native_transactions PRIVATE ../..)
     target_compile_definitions(converter_native_transactions PRIVATE AU_CONVERTER_TEST_HOOKS)

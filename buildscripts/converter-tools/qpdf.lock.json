@@ -1,0 +1,9 @@
+{
+  "name": "qpdf",
+  "version": "12.3.2",
+  "platform": "windows-x64-msvc",
+  "source": "https://github.com/qpdf/qpdf/releases/download/v12.3.2/qpdf-12.3.2-msvc64.zip",
+  "archiveSha256": "8941870a604e7c87ed24566b038d46c24ce76616254d2383c578f60c0677f202",
+  "binarySha256": "43f79db620ce09529a67572a5de87aec4065b95f11ba6e5918db557f943a7eac",
+  "installRelativePath": "converter-tools/qpdf/qpdf.exe"
+}
