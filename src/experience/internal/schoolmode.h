@@ -44,6 +44,14 @@ public:
         SchoolModeRecord record;
     };
 
+    struct SharedRecordResult
+    {
+        bool available = false;
+        bool hasKnownRecord = false;
+        QString error;
+        SchoolModeRecord record;
+    };
+
     static ParseResult parse(const QByteArray& json);
     static QByteArray serialize(const SchoolModeRecord& record);
 
@@ -59,11 +67,8 @@ public:
     //! directory, so every app on this machine that honours School mode
     //! reads and writes the same file.
     static QString sharedFilePath();
-
-    //! Reads the current shared record. An unreadable or malformed record is
-    //! treated as off, because a broken user-experience lock must never
-    //! manufacture a lockout. Callers that need the parse error use parse().
-    static SchoolModeRecord sharedRecord();
+    static ParseResult readRecordFile(const QString& path);
+    static SharedRecordResult sharedRecord();
 };
 
 //! Watches the shared file and exposes the live state to the rest of the
@@ -75,9 +80,11 @@ class SchoolModeService : public QObject
     Q_OBJECT
 
 public:
-    explicit SchoolModeService(QObject* parent = nullptr);
+    explicit SchoolModeService(QObject* parent = nullptr, const QString& recordPath = QString());
 
     bool isOn() const { return m_record.on; }
+    bool isAvailable() const { return m_available; }
+    QString error() const { return m_error; }
     QString displayName() const { return m_record.displayName; }
     bool hasCredential() const { return !m_record.credentialHashHex.isEmpty(); }
 
@@ -100,6 +107,10 @@ private:
     void onFileChanged();
 
     SchoolModeRecord m_record;
+    QString m_recordPath;
+    bool m_available = true;
+    bool m_hasKnownRecord = false;
+    QString m_error;
     QFileSystemWatcher* m_watcher = nullptr;
 };
 }

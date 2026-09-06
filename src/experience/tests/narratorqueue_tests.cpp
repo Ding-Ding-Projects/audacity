@@ -69,3 +69,19 @@ TEST(NarratorQueueTests, OneAtATimeNeverOverlaps)
     EXPECT_EQ(queue.size(), 1);
     EXPECT_EQ(first.text, QStringLiteral("A"));
 }
+
+TEST(NarratorQueueTests, KeepsLaterUtterancesPendingUntilTheConsumerAdvances)
+{
+    NarratorQueue queue;
+    ASSERT_TRUE(queue.enqueue(makeUtterance(QStringLiteral("First")), 0));
+    ASSERT_TRUE(queue.enqueue(makeUtterance(QStringLiteral("Second")), 10000));
+    ASSERT_TRUE(queue.enqueue(makeUtterance(QStringLiteral("Third")), 20000));
+
+    const NarratorUtterance first = queue.popNext();
+    EXPECT_EQ(first.text, QStringLiteral("First"));
+    EXPECT_EQ(queue.size(), 2);
+
+    const NarratorUtterance second = queue.popNext();
+    EXPECT_EQ(second.text, QStringLiteral("Second"));
+    EXPECT_EQ(queue.size(), 1);
+}

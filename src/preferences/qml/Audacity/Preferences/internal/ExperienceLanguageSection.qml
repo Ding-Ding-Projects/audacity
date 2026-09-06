@@ -14,6 +14,10 @@ BaseSection {
 
     property var settingsModel: null
 
+    // A confirmed active School mode removes the entire route. A record that
+    // cannot be read stays visible so the unavailable state is never hidden.
+    visible: !settingsModel || !settingsModel.schoolModeOn || !settingsModel.schoolModeAvailable
+
     title: qsTrc("preferences", "Language mode")
 
     M3SegmentedButton {
@@ -34,6 +38,11 @@ BaseSection {
         ]
 
         currentIndex: root.settingsModel ? root.settingsModel.languageMode : 0
+        // School mode removes this route entirely. An unreadable shared
+        // record is different: keep the current choice visible but prevent a
+        // change while the runtime uses its conservative English fallback.
+        visible: !root.settingsModel || !root.settingsModel.schoolModeOn
+        enabled: !root.settingsModel || root.settingsModel.schoolModeAvailable
 
         navigationPanel: root.navigation
         navigationRowStart: 1
@@ -49,7 +58,18 @@ BaseSection {
         wrapMode: Text.WordWrap
         color: M3.color.onSurfaceVariant
         font: M3.typography.bodyMedium
+        visible: !root.settingsModel || !root.settingsModel.schoolModeOn
         text: qsTrc("preferences", "Bilingual shows the English text and the Cantonese text together, separated by a slash.")
+    }
+
+    StyledTextLabel {
+        width: parent.width
+        horizontalAlignment: Text.AlignLeft
+        wrapMode: Text.WordWrap
+        color: M3.color.error
+        font: M3.typography.bodyMedium
+        visible: root.settingsModel && !root.settingsModel.schoolModeAvailable
+        text: root.settingsModel ? root.settingsModel.schoolModeError : ""
     }
 
     StyledTextLabel {

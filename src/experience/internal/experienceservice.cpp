@@ -102,12 +102,13 @@ void ExperienceService::applyLanguageMode()
 
 LanguageMode ExperienceService::effectiveLanguageMode() const
 {
-    return m_schoolMode && m_schoolMode->isOn() ? LanguageMode::English : configuration()->languageMode();
+    return m_schoolMode && (!m_schoolMode->isAvailable() || m_schoolMode->isOn())
+           ? LanguageMode::English : configuration()->languageMode();
 }
 
 void ExperienceService::applySchoolMode()
 {
-    if (m_schoolMode && m_schoolMode->isOn()) {
+    if (m_schoolMode && (!m_schoolMode->isAvailable() || m_schoolMode->isOn())) {
         // The stored table remains on disk. Clearing only the live table keeps
         // the lock reversible and restores the user's exact prior choice.
         if (m_translator) {

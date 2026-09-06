@@ -318,6 +318,16 @@ bool ExperienceSettingsModel::schoolModeOn() const
     return m_schoolMode && m_schoolMode->isOn();
 }
 
+bool ExperienceSettingsModel::schoolModeAvailable() const
+{
+    return !m_schoolMode || m_schoolMode->isAvailable();
+}
+
+QString ExperienceSettingsModel::schoolModeError() const
+{
+    return m_schoolMode ? m_schoolMode->error() : QString();
+}
+
 QString ExperienceSettingsModel::schoolModeDisplayName() const
 {
     return m_schoolMode ? m_schoolMode->displayName() : QStringLiteral("School mode");

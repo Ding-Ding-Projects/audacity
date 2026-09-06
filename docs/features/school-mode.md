@@ -60,3 +60,9 @@ update forces English, clears only the live personal-vocabulary table, and
 suppresses funny-level decoration. The stored language, levels, and vocabulary
 file are never rewritten, so turning the shared record off restores the exact
 prior choices.
+
+If the shared record becomes unreadable or malformed after a valid read, the
+running application retains its last known mode and surfaces an unavailable
+state with the read error. At startup without a usable record, the runtime uses
+the conservative English/plain presentation until the unavailable state is
+resolved; it never silently reports that the shared control is off.

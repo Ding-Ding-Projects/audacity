@@ -155,8 +155,13 @@ QString pick(const QStringList& phrases, const QString& plainText, int salt)
 
 QString MessageStyler::style(MessageKind kind, const QString& plainText) const
 {
-    const SchoolModeRecord schoolMode = SchoolModeStore::sharedRecord();
-    if (schoolMode.on) {
+    const SchoolModeStore::SharedRecordResult schoolMode = SchoolModeStore::sharedRecord();
+    if (!schoolMode.available && !schoolMode.hasKnownRecord) {
+        // Startup has no safe prior state. Keep the surface plain and English
+        // until the preferences control can expose the unavailable record.
+        return styleWith(kind, plainText, LanguageMode::English, 1, 1, configuration()->emojiInDialogs());
+    }
+    if (schoolMode.record.on) {
         // Keep the persisted sliders untouched. School mode only stops the
         // running surface from consulting them until the shared record is off.
         return styleWith(kind, plainText, LanguageMode::English, 1, 1, configuration()->emojiInDialogs());

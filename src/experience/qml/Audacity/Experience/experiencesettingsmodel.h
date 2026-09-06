@@ -62,6 +62,8 @@ class ExperienceSettingsModel : public QObject, public muse::Contextable, public
     Q_PROPERTY(QString narratorEngineDescription READ narratorEngineDescription CONSTANT FINAL)
 
     Q_PROPERTY(bool schoolModeOn READ schoolModeOn NOTIFY schoolModeChanged FINAL)
+    Q_PROPERTY(bool schoolModeAvailable READ schoolModeAvailable NOTIFY schoolModeChanged FINAL)
+    Q_PROPERTY(QString schoolModeError READ schoolModeError NOTIFY schoolModeChanged FINAL)
     Q_PROPERTY(QString schoolModeDisplayName READ schoolModeDisplayName NOTIFY schoolModeChanged FINAL)
     Q_PROPERTY(bool schoolModeHasCredential READ schoolModeHasCredential NOTIFY schoolModeChanged FINAL)
 
@@ -137,6 +139,8 @@ public:
     QString narratorEngineDescription() const;
 
     bool schoolModeOn() const;
+    bool schoolModeAvailable() const;
+    QString schoolModeError() const;
     QString schoolModeDisplayName() const;
     bool schoolModeHasCredential() const;
     //! Turns School mode on. When no credential exists yet, newCredential

@@ -110,23 +110,42 @@ QString SchoolModeStore::sharedFilePath()
     return dir.absoluteFilePath(QStringLiteral("shared/school-mode.json"));
 }
 
-SchoolModeRecord SchoolModeStore::sharedRecord()
+SchoolModeStore::ParseResult SchoolModeStore::readRecordFile(const QString& path)
 {
-    QFile file(sharedFilePath());
-    if (!file.open(QIODevice::ReadOnly)) {
-        return SchoolModeRecord();
+    QFile file(path);
+    if (!file.exists()) {
+        return parse(QByteArray());
     }
-
-    const ParseResult result = parse(file.readAll());
-    return result.ok ? result.record : SchoolModeRecord();
+    if (!file.open(QIODevice::ReadOnly)) {
+        ParseResult result;
+        result.error = QStringLiteral("The shared School mode record could not be read.");
+        return result;
+    }
+    return parse(file.readAll());
 }
 
-SchoolModeService::SchoolModeService(QObject* parent)
-    : QObject(parent), m_watcher(new QFileSystemWatcher(this))
+SchoolModeStore::SharedRecordResult SchoolModeStore::sharedRecord()
+{
+    static SchoolModeRecord lastKnownRecord;
+    static bool hasKnownRecord = false;
+
+    const ParseResult result = readRecordFile(sharedFilePath());
+    if (result.ok) {
+        lastKnownRecord = result.record;
+        hasKnownRecord = true;
+        return { true, true, QString(), result.record };
+    }
+
+    return { false, hasKnownRecord, result.error, lastKnownRecord };
+}
+
+SchoolModeService::SchoolModeService(QObject* parent, const QString& recordPath)
+    : QObject(parent), m_recordPath(recordPath.isEmpty() ? SchoolModeStore::sharedFilePath() : recordPath),
+      m_watcher(new QFileSystemWatcher(this))
 {
     reload();
 
-    const QString path = SchoolModeStore::sharedFilePath();
+    const QString path = m_recordPath;
     QDir().mkpath(QFileInfo(path).absolutePath());
     if (QFile::exists(path)) {
         m_watcher->addPath(path);
@@ -139,17 +158,41 @@ SchoolModeService::SchoolModeService(QObject* parent)
 
 void SchoolModeService::reload()
 {
-    m_record = SchoolModeStore::sharedRecord();
+    const SchoolModeStore::ParseResult result = SchoolModeStore::readRecordFile(m_recordPath);
+    if (result.ok) {
+        m_record = result.record;
+        m_available = true;
+        m_hasKnownRecord = true;
+        m_error.clear();
+        if (m_recordPath == SchoolModeStore::sharedFilePath()) {
+            // Prime the process-wide reader used by synchronous presentation
+            // helpers, so a later corrupt live read retains this same record.
+            SchoolModeStore::sharedRecord();
+        }
+        return;
+    }
+
+    m_available = false;
+    m_error = result.error;
+    if (!m_hasKnownRecord) {
+        m_record = SchoolModeRecord();
+    }
 }
 
 void SchoolModeService::save()
 {
-    const QString path = SchoolModeStore::sharedFilePath();
+    const QString path = m_recordPath;
     QDir().mkpath(QFileInfo(path).absolutePath());
 
     QFile file(path);
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         file.write(SchoolModeStore::serialize(m_record));
+        m_available = true;
+        m_hasKnownRecord = true;
+        m_error.clear();
+    } else {
+        m_available = false;
+        m_error = QStringLiteral("The shared School mode record could not be written.");
     }
 
     if (!m_watcher->files().contains(path)) {
