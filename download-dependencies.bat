@@ -12,9 +12,12 @@ rem ---------------------------------------------------------------------------
 
 set "REQUESTED_SILENT=%SILENT%"
 set "SILENT=0"
+set "BUILD_ONLY=0"
 if /I "%REQUESTED_SILENT%"=="1" set "SILENT=1"
 if /I "%~1"=="/s" set "SILENT=1"
 if /I "%~1"=="--silent" set "SILENT=1"
+if /I "%~1"=="/build" set "BUILD_ONLY=1"
+if /I "%~2"=="/build" set "BUILD_ONLY=1"
 
 set "ROOT=%~dp0"
 set "TOOLS=%ROOT%build.tools"
@@ -110,22 +113,17 @@ if exist "%QT_ROOT%\%QT_VERSION%\msvc2022_64\bin\qmake.exe" (
 
 echo.
 echo === Fetching nuget.exe and the pinned squirrel.windows package
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$ErrorActionPreference='Stop';" ^
-  "$lock = Get-Content '%ROOT%buildscripts\packaging\Windows\Squirrel\squirrel.lock.json' -Raw | ConvertFrom-Json;" ^
-  "$dir = '%TOOLS%\squirrel'; New-Item -ItemType Directory -Force -Path $dir | Out-Null;" ^
-  "function Fetch($url, $sha, $dest) {" ^
-  "  if (Test-Path $dest) { if ((Get-FileHash $dest -Algorithm SHA256).Hash -ieq $sha) { Write-Host \"Reusing $dest\"; return } }" ^
-  "  Write-Host \"Downloading $url\"; Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing;" ^
-  "  $a = (Get-FileHash $dest -Algorithm SHA256).Hash;" ^
-  "  if ($a -ine $sha) { throw \"SHA256 mismatch for $url\" }; Write-Host \"Verified $a\" }" ^
-  "Fetch $lock.nuget.url $lock.nuget.sha256 (Join-Path $dir 'nuget.exe');" ^
-  "Fetch $lock.squirrel.url $lock.squirrel.sha256 (Join-Path $dir ('squirrel.windows.' + $lock.squirrel.version + '.nupkg'))"
+if "%BUILD_ONLY%"=="1" (
+  echo Skipping installer-only Squirrel tools for the application build.
+  goto dependencies_ready
+)
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "%ROOT%buildscripts\ci\windows\fetch_squirrel_tools.ps1" -Root "%ROOT%." -ToolsDir "%TOOLS%\squirrel"
 if errorlevel 1 (
   echo ERROR: the packaging tool download failed.
   exit /b 1
 )
 
+:dependencies_ready
 echo.
 echo === All dependencies are ready
 echo Qt:        %QT_ROOT%\%QT_VERSION%\msvc2022_64

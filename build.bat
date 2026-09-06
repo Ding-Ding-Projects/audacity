@@ -20,7 +20,7 @@ echo === Material Audacity build
 
 rem A build must be usable from a fresh checkout. Keep the dependency fetcher
 rem as the single bootstrap path instead of requiring a preparatory command.
-call "%ROOT%download-dependencies.bat" /s
+call "%ROOT%download-dependencies.bat" /s /build
 if errorlevel 1 (
   echo ERROR: dependency bootstrap failed. See the phase above for the exact missing tool or download error.
   exit /b 1
