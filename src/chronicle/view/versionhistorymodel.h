@@ -25,12 +25,14 @@ class VersionHistoryModel : public QObject, public muse::Contextable, public mus
 
     Q_PROPERTY(QVariantList revisions READ revisions NOTIFY revisionsChanged)
     Q_PROPERTY(QVariantList actionCounts READ actionCounts NOTIFY revisionsChanged)
+    Q_PROPERTY(QVariantList familyCounts READ familyCounts NOTIFY revisionsChanged)
     Q_PROPERTY(QString storeKind READ storeKind NOTIFY revisionsChanged)
 
     Q_PROPERTY(QString searchText READ searchText WRITE setSearchText NOTIFY filterChanged)
     Q_PROPERTY(QString fromDate READ fromDate WRITE setFromDate NOTIFY filterChanged)
     Q_PROPERTY(QString toDate READ toDate WRITE setToDate NOTIFY filterChanged)
     Q_PROPERTY(QStringList selectedActions READ selectedActions WRITE setSelectedActions NOTIFY filterChanged)
+    Q_PROPERTY(QStringList selectedFamilies READ selectedFamilies WRITE setSelectedFamilies NOTIFY filterChanged)
 
     Q_PROPERTY(int retentionCount READ retentionCount WRITE setRetentionCount NOTIFY retentionChanged)
     Q_PROPERTY(int retentionDays READ retentionDays WRITE setRetentionDays NOTIFY retentionChanged)
@@ -44,6 +46,9 @@ public:
     QVariantList revisions() const;
     //! One entry per recorded action, with its count, for the filter chips.
     QVariantList actionCounts() const;
+    //! One entry per action family (Edit, Clip, Track, Effect, Generate,
+    //! Label, Envelope, Project settings, Save, Restore), with its count.
+    QVariantList familyCounts() const;
     QString storeKind() const;
 
     QString searchText() const { return m_searchText; }
@@ -54,6 +59,8 @@ public:
     void setToDate(const QString& value);
     QStringList selectedActions() const { return m_selectedActions; }
     void setSelectedActions(const QStringList& value);
+    QStringList selectedFamilies() const { return m_selectedFamilies; }
+    void setSelectedFamilies(const QStringList& value);
 
     Q_INVOKABLE void clearFilters();
 
@@ -87,5 +94,6 @@ private:
     QString m_fromDate;
     QString m_toDate;
     QStringList m_selectedActions;
+    QStringList m_selectedFamilies;
 };
 }

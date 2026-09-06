@@ -10,6 +10,35 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Local history: every undoable edit (cut, paste, moving a clip, applying an
+  effect, adding or deleting a track, editing a label or an envelope point,
+  and so on) is now recorded as its own revision, named after the edit
+  itself, controlled by a new `chronicle/commitOnEveryAction` setting that
+  defaults to on. A drag that Audacity's own undo stack already consolidates
+  into one entry becomes exactly one revision, taken when the drag settles.
+  Every recorded action is also grouped into one of ten families (Edit, Clip,
+  Track, Effect, Generate, Label, Envelope, Project settings, Save, Restore)
+  so the version history panel's filter chips read the way a user thinks
+  about their own work, and saves and restores are marked as milestones.
+
+- Personalize module: the per element appearance editor grew a full layered
+  style workspace on top of its existing typography, colour and radius
+  overrides, an ordered stack of fill (solid, two stop gradient, local
+  image), stroke, shadow, glow, blur, tonal adjustment, transform and mask
+  layers per element and per interaction state (normal, hover, focus,
+  pressed, selected, disabled, dragged, error, loading, success, warning),
+  each with its own opacity and blend mode; a new `AppearanceLayers`
+  singleton stores it as versioned JSON separate from the flat overrides
+  file, and a new `M3AppearanceLayers` item in the shared Material 3
+  component library renders the stack live using `QtQuick.Effects`, wired
+  into `M3Surface` and `M3Button` behind an opt in element id so every
+  existing element that has not customised a layer stack pays nothing; the
+  editor itself became a resizable, draggable side sheet with tabs for
+  typography, layers, fill, stroke, effects, adjustments, transform and
+  preview, an in memory undo and redo stack recorded through the personalize
+  mutation history, a before/after toggle, a multi state preview strip, and
+  a capability matrix in its documentation naming exactly which tools are
+  implemented, partial, or not yet supported
 - UI components module: every `M3Menu` and the flat list popup used by
   `M3Dropdown` now show a keyboard focusable filter field by default, not
   only for long menus, plain text matching first with the field's own

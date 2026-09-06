@@ -46,4 +46,19 @@ inline const QString Manual = QStringLiteral("manual");
 
 //! Human readable titles for the action identifiers above.
 QString actionTitle(const QString& action);
+
+//! The family an action belongs to, used to group the filter chips the way an
+//! audio editor user thinks about their work rather than by the raw action
+//! identifier. One of "edit", "clip", "track", "effect", "generate", "label",
+//! "envelope", "project-settings", "save" or "restore".
+QString actionFamily(const QString& action);
+
+//! Human readable title for a family identifier, for example "edit" becomes
+//! "Edit".
+QString actionFamilyTitle(const QString& family);
+
+//! Whether a revision produced by this action should be marked as a milestone
+//! in the panel (a save, an export or a restore), independent of any label or
+//! star the user later adds.
+bool isMilestoneAction(const QString& action);
 }

@@ -21,9 +21,11 @@ using namespace au::chronicle;
 static const std::string MODULE_NAME("chronicle");
 static const muse::Settings::Key RETENTION_COUNT(MODULE_NAME, "chronicle/retentionCount");
 static const muse::Settings::Key RETENTION_DAYS(MODULE_NAME, "chronicle/retentionDays");
+static const muse::Settings::Key COMMIT_ON_EVERY_ACTION(MODULE_NAME, "chronicle/commitOnEveryAction");
 
 static const int DEFAULT_RETENTION_COUNT = 200;
 static const int DEFAULT_RETENTION_DAYS = 90;
+static const bool DEFAULT_COMMIT_ON_EVERY_ACTION = true;
 
 static const int SETTINGS_DEBOUNCE_MS = 1500;
 
@@ -48,6 +50,114 @@ QString au::chronicle::actionTitle(const QString& action)
         return QStringLiteral("Discarded unsaved work");
     }
     return QStringLiteral("Snapshot");
+}
+
+QString au::chronicle::actionFamily(const QString& action)
+{
+    if (action == actions::ProjectSave) {
+        return QStringLiteral("save");
+    }
+    if (action == actions::Restore || action == actions::DiscardUnsaved) {
+        return QStringLiteral("restore");
+    }
+    if (action == actions::SettingsChange || action == actions::PresetSave || action == actions::PresetDelete) {
+        return QStringLiteral("project-settings");
+    }
+
+    // Everything below this line is a free form action name coming from the
+    // undo stack itself, for example "Cut", "Move clip", "Amplify" or
+    // "Add track". Audacity does not carry a stable identifier for these, so
+    // the family is guessed from keywords in the name. A name that matches
+    // nothing recognised is kept in "edit" rather than dropped, so it still
+    // shows up somewhere in the filter chips.
+    const QString lower = action.toLower();
+
+    static const QStringList trackWords{ QStringLiteral("track") };
+    static const QStringList clipWords{
+        QStringLiteral("clip"), QStringLiteral("move"), QStringLiteral("split"), QStringLiteral("trim"),
+        QStringLiteral("join"), QStringLiteral("stretch"), QStringLiteral("duplicate")
+    };
+    static const QStringList generateWords{
+        QStringLiteral("generate"), QStringLiteral("tone"), QStringLiteral("noise"), QStringLiteral("silence"),
+        QStringLiteral("chirp"), QStringLiteral("dtmf")
+    };
+    static const QStringList labelWords{ QStringLiteral("label") };
+    static const QStringList envelopeWords{ QStringLiteral("envelope") };
+    static const QStringList effectWords{
+        QStringLiteral("effect"), QStringLiteral("amplify"), QStringLiteral("compress"), QStringLiteral("reverb"),
+        QStringLiteral("equal"), QStringLiteral("normali"), QStringLiteral("limiter"), QStringLiteral("filter"),
+        QStringLiteral("fade"), QStringLiteral("nyquist"), QStringLiteral("apply"), QStringLiteral("reduction")
+    };
+
+    auto matchesAny = [&lower](const QStringList& words) {
+        for (const QString& word : words) {
+            if (lower.contains(word)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    if (matchesAny(trackWords)) {
+        return QStringLiteral("track");
+    }
+    if (matchesAny(effectWords)) {
+        return QStringLiteral("effect");
+    }
+    if (matchesAny(generateWords)) {
+        return QStringLiteral("generate");
+    }
+    if (matchesAny(labelWords)) {
+        return QStringLiteral("label");
+    }
+    if (matchesAny(envelopeWords)) {
+        return QStringLiteral("envelope");
+    }
+    if (matchesAny(clipWords)) {
+        return QStringLiteral("clip");
+    }
+
+    return QStringLiteral("edit");
+}
+
+QString au::chronicle::actionFamilyTitle(const QString& family)
+{
+    if (family == QStringLiteral("edit")) {
+        return QStringLiteral("Edit");
+    }
+    if (family == QStringLiteral("clip")) {
+        return QStringLiteral("Clip");
+    }
+    if (family == QStringLiteral("track")) {
+        return QStringLiteral("Track");
+    }
+    if (family == QStringLiteral("effect")) {
+        return QStringLiteral("Effect");
+    }
+    if (family == QStringLiteral("generate")) {
+        return QStringLiteral("Generate");
+    }
+    if (family == QStringLiteral("label")) {
+        return QStringLiteral("Label");
+    }
+    if (family == QStringLiteral("envelope")) {
+        return QStringLiteral("Envelope");
+    }
+    if (family == QStringLiteral("project-settings")) {
+        return QStringLiteral("Project settings");
+    }
+    if (family == QStringLiteral("save")) {
+        return QStringLiteral("Save");
+    }
+    if (family == QStringLiteral("restore")) {
+        return QStringLiteral("Restore");
+    }
+    return QStringLiteral("Edit");
+}
+
+bool au::chronicle::isMilestoneAction(const QString& action)
+{
+    return action == actions::ProjectSave || action == actions::Restore;
 }
 
 VersionHistoryService::VersionHistoryService()
@@ -90,6 +200,7 @@ void VersionHistoryService::init()
 {
     muse::settings()->setDefaultValue(RETENTION_COUNT, muse::Val(DEFAULT_RETENTION_COUNT));
     muse::settings()->setDefaultValue(RETENTION_DAYS, muse::Val(DEFAULT_RETENTION_DAYS));
+    muse::settings()->setDefaultValue(COMMIT_ON_EVERY_ACTION, muse::Val(DEFAULT_COMMIT_ON_EVERY_ACTION));
 
     // The settings file is watched rather than every individual key, so any
     // preference change produces exactly one snapshot rather than one per key.
@@ -347,4 +458,14 @@ int VersionHistoryService::retentionDays() const
 void VersionHistoryService::setRetentionDays(int value)
 {
     muse::settings()->setSharedValue(RETENTION_DAYS, muse::Val(value));
+}
+
+bool VersionHistoryService::commitOnEveryAction() const
+{
+    return muse::settings()->value(COMMIT_ON_EVERY_ACTION).toBool();
+}
+
+void VersionHistoryService::setCommitOnEveryAction(bool value)
+{
+    muse::settings()->setSharedValue(COMMIT_ON_EVERY_ACTION, muse::Val(value));
 }

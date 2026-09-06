@@ -13,6 +13,10 @@ void ProjectHistoryWatcher::init()
         onCurrentProjectChanged();
     });
 
+    projectHistory()->historyChanged().onReceive(this, [this](trackedit::HistoryEvent event) {
+        onHistoryChanged(event);
+    });
+
     onCurrentProjectChanged();
 }
 
@@ -36,6 +40,7 @@ void ProjectHistoryWatcher::onCurrentProjectChanged()
     versionHistory()->setCurrentProject(id, path);
 
     m_lastNeedSave = project->needSave().val;
+    m_lastActionCount = projectHistory()->undoRedoActionCount();
 
     project->needSaveChanged().onNotify(this, [this]() {
         const auto current = globalContext()->currentProject();
@@ -58,4 +63,40 @@ void ProjectHistoryWatcher::onCurrentProjectChanged()
             versionHistory()->recordSnapshot(actions::DiscardUnsaved, current->displayName());
         }
     });
+}
+
+void ProjectHistoryWatcher::onHistoryChanged(trackedit::HistoryEvent event)
+{
+    if (!versionHistory()->commitOnEveryAction()) {
+        return;
+    }
+
+    if (!globalContext()->currentProject()) {
+        return;
+    }
+
+    // RestoredState fires for undo and redo themselves. A revision recording
+    // that the user moved through their own history would only clutter it,
+    // and the states it moves between are already on record.
+    if (event != trackedit::HistoryEvent::NewState) {
+        return;
+    }
+
+    const size_t count = projectHistory()->undoRedoActionCount();
+    if (count == m_lastActionCount) {
+        // A continuous drag or an in-place edit consolidates into the entry
+        // that is already there (UndoPushType::CONSOLIDATE), so the entry
+        // count does not grow. Recording nothing here is what keeps a whole
+        // drag as one revision, taken at the point it actually settles.
+        return;
+    }
+    m_lastActionCount = count;
+
+    const size_t index = projectHistory()->currentStateIndex();
+    const QString name = projectHistory()->lastActionNameAtIdx(index).qTranslated();
+    if (name.isEmpty()) {
+        return;
+    }
+
+    versionHistory()->recordSnapshot(name, QString(), name);
 }

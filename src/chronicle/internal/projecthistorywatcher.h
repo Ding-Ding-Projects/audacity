@@ -7,6 +7,7 @@
 #include "framework/global/async/asyncable.h"
 
 #include "context/iglobalcontext.h"
+#include "trackedit/iprojecthistory.h"
 
 #include "iversionhistoryservice.h"
 
@@ -22,6 +23,7 @@ namespace au::chronicle {
 class ProjectHistoryWatcher : public muse::async::Asyncable, public muse::Contextable
 {
     muse::ContextInject<au::context::IGlobalContext> globalContext { this };
+    muse::ContextInject<au::trackedit::IProjectHistory> projectHistory { this };
     muse::GlobalInject<IVersionHistoryService> versionHistory;
 
 public:
@@ -32,9 +34,14 @@ public:
 
 private:
     void onCurrentProjectChanged();
+    void onHistoryChanged(trackedit::HistoryEvent event);
 
     //! Guards against recording the same save twice when several
     //! notifications arrive for one action.
     bool m_lastNeedSave = false;
+
+    //! The undo entry count last seen, so a NewState event that consolidated
+    //! into the existing entry (a drag in progress) is not recorded twice.
+    size_t m_lastActionCount = 0;
 };
 }
