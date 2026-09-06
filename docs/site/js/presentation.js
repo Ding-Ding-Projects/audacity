@@ -66,17 +66,25 @@
     return [{ language: 'en', text: source.replace(key, () => english) }];
   }
   function text(source, options = {}) {
+    return joinParts(parts(source, options));
+  }
+  function joinParts(values) {
     let lastLanguage;
-    return parts(source, options).map(part => {
+    return values.map(part => {
       const separator = lastLanguage && lastLanguage !== part.language ? ' / ' : '';
       lastLanguage = part.language;
       return separator + part.text;
     }).join('');
   }
   function provenance(version, localTime, language) {
-    const english = 'Documentation version: ' + version + ' · Source updated: ' + localTime;
-    const cantonese = '文件版本：' + version + ' · 原始碼更新時間：' + localTime;
-    return language === 'yue' ? cantonese : language === 'bilingual' ? english + ' / ' + cantonese : english;
+    return joinParts(provenanceParts(version, localTime, language));
   }
-  return Object.freeze({ ready, text, parts, has: source => typeof source === 'string' && (Object.hasOwn(dictionary, source.trim()) || Object.hasOwn(feedback, source.trim()) || !!resolveTemplate(source.trim())), provenance, staticStrings: Object.keys(dictionary).length });
+  function provenanceParts(version, localTime, language) {
+    const key = 'Documentation version: {version} · Source updated: {localTime}';
+    const english = templateParts(key, 'en', { version, localTime });
+    if (!Object.hasOwn(dictionary, key)) return english;
+    const cantonese = templateParts(dictionary[key], 'yue', { version, localTime });
+    return language === 'yue' ? cantonese : language === 'bilingual' ? english.concat(cantonese) : english;
+  }
+  return Object.freeze({ ready, text, parts, has: source => typeof source === 'string' && (Object.hasOwn(dictionary, source.trim()) || Object.hasOwn(feedback, source.trim()) || !!resolveTemplate(source.trim())), provenance, provenanceParts, staticStrings: Object.keys(dictionary).length });
 });

@@ -297,8 +297,19 @@
         year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit',
         minute: '2-digit', second: '2-digit', timeZoneName: 'longOffset', hour12: false,
       }).format(new Date(record.updatedAt));
-      provenanceLine.textContent = window.MaterialAudacityPresentation?.provenance(record.version, localTime, settings.language)
-        || 'Documentation version: ' + record.version + ' · Source updated: ' + localTime;
+      const parts = window.MaterialAudacityPresentation?.provenanceParts(record.version, localTime, settings.language)
+        || [{ language: 'en', text: 'Documentation version: ' + record.version + ' · Source updated: ' + localTime }];
+      provenanceLine.replaceChildren();
+      let group;
+      parts.forEach(part => {
+        if (!group || group.lang !== part.language) {
+          group = document.createElement('span'); group.lang = part.language; group.style.display = 'block';
+          provenanceLine.appendChild(group);
+        }
+        const span = document.createElement('span'); span.textContent = part.text;
+        if (part.data) span.lang = part.dataLanguage;
+        group.appendChild(span);
+      });
     }).catch(() => { provenanceLine.textContent = 'Documentation version and source provenance are unavailable.'; });
 
     const tabs = [

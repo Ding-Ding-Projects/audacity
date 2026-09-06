@@ -54,6 +54,10 @@ test('localized provenance preserves the exact supplied version and timestamp', 
     const value = presentation.provenance(version, timestamp, language);
     assert.equal(value.split(version).length - 1, language === 'bilingual' ? 2 : 1);
     assert.equal(value.split(timestamp).length - 1, language === 'bilingual' ? 2 : 1);
+    const parts = presentation.provenanceParts(version, timestamp, language);
+    assert.ok(parts.filter(part => !part.data).every(part => part.language === language || language === 'bilingual'));
+    assert.ok(parts.filter(part => part.data).every(part => part.dataLanguage === 'en'));
+    assert.deepEqual(parts.filter(part => part.data).map(part => part.text), language === 'bilingual' ? [version, timestamp, version, timestamp] : [version, timestamp]);
   }
 });
 
@@ -62,6 +66,7 @@ test('missing browser catalog reports unavailable and retains original wording',
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/presentation.js'), 'utf8'), context);
   assert.equal(context.MaterialAudacityPresentation.ready, false);
   assert.equal(context.MaterialAudacityPresentation.text('Home', { language: 'yue' }), 'Home');
+  assert.ok(context.MaterialAudacityPresentation.provenanceParts('source-abc', 'time', 'yue').every(part => part.language === 'en'));
 });
 
 test('concrete parameterized copy translates while marking values as unchanged data', () => {
