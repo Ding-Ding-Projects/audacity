@@ -3688,8 +3688,8 @@
     </message>
     <message>
         <location filename="../../src/appshell/qml/Audacity/AppShell/HomePage/HomeMenu.qml" line="64" />
-        <source>Build updated at %1</source>
-        <translation>建置更新時間：%1</translation>
+        <source>Version source updated at %1</source>
+        <translation>版本來源更新時間：%1</translation>
     </message>
     <message>
         <location filename="../../src/appshell/qml/Audacity/AppShell/HomePage/HomeMenu.qml" line="94" />

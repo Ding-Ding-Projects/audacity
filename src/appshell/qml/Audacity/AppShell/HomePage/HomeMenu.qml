@@ -63,7 +63,7 @@ Item {
         if (local === "") {
             return qsTrc("appshell", "Build provenance unavailable")
         }
-        return qsTrc("appshell", "Build updated at %1").arg(local)
+        return qsTrc("appshell", "Version source updated at %1").arg(local)
     }
 
     readonly property var destinations: {
@@ -126,7 +126,7 @@ Item {
 
         anchors.fill: parent
         anchors.topMargin: 12
-        anchors.bottomMargin: root.narrowProvenanceHeight + 20
+        anchors.bottomMargin: narrowProvenance.implicitHeight + 20
 
         visible: root.iconsOnly
 
@@ -140,8 +140,6 @@ Item {
             root.selected(root.destinations[index].name)
         }
     }
-
-    readonly property int narrowProvenanceHeight: 148
 
     ColumnLayout {
         anchors.fill: parent
@@ -216,6 +214,7 @@ Item {
     // Word wrapping is intentional: factual build provenance must not be
     // shortened to fit the collapsed rail.
     Column {
+        id: narrowProvenance
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -223,7 +222,6 @@ Item {
 
         visible: root.iconsOnly
 
-        height: root.narrowProvenanceHeight
         spacing: 2
 
         StyledTextLabel {

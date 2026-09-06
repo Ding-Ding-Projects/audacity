@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDateTime>
+#include <QRegularExpression>
 #include <QUrl>
 #include <QVariantList>
 
@@ -290,7 +291,7 @@ QString AboutModel::buildVersion() const
 static QDateTime buildDateTimeUtc()
 {
     const QString sourceRevision = QStringLiteral(AU_BUILD_SOURCE_REVISION);
-    if (sourceRevision.size() != 40) {
+    if (!QRegularExpression(QStringLiteral("^[0-9a-f]{40}$")).match(sourceRevision).hasMatch()) {
         return QDateTime();
     }
 
