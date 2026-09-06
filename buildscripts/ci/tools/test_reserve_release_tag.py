@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -310,7 +311,33 @@ class ReleaseReservationTests(unittest.TestCase):
         self.assertEqual(calls[0][0][-2:], ["--input", "-"])
         self.assertNotIn(SHA, calls[0][0])
         self.assertNotIn("env", calls[0][1])
+        self.assertEqual(calls[0][1]["encoding"], "utf-8")
+        self.assertEqual(calls[0][1]["errors"], "strict")
         self.assertEqual(calls[1][0][-2:], ["--paginate", "--slurp"])
+
+    def test_actual_subprocess_decodes_non_ascii_json_and_diagnostics_as_utf8(self):
+        body = {"sha": SHA, "message": "已驗證版本資料 ✅"}
+        diagnostic = "診斷訊息"
+        script = ("import sys; sys.stdout.buffer.write(bytes.fromhex('"
+                  + json.dumps(body, ensure_ascii=False).encode("utf-8").hex()
+                  + "')); sys.stderr.buffer.write(bytes.fromhex('"
+                  + diagnostic.encode("utf-8").hex() + "'))")
+        def runner(args, **kwargs):
+            result = subprocess.run([sys.executable, "-c", script], **kwargs)
+            self.assertEqual(result.stderr, diagnostic)
+            return result
+        self.assertEqual(tags.GhApi(runner).request("GET", "repos/example/project/git/commits/" + SHA), body)
+
+    def test_actual_subprocess_invalid_utf8_stops_without_retry(self):
+        calls = []
+        def runner(args, **kwargs):
+            calls.append(args)
+            return subprocess.run([sys.executable, "-c", "import sys; sys.stdout.buffer.write(bytes([255]))"], **kwargs)
+        # Windows reader-thread decoding errors may instead surface as missing
+        # stdout and a malformed-JSON error. Both outcomes must stop, not retry.
+        with self.assertRaises(tags.ReservationError):
+            tags.GhApi(runner).request("POST", "repos/example/project/git/refs", data={})
+        self.assertEqual(len(calls), 1)
 
     def test_gh_auth_and_malformed_json_are_fail_closed(self):
         def denied(args, **kwargs):

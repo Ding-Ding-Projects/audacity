@@ -98,8 +98,9 @@ class GhApi:
             args += ["--input", "-"]
         try:
             result = self.runner(args, input=json.dumps(data) if data is not None else None,
-                                 text=True, capture_output=True, check=False, timeout=60)
-        except (OSError, subprocess.TimeoutExpired) as error:
+                                 text=True, encoding="utf-8", errors="strict",
+                                 capture_output=True, check=False, timeout=60)
+        except (OSError, subprocess.TimeoutExpired, UnicodeError) as error:
             # An interrupted POST might already have reserved a tag. Do not retry
             # an unknown outcome or expose CLI diagnostics containing account data.
             raise ReservationError("gh request could not complete; outcome may be unknown. Do not reuse a possibly reserved tag.") from error
