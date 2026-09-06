@@ -309,21 +309,48 @@
       '<div id="downloads-body">Loading…</div>';
     fetch('data/release.json').then((r) => r.json()).then((rel) => {
       const body = document.getElementById('downloads-body');
-      const unsignedNote = '<div class="md-card"><h3>This installer is unsigned</h3><p>' + rel.unsignedReason + '</p></div>';
-      let assetsHtml;
+      if (!body) return;
+      if (!rel || !/^v\d+\.\d+\.\d+-m3\.\d+$/.test(rel.tag || '')
+          || typeof rel.prerelease !== 'boolean' || !Array.isArray(rel.assets)
+          || rel.assets.length > 32 || typeof rel.notes !== 'string'
+          || typeof rel.unsignedReason !== 'string'
+          || rel.assets.some(a => !a || typeof a.name !== 'string' || a.name.length > 256
+            || typeof a.url !== 'string'
+            || !a.url.startsWith('https://github.com/Ding-Ding-Projects/audacity/releases/download/' + rel.tag + '/'))
+          || new Set(rel.assets.map(a => a.name)).size !== rel.assets.length) {
+        throw new Error('Invalid release metadata');
+      }
       const items = (rel.assets || []).map((a) => ({ text: a.name, asset: a }));
       function list(filtered) {
         const el = document.getElementById('assets-list');
         if (!el) return;
-        if (!filtered.length) { el.innerHTML = '<p>No release assets are published yet. Tag: ' + rel.tag + '.</p>'; return; }
-        el.innerHTML = '<ul>' + filtered.map((it) => {
+        el.replaceChildren();
+        if (!filtered.length) { el.textContent = 'No matching release assets. Tag: ' + rel.tag + '.'; return; }
+        const listElement = document.createElement('ul');
+        filtered.forEach((it) => {
           const a = it.asset;
-          return '<li><a href="' + a.url + '">' + a.name + '</a>' + (a.sha256 ? ' · SHA-256: <code>' + a.sha256 + '</code>' : '') + '</li>';
-        }).join('') + '</ul>';
+          if (typeof a.url !== 'string' || !a.url.startsWith('https://github.com/Ding-Ding-Projects/audacity/releases/download/')) return;
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = a.url;
+          link.textContent = String(a.name);
+          item.appendChild(link);
+          if (/^[a-f0-9]{64}$/.test(a.sha256 || '')) {
+            item.appendChild(document.createTextNode(' · SHA-256: '));
+            const hash = document.createElement('code');
+            hash.textContent = a.sha256;
+            item.appendChild(hash);
+          }
+          listElement.appendChild(item);
+        });
+        el.appendChild(listElement);
       }
-      body.innerHTML = '<p>' + rel.notes + '</p>' + unsignedNote + '<div id="assets-list"></div>';
+      body.innerHTML = '<p class="release-channel"></p><p class="release-notes"></p><div class="md-card"><h3>This installer is unsigned</h3><p class="unsigned-note"></p></div><div id="assets-list"></div>';
+      body.querySelector('.release-channel').textContent = rel.prerelease ? 'Prerelease: ' + rel.tag : 'Release: ' + rel.tag;
+      body.querySelector('.release-notes').textContent = rel.notes || '';
+      body.querySelector('.unsigned-note').textContent = rel.unsignedReason || 'Signature verification is unavailable.';
       wireFilter(document.getElementById('downloads-filter-input'), items, list, 'downloads-filter');
-    }).catch(() => { document.getElementById('downloads-body').textContent = 'Release information is unavailable right now.'; });
+    }).catch(() => { const body = document.getElementById('downloads-body'); if (body) body.textContent = 'Release information is unavailable right now.'; });
   };
 
   renderers.changelog = function (root) {
