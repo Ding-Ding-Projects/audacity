@@ -25073,5 +25073,85 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <source>revisions</source>
         <translation>個版本</translation>
     </message>
+    <message>
+        <source>%1 file(s) added, %2 modified, %3 deleted, %4 unchanged</source>
+        <translation>新增 %1 個檔案，改咗 %2 個，刪咗 %3 個，%4 個原封不動</translation>
+    </message>
+    <message>
+        <source>Backend</source>
+        <translation>後端</translation>
+    </message>
+    <message>
+        <source>Compare two revisions</source>
+        <translation>比較兩個版本</translation>
+    </message>
+    <message>
+        <source>Comparison result</source>
+        <translation>比較結果</translation>
+    </message>
+    <message>
+        <source>Content addressed store</source>
+        <translation>內容定址倉</translation>
+    </message>
+    <message>
+        <source>Git repository</source>
+        <translation>Git 倉庫</translation>
+    </message>
+    <message>
+        <source>Is A</source>
+        <translation>係 A</translation>
+    </message>
+    <message>
+        <source>Is B</source>
+        <translation>係 B</translation>
+    </message>
+    <message>
+        <source>Recorded size: %1 then %2</source>
+        <translation>記錄嘅大小：先係 %1，之後係 %2</translation>
+    </message>
+    <message>
+        <source>Repository size</source>
+        <translation>倉庫大小</translation>
+    </message>
+    <message>
+        <source>Revisions recorded</source>
+        <translation>已記錄嘅版本數</translation>
+    </message>
+    <message>
+        <source>Search revisions to compare</source>
+        <translation>搜尋想比較嘅版本</translation>
+    </message>
+    <message>
+        <source>Search storage details</source>
+        <translation>搜尋儲存空間詳情</translation>
+    </message>
+    <message>
+        <source>Search the timeline by day</source>
+        <translation>按日子搜尋時間軸</translation>
+    </message>
+    <message>
+        <source>Set as A</source>
+        <translation>設做 A</translation>
+    </message>
+    <message>
+        <source>Set as B</source>
+        <translation>設做 B</translation>
+    </message>
+    <message>
+        <source>Show revisions from %1</source>
+        <translation>顯示 %1 嘅版本</translation>
+    </message>
+    <message>
+        <source>Storage</source>
+        <translation>儲存空間</translation>
+    </message>
+    <message>
+        <source>Storage details</source>
+        <translation>儲存空間詳情</translation>
+    </message>
+    <message>
+        <source>Timeline</source>
+        <translation>時間軸</translation>
+    </message>
 </context>
 </TS>
