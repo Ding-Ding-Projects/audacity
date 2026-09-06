@@ -22,6 +22,7 @@ class BrandingStoreTests final : public QObject
 {
     Q_OBJECT
 private slots:
+    void initTestCase();
     void rejectsMalformedAndOversizedContent();
     void fitAndCropProduceExpectedPixels();
     void backgroundAndAlphaArePreserved();
@@ -30,7 +31,13 @@ private slots:
     void refusesUnsafeSvgWithoutNetworkAccess();
     void acceptsSafeSvgAndIcoWhenQtCodecsAreAvailable();
     void modelLoadsAndResetsTheSameLocalCache();
+    void realShippedResourceOpensAndDecodes();
 };
+
+void BrandingStoreTests::initTestCase()
+{
+    Q_INIT_RESOURCE(au_personalize);
+}
 
 void BrandingStoreTests::rejectsMalformedAndOversizedContent()
 {
@@ -140,21 +147,43 @@ void BrandingStoreTests::modelLoadsAndResetsTheSameLocalCache()
     const QString sourcePath = directory.filePath("candidate.png");
     QFile source(sourcePath);
     QVERIFY(source.open(QIODevice::WriteOnly));
-    source.write(png(image));
+    QCOMPARE(source.write(png(image)), qint64(png(image).size()));
     source.close();
     au::personalize::BrandingModel model(directory.filePath("profile"), QByteArray("shipped"));
+    model.setCrop(true);
+    QVERIFY(!model.crop());
+    QCOMPARE(model.status(), QString("The selected logo could not be applied"));
     QVERIFY(model.loadFile(sourcePath));
     QVERIFY(model.hasCustomLogo());
     QVERIFY(!model.previewPath().isEmpty());
-    QVERIFY(model.logo16Path().endsWith("16.png"));
-    QVERIFY(model.logo32Path().endsWith("32.png"));
-    QVERIFY(model.logo48Path().endsWith("48.png"));
-    QVERIFY(model.logo64Path().endsWith("64.png"));
+    QVERIFY(model.logo16Path().contains("16.png?brandingRevision="));
+    QVERIFY(model.logo32Path().contains("32.png?brandingRevision="));
+    QVERIFY(model.logo48Path().contains("48.png?brandingRevision="));
+    QVERIFY(model.logo64Path().contains("64.png?brandingRevision="));
+    const QString firstUrl = model.logo32Path();
+    image.fill(Qt::yellow);
+    QVERIFY(source.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    QCOMPARE(source.write(png(image)), qint64(png(image).size()));
+    source.close();
+    QVERIFY(model.loadFile(sourcePath));
+    QVERIFY(model.logo32Path() != firstUrl);
+    const QString successfulUrl = model.logo32Path();
+    QVERIFY(!model.loadFile("missing-file.png"));
+    QCOMPARE(model.logo32Path(), successfulUrl);
     model.setCrop(true);
     QVERIFY(model.crop());
     model.reset();
     QVERIFY(!model.hasCustomLogo());
     QVERIFY(model.logo16Path().startsWith("data:image/png;base64,"));
+}
+
+void BrandingStoreTests::realShippedResourceOpensAndDecodes()
+{
+    QFile resource(":/branding/shipped-logo.png");
+    QVERIFY(resource.open(QIODevice::ReadOnly));
+    QImage image;
+    QVERIFY(image.loadFromData(resource.readAll()));
+    QVERIFY(!image.isNull());
 }
 
 QTEST_MAIN(BrandingStoreTests)

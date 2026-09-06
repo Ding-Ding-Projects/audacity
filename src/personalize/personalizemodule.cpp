@@ -42,7 +42,7 @@ void PersonalizeModule::registerUiTypes()
 {
     auto brandingCreator = [](QQmlEngine*, QJSEngine*) -> QObject* {
         static muse::GlobalInject<muse::IGlobalConfiguration> configuration;
-        QFile shipped(":/images/AudacityLogo.png");
+        QFile shipped(":/branding/shipped-logo.png");
         shipped.open(QIODevice::ReadOnly);
         return new BrandingModel(configuration()->userAppDataPath().toQString() + "/personalize", shipped.readAll());
     };

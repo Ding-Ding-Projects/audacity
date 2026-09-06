@@ -38,9 +38,11 @@ signals:
     void changed();
 private:
     QString pathForSize(int size) const;
+    QString translatedStatus(const au::branding::LogoResult& result) const;
     void refresh(const au::branding::LogoResult& result = { true, {} });
     au::branding::BrandingStore m_store;
     QByteArray m_shippedMark;
     QString m_status;
+    quint64 m_revision { 0 };
 };
 }

@@ -25162,10 +25162,14 @@ Template for clip name generation on inserting new empty clip</extracomment>
 <context>
     <name>personalize/branding</name>
     <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="11" /><source>Application logo</source><translation>程式標誌</translation></message>
-    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="12" /><source>This changes the local Personalize preview only. It never changes the executable, installer, updater or release identity.</source><translation>呢個淨係改本機個人化預覽，唔會改執行檔、安裝程式、更新器或者發行身份。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="12" /><source>This changes local application presentation, including the Material title bar. It never changes the executable, installer, updater or release identity.</source><translation>呢個會改本機程式門面，包括 Material 標題欄，唔會改執行檔、安裝程式、更新器或者發行身份。</translation></message>
     <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="18" /><source>Choose logo</source><translation>揀標誌</translation></message>
     <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="19" /><source>Crop to fill the preview</source><translation>裁剪填滿預覽</translation></message>
     <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="20" /><source>Background colour</source><translation>背景顏色</translation></message>
     <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="22" /><source>Reset logo</source><translation>重設標誌</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="21" /><source>Choose a local logo before changing crop or background.</source><translation>先揀本機標誌，先可以改裁剪或者背景。</translation></message>
+    <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="33" /><source>Custom logo saved locally</source><translation>自訂標誌已經喺本機儲好</translation></message>
+    <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="33" /><source>Using the shipped logo</source><translation>而家用緊原裝標誌</translation></message>
+    <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="35" /><source>The selected logo could not be applied</source><translation>揀咗嘅標誌用唔到</translation></message>
 </context>
 </TS>
