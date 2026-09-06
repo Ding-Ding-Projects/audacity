@@ -25,9 +25,11 @@ class Links(HTMLParser):
         self.models = set()
 
     def handle_starttag(self, tag, attrs):
+        data = dict(attrs)
+        if data.get("data-next") or data.get("hx-get"):
+            self.next_url = data.get("data-next") or data.get("hx-get")
         if tag != "a":
             return
-        data = dict(attrs)
         href = data.get("href", "")
         rel = {piece.lower() for piece in data.get("rel", "").split()}
         if "next" in rel:
