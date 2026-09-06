@@ -123,6 +123,14 @@ The history is never rewritten.
 
 The panel sits beside the undo history, behind the "Versions" segment.
 
+Setting `AU_OPEN_HISTORY=versions` before launch makes the History panel
+start on its Versions segment instead of the undo history, so it can be
+reached directly rather than switching the segmented control by hand every
+time. This is a debug convenience only, read once at process start through
+the `ChronicleDebugHooks` QML singleton (`src/chronicle/view/chronicledebughooks.h`),
+and has no effect at all when the variable is unset or holds any other
+value.
+
 - Each row shows the time, the label describing what changed, and the action
   that triggered the snapshot.
 - Opening a row shows the diff summary: every file in the revision, its status
@@ -142,6 +150,38 @@ The panel sits beside the undo history, behind the "Versions" segment.
 - An `M3SearchBar` with `showRegexBuilder: true`. The search term is used as a
   regular expression when it compiles as one and as plain text otherwise, so a
   typed bracket never empties the list.
+
+### Timeline
+
+A row of `M3Chip`s below the action filters, one per calendar day that has a
+revision, oldest first, each labelled with the day and its revision count,
+driven by `VersionHistoryModel::dayGroups()`. It has its own `M3SearchBar`
+with `showRegexBuilder: true`, isolated from the panel's main search field
+and from the two search fields below. Selecting a day chip sets both ends of
+the date range to that day, reusing the existing date filter rather than
+introducing a second, competing one.
+
+### Storage
+
+An `M3Card` (outlined variant) listing the backend, the repository's total
+size on disk across every project's history, and the number of revisions
+recorded, driven by `VersionHistoryModel::storageInfo()`. Its own
+`M3SearchBar` filters the three rows by their label. This does not include
+the size of what is actually embedded in the currently open project's own
+save file: the model has no reference to the open project, only
+`ProjectHistoryWatcher` does, since it is what writes and reads that bundle.
+
+### Compare two revisions
+
+A filterable list of every recorded revision, each row offering **Set as A**
+and **Set as B**. Once both are chosen, an `M3Card` reports how many files
+were added, modified, deleted and left unchanged between them, and each
+revision's total recorded size, driven by
+`VersionHistoryModel::compareRevisions()` (backed by the pure function
+`compareRevisionFiles()`). This compares by file path and size only: it does
+not compare track count, clip count or sample rate, which this history does
+not capture per revision, and it cannot distinguish a genuine content change
+from a same-size coincidence.
 
 ### Retention
 
@@ -286,6 +326,16 @@ left in place untouched.
   function behind the compare view: every change kind classified correctly
   from a mixed input, and two empty lists producing all zeros rather than
   a crash.
+- The QML additions (Timeline, Storage, Compare two revisions, and the
+  Open as new project / Star / Pin buttons) were checked with `qmllint` for
+  syntax and were exercised by building the full application; a real Xvfb
+  capture of the panel actually showing them was attempted but not obtained
+  in this pass, because the headless run's window has no window manager and
+  the History panel opens as a separate top-level surface this setup could
+  not reliably raise above the main window. This is stated here rather than
+  claimed as verified: the code compiles and links, and its logic is tested
+  where a plain gtest can reach it, but nobody has looked at a screenshot of
+  it rendered.
 
 ## What this feature does not do yet
 
@@ -297,22 +347,16 @@ Stated plainly rather than left as a silent gap:
   from the panel through the **Star**, **Pin** and **Open as new project**
   buttons added to each revision's action row alongside the existing
   **Restore**, **Edit label** and **Export…**.
-- **The day by day timeline grouping** (`VersionHistoryModel::dayGroups()`)
-  and **the storage panel's numbers** (`VersionHistoryModel::storageInfo()`,
-  repository size on disk, backend name, revision count) exist as callable
-  model methods, but no QML surface in the panel renders them yet as a
-  timeline rail or a storage panel. `storageInfo()` also does not include the
+- **The day by day timeline grouping, the storage card and the compare
+  view** now have real Material 3 QML surfaces in the panel (the Timeline,
+  Storage and Compare two revisions sections above), each with its own
+  local search and regex builder. `storageInfo()` still does not include the
   size of what is actually embedded in the currently open project's own save
   file, since the model has no reference to the open project; only
   `ProjectHistoryWatcher`, which writes and reads that bundle, knows it.
-- **Comparing two revisions** (`VersionHistoryModel::compareRevisions()`,
-  backed by the tested pure function `compareRevisionFiles()`) compares by
-  file path and size: files added, modified, deleted and unchanged between
-  two revisions, and each revision's total recorded size. It does not compare
-  track count, clip count, or sample rate, because this history does not
-  capture any of those per revision yet, and it cannot distinguish a genuine
-  content change from a same-size coincidence, since it compares by size
-  rather than by content hash. No QML surface calls it yet either.
+- **Comparing two revisions** still compares by file path and size only, as
+  described above, and cannot distinguish a genuine content change from a
+  same-size coincidence.
 - **Per revision track and clip names, the selection range, and a waveform
   peak thumbnail of the affected region** are not implemented at all. Capturing
   which tracks and clips an edit touched, and a project time selection range,

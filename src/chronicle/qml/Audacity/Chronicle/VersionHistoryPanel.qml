@@ -56,6 +56,80 @@ Item {
         property bool filtersExpanded: false
         property bool editingLabel: false
 
+        // Local search state for the three surfaces below, each isolated
+        // from the panel's own main search field and from each other.
+        property string timelineSearchText: ""
+        property string storageSearchText: ""
+        property string compareSearchText: ""
+        property string compareRevisionIdA: ""
+        property string compareRevisionIdB: ""
+
+        // Used as a regular expression when it compiles as one and as plain
+        // text otherwise, exactly like the panel's main search field, so a
+        // typed bracket never empties a list here either.
+        function matches(haystack, needle) {
+            if (needle.length === 0) {
+                return true
+            }
+            try {
+                var expression = new RegExp(needle, "i")
+                return expression.test(haystack)
+            } catch (invalidPattern) {
+                return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1
+            }
+        }
+
+        function filteredDayGroups(groups, needle) {
+            var result = []
+            for (var i = 0; i < groups.length; i++) {
+                if (prv.matches(groups[i].date, needle)) {
+                    result.push(groups[i])
+                }
+            }
+            return result
+        }
+
+        function storageRows(info) {
+            return [
+                {
+                    "label": qsTrc("chronicle", "Backend"),
+                    "value": info.backend === "git"
+                             ? qsTrc("chronicle", "Git repository")
+                             : qsTrc("chronicle", "Content addressed store")
+                },
+                {
+                    "label": qsTrc("chronicle", "Repository size"),
+                    "value": prv.formatSize(info.repositoryBytes)
+                },
+                {
+                    "label": qsTrc("chronicle", "Revisions recorded"),
+                    "value": String(info.revisionCount)
+                }
+            ]
+        }
+
+        function filteredStorageRows(info, needle) {
+            var rows = prv.storageRows(info)
+            var result = []
+            for (var i = 0; i < rows.length; i++) {
+                if (prv.matches(rows[i].label, needle)) {
+                    result.push(rows[i])
+                }
+            }
+            return result
+        }
+
+        function filteredRevisionsForCompare(revisions, needle) {
+            var result = []
+            for (var i = 0; i < revisions.length; i++) {
+                var haystack = revisions[i].label + " " + revisions[i].actionTitle + " " + revisions[i].timestamp
+                if (prv.matches(haystack, needle)) {
+                    result.push(revisions[i])
+                }
+            }
+            return result
+        }
+
         function formatSize(bytes) {
             if (bytes < 1024) {
                 return qsTrc("chronicle", "%1 B").arg(bytes)
@@ -128,6 +202,72 @@ Item {
                             selection.splice(at, 1)
                         }
                         historyModel.selectedActions = selection
+                    }
+                }
+            }
+        }
+
+        // Timeline rail: one chip per calendar day that has a revision,
+        // oldest first, with its own local search, isolated from the
+        // panel's main search field above.
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: 12
+            Layout.rightMargin: 12
+            Layout.bottomMargin: 8
+            spacing: 6
+
+            StyledTextLabel {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                text: qsTrc("chronicle", "Timeline")
+                font: M3.typography.labelLarge
+                color: M3.color.onSurfaceVariant
+            }
+
+            M3SearchBar {
+                id: timelineSearchBar
+
+                objectName: "VersionHistoryTimelineSearch"
+                Layout.fillWidth: true
+
+                placeholder: qsTrc("chronicle", "Search the timeline by day")
+                accessibleName: qsTrc("chronicle", "Search the timeline by day")
+                showRegexBuilder: true
+
+                navigation.panel: navPanel
+                navigation.order: 30
+
+                onSearchTextChanged: prv.timelineSearchText = timelineSearchBar.searchText
+                onRegexBuilderRequested: {
+                    timelineRegexBuilder.pattern = timelineSearchBar.searchText
+                    timelineRegexBuilder.open()
+                }
+            }
+
+            Flow {
+                Layout.fillWidth: true
+                spacing: 6
+
+                Repeater {
+                    model: prv.filteredDayGroups(historyModel.dayGroups(), prv.timelineSearchText)
+
+                    delegate: M3Chip {
+                        id: dayChip
+
+                        required property var modelData
+
+                        variant: "assist"
+                        text: dayChip.modelData.date + " (" + dayChip.modelData.count + ")"
+                        accessibleName: qsTrc("chronicle", "Show revisions from %1").arg(dayChip.modelData.date)
+
+                        navigation.panel: navPanel
+                        navigation.order: 31
+
+                        onClicked: {
+                            historyModel.fromDate = dayChip.modelData.date
+                            historyModel.toDate = dayChip.modelData.date
+                        }
                     }
                 }
             }
@@ -458,6 +598,203 @@ Item {
             }
         }
 
+        M3Divider {
+            Layout.fillWidth: true
+        }
+
+        // Storage: repository size on disk, backend and revision count, each
+        // row filterable by its own local search.
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.margins: 12
+            spacing: 6
+
+            StyledTextLabel {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                text: qsTrc("chronicle", "Storage")
+                font: M3.typography.labelLarge
+                color: M3.color.onSurfaceVariant
+            }
+
+            M3SearchBar {
+                id: storageSearchBar
+
+                objectName: "VersionHistoryStorageSearch"
+                Layout.fillWidth: true
+
+                placeholder: qsTrc("chronicle", "Search storage details")
+                accessibleName: qsTrc("chronicle", "Search storage details")
+                showRegexBuilder: true
+
+                navigation.panel: navPanel
+                navigation.order: 9010
+
+                onSearchTextChanged: prv.storageSearchText = storageSearchBar.searchText
+                onRegexBuilderRequested: {
+                    storageRegexBuilder.pattern = storageSearchBar.searchText
+                    storageRegexBuilder.open()
+                }
+            }
+
+            M3Card {
+                Layout.fillWidth: true
+                variant: "outlined"
+                accessibleName: qsTrc("chronicle", "Storage details")
+
+                ColumnLayout {
+                    width: parent.width
+                    spacing: 4
+
+                    Repeater {
+                        model: prv.filteredStorageRows(historyModel.storageInfo(), prv.storageSearchText)
+
+                        delegate: RowLayout {
+                            required property var modelData
+
+                            Layout.fillWidth: true
+
+                            StyledTextLabel {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignLeft
+                                text: modelData.label
+                                font: M3.typography.bodyMedium
+                                color: M3.color.onSurfaceVariant
+                            }
+
+                            StyledTextLabel {
+                                horizontalAlignment: Text.AlignRight
+                                text: modelData.value
+                                font: M3.typography.bodyMedium
+                                color: M3.color.onSurface
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        M3Divider {
+            Layout.fillWidth: true
+        }
+
+        // Compare: pick two revisions from one filterable local list, then
+        // see how their recorded files differ by path and size. This does
+        // not compare track count, clip count or sample rate, which this
+        // history does not capture per revision.
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.margins: 12
+            spacing: 6
+
+            StyledTextLabel {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                text: qsTrc("chronicle", "Compare two revisions")
+                font: M3.typography.labelLarge
+                color: M3.color.onSurfaceVariant
+            }
+
+            M3SearchBar {
+                id: compareSearchBar
+
+                objectName: "VersionHistoryCompareSearch"
+                Layout.fillWidth: true
+
+                placeholder: qsTrc("chronicle", "Search revisions to compare")
+                accessibleName: qsTrc("chronicle", "Search revisions to compare")
+                showRegexBuilder: true
+
+                navigation.panel: navPanel
+                navigation.order: 9020
+
+                onSearchTextChanged: prv.compareSearchText = compareSearchBar.searchText
+                onRegexBuilderRequested: {
+                    compareRegexBuilder.pattern = compareSearchBar.searchText
+                    compareRegexBuilder.open()
+                }
+            }
+
+            Repeater {
+                model: prv.filteredRevisionsForCompare(historyModel.revisions, prv.compareSearchText)
+
+                delegate: RowLayout {
+                    id: compareRow
+
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    StyledTextLabel {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignLeft
+                        elide: Text.ElideRight
+                        text: compareRow.modelData.label + " · " + compareRow.modelData.timestamp
+                        font: M3.typography.bodyMedium
+                        color: M3.color.onSurface
+                    }
+
+                    M3Button {
+                        text: prv.compareRevisionIdA === compareRow.modelData.revisionId
+                              ? qsTrc("chronicle", "Is A")
+                              : qsTrc("chronicle", "Set as A")
+                        variant: prv.compareRevisionIdA === compareRow.modelData.revisionId ? "filled" : "outlined"
+                        accessible.checked: prv.compareRevisionIdA === compareRow.modelData.revisionId
+                        onClicked: prv.compareRevisionIdA = compareRow.modelData.revisionId
+                    }
+
+                    M3Button {
+                        text: prv.compareRevisionIdB === compareRow.modelData.revisionId
+                              ? qsTrc("chronicle", "Is B")
+                              : qsTrc("chronicle", "Set as B")
+                        variant: prv.compareRevisionIdB === compareRow.modelData.revisionId ? "filled" : "outlined"
+                        accessible.checked: prv.compareRevisionIdB === compareRow.modelData.revisionId
+                        onClicked: prv.compareRevisionIdB = compareRow.modelData.revisionId
+                    }
+                }
+            }
+
+            M3Card {
+                Layout.fillWidth: true
+                variant: "outlined"
+                visible: prv.compareRevisionIdA.length > 0 && prv.compareRevisionIdB.length > 0
+                accessibleName: qsTrc("chronicle", "Comparison result")
+
+                ColumnLayout {
+                    width: parent.width
+                    spacing: 4
+
+                    property var comparison: (prv.compareRevisionIdA.length > 0 && prv.compareRevisionIdB.length > 0)
+                                              ? historyModel.compareRevisions(prv.compareRevisionIdA, prv.compareRevisionIdB)
+                                              : ({})
+
+                    StyledTextLabel {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignLeft
+                        text: qsTrc("chronicle", "%1 file(s) added, %2 modified, %3 deleted, %4 unchanged")
+                              .arg(parent.comparison.filesAdded || 0)
+                              .arg(parent.comparison.filesModified || 0)
+                              .arg(parent.comparison.filesDeleted || 0)
+                              .arg(parent.comparison.filesUnchanged || 0)
+                        font: M3.typography.bodyMedium
+                        color: M3.color.onSurface
+                        wrapMode: Text.WordWrap
+                    }
+
+                    StyledTextLabel {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignLeft
+                        text: qsTrc("chronicle", "Recorded size: %1 then %2")
+                              .arg(prv.formatSize(parent.comparison.totalBytesA || 0))
+                              .arg(prv.formatSize(parent.comparison.totalBytesB || 0))
+                        font: M3.typography.bodySmall
+                        color: M3.color.onSurfaceVariant
+                    }
+                }
+            }
+        }
+
         StyledTextLabel {
             Layout.fillWidth: true
             Layout.leftMargin: 12
@@ -529,6 +866,45 @@ Item {
 
         onPatternAccepted: function (pattern) {
             searchBar.searchText = pattern
+        }
+    }
+
+    RegexBuilderSheet {
+        id: timelineRegexBuilder
+
+        anchors.fill: parent
+
+        storeName: "version-history-timeline"
+        fieldLabel: "Version history timeline"
+
+        onPatternAccepted: function (pattern) {
+            timelineSearchBar.searchText = pattern
+        }
+    }
+
+    RegexBuilderSheet {
+        id: storageRegexBuilder
+
+        anchors.fill: parent
+
+        storeName: "version-history-storage"
+        fieldLabel: "Version history storage"
+
+        onPatternAccepted: function (pattern) {
+            storageSearchBar.searchText = pattern
+        }
+    }
+
+    RegexBuilderSheet {
+        id: compareRegexBuilder
+
+        anchors.fill: parent
+
+        storeName: "version-history-compare"
+        fieldLabel: "Version history compare"
+
+        onPatternAccepted: function (pattern) {
+            compareSearchBar.searchText = pattern
         }
     }
 }
