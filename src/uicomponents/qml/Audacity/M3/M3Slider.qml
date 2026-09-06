@@ -49,6 +49,29 @@ FocusScope {
 
     property alias navigation: navCtrl
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     signal moved
 
     readonly property bool horizontal: root.orientation === Qt.Horizontal
@@ -138,7 +161,8 @@ FocusScope {
 
         radius: root.trackThickness / 2
         antialiasing: true
-        color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        readonly property color defaultColor: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.m3Appearance("containerColor", activeTrack.defaultColor)
 
         x: root.horizontal ? 0 : (root.width - root.trackThickness) / 2
         y: root.horizontal ? (root.height - root.trackThickness) / 2 : root.height - activeTrack.height
@@ -178,9 +202,10 @@ FocusScope {
 
         width: root.horizontal ? root.handleWidth : root.handleLength
         height: root.horizontal ? root.handleLength : root.handleWidth
-        radius: root.handleWidth / 2
+        radius: root.m3Appearance("radius", root.handleWidth / 2)
         antialiasing: true
-        color: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        readonly property color defaultColor: root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
+        color: root.m3Appearance("handleColor", handle.defaultColor)
 
         x: root.horizontal ? root.handleWidth + root.position * root.travelLength - root.handleWidth / 2 : (root.width - handle.width) / 2
         y: root.horizontal ? (root.height - handle.height) / 2 : root.height - root.handleWidth - root.position * root.travelLength - root.handleWidth / 2

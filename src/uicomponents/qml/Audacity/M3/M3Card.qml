@@ -38,7 +38,31 @@ FocusScope {
     implicitWidth: 280
     implicitHeight: contentContainer.childrenRect.height + root.padding * 2
 
-    readonly property int restingElevation: root.variant === "elevated" ? 1 : 0
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
+    readonly property int defaultRestingElevation: root.variant === "elevated" ? 1 : 0
+    readonly property int restingElevation: root.m3Appearance("elevation", root.defaultRestingElevation)
 
     NavigationControl {
         id: navCtrl
@@ -65,10 +89,10 @@ FocusScope {
         id: background
 
         anchors.fill: parent
-        radius: M3.shape.medium
+        radius: root.m3Appearance("radius", M3.shape.medium)
         antialiasing: true
 
-        color: {
+        readonly property color defaultColor: {
             switch (root.variant) {
             case "filled":
                 return M3.color.surfaceContainerHighest
@@ -78,6 +102,8 @@ FocusScope {
                 return M3.surfaceAt(1)
             }
         }
+
+        color: root.m3Appearance("containerColor", background.defaultColor)
 
         border.width: root.variant === "outlined" ? 1 : 0
         border.color: M3.color.outlineVariant

@@ -41,6 +41,29 @@ FocusScope {
     signal toggled(bool checked)
     signal removed
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     readonly property bool selectable: root.variant === "filter"
     readonly property bool removable: root.variant === "input"
     readonly property bool selected: root.selectable && root.checked
@@ -48,7 +71,7 @@ FocusScope {
     implicitHeight: M3.density.apply(32)
     implicitWidth: contentRow.implicitWidth + 24
 
-    readonly property color containerColor: {
+    readonly property color defaultContainerColor: {
         if (!root.enabled) {
             return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)
         }
@@ -57,6 +80,8 @@ FocusScope {
         }
         return root.elevated ? M3.surfaceAt(1) : "transparent"
     }
+
+    readonly property color containerColor: root.m3Appearance("containerColor", root.defaultContainerColor)
 
     readonly property color contentColor: {
         if (!root.enabled) {
@@ -96,7 +121,7 @@ FocusScope {
         id: background
 
         anchors.fill: parent
-        radius: M3.shape.small
+        radius: root.m3Appearance("radius", M3.shape.small)
         antialiasing: true
         color: root.containerColor
 

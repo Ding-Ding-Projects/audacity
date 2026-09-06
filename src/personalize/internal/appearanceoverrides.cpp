@@ -17,6 +17,15 @@ AppearanceOverrides::AppearanceOverrides(QObject* parent)
     : QObject(parent)
 {
     load();
+
+    // AU_APPEARANCE_DEMO=1 seeds one visible override so the rendering path
+    // can be captured without going through the editor by hand. It never
+    // persists past this in-memory seed unless the user also edits it
+    // through the popover, and it is never enabled by default.
+    if (qEnvironmentVariableIntValue("AU_APPEARANCE_DEMO") != 0) {
+        setProperty("home.newProject", "containerColor", QColor(0xff, 0x57, 0x22));
+        setProperty("home.newProject", "radius", 4);
+    }
 }
 
 QString AppearanceOverrides::storePath() const

@@ -38,6 +38,29 @@ FocusScope {
 
     property alias navigation: navCtrl
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     signal clicked
 
     readonly property bool marked: root.checked || root.indeterminate
@@ -94,10 +117,12 @@ FocusScope {
             anchors.centerIn: parent
             width: 18
             height: 18
-            radius: 2
+            radius: root.m3Appearance("radius", 2)
             antialiasing: true
 
-            color: root.marked ? (root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)) : "transparent"
+            readonly property color defaultColor: root.marked ? (root.enabled ? M3.color.primary : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContainer)) : "transparent"
+
+            color: root.m3Appearance("containerColor", box.defaultColor)
 
             border.width: root.marked ? 0 : 2
             border.color: root.enabled ? M3.color.onSurfaceVariant : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)

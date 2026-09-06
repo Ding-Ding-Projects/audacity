@@ -43,6 +43,29 @@ StyledPopupView {
     signal handleMenuItem(string itemId)
     signal regexBuilderRequested
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     // Items that survive the current filter text.
     readonly property var visibleItems: {
         if (!root.searchable || root.filterText === "") {
@@ -63,9 +86,9 @@ StyledPopupView {
         return result
     }
 
-    cornerRadius: M3.shape.extraSmall
-    elevationLevel: 2
-    backgroundColor: M3.surfaceAt(2)
+    cornerRadius: root.m3Appearance("radius", M3.shape.extraSmall)
+    elevationLevel: root.m3Appearance("elevation", 2)
+    backgroundColor: root.m3Appearance("containerColor", M3.surfaceAt(2))
     borderColor: M3.color.outlineVariant
 
     padding: 0

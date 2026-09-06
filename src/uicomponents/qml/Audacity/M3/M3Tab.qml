@@ -40,9 +40,32 @@ FocusScope {
 
     signal clicked
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     readonly property bool vertical: root.orientation === Qt.Vertical
 
-    readonly property color contentColor: {
+    readonly property color defaultContentColor: {
         if (!root.enabled) {
             return Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, M3.stateLayer.disabledContent)
         }
@@ -51,6 +74,8 @@ FocusScope {
         }
         return root.primary ? M3.color.primary : M3.color.onSurface
     }
+
+    readonly property color contentColor: root.m3Appearance("contentColor", root.defaultContentColor)
 
     implicitHeight: root.vertical ? M3.density.apply(48) : M3.density.apply(48)
     implicitWidth: root.vertical ? 200 : Math.max(90, contentRow.implicitWidth + 32)

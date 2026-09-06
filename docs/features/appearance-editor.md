@@ -43,15 +43,29 @@ property, defaulting to an empty string (no overrides applied). When
 the token derived default as the fallback, and reacts live to
 `AppearanceOverrides.elementChanged` for that same element id.
 
-`M3Button` and `M3IconButton` currently resolve their container colour,
-content colour (`M3Button` only) and corner radius this way. The remaining
-components named in the appearance editor's own description (`M3Card`,
-`M3TextField`, `M3Switch`, `M3Checkbox`, `M3Slider`, `M3Chip`, `M3ListItem`,
-`M3TopAppBar`, `M3Tabs`/`M3Tab`, `M3Dialog`, `M3Menu`) do not read
-`AppearanceOverrides` yet, and typography, elevation and opacity overrides
-are not read by any component yet either. Setting one of those properties in
-the editor still stores it (nothing is lost), it is simply not rendered
-until the matching component gains the same `elementId` plus resolve wiring.
+Every component named in the appearance editor's own description now carries
+`elementId` and resolves at least colour and corner radius through the
+store: `M3Button` and `M3IconButton` (container colour, content colour on
+`M3Button`, radius), `M3Card` (container colour, radius, elevation),
+`M3TextField` (container colour, radius), `M3Switch` (container colour,
+radius), `M3Checkbox` (container colour, radius), `M3Slider` (active track
+colour, handle colour, handle radius), `M3Chip` (container colour, radius),
+`M3ListItem` (container colour, radius), `M3TopAppBar` (container colour),
+`M3Tab` (content colour), `M3Tabs` (container colour), `M3Dialog` (container
+colour, radius) and `M3Menu` (container colour, radius, elevation).
+
+Typography (family, size, weight, italic, letter spacing) and opacity
+overrides are stored by the editor but not read by any component yet,
+because a QML `font` grouped property cannot be partially overridden
+property by property without a larger change to how each component builds
+its font. Setting one of those properties in the editor still stores it
+(nothing is lost); it simply is not rendered until a later change wires
+per-axis font resolution through the same store.
+
+Set `AU_APPEARANCE_DEMO=1` before launching to seed one visible override
+(an orange, near-square container) on the Home page's "New" project button
+(`elementId: "home.newProject"` in `ProjectsPage.qml`), useful for capturing
+the rendering path without going through the editor by hand.
 
 `PersonalizableItem` already carries the `elementId` it was given through to
 the appearance editor popover it opens; wiring a wrapped M3 element's own

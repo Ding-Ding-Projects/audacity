@@ -38,6 +38,29 @@ Item {
 
     signal activated(int index)
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     readonly property bool vertical: root.orientation === Qt.Vertical
 
     // The tab that is currently selected, for callers that read its navigation
@@ -63,7 +86,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: M3.color.surface
+        color: root.m3Appearance("containerColor", M3.color.surface)
     }
 
     Grid {

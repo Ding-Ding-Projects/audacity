@@ -438,6 +438,11 @@ FocusScope {
                 navigation.panel: navBottomPanel
                 navigation.column: 2
 
+                // Lets the personalize appearance editor target this exact
+                // button (Home > Project's primary "New" action), and lets
+                // AU_APPEARANCE_DEMO=1 seed one visible override for it.
+                elementId: "home.newProject"
+
                 text: qsTrc("project", "New")
 
                 onClicked: {

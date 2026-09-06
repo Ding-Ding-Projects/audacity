@@ -43,6 +43,29 @@ FocusScope {
 
     property alias navigation: navCtrl
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     signal clicked
 
     readonly property int lineCount: {
@@ -82,7 +105,9 @@ FocusScope {
         id: background
 
         anchors.fill: parent
-        color: root.selected ? M3.color.secondaryContainer : "transparent"
+        radius: root.m3Appearance("radius", 0)
+        readonly property color defaultColor: root.selected ? M3.color.secondaryContainer : "transparent"
+        color: root.m3Appearance("containerColor", background.defaultColor)
 
         Behavior on color {
             ColorAnimation {

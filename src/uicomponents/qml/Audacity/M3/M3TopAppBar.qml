@@ -37,6 +37,29 @@ Item {
 
     signal navigationIconTriggered
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     readonly property bool centered: root.size === "centerAligned"
     readonly property bool twoRow: root.size === "medium" || root.size === "large"
 
@@ -64,7 +87,8 @@ Item {
         id: background
 
         anchors.fill: parent
-        color: root.scrolled ? M3.color.surfaceContainer : M3.color.surface
+        readonly property color defaultColor: root.scrolled ? M3.color.surfaceContainer : M3.color.surface
+        color: root.m3Appearance("containerColor", background.defaultColor)
 
         Behavior on color {
             ColorAnimation {

@@ -59,6 +59,29 @@ FocusScope {
     readonly property bool showError: root.hasError || root.errorText !== ""
     readonly property string helperText: root.showError && root.errorText !== "" ? root.errorText : root.supportingText
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     readonly property color accent: root.showError ? M3.color.error : M3.color.primary
     readonly property color labelColor: {
         if (!root.enabled) {
@@ -103,12 +126,16 @@ FocusScope {
         height: M3.density.apply(56)
         antialiasing: true
 
-        color: root.filled ? (root.enabled ? M3.color.surfaceContainerHighest : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, 0.04)) : "transparent"
+        readonly property color defaultColor: root.filled ? (root.enabled ? M3.color.surfaceContainerHighest : Qt.rgba(M3.color.onSurface.r, M3.color.onSurface.g, M3.color.onSurface.b, 0.04)) : "transparent"
 
-        topLeftRadius: M3.shape.extraSmall
-        topRightRadius: M3.shape.extraSmall
-        bottomLeftRadius: root.filled ? 0 : M3.shape.extraSmall
-        bottomRightRadius: root.filled ? 0 : M3.shape.extraSmall
+        color: root.m3Appearance("containerColor", box.defaultColor)
+
+        readonly property real overrideRadius: root.m3Appearance("radius", M3.shape.extraSmall)
+
+        topLeftRadius: box.overrideRadius
+        topRightRadius: box.overrideRadius
+        bottomLeftRadius: root.filled ? 0 : box.overrideRadius
+        bottomRightRadius: root.filled ? 0 : box.overrideRadius
 
         border.width: root.filled ? 0 : (input.activeFocus ? 2 : 1)
         border.color: {

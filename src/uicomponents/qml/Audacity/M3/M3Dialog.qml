@@ -36,15 +36,38 @@ StyledDialogView {
 
     property bool fullScreen: false
 
+    // Personalize appearance override hookup, see M3Button.qml for detail.
+    property string elementId: ""
+    property int appearanceRevision: 0
+
+    function m3Appearance(property, fallback) {
+        root.appearanceRevision
+        if (root.elementId === "" || typeof AppearanceOverrides === "undefined") {
+            return fallback
+        }
+        return AppearanceOverrides.resolve(root.elementId, "", property, fallback)
+    }
+
+    Connections {
+        target: typeof AppearanceOverrides !== "undefined" ? AppearanceOverrides : null
+        ignoreUnknownSignals: true
+
+        function onElementChanged(elementId) {
+            if (elementId === root.elementId) {
+                root.appearanceRevision = root.appearanceRevision + 1
+            }
+        }
+    }
+
     contentWidth: root.fullScreen ? 900 : 420
     contentHeight: root.fullScreen ? 640 : column.implicitHeight + 48
 
     margins: root.fullScreen ? 0 : 24
-    cornerRadius: root.fullScreen ? 0 : M3.shape.extraLarge
+    cornerRadius: root.m3Appearance("radius", root.fullScreen ? 0 : M3.shape.extraLarge)
 
     Rectangle {
         anchors.fill: parent
-        color: M3.surfaceAt(3)
+        color: root.m3Appearance("containerColor", M3.surfaceAt(3))
         radius: root.cornerRadius
         antialiasing: true
     }
