@@ -2,6 +2,7 @@
 #pragma once
 #include "nativefiletransaction.h"
 #include <QCryptographicHash>
+#include <QDebug>
 #include <QFile>
 #include <QTemporaryDir>
 #include <QDirIterator>
@@ -19,11 +20,36 @@ namespace au::converter::detail {
 // removed before launch. Only registryRead is granted, for SxS activation.
 class ProcessContainment final {
 public:
+    enum class ProfileCleanupState { NoOwnedProfile, Pending, Removed, Failed };
+    struct ProfileCleanupReport {
+        ProfileCleanupState state = ProfileCleanupState::NoOwnedProfile;
+        HRESULT result = S_OK;
+    };
+#ifdef AU_CONVERTER_TEST_HOOKS
+    static inline thread_local bool testFailProfileDeletion = false;
+    static inline thread_local QString testProfileName;
+    QString ownedProfileNameForTest() const { return profileName; }
+#endif
     ProcessContainment() : scratch(QDir::tempPath() + QStringLiteral("/audacity-pdf-XXXXXX")) {
         profileName = QStringLiteral("Audacity.Pdf.") + QUuid::createUuid().toString(QUuid::WithoutBraces);
+#ifdef AU_CONVERTER_TEST_HOOKS
+        if (!testProfileName.isEmpty()) profileName = testProfileName;
+#endif
+        // CreateAppContainerProfile can recreate physical storage for an
+        // existing registration. Derive the candidate identity, then use the
+        // supported registration-backed lookup before acquiring ownership.
+        PSID candidateSid = nullptr;
+        if (FAILED(DeriveAppContainerSidFromAppContainerName(reinterpret_cast<LPCWSTR>(profileName.utf16()), &candidateSid))) return;
+        LPWSTR candidateText = nullptr, registeredFolder = nullptr;
+        if (!ConvertSidToStringSidW(candidateSid, &candidateText)) { FreeSid(candidateSid); return; }
+        const HRESULT registration = GetAppContainerFolderPath(candidateText, &registeredFolder);
+        if (registeredFolder) CoTaskMemFree(registeredFolder);
+        LocalFree(candidateText); FreeSid(candidateSid);
+        if (registration != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) return;
         if (FAILED(CreateAppContainerProfile(reinterpret_cast<LPCWSTR>(profileName.utf16()), L"Audacity PDF worker",
             L"Ephemeral converter worker", nullptr, 0, &sid))) return;
         ownsProfile = true;
+        cleanupReport.state = ProfileCleanupState::Pending;
         LPWSTR sidText = nullptr, folder = nullptr;
         if (!ConvertSidToStringSidW(sid, &sidText)) return;
         const HRESULT folderResult = GetAppContainerFolderPath(sidText, &folder);
@@ -66,8 +92,39 @@ public:
             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
         ready = root.valid() && grantRead(root.value);
     }
-    ~ProcessContainment() { files.clear(); if (sid) FreeSid(sid);
-        if (ownsProfile) DeleteAppContainerProfile(reinterpret_cast<LPCWSTR>(profileName.utf16())); }
+    ~ProcessContainment() {
+        cleanupProfile();
+        // Keep the SID and ownership record alive through the deletion attempt.
+        if (sid) FreeSid(sid);
+    }
+    // Call only after every worker using this container has been closed. The
+    // destructor uses the same one-attempt path. A failed result is observable
+    // and retained; repeated cleanup calls never retry or broaden its target.
+    ProfileCleanupReport cleanupProfile() {
+        ready = false;
+        files.clear();
+        pins.clear();
+        if (!ownsProfile || cleanupReport.state != ProfileCleanupState::Pending) return cleanupReport;
+        HRESULT result;
+#ifdef AU_CONVERTER_TEST_HOOKS
+        if (testFailProfileDeletion) result = HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED);
+        else
+#endif
+            result = DeleteAppContainerProfile(reinterpret_cast<LPCWSTR>(profileName.utf16()));
+        cleanupReport.result = result;
+        if (SUCCEEDED(result)) {
+            cleanupReport.state = ProfileCleanupState::Removed;
+            ownsProfile = false;
+        } else {
+            cleanupReport.state = ProfileCleanupState::Failed;
+            // Fixed bounded diagnostic, with no profile path, source name or
+            // parser content. Host logging receives the actual API HRESULT.
+            qWarning().noquote() << QStringLiteral("PDF worker profile cleanup failed (HRESULT 0x%1); an owned registration may remain.")
+                .arg(quint32(result), 8, 16, QLatin1Char('0'));
+        }
+        return cleanupReport;
+    }
+    ProfileCleanupReport profileCleanupReport() const { return cleanupReport; }
     bool valid() const { return ready; }
     QString directory() const { return scratch.path(); }
     PSID identity() const { return sid; }
@@ -143,6 +200,7 @@ private:
     PSID sid = nullptr;
     bool ready = false;
     bool ownsProfile = false;
+    ProfileCleanupReport cleanupReport;
     QString profileName, profilePath;
     std::vector<unsigned char> capabilityStorage;
     SID_AND_ATTRIBUTES capability = {};

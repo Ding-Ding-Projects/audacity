@@ -223,8 +223,17 @@ Windows API. Its newly created physical package directory is validated against
 that exact generated name, checked for redirection, and removed before any child
 launch. This prevents the worker from discovering and writing to default package
 storage despite a read-only working directory. The parent retains the unique
-registration until teardown and removes only the profile it successfully created;
-it never adopts or deletes an existing profile. No original source, existing
+registration until teardown and attempts removal only for the profile it
+successfully created. A registration-backed folder lookup rejects an existing
+candidate identity before creation, including one whose physical storage is
+absent. SID derivation alone is never treated as evidence of absence.
+Teardown retains the SID through `DeleteAppContainerProfile`, checks its HRESULT,
+and exposes a bounded `Pending`, `Removed`, `Failed`, or `NoOwnedProfile` report.
+A failed deletion emits one fixed diagnostic containing the HRESULT but no
+profile path or document content; its final state remains uncertain and an
+owned registration may remain for recovery. Repeated cleanup does not retry,
+broaden its target, or delete a same-name replacement. It never adopts or deletes
+an existing profile. No original source, existing
 profile, machine firewall or system ACL is modified.
 
 The parent copies the ten independently hash-pinned executable/DLL files into a
@@ -288,8 +297,16 @@ interaction and capture evidence. These are not implemented by this backend.
 
 ## Focused verification
 
-`src/converter/tests/standalone` builds four real Qt console executables plus one static native worker fixture:
+`src/converter/tests/standalone` builds five real Qt console executables plus one static native worker fixture:
 
+- `converter_profile_cleanup`: five focused cases verify ordinary destructor
+  removal using `GetAppContainerFolderPath` on the retained exact SID (`S_OK`
+  before deletion, `0x80070002` afterwards), followed by same-name recreation;
+  checked explicit cleanup and replacement preservation; observable injected
+  deletion failure with another profile preserved; and rejected collisions with
+  existing registrations both with and without physical storage. All profiles
+  are uniquely named owned fixtures. A deterministic SID alone or same-name
+  recreation alone is insufficient evidence of deletion.
 - `converter_process_containment`: a synthetic native worker proves actual
   read/write refusal outside scratch, refusal of an ALL APPLICATION PACKAGES
   canary, read-only staged input, no file creation or package-storage recreation,
@@ -319,7 +336,8 @@ Test barriers are compiled only with `AU_CONVERTER_TEST_HOOKS`; product builds
 contain no injection callback. Required plugin or fixture unavailability fails
 these executables rather than counting rejection as a successful conversion.
 The image/native executables have a 90-second CTest timeout and the PDF executable
-has a 180-second timeout. The containment executable has a 90-second timeout. PDF test-only budgets can only reduce production limits;
+has a 180-second timeout. The containment executable has a 90-second timeout,
+and the profile-cleanup executable has a 30-second timeout. PDF test-only budgets can only reduce production limits;
 they never replace qpdf with a stub or permit an unverified tool. Results go directly to stderr so
 host Qt logging rules cannot suppress their verdicts.
 
