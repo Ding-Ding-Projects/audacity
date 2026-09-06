@@ -54,4 +54,48 @@ Assert-RejectsMutation 'candidate-mismatch' ($generator -replace 'NOT AU_ACTUAL_
     Assert-Contains $text 'NOT AU_ACTUAL_SOURCE_REVISION STREQUAL AU_EXPECTED_SOURCE_REVISION' 'The generator must reject a source candidate mismatch.'
 }
 
+$fixture = Join-Path $env:TEMP ('audacity-front-provenance-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $fixture | Out-Null
+try {
+    git -C $fixture init -q
+    git -C $fixture config user.name 'fixture'
+    git -C $fixture config user.email 'fixture@example.invalid'
+    Set-Content -LiteralPath (Join-Path $fixture '.gitignore') -Value 'build/' -NoNewline
+    Set-Content -LiteralPath (Join-Path $fixture 'tracked.txt') -Value 'baseline' -NoNewline
+    git -C $fixture add .gitignore tracked.txt
+    git -C $fixture commit -q -m fixture
+    $fixtureRevision = (git -C $fixture rev-parse HEAD).Trim()
+    $fixtureHeader = Join-Path $fixture 'build/appshelldisplayprovenance.h'
+
+    function Invoke-FixtureGeneration {
+        param([bool] $ExpectSuccess)
+        & cmake "-DAU_SOURCE_DIR=$fixture" "-DAU_EXPECTED_SOURCE_REVISION=$fixtureRevision" "-DAU_OUTPUT_HEADER=$fixtureHeader" -P $generatorPath 2>&1 | Out-String | Write-Verbose
+        if ($ExpectSuccess -and $LASTEXITCODE -ne 0) { throw 'Clean fixture provenance generation failed.' }
+        if (-not $ExpectSuccess -and $LASTEXITCODE -eq 0) { throw 'Dirty fixture provenance generation unexpectedly succeeded.' }
+    }
+
+    Invoke-FixtureGeneration $true
+    $firstBytes = [IO.File]::ReadAllBytes($fixtureHeader)
+    $firstWrite = (Get-Item $fixtureHeader).LastWriteTimeUtc
+    Start-Sleep -Milliseconds 30
+    Invoke-FixtureGeneration $true
+    if ([Convert]::ToBase64String($firstBytes) -ne [Convert]::ToBase64String([IO.File]::ReadAllBytes($fixtureHeader))) { throw 'Unchanged candidate rewrote header bytes.' }
+    if ((Get-Item $fixtureHeader).LastWriteTimeUtc -ne $firstWrite) { throw 'Unchanged candidate rewrote the header.' }
+
+    Set-Content -LiteralPath (Join-Path $fixture 'tracked.txt') -Value 'unstaged' -NoNewline
+    Invoke-FixtureGeneration $false
+    git -C $fixture restore tracked.txt
+    Set-Content -LiteralPath (Join-Path $fixture 'tracked.txt') -Value 'staged' -NoNewline
+    git -C $fixture add tracked.txt
+    Invoke-FixtureGeneration $false
+    git -C $fixture reset -q HEAD -- tracked.txt
+    git -C $fixture restore tracked.txt
+    Set-Content -LiteralPath (Join-Path $fixture 'untracked.txt') -Value 'untracked' -NoNewline
+    Invoke-FixtureGeneration $false
+    Remove-Item -LiteralPath (Join-Path $fixture 'untracked.txt') -Force
+    Invoke-FixtureGeneration $true
+} finally {
+    if (Test-Path -LiteralPath $fixture) { Remove-Item -LiteralPath $fixture -Recurse -Force }
+}
+
 Write-Host 'Front-screen provenance structural and negative-regression checks passed.'
