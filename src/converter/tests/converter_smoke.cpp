@@ -11,13 +11,14 @@
 #include <QTemporaryDir>
 
 #include <atomic>
+#include <cstdio>
 
 using namespace au::converter;
 
 namespace {
 bool expect(bool condition, const char* message)
 {
-    if (!condition) qCritical("%s", message);
+    if (!condition) std::fprintf(stderr, "%s\n", message);
     return condition;
 }
 

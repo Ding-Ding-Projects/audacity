@@ -16,6 +16,7 @@ set_target_properties(converter_core_smoke PROPERTIES CXX_STANDARD 20 CXX_STANDA
 
 enable_testing()
 add_test(NAME converter_core_smoke COMMAND converter_core_smoke)
+set_tests_properties(converter_core_smoke PROPERTIES TIMEOUT 90)
 
 if(WIN32)
     add_executable(converter_native_transactions
@@ -28,4 +29,5 @@ if(WIN32)
     target_link_libraries(converter_native_transactions PRIVATE Qt6::Core Qt6::Gui)
     set_target_properties(converter_native_transactions PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
     add_test(NAME converter_native_transactions COMMAND converter_native_transactions)
+    set_tests_properties(converter_native_transactions PROPERTIES TIMEOUT 90)
 endif()

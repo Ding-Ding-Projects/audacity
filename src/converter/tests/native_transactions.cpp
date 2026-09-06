@@ -189,6 +189,20 @@ int main(int argc, char** argv)
             };
             f.converted(f.convert()); require(reached && bytes(f.source) == original, "unchanged opened source");
         }},
+        {"native read error remains a negative QIODevice result", [] {
+            Fixture f; std::unique_ptr<detail::Handle> locker; OVERLAPPED range = {}; bool reached = false;
+            ConversionEngine::testHook = [&](auto phase) {
+                if (phase == ConversionEngine::TestPhase::SourceOpened) {
+                    reached = true;
+                    locker = std::make_unique<detail::Handle>(CreateFileW(wide(f.source), GENERIC_READ,
+                                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr));
+                    require(locker->valid(), "read-lock fixture handle");
+                    require(LockFileEx(locker->value, LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY, 0, 32, 0, &range), "exclusive byte range fixture");
+                }
+            };
+            require(f.convert().status == ConversionStatus::Rejected && reached, "native locked read refused safely");
+            require(!QFile::exists(f.output), "no output after read error");
+        }},
         {"destination ancestor swap blocked after pinning", [] {
             Fixture f; const auto parent = f.directory.filePath(QStringLiteral("parent"));
             require(QDir().mkpath(parent), "destination parent"); f.output = parent + QStringLiteral("/out.bmp"); bool reached = false;

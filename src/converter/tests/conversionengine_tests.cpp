@@ -105,8 +105,10 @@ TEST(ConversionEngine, publishesOnlyVerifiedImageOutput)
     QTemporaryDir directory;
     const QString source = writePng(directory, QStringLiteral("source.png"));
     const QString destination = directory.filePath(QStringLiteral("converted.jpg"));
+    if (!ConverterCatalog::find(QStringLiteral("PNG"), QStringLiteral("JPEG")).enabled) {
+        GTEST_SKIP() << "The running Qt build has no PNG to JPEG adapter.";
+    }
     const ConversionResult result = ConversionEngine().convert({ source, destination, QStringLiteral("jpeg") });
-    if (result.status == ConversionStatus::Rejected) GTEST_SKIP() << result.message.toStdString();
     EXPECT_EQ(result.status, ConversionStatus::Converted);
     QImage verified(destination);
     EXPECT_FALSE(verified.isNull());

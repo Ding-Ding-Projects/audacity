@@ -1,101 +1,122 @@
 # Local file conversion core
 
-This first backend slice adds `src/converter`, an unregistered Qt module for a
-future local file-converter surface. It does not provide a user interface,
-application registration, translations, packaged-artifact proof, PDF tools,
-audio conversion, or video conversion.
+This backend slice adds `src/converter`, an unregistered Qt module for a future
+local file-converter surface. It does not provide a user interface, application
+registration, translations, packaged-artifact proof, PDF tools, audio
+conversion, or video conversion.
 
 ## Current adapter catalog
 
-The catalog is categorized and deliberately honest. Its current functional
-scope is Qt image plugin conversion among PNG, JPEG and BMP, only when the Qt
-plugins in the running build report both source decoding and target encoding
-support. PDF, audio, video, archives, structured data, code/text and binary
-encodings remain visible as disabled adapters with a precise reason.
+The current functional scope is Qt image plugin conversion from PNG to JPEG or
+BMP, and from JPEG or BMP to PNG. Each pair requires the running Qt plugins to
+report both decoding and encoding support. PDF, audio, video, archives,
+structured data, code/text and binary encodings remain visible as disabled
+adapters with precise reasons.
 
-The module never searches `PATH`, launches command-line tools, runs scripts,
-uses a network service, or treats a developer-machine installation as bundled
-capability. A format is enabled only when the Qt plugin reports availability in
-the running build.
+The module does not search `PATH`, launch command-line tools or scripts, or use
+network services. Runtime plugin presence is not packaged-application proof;
+the application integration must validate bundled plugin provenance before
+presenting these adapters as installed-product capabilities.
 
-## Safety boundaries
+## Native file transaction
 
-- Source type detection reads bounded source bytes and does not trust a file
-  extension.
-- Input size is limited to 256 MiB and decoded image dimensions to 100 million
-  pixels. Malformed or oversized sources are rejected before output.
-- The source is never modified.
-- A destination that already exists is preserved unless the caller explicitly
-  selects overwrite. This standalone core still refuses explicit overwrite,
-  because its application integration must supply a verified Windows-safe
-  atomic replacement service rather than deleting the old file first.
-- New outputs are encoded in a private temporary file in the destination
-  directory, reopened and dimension-verified, then renamed into a previously
-  absent destination. Failed or cancelled conversions publish no output.
-- Queue persistence records only versioned item state, paths, target format and
-  the caller's overwrite choice. It never stores input or output file bytes.
-  Queue reads are paged and capped to 500 rows per call.
+On Windows, the core accepts absolute drive paths on fixed local NTFS volumes.
+It rejects relative paths, device and network paths, alternate data streams,
+reserved DOS names, ambiguous trailing dots/spaces, and reparse points in both
+source and destination ancestor chains. Unsupported filesystem semantics fail
+closed; no copy-and-delete fallback is attempted.
+
+Every ancestor is opened with `FILE_FLAG_OPEN_REPARSE_POINT`, checked through
+its directory handle, and held with `FILE_LIST_DIRECTORY` access and without
+delete sharing. Read and write sharing are necessary because native rename
+opens the destination directory for writing. Attribute-only opens do not
+participate in ordinary sharing enforcement, so sharing alone is not the
+reparse defense. Every subsequent directory or file handle must resolve to its
+expected volume-GUID path. An empty parent redirected before temporary creation
+produces a mismatched handle that is rejected and removed by that handle. Once
+the exclusive child is open, its parent remains nonempty, and NTFS refuses to
+turn it into a reparse point. Ancestor deletion/renaming remains blocked by the
+open directory handles. Volume-GUID paths prevent drive-letter remapping from
+redirecting later operations.
+
+The source is opened once with `FILE_FLAG_OPEN_REPARSE_POINT` and without write
+or delete sharing. The opened handle determines regular-file type, input size,
+and file identity. Signature inspection and image decoding use the same bounded,
+seekable QIODevice. Source identity, size and last-write metadata are checked
+again before publication. The source is never opened for writing. Case aliases
+and hard links identifying the source are refused as destinations.
+
+All existing destinations are preserved, including requests that explicitly
+approve overwrite. Safe overwrite is still unavailable in this core and is
+not a completed feature.
+
+A random temporary output is created with exclusive `CREATE_NEW` access in the
+pinned parent. Encoding and full decode verification use that same handle, with
+no path reopen. `FlushFileBuffers` precedes the atomic commit:
+`SetFileInformationByHandle(FileRenameInfo)` with `ReplaceIfExists = FALSE`.
+A destination introduced during conversion wins, including a link, and is
+preserved. The result never falls back to copying over the target. Cancellation
+or failure marks the unpublished temporary for deletion through its own handle,
+never through a filename that another process could substitute. A filesystem IO
+failure can prevent deletion; crash-orphan recovery remains integration work.
+
+The documented native contracts are
+[FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info),
+[SetFileInformationByHandle](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle),
+and [reparse-point validation](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fsa/4aeefef8-92c3-4abc-af7a-a610caf8a165).
+The implementation does not invoke undocumented native system calls.
+
+## Resource and cancellation boundaries
+
+Input is limited to 256 MiB, decoded dimensions to 100 million pixels, and
+encoded output to 512 MiB. Invalid signatures, malformed dimensions and truncated
+images are rejected. Source and temporary reads use bounded chunks. Cancellation
+is checked during IO and immediately before commit. A cancellation that arrives
+after the atomic commit does not undo the completed output.
+
+The decoder remains in-process, without a hard CPU deadline or process memory
+sandbox. The file transaction does not protect against privileged kernel
+tampering or writes through a mapping created before the source handle opened.
+This is a backend namespace-race boundary, not a complete decoder sandbox or a
+claim of power-loss durability. A process crash may leave an unpublished
+temporary; originals are not overwritten by the create-if-absent commit.
+
+Queue persistence records versioned item state, paths, target format and the
+caller's overwrite choice, without input or output bytes. Queue reads are paged
+and capped to 500 rows per call.
 
 ## Parent integration required
 
-The application integration lane must register `src/converter/CMakeLists.txt`
-from the root build, provide QML and localized user-facing copy, add the
-adapter catalog search and its regex builder, bind progress and cancellation to
-a bounded-concurrency worker, add storage-capacity preflight, package and prove
-the Qt image plugins, provide a Windows-safe overwrite transaction, and run
-the module tests through the project build.
+Application integration must register `src/converter/CMakeLists.txt`, provide
+QML and localization, add adapter searches and their regex builders, bind
+progress/cancellation to bounded workers, provide storage-capacity preflight,
+prove bundled Qt plugins, implement safe approved overwrite, and integrate
+process isolation, execution limits and durable crash recovery.
 
-The visible converter must also implement the remaining product contract:
-document and PDF operations, batch handling with durable crash recovery,
-history and exports, accessibility and responsive behavior, notifications,
-command-palette routing, real built-artifact interaction, and captures.
+The full converter also requires document/PDF operations, audio/video and other
+category adapters, batch history/exports, accessibility, responsive behavior,
+notifications, command-palette routing, and real packaged-application
+interaction and capture evidence. These are not implemented by this backend.
 
-## Focused tests
+## Focused verification
 
-`src/converter/tests/conversionengine_tests.cpp` covers corrupt byte input,
-existing-destination preservation, verified output, pre-start cancellation,
-queue restart and persisted cancellation. The image conversion test skips only
-when the current Qt build lacks the necessary bundled image capability, which
-is the same condition that disables the adapter in the catalog.
+`src/converter/tests/standalone` builds two real Qt console executables:
 
-## Native transaction boundary
+- `converter_core_smoke`: successful JPEG conversion and full reopen, source
+  collision, cancellation, queue persistence and restart.
+- `converter_native_transactions`: independently reported deterministic cases
+  for signature detection, file identity, symlinks, directory junctions,
+  destination insertion, source and temporary substitution, attribute-only
+  directory redirection, native IO errors, resource limits, malformed input,
+  cancellation, and unpublished temporary deletion.
 
-On Windows, this core accepts absolute drive paths on fixed local NTFS volumes.
-It rejects relative paths, device and network paths, alternate data streams,
-reserved DOS names, ambiguous trailing dots/spaces, and every reparse point in
-both source and destination ancestor chains. Unsupported filesystem semantics
-fail closed; no copy-and-delete fallback is attempted.
+Test barriers are compiled only with `AU_CONVERTER_TEST_HOOKS`; product builds
+contain no injection callback. Required plugin or fixture unavailability fails
+these executables rather than counting rejection as a successful conversion.
+Each executable has a 90-second CTest timeout. Results go directly to stderr so
+host Qt logging rules cannot suppress their verdicts.
 
-Each ancestor is opened with `FILE_FLAG_OPEN_REPARSE_POINT` and held without
-write or delete sharing. The opened root is resolved to its volume GUID so a
-subsequent drive-letter remapping cannot redirect the transaction. The source
-is opened once without write or delete sharing, checked by handle for regular
-file type, size and identity, and decoded through that same bounded QIODevice.
-Hard-link identity, case aliases and existing destinations are refused.
-
-The temporary output uses an exclusive `CREATE_NEW` handle in the pinned
-parent. Encoding and full decode verification use that same handle. The output
-is bounded to 512 MiB. `FlushFileBuffers` precedes
-`SetFileInformationByHandle(FileRenameInfo)` with `ReplaceIfExists = FALSE`.
-The native rename is the atomic create-if-absent commit: a destination created
-at any earlier point wins, including a link, and its bytes are preserved.
-On cancellation or failure the unpublished temporary is removed by its own
-handle, never by a filename that another process could substitute.
-
-The implementation protects ordinary filesystem namespace races, not privileged
-kernel tampering or writes through a mapping created before the source handle
-was opened. Cancellation is checked during bounded IO and immediately before
-commit; cancellation arriving after the atomic commit does not roll it back.
-Decoder execution remains in-process and has no hard CPU deadline or process
-memory sandbox. Process isolation and crash-orphan recovery remain integration
-work. A process crash can leave an unpublished temporary, never an overwritten
-original. Explicit overwrite is still unavailable, not a completed feature.
-
-`src/converter/tests/standalone` builds a real Qt console transaction executable
-with deterministic test-only barriers. It exercises source and destination
-reparse paths, hard links and case aliases, destination creation races, blocked
-source/directory/temporary substitutions, input/output limits, malformed images,
-and cancellation at source, output and commit boundaries. The executable fails
-if required image plugins or filesystem fixtures are unavailable; it does not
-count refusal to convert as success. These tests prove this backend on the
-host, not the full application or a packaged installer.
+The separate project GoogleTest file additionally covers the catalog and queue
+schema rejection. Its unavailable-plugin skip is restricted to a catalog check,
+never an arbitrary rejected conversion. Standalone console evidence does not
+claim that the GoogleTest target, full application or installer was exercised.
