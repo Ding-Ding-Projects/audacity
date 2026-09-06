@@ -19,9 +19,8 @@ struct QueueItem {
     QString message;
 };
 
-//! The queue stores paths and bounded state only.  It never stores source or
-//! output bytes and callers read pages, rather than forcing a long queue into
-//! a view-model sized in-memory list.
+//! The queue stores one bounded JSON record per item. It streams pages from
+//! disk and never retains the whole queue or any file bytes in memory.
 class ConversionQueue
 {
 public:
@@ -36,6 +35,6 @@ public:
 
 private:
     QString m_statePath;
-    QVector<QueueItem> m_items;
+    QString recordsPath() const;
 };
 }

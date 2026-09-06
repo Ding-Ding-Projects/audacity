@@ -17,9 +17,9 @@
 using namespace au::converter;
 
 namespace {
-bool cancelled(const bool* requested)
+bool cancelled(const std::atomic_bool* requested)
 {
-    return requested != nullptr && *requested;
+    return requested != nullptr && requested->load(std::memory_order_acquire);
 }
 
 ConversionResult result(ConversionStatus status, const QString& sourceFormat, const QString& message)
@@ -77,14 +77,14 @@ QString ConversionEngine::detectFormat(const QString& sourcePath, QString* error
     return {};
 }
 
-ConversionResult ConversionEngine::convert(const ConversionRequest& request, const bool* cancellationRequested) const
+ConversionResult ConversionEngine::convert(const ConversionRequest& request, const std::atomic_bool* cancellationRequested) const
 {
     if (cancelled(cancellationRequested)) {
         return result(ConversionStatus::Cancelled, {}, QStringLiteral("Conversion was cancelled before reading the source."));
     }
 
     const QFileInfo sourceInfo(request.sourcePath);
-    if (!sourceInfo.isFile()) {
+    if (!sourceInfo.isFile() || sourceInfo.isSymLink()) {
         return result(ConversionStatus::Rejected, {}, QStringLiteral("The selected source is not a regular file."));
     }
     if (sourceInfo.size() <= 0 || sourceInfo.size() > MaxInputBytes) {
@@ -94,8 +94,17 @@ ConversionResult ConversionEngine::convert(const ConversionRequest& request, con
         return result(ConversionStatus::Rejected, {}, QStringLiteral("A target format and destination are required."));
     }
 
+    QFile source(request.sourcePath);
+    if (!source.open(QIODevice::ReadOnly) || source.size() != sourceInfo.size()) {
+        return result(ConversionStatus::Rejected, {}, QStringLiteral("The source changed while it was being opened."));
+    }
+    const QByteArray signature = source.read(32);
     QString detectionError;
-    const QString sourceFormat = detectFormat(request.sourcePath, &detectionError);
+    QString sourceFormat;
+    if (matches(signature, "\x89PNG\r\n\x1a\n")) sourceFormat = QStringLiteral("PNG");
+    else if (matches(signature, "\xff\xd8\xff")) sourceFormat = QStringLiteral("JPEG");
+    else if (matches(signature, "BM")) sourceFormat = QStringLiteral("BMP");
+    else detectionError = QStringLiteral("The source bytes do not match a supported image signature.");
     if (sourceFormat.isEmpty()) {
         return result(ConversionStatus::Rejected, {}, detectionError);
     }
@@ -106,6 +115,12 @@ ConversionResult ConversionEngine::convert(const ConversionRequest& request, con
     }
 
     const QFileInfo outputInfo(request.outputPath);
+    if (QDir::cleanPath(sourceInfo.absoluteFilePath()).compare(QDir::cleanPath(outputInfo.absoluteFilePath()), Qt::CaseInsensitive) == 0) {
+        return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The destination must differ from the source."));
+    }
+    if (QFileInfo(outputInfo.dir().absolutePath()).isSymLink()) {
+        return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The destination directory must not be a symbolic link."));
+    }
     if (outputInfo.exists()) {
         if (!request.allowOverwrite) {
             return result(ConversionStatus::Rejected, sourceFormat,
@@ -118,7 +133,9 @@ ConversionResult ConversionEngine::convert(const ConversionRequest& request, con
                       QStringLiteral("Safe overwrite is not available in this standalone core. The existing file was preserved."));
     }
 
-    QImageReader reader(request.sourcePath, sourceFormat.toLatin1());
+    source.seek(0);
+    QImageReader::setAllocationLimit(384);
+    QImageReader reader(&source, sourceFormat.toLatin1());
     reader.setAutoTransform(false);
     const QSize size = reader.size();
     if (!size.isValid() || size.width() <= 0 || size.height() <= 0
@@ -158,8 +175,8 @@ ConversionResult ConversionEngine::convert(const ConversionRequest& request, con
     }
 
     QImageReader verifier(temporaryPath, lowerFormat(request.targetFormat).toLatin1());
-    const QImage reopened = verifier.read();
-    if (reopened.isNull() || reopened.size() != image.size()) {
+    const QSize reopenedSize = verifier.size();
+    if (!reopenedSize.isValid() || reopenedSize != image.size() || !verifier.canRead()) {
         return result(ConversionStatus::Failed, sourceFormat, QStringLiteral("The temporary output failed reopen verification."));
     }
     if (!QFile::rename(temporaryPath, request.outputPath)) {

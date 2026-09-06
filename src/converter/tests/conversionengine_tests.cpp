@@ -7,10 +7,12 @@
 #include "conversionqueue.h"
 
 #include <QFile>
+#include <QDirIterator>
 #include <QImage>
 #include <QImageWriter>
 #include <QTemporaryDir>
 
+#include <atomic>
 #include <gtest/gtest.h>
 
 using namespace au::converter;
@@ -38,6 +40,18 @@ TEST(ConversionEngine, rejectsCorruptInputByBytes)
     const ConversionResult result = ConversionEngine().convert({ source, directory.filePath(QStringLiteral("out.jpg")), QStringLiteral("jpeg") });
     EXPECT_EQ(result.status, ConversionStatus::Rejected);
     EXPECT_FALSE(QFile::exists(directory.filePath(QStringLiteral("out.jpg"))));
+}
+
+TEST(ConversionEngine, rejectsHeaderBombBeforeDecode)
+{
+    QTemporaryDir directory;
+    const QString source = directory.filePath(QStringLiteral("bomb.png"));
+    QFile file(source);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly));
+    file.write("\x89PNG\r\n\x1a\n\0\0\0\rIHDR\0\x01\0\0\0\x01", 29);
+    file.close();
+    const ConversionResult result = ConversionEngine().convert({ source, directory.filePath(QStringLiteral("out.jpg")), QStringLiteral("jpeg") });
+    EXPECT_EQ(result.status, ConversionStatus::Rejected);
 }
 
 TEST(ConverterCatalog, showsKnownUnavailableFormatsWithReasons)
@@ -78,6 +92,14 @@ TEST(ConversionEngine, preservesExistingDestinationWithoutExplicitOverwrite)
     EXPECT_EQ(existing.readAll(), QByteArray("do not replace"));
 }
 
+TEST(ConversionEngine, rejectsDestinationThatAliasesTheSource)
+{
+    QTemporaryDir directory;
+    const QString source = writePng(directory, QStringLiteral("source.png"));
+    const ConversionResult result = ConversionEngine().convert({ source, source, QStringLiteral("jpeg") });
+    EXPECT_EQ(result.status, ConversionStatus::Rejected);
+}
+
 TEST(ConversionEngine, publishesOnlyVerifiedImageOutput)
 {
     QTemporaryDir directory;
@@ -96,7 +118,7 @@ TEST(ConversionEngine, cancellationDoesNotPublishOutput)
     QTemporaryDir directory;
     const QString source = writePng(directory, QStringLiteral("source.png"));
     const QString destination = directory.filePath(QStringLiteral("cancelled.jpg"));
-    const bool cancel = true;
+    const std::atomic_bool cancel = true;
     const ConversionResult result = ConversionEngine().convert({ source, destination, QStringLiteral("jpeg") }, &cancel);
     EXPECT_EQ(result.status, ConversionStatus::Cancelled);
     EXPECT_FALSE(QFile::exists(destination));
@@ -117,9 +139,30 @@ TEST(ConversionQueue, restartAndCancellationPersistPathsWithoutSourceBytes)
     const QVector<QueueItem> restored = restarted.page(0, 20);
     ASSERT_EQ(restored.size(), 1);
     EXPECT_EQ(restored.first().state, QueueItemState::Cancelled);
-    QFile stateFile(statePath);
+    QDirIterator records(statePath + QStringLiteral(".items"), { QStringLiteral("*.json") }, QDir::Files);
+    ASSERT_TRUE(records.hasNext());
+    QFile stateFile(records.next());
     ASSERT_TRUE(stateFile.open(QIODevice::ReadOnly));
     const QByteArray state = stateFile.readAll();
     EXPECT_TRUE(state.contains("C:/input.png"));
     EXPECT_FALSE(state.contains("\x89PNG"));
+}
+
+TEST(ConversionQueue, rejectsDuplicateSchemaFields)
+{
+    QTemporaryDir directory;
+    const QString statePath = directory.filePath(QStringLiteral("queue.json"));
+    ConversionQueue queue(statePath);
+    ASSERT_TRUE(queue.enqueue({ QStringLiteral("C:/input.png"), QStringLiteral("C:/output.jpg"), QStringLiteral("jpeg") }));
+    QDirIterator records(statePath + QStringLiteral(".items"), { QStringLiteral("*.json") }, QDir::Files);
+    ASSERT_TRUE(records.hasNext());
+    QFile record(records.next());
+    ASSERT_TRUE(record.open(QIODevice::ReadOnly));
+    const QByteArray original = record.readAll();
+    record.close();
+    ASSERT_TRUE(record.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    record.write(original.left(original.size() - 1) + QByteArray(",\"id\":\"duplicate\"}"));
+    record.close();
+    ConversionQueue restarted(statePath);
+    EXPECT_FALSE(restarted.load());
 }

@@ -6,6 +6,8 @@
 
 #include <QString>
 
+#include <atomic>
+
 namespace au::converter {
 
 enum class ConversionStatus {
@@ -38,7 +40,7 @@ public:
     static constexpr qint64 MaxInputBytes = 256LL * 1024 * 1024;
     static constexpr qint64 MaxDecodedPixels = 100LL * 1000 * 1000;
 
-    ConversionResult convert(const ConversionRequest& request, const bool* cancellationRequested = nullptr) const;
+    ConversionResult convert(const ConversionRequest& request, const std::atomic_bool* cancellationRequested = nullptr) const;
     static QString detectFormat(const QString& sourcePath, QString* error = nullptr);
 };
 }
