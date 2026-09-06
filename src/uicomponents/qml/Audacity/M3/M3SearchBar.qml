@@ -155,8 +155,12 @@ FocusScope {
         M3IconButton {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.showRegexBuilder
-            icon: IconCode.BRACKET_PARENTHESES_SQUARE
-            accessibleName: "Open the regular expression builder"
+            // IconCode.BRACKET_PARENTHESES_SQUARE is drawn as a literal
+            // "[ ]" in this font, which reads as missing-icon fallback text
+            // rather than as an icon. IconCode.BRACE draws a single curly
+            // brace glyph instead, which is unambiguously an icon.
+            icon: IconCode.BRACE
+            accessibleName: "Open regular expression builder"
             toolTipTitle: "Regular expression builder"
             onClicked: root.regexBuilderRequested()
         }
