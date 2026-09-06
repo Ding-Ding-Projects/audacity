@@ -59,7 +59,7 @@ def main() -> int:
         if not isinstance(photos, list) or not photos:
             return fail(args.output_json, "no tracked dim-sum release photo is indexed")
         entry = photos[0]
-        for field in ("id", "code_name", "path", "sha256"):
+        for field in ("id", "code_name", "path", "sha256", "origin", "origin_disclosure"):
             if not isinstance(entry.get(field), str) or not entry[field]:
                 raise ValueError("indexed photo lacks {0}".format(field))
         source = tracked_path(entry["path"])
@@ -78,10 +78,14 @@ def main() -> int:
         result = {"resolved": True, "id": entry["id"], "code_name": entry["code_name"],
                   "asset": asset, "source_url": "tracked:" + entry["path"],
                   "width": dimensions[0], "height": dimensions[1], "bytes": len(data),
-                  "sha256": digest}
+                  "sha256": digest, "origin": entry["origin"],
+                  "origin_disclosure": entry["origin_disclosure"]}
         with open(args.output_json, "w", encoding="utf-8") as handle:
             json.dump(result, handle, ensure_ascii=False, indent=2)
-        print(json.dumps(result, ensure_ascii=False))
+        # Keep the release metadata Unicode-correct on disk while preserving a
+        # usable Windows console diagnostic on hosts whose active code page
+        # cannot encode Traditional Chinese.
+        print(json.dumps(result, ensure_ascii=True))
         return 0
     except (OSError, ValueError, KeyError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
         return fail(args.output_json, "tracked dim-sum release photo validation failed: {0}".format(exc))

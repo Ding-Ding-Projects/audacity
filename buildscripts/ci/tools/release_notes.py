@@ -189,6 +189,8 @@ def dim_sum_section(path: str) -> str:
         "`{0}` ({1}x{2} PNG, {3:,} bytes, source {4}).".format(
             info["asset"], info["width"], info["height"], info["bytes"], info["source_url"]),
         "",
+        "Origin disclosure: **{0}**".format(info["origin_disclosure"]),
+        "",
         "<!-- dim-sum-id: {0} -->".format(info["id"]),
     ]
     return "\n".join(lines)
