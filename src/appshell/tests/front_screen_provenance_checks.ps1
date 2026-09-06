@@ -69,9 +69,13 @@ try {
 
     function Invoke-FixtureGeneration {
         param([bool] $ExpectSuccess)
-        & cmake "-DAU_SOURCE_DIR=$fixture" "-DAU_EXPECTED_SOURCE_REVISION=$fixtureRevision" "-DAU_OUTPUT_HEADER=$fixtureHeader" -P $generatorPath 2>&1 | Out-String | Write-Verbose
-        if ($ExpectSuccess -and $LASTEXITCODE -ne 0) { throw 'Clean fixture provenance generation failed.' }
-        if (-not $ExpectSuccess -and $LASTEXITCODE -eq 0) { throw 'Dirty fixture provenance generation unexpectedly succeeded.' }
+        $previousErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        & cmake "-DAU_SOURCE_DIR=$fixture" "-DAU_EXPECTED_SOURCE_REVISION=$fixtureRevision" "-DAU_OUTPUT_HEADER=$fixtureHeader" -P $generatorPath
+        $exitCode = $LASTEXITCODE
+        $ErrorActionPreference = $previousErrorActionPreference
+        if ($ExpectSuccess -and $exitCode -ne 0) { throw 'Clean fixture provenance generation failed.' }
+        if (-not $ExpectSuccess -and $exitCode -eq 0) { throw 'Dirty fixture provenance generation unexpectedly succeeded.' }
     }
 
     Invoke-FixtureGeneration $true
