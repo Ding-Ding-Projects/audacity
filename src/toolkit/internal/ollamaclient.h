@@ -28,6 +28,8 @@ class OllamaClient : public QObject
     Q_PROPERTY(bool chatInFlight READ chatInFlight NOTIFY chatInFlightChanged)
     Q_PROPERTY(int pullConcurrency READ pullConcurrency WRITE setPullConcurrency NOTIFY pullConcurrencyChanged)
     Q_PROPERTY(int capabilityRevision READ capabilityRevision NOTIFY capabilityRevisionChanged)
+    Q_PROPERTY(QVariantList chatSessions READ chatSessions NOTIFY chatSessionsChanged)
+    Q_PROPERTY(QVariantMap catalogSnapshot READ catalogSnapshot NOTIFY catalogSnapshotChanged)
 
 public:
     explicit OllamaClient(QObject* parent = nullptr);
@@ -40,6 +42,8 @@ public:
     bool chatInFlight() const;
     int pullConcurrency() const;
     int capabilityRevision() const;
+    QVariantList chatSessions() const;
+    QVariantMap catalogSnapshot() const;
     void setPullConcurrency(int value);
 
     //! Returns true only when the host is loopback or a private network
@@ -57,6 +61,11 @@ public:
     Q_INVOKABLE bool supportsImageAttachments(const QString& modelTag) const;
     Q_INVOKABLE bool attachImage(const QString& modelTag, const QUrl& fileUrl);
     Q_INVOKABLE void clearAttachments(const QString& modelTag);
+    Q_INVOKABLE QString saveChatSession(const QString& title, const QString& systemPrompt, const QVariantList& messages);
+    Q_INVOKABLE QVariantMap loadChatSession(const QString& id) const;
+    Q_INVOKABLE void deleteChatSession(const QString& id);
+    Q_INVOKABLE QString exportChatSession(const QString& id) const;
+    Q_INVOKABLE bool importCatalogSnapshot(const QUrl& fileUrl);
 
 signals:
     void hostChanged();
@@ -74,6 +83,8 @@ signals:
     void capabilityRevisionChanged();
     void modelInspected(const QString& modelTag, bool supportsImages);
     void attachmentRejected(const QString& reason);
+    void chatSessionsChanged();
+    void catalogSnapshotChanged();
     void queuedPullsChanged(const QVariantList& pulls);
     void requestFailed(const QString& what, const QString& reason);
 
@@ -84,6 +95,7 @@ private:
     void persistPullQueue() const;
     void restorePullQueue();
     void setChatInFlight(bool value);
+    void refreshChatSessions();
 
     QNetworkAccessManager m_network;
     QString m_host = QStringLiteral("127.0.0.1:11434");
@@ -100,5 +112,7 @@ private:
     int m_capabilityRevision = 0;
     QHash<QString, bool> m_imageCapabilities;
     QHash<QString, QStringList> m_pendingImages;
+    QVariantList m_chatSessions;
+    QVariantMap m_catalogSnapshot;
 };
 }

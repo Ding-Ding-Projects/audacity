@@ -12,6 +12,8 @@
 #include <QHostAddress>
 #include <QSettings>
 #include <QFile>
+#include <QDateTime>
+#include <QUuid>
 
 using namespace au::toolkit;
 
@@ -19,6 +21,9 @@ OllamaClient::OllamaClient(QObject* parent)
     : QObject(parent)
 {
     restorePullQueue();
+    refreshChatSessions();
+    QSettings settings;
+    m_catalogSnapshot = settings.value(QStringLiteral("ollama/catalogSnapshot")).toMap();
 }
 
 QString OllamaClient::host() const
@@ -107,6 +112,16 @@ int OllamaClient::pullConcurrency() const
 int OllamaClient::capabilityRevision() const
 {
     return m_capabilityRevision;
+}
+
+QVariantList OllamaClient::chatSessions() const
+{
+    return m_chatSessions;
+}
+
+QVariantMap OllamaClient::catalogSnapshot() const
+{
+    return m_catalogSnapshot;
 }
 
 void OllamaClient::setPullConcurrency(int value)
@@ -382,6 +397,102 @@ void OllamaClient::clearAttachments(const QString& modelTag)
     m_pendingImages.remove(modelTag.trimmed());
 }
 
+QString OllamaClient::saveChatSession(const QString& title, const QString& systemPrompt, const QVariantList& messages)
+{
+    const QString id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QVariantMap session {
+        { QStringLiteral("id"), id },
+        { QStringLiteral("title"), title.left(120) },
+        { QStringLiteral("systemPrompt"), systemPrompt.left(4096) },
+        { QStringLiteral("messages"), messages.mid(qMax(0, messages.size() - 200)) },
+        { QStringLiteral("updatedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate) }
+    };
+    QSettings settings;
+    QVariantList stored = settings.value(QStringLiteral("ollama/chatSessions")).toList();
+    stored << session;
+    while (stored.size() > 50) {
+        stored.removeFirst();
+    }
+    settings.setValue(QStringLiteral("ollama/chatSessions"), stored);
+    refreshChatSessions();
+    return id;
+}
+
+QVariantMap OllamaClient::loadChatSession(const QString& id) const
+{
+    for (const QVariant& entry : m_chatSessions) {
+        const QVariantMap session = entry.toMap();
+        if (session.value(QStringLiteral("id")).toString() == id) {
+            return session;
+        }
+    }
+    return {};
+}
+
+void OllamaClient::deleteChatSession(const QString& id)
+{
+    QSettings settings;
+    QVariantList stored = settings.value(QStringLiteral("ollama/chatSessions")).toList();
+    for (auto it = stored.begin(); it != stored.end();) {
+        if (it->toMap().value(QStringLiteral("id")).toString() == id) {
+            it = stored.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    settings.setValue(QStringLiteral("ollama/chatSessions"), stored);
+    refreshChatSessions();
+}
+
+QString OllamaClient::exportChatSession(const QString& id) const
+{
+    const QVariantMap session = loadChatSession(id);
+    if (session.isEmpty()) {
+        return {};
+    }
+    QJsonObject exported;
+    exported.insert(QStringLiteral("title"), session.value(QStringLiteral("title")).toString());
+    exported.insert(QStringLiteral("systemPrompt"), session.value(QStringLiteral("systemPrompt")).toString());
+    QJsonArray messages;
+    for (const QVariant& value : session.value(QStringLiteral("messages")).toList()) {
+        QJsonObject message = QJsonObject::fromVariantMap(value.toMap());
+        message.remove(QStringLiteral("images"));
+        messages.append(message);
+    }
+    exported.insert(QStringLiteral("messages"), messages);
+    exported.insert(QStringLiteral("exportedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    return QString::fromUtf8(QJsonDocument(exported).toJson(QJsonDocument::Indented));
+}
+
+bool OllamaClient::importCatalogSnapshot(const QUrl& fileUrl)
+{
+    if (!fileUrl.isLocalFile()) {
+        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Only a local verified snapshot file is allowed."));
+        return false;
+    }
+    QFile file(fileUrl.toLocalFile());
+    constexpr qint64 maximumSnapshotBytes = 16LL * 1024 * 1024;
+    if (!file.open(QIODevice::ReadOnly) || file.size() <= 0 || file.size() > maximumSnapshotBytes) {
+        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot must be a readable file of at most 16 MiB."));
+        return false;
+    }
+    const QJsonObject snapshot = QJsonDocument::fromJson(file.readAll()).object();
+    const QString origin = snapshot.value(QStringLiteral("origin")).toString();
+    const QString revision = snapshot.value(QStringLiteral("revision")).toString();
+    const int pageCount = snapshot.value(QStringLiteral("pageCount")).toInt(-1);
+    const QJsonArray models = snapshot.value(QStringLiteral("models")).toArray();
+    if (origin != QStringLiteral("https://ollama.com/library") || revision.isEmpty() || pageCount < 1 || models.isEmpty()) {
+        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot is missing official origin, revision, page count, or model rows."));
+        return false;
+    }
+    m_catalogSnapshot = snapshot.toVariantMap();
+    m_catalogSnapshot.insert(QStringLiteral("importedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    QSettings settings;
+    settings.setValue(QStringLiteral("ollama/catalogSnapshot"), m_catalogSnapshot);
+    emit catalogSnapshotChanged();
+    return true;
+}
+
 void OllamaClient::cancelChat()
 {
     if (m_chatReply) {
@@ -432,4 +543,11 @@ void OllamaClient::setChatInFlight(bool value)
     }
     m_chatInFlight = value;
     emit chatInFlightChanged();
+}
+
+void OllamaClient::refreshChatSessions()
+{
+    QSettings settings;
+    m_chatSessions = settings.value(QStringLiteral("ollama/chatSessions")).toList();
+    emit chatSessionsChanged();
 }

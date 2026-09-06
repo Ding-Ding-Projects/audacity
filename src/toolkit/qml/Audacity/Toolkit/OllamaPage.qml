@@ -476,6 +476,37 @@ Item {
                     }
                 }
             }
+            M3Button {
+                text: qsTrc("toolkit", "Save session")
+                variant: "text"
+                enabled: root.chatMessages.length > 0
+                onClicked: ollama.saveChatSession(root.selectedModel, root.systemPrompt, root.chatMessages)
+            }
+        }
+
+        StyledTextLabel {
+            text: qsTrc("toolkit", "Saved local sessions")
+            font: M3.typography.titleMedium
+        }
+
+        ListView {
+            id: savedSessions
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.min(160, savedSessions.contentHeight)
+            clip: true
+            model: ollama.chatSessions
+            delegate: M3ListItem {
+                required property var modelData
+                width: savedSessions.width
+                headline: modelData.title.length > 0 ? modelData.title : qsTrc("toolkit", "Untitled local session")
+                supportingText: modelData.updatedAt
+                trailingText: qsTrc("toolkit", "Load")
+                onClicked: {
+                    var session = ollama.loadChatSession(modelData.id)
+                    root.systemPrompt = session.systemPrompt
+                    root.chatMessages = session.messages
+                }
+            }
         }
 
         StyledTextLabel {
