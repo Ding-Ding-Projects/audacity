@@ -9,6 +9,7 @@ rem   build.bat /s     Silent mode: only warnings, errors and the summary.
 rem ---------------------------------------------------------------------------
 
 set "ROOT=%~dp0"
+set "ROOT_ARG=%~dp0."
 set "BUILD_DIR=%ROOT%build\windows"
 set "INSTALL_DIR=%ROOT%build.install"
 set "QT_DIR=%ROOT%build.tools\Qt\6.10.1\msvc2022_64"
@@ -56,7 +57,7 @@ if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 echo.
 echo === Configure
 if "%SILENT%"=="1" (
-  cmake -S "%ROOT%" -B "%BUILD_DIR%" -G Ninja ^
+  cmake -S "%ROOT_ARG%" -B "%BUILD_DIR%" -G Ninja ^
         -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
         -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
         -DMUSE_ENABLE_UNIT_TESTS=OFF > "%BUILD_DIR%\configure.log" 2>&1
@@ -65,7 +66,7 @@ if "%SILENT%"=="1" (
     exit /b 1
   )
 ) else (
-  cmake -S "%ROOT%" -B "%BUILD_DIR%" -G Ninja ^
+  cmake -S "%ROOT_ARG%" -B "%BUILD_DIR%" -G Ninja ^
         -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
         -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
         -DMUSE_ENABLE_UNIT_TESTS=OFF
