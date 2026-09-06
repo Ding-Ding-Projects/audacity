@@ -10,13 +10,18 @@
 
 #include "inotificationcenter.h"
 #include "imessagestyler.h"
+#include "iexperienceconfiguration.h"
+#include "narratorqueue.h"
+#include "narratorservice.h"
 
 namespace au::experience {
 class NotificationCenter : public INotificationCenter, public muse::async::Asyncable
 {
     muse::GlobalInject<IMessageStyler> styler;
+    muse::GlobalInject<IExperienceConfiguration> configuration;
 
 public:
+    NotificationCenter();
     ~NotificationCenter() override = default;
 
     //! The notification centre keeps the most recent notifications only.
@@ -40,10 +45,15 @@ public:
 
 private:
     MessageKind kindOf(NotificationType type) const;
+    void narrate(const Notification& notification);
+    void speakNext();
 
     std::deque<Notification> m_notifications;
     int m_nextId = 1;
     muse::async::Notification m_changed;
     muse::async::Channel<QString> m_actionRequested;
+    NarratorQueue m_narratorQueue;
+    NarratorEngine m_narratorEngine;
+    bool m_narratorSpeaking = false;
 };
 }

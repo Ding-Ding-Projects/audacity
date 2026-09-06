@@ -54,3 +54,9 @@ absent/empty record as off with the shipped name, round-tripping a record throug
 serialization, rejecting malformed JSON, rejecting an empty display name, verifying a
 correct and an incorrect credential against a salted hash, and confirming two generated
 salts differ.
+
+The runtime service also owns a live `SchoolModeService`, so a file-watcher
+update forces English, clears only the live personal-vocabulary table, and
+suppresses funny-level decoration. The stored language, levels, and vocabulary
+file are never rewritten, so turning the shared record off restores the exact
+prior choices.

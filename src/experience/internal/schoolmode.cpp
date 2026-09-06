@@ -110,6 +110,17 @@ QString SchoolModeStore::sharedFilePath()
     return dir.absoluteFilePath(QStringLiteral("shared/school-mode.json"));
 }
 
+SchoolModeRecord SchoolModeStore::sharedRecord()
+{
+    QFile file(sharedFilePath());
+    if (!file.open(QIODevice::ReadOnly)) {
+        return SchoolModeRecord();
+    }
+
+    const ParseResult result = parse(file.readAll());
+    return result.ok ? result.record : SchoolModeRecord();
+}
+
 SchoolModeService::SchoolModeService(QObject* parent)
     : QObject(parent), m_watcher(new QFileSystemWatcher(this))
 {
@@ -128,16 +139,7 @@ SchoolModeService::SchoolModeService(QObject* parent)
 
 void SchoolModeService::reload()
 {
-    QFile file(SchoolModeStore::sharedFilePath());
-    QByteArray data;
-    if (file.open(QIODevice::ReadOnly)) {
-        data = file.readAll();
-    }
-
-    const SchoolModeStore::ParseResult result = SchoolModeStore::parse(data);
-    if (result.ok) {
-        m_record = result.record;
-    }
+    m_record = SchoolModeStore::sharedRecord();
 }
 
 void SchoolModeService::save()

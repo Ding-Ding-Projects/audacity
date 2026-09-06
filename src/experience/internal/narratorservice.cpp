@@ -13,6 +13,14 @@ NarratorEngine::NarratorEngine(QObject* parent)
     : QObject(parent)
 {
     detectEngine();
+    m_process = new QProcess(this);
+    connect(m_process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this,
+            [this](int, QProcess::ExitStatus) { emit speechFinished(); });
+    connect(m_process, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
+        if (m_process->state() == QProcess::NotRunning) {
+            emit speechFinished();
+        }
+    });
 }
 
 void NarratorEngine::detectEngine()
@@ -78,19 +86,24 @@ void NarratorEngine::speak(const QString& text, NarratorLanguage language, const
         // Quiet mode is the narrator's own reduced-sound setting: honour it
         // by staying silent. A screen reader already reading the interface
         // gets ducked under rather than talked over.
+        emit speechFinished();
         return;
     }
 
     if (m_engineKind != NarratorEngineKind::ProcessBackend || text.isEmpty()) {
+        emit speechFinished();
         return;
     }
 
-    QProcess::startDetached(m_processBackendCommand, { text });
+    if (m_process->state() != QProcess::NotRunning) {
+        return;
+    }
+    m_process->start(m_processBackendCommand, { text });
 }
 
 void NarratorEngine::stop()
 {
-    // The process backend is fire-and-forget per utterance; there is
-    // nothing persistent here to stop. A QtTextToSpeech backend would
-    // call its own stop() here.
+    if (m_process && m_process->state() != QProcess::NotRunning) {
+        m_process->kill();
+    }
 }

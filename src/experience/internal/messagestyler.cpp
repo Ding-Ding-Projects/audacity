@@ -3,6 +3,8 @@
  */
 #include "messagestyler.h"
 
+#include "schoolmode.h"
+
 #include <QStringList>
 
 namespace au::experience {
@@ -153,6 +155,13 @@ QString pick(const QStringList& phrases, const QString& plainText, int salt)
 
 QString MessageStyler::style(MessageKind kind, const QString& plainText) const
 {
+    const SchoolModeRecord schoolMode = SchoolModeStore::sharedRecord();
+    if (schoolMode.on) {
+        // Keep the persisted sliders untouched. School mode only stops the
+        // running surface from consulting them until the shared record is off.
+        return styleWith(kind, plainText, LanguageMode::English, 1, 1, configuration()->emojiInDialogs());
+    }
+
     return styleWith(kind, plainText,
                      configuration()->languageMode(),
                      configuration()->englishFunnyLevel(),

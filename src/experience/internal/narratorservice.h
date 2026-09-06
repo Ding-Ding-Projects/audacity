@@ -9,6 +9,8 @@
 
 #include "narratorqueue.h"
 
+class QProcess;
+
 namespace au::experience {
 //! Which speech backend the narrator is actually using on this machine.
 enum class NarratorEngineKind {
@@ -76,10 +78,16 @@ public:
     //! assistive technology queries the application.
     static bool screenReaderActive();
 
+signals:
+    //! Emitted after the active process exits, or immediately when no sound
+    //! can be made. This lets real event consumers serialize utterances.
+    void speechFinished();
+
 private:
     void detectEngine();
 
     NarratorEngineKind m_engineKind = NarratorEngineKind::None;
     QString m_processBackendCommand;
+    QProcess* m_process = nullptr;
 };
 }

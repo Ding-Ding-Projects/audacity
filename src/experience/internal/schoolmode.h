@@ -59,6 +59,11 @@ public:
     //! directory, so every app on this machine that honours School mode
     //! reads and writes the same file.
     static QString sharedFilePath();
+
+    //! Reads the current shared record. An unreadable or malformed record is
+    //! treated as off, because a broken user-experience lock must never
+    //! manufacture a lockout. Callers that need the parse error use parse().
+    static SchoolModeRecord sharedRecord();
 };
 
 //! Watches the shared file and exposes the live state to the rest of the

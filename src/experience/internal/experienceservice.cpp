@@ -49,6 +49,7 @@ void ExperienceService::init()
     m_lowStimulationApplied = settings()->value(LOW_STIMULATION_APPLIED).toBool();
 
     m_translator = new ExperienceTranslator();
+    m_schoolMode = new SchoolModeService(this);
 
     QStringList cataloguePaths;
     for (const QString& resourceName : languagesConfiguration()->languageResourceNames()) {
@@ -68,7 +69,8 @@ void ExperienceService::init()
         LOGW() << "No Cantonese (Hong Kong) catalogue was found, bilingual mode will show English only";
     }
 
-    loadStoredVocabulary();
+    applySchoolMode();
+    applyLanguageMode();
     refreshTranslator();
     applyLowStimulation();
 
@@ -78,6 +80,14 @@ void ExperienceService::init()
         setRestartRequired(true);
     });
 
+    connect(m_schoolMode, &SchoolModeService::stateChanged, this, [this]() {
+        // The shared record can be changed by another participating
+        // application. Apply it here so the active surface updates live.
+        applySchoolMode();
+        applyLanguageMode();
+        refreshTranslator();
+    });
+
     configuration()->attentionModesChanged().onNotify(this, [this]() {
         applyLowStimulation();
     });
@@ -85,9 +95,28 @@ void ExperienceService::init()
 
 void ExperienceService::applyLanguageMode()
 {
-    const LanguageMode mode = configuration()->languageMode();
+    const LanguageMode mode = effectiveLanguageMode();
     const QString code = mode == LanguageMode::Cantonese ? CANTONESE_CODE : ENGLISH_CODE;
     settings()->setSharedValue(LANGUAGE_CODE, Val(code.toStdString()));
+}
+
+LanguageMode ExperienceService::effectiveLanguageMode() const
+{
+    return m_schoolMode && m_schoolMode->isOn() ? LanguageMode::English : configuration()->languageMode();
+}
+
+void ExperienceService::applySchoolMode()
+{
+    if (m_schoolMode && m_schoolMode->isOn()) {
+        // The stored table remains on disk. Clearing only the live table keeps
+        // the lock reversible and restores the user's exact prior choice.
+        if (m_translator) {
+            m_translator->setVocabulary({});
+        }
+        return;
+    }
+
+    loadStoredVocabulary();
 }
 
 void ExperienceService::refreshTranslator()
@@ -96,7 +125,7 @@ void ExperienceService::refreshTranslator()
         return;
     }
 
-    m_translator->setLanguageMode(configuration()->languageMode());
+    m_translator->setLanguageMode(effectiveLanguageMode());
 
     const bool wanted = !m_translator->isEmpty();
     if (wanted && !m_translatorInstalled) {

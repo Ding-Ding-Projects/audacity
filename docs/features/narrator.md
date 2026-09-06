@@ -72,3 +72,9 @@ through the same configuration test pattern as the rest of the narrator settings
 tests do not exercise `QAccessible::isActive()` directly since that is a live platform signal
 rather than pure logic, and is instead verified by reading the built application (the
 Narrator preferences section shows the Quiet mode toggle and its explanatory text).
+
+The notification centre is a real narrator event consumer. When narration is
+enabled, each application notification enters the serialized queue before the
+selected backend starts. The next notification waits for the active backend
+process to exit, or for an utterance to be truthfully suppressed by Quiet mode,
+a screen reader, or no available engine.
