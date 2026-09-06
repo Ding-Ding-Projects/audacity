@@ -9,6 +9,9 @@
 #include <QVector>
 
 #include <atomic>
+#ifdef AU_CONVERTER_TEST_HOOKS
+#include <functional>
+#endif
 
 namespace au::converter {
 
@@ -44,6 +47,16 @@ public:
     static constexpr qint64 MaxInputBytes = 256LL * 1024 * 1024;
     static constexpr qint64 MaxOutputBytes = 512LL * 1024 * 1024;
     static constexpr int TimeoutMilliseconds = 60000;
+    static constexpr qint64 MaxProcessMemoryBytes = 512LL * 1024 * 1024;
+#ifdef AU_CONVERTER_TEST_HOOKS
+    enum class TestPhase { SourcesPinned, ProcessStarted, BeforePublish, OutputPublished };
+    static thread_local std::function<void(TestPhase, const QString&)> testHook;
+    // Lower-only budgets exercise real process termination without slow fixtures.
+    static thread_local int testTimeoutMilliseconds;
+    static thread_local qint64 testProcessOutputBytes;
+    static thread_local qint64 testOutputBytes;
+    static thread_local qint64 testProcessMemoryBytes;
+#endif
 
     static QString bundledToolPath();
     static QString availabilityReason();

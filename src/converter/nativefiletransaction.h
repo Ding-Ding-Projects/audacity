@@ -126,14 +126,23 @@ private:
 class HandleDevice final : public QIODevice
 {
 public:
-    HandleDevice(const QString& path, bool temporary, qint64 limit, const std::atomic_bool* cancellation)
+    HandleDevice(const QString& path, bool temporary, qint64 limit, const std::atomic_bool* cancellation, bool shareRead = false)
         : m_handle(CreateFileW(reinterpret_cast<LPCWSTR>(path.utf16()),
-                   temporary ? GENERIC_READ | GENERIC_WRITE | DELETE : GENERIC_READ,
-                   temporary ? 0 : FILE_SHARE_READ, nullptr, temporary ? CREATE_NEW : OPEN_EXISTING,
+                   temporary ? GENERIC_READ | GENERIC_WRITE | (shareRead ? 0 : DELETE) : GENERIC_READ,
+                   temporary ? (shareRead ? FILE_SHARE_READ | FILE_SHARE_DELETE : 0) : FILE_SHARE_READ,
+                   nullptr, temporary ? CREATE_NEW : OPEN_EXISTING,
                    FILE_FLAG_OPEN_REPARSE_POINT | (temporary ? FILE_ATTRIBUTE_TEMPORARY : 0), nullptr)),
-          m_temporary(temporary), m_limit(limit), m_cancellation(cancellation)
+          m_temporary(temporary), m_subprocessReadable(temporary && shareRead), m_limit(limit), m_cancellation(cancellation)
     {
         if (!m_handle.valid() || !information(m_handle.value, m_initial, false) || !resolvesTo(m_handle.value, path)) return;
+        if (m_subprocessReadable) {
+            // CRT readers do not share DELETE access. Keep the writer without
+            // DELETE and add an exact-file read pin that prevents renames while
+            // the subprocess reopens the path. The writer prevents other writes.
+            m_readPin = std::make_unique<Handle>(ReOpenFile(m_handle.value, GENERIC_READ,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_FLAG_OPEN_REPARSE_POINT));
+            if (!m_readPin->valid() || !resolvesTo(m_readPin->value, path)) return;
+        }
         const qint64 length = size();
         if (length < 0 || length > limit || (!temporary && !length)) return;
         QIODevice::open((temporary ? ReadWrite : ReadOnly) | Unbuffered);
@@ -141,8 +150,11 @@ public:
     ~HandleDevice() override
     {
         if (m_temporary && m_handle.valid()) {
+            m_readPin.reset();
+            Handle deletion(m_subprocessReadable ? ReOpenFile(m_handle.value, DELETE,
+                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_FLAG_OPEN_REPARSE_POINT) : INVALID_HANDLE_VALUE);
             FILE_DISPOSITION_INFO remove = { TRUE };
-            SetFileInformationByHandle(m_handle.value, FileDispositionInfo, &remove, sizeof(remove));
+            SetFileInformationByHandle(m_subprocessReadable ? deletion.value : m_handle.value, FileDispositionInfo, &remove, sizeof(remove));
         }
     }
     qint64 size() const override
@@ -165,11 +177,22 @@ public:
                && CompareFileTime(&current.ftLastWriteTime, &m_initial.ftLastWriteTime) == 0;
     }
     const BY_HANDLE_FILE_INFORMATION& identity() const { return m_initial; }
+    bool sealForSubprocess()
+    {
+        if (!m_subprocessReadable || !m_readPin || !m_readPin->valid() || !FlushFileBuffers(m_handle.value)) return false;
+        // qpdf's CRT reader shares neither WRITE nor DELETE. The read pin keeps
+        // the same object and namespace alive while the writer is relinquished.
+        CloseHandle(m_handle.value);
+        m_handle.value = ReOpenFile(m_readPin->value, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_DELETE,
+                                   FILE_FLAG_OPEN_REPARSE_POINT);
+        m_sealed = m_handle.valid();
+        return m_sealed;
+    }
     bool publish(const QString& target)
     {
         BY_HANDLE_FILE_INFORMATION current = {};
         if (interrupted() || !information(m_handle.value, current, false) || !sameIdentity(m_initial, current)
-            || !FlushFileBuffers(m_handle.value)) return false;
+            || (!m_sealed && !FlushFileBuffers(m_handle.value))) return false;
         const DWORD nameBytes = DWORD(target.size() * sizeof(wchar_t));
         std::vector<unsigned char> storage(sizeof(FILE_RENAME_INFO) + nameBytes, 0);
         auto* rename = reinterpret_cast<FILE_RENAME_INFO*>(storage.data());
@@ -177,7 +200,13 @@ public:
         rename->RootDirectory = nullptr;
         rename->FileNameLength = nameBytes;
         memcpy(rename->FileName, target.utf16(), nameBytes);
-        if (interrupted() || !SetFileInformationByHandle(m_handle.value, FileRenameInfo, rename, DWORD(storage.size()))) return false;
+        // ReOpenFile addresses the held file object, never a filename that may
+        // have been replaced after the read pin is released.
+        m_readPin.reset();
+        Handle publication(m_subprocessReadable ? ReOpenFile(m_handle.value, DELETE,
+            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_FLAG_OPEN_REPARSE_POINT) : INVALID_HANDLE_VALUE);
+        if (interrupted() || !SetFileInformationByHandle(m_subprocessReadable ? publication.value : m_handle.value,
+                                                        FileRenameInfo, rename, DWORD(storage.size()))) return false;
         m_temporary = false;
         return true;
     }
@@ -216,6 +245,9 @@ private:
     bool interrupted() const { return m_cancellation && m_cancellation->load(std::memory_order_acquire); }
     Handle m_handle;
     bool m_temporary;
+    bool m_subprocessReadable;
+    bool m_sealed = false;
+    std::unique_ptr<Handle> m_readPin;
     qint64 m_limit;
     const std::atomic_bool* m_cancellation;
     BY_HANDLE_FILE_INFORMATION m_initial = {};

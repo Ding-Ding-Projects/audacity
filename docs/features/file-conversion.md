@@ -9,19 +9,33 @@ conversion, or video conversion.
 
 The current functional scope is Qt image plugin conversion from PNG to JPEG or
 BMP, and from JPEG or BMP to PNG. Each pair requires the running Qt plugins to
-report both decoding and encoding support. PDF, audio, video, archives,
+report both decoding and encoding support. Audio, video, archives,
 structured data, code/text and binary encodings remain visible as disabled
 adapters with precise reasons.
 
 The PDF catalog entry is enabled only when the packaged `converter-tools/qpdf/qpdf.exe`
-matches the pinned SHA-256 in `buildscripts/converter-tools/qpdf.lock.json`. It
+and all nine required DLLs match the independent SHA-256 inventory in
+`buildscripts/converter-tools/qpdf.lock.json`. The runtime inventory is mirrored
+in `src/converter/qpdfbundle.h`, with an exact equality regression. The bootstrap
+checks every component on warm installations and after extraction of the pinned
+official qpdf 12.3.2 archive. It
 never searches `PATH` or accepts a developer tool. The adapter runs fixed qpdf
-arguments only, has a 60-second process deadline, caps source and output files,
-rejects encrypted inputs that need credentials, writes a private temporary file,
+arguments only, has a shared 60-second operation deadline, caps source and output files,
+rejects all encrypted inputs without accepting credentials, streams into a private temporary file,
 reopens it with `--check` and `--show-npages`, and never overwrites an existing
 destination. qpdf currently covers inspect, merge, extract, reorder, rotate,
 and split requests. Metadata uses qpdf's official JSON update format and only
 permits bounded Title, Author, Subject, and Keywords values.
+It creates the document information dictionary when absent and preserves fields
+not included in the update. Unicode values are passed through qpdf's JSON format.
+
+Each split request supplies a positive integer page-group size in `pageSpec`.
+Split results use zero-padded source-page ranges in their names and return one
+ordered output record with the exact page count for each committed file.
+Extract and reorder accept positive page numbers, ranges, commas, and repeated
+pages. Merge preserves both source-list and within-source order. Rotation adds
+90, 180, or 270 degrees to all pages. Inspect and all non-merge operations require
+exactly one source rather than silently ignoring additional inputs.
 
 The module does not search `PATH`, launch arbitrary command-line tools or scripts, or use
 network services. Runtime plugin presence is not packaged-application proof;
@@ -76,6 +90,24 @@ The documented native contracts are
 and [reparse-point validation](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fsa/4aeefef8-92c3-4abc-af7a-a610caf8a165).
 The implementation does not invoke undocumented native system calls.
 
+PDF subprocess readers require a different sharing transition from the image
+decoder. The output writer is first flushed, while an exact-file read pin keeps
+the object and path alive. The writer is then replaced through `ReOpenFile` by
+a read-only handle. One handle blocks writes and another blocks renames while
+qpdf validates the path. Publication and unpublished deletion acquire access
+through `ReOpenFile` on that held object, never by reopening a potentially
+replaced filename. qpdf receives the equivalent `\\.\Volume{...}` device path
+because its wildcard expansion misinterprets the question mark in `\\?\Volume{...}`.
+Source files and all ten verified bundle components stay pinned for the entire
+request. Existing mappings and privileged modifications remain outside this boundary.
+
+Split publication is intentionally incremental. If a later destination collides
+or cancellation arrives, already committed results are retained and reported
+with `ok = false`, their exact paths, page counts, and `committed = true`.
+The adapter never rolls back by deleting a published pathname. Such a path may
+already hold a user's replacement by the time a later split fails. A committed
+record describes the publication event, not perpetual ownership of the path.
+
 ## Resource and cancellation boundaries
 
 Input is limited to 256 MiB, decoded dimensions to 100 million pixels, and
@@ -84,12 +116,29 @@ images are rejected. Source and temporary reads use bounded chunks. Cancellation
 is checked during IO and immediately before commit. A cancellation that arrives
 after the atomic commit does not undo the completed output.
 
-The decoder remains in-process, without a hard CPU deadline or process memory
+The image decoder remains in-process, without a hard CPU deadline or process memory
 sandbox. The file transaction does not protect against privileged kernel
 tampering or writes through a mapping created before the source handle opened.
 This is a backend namespace-race boundary, not a complete decoder sandbox or a
 claim of power-loss durability. A process crash may leave an unpublished
 temporary; originals are not overwritten by the create-if-absent commit.
+
+PDF execution uses a Windows job assigned during child creation, before the
+child executes. It limits the job to one process, bounds process committed memory
+to 512 MiB, kills the child on job closure, and refuses launch if these controls
+cannot be installed. Children are hidden and receive only a bundled-tool `PATH`
+and the actual `SystemRoot`, rather than inheriting the caller's environment; their
+working directory is the verified bundled tool directory. The shared deadline
+includes all qpdf calls in one request, with bounded startup and termination
+waits of five seconds each. Cancellation reaches inspection and output validation
+as well as transformation. Standard output streams to a bounded file handle;
+diagnostic/query output is capped at 1 MiB and parser diagnostic content is not
+reflected into user-visible messages. Sources are limited to 256 MiB, each output
+to 512 MiB, inspected documents to 10,000 pages, merge requests to 32 sources,
+and split requests to 1,000 outputs. Metadata JSON shares the 1 MiB query-output
+cap. This is resource containment, not a security sandbox: the child retains
+the launching account's access rights. Source pinning and no-overwrite publication
+do not establish resistance to a compromised operating system or kernel.
 
 Queue persistence records versioned item state, paths, target format and the
 caller's overwrite choice, without input or output bytes. Queue reads are paged
@@ -104,14 +153,14 @@ prove bundled Qt plugins, implement safe approved overwrite, and integrate
 process isolation, execution limits and durable crash recovery.
 
 The full converter still requires package installation of the verified qpdf
-distribution, output-order/rotation/metadata semantic assertions, and full application integration. It also requires audio/video and other
+distribution and full application integration. It also requires audio/video and other
 category adapters, batch history/exports, accessibility, responsive behavior,
 notifications, command-palette routing, and real packaged-application
 interaction and capture evidence. These are not implemented by this backend.
 
 ## Focused verification
 
-`src/converter/tests/standalone` builds two real Qt console executables:
+`src/converter/tests/standalone` builds three real Qt console executables:
 
 - `converter_core_smoke`: successful JPEG conversion and full reopen, source
   collision, cancellation, queue persistence and restart.
@@ -120,11 +169,21 @@ interaction and capture evidence. These are not implemented by this backend.
   destination insertion, source and temporary substitution, attribute-only
   directory redirection, native IO errors, resource limits, malformed input,
   cancellation, and unpublished temporary deletion.
+- `converter_pdf_operations`: direct `PdfProcessor` integration using the real
+  hash-pinned qpdf executable and synthetic PDFs with unique content, identities,
+  and page dimensions. It checks inspection; split counts, ordering, and partial
+  outcomes; extraction, duplicate/reverse reordering, merge order; all three
+  rotations; exact Unicode Title/Author/Subject/Keywords; new and existing Info
+  dictionaries; corruption, encryption, cancellation, and collisions; native
+  source/bundle pinning; process deadline, memory and byte limits; and every
+  required bundle component's removal plus DLL content tampering.
 
 Test barriers are compiled only with `AU_CONVERTER_TEST_HOOKS`; product builds
 contain no injection callback. Required plugin or fixture unavailability fails
 these executables rather than counting rejection as a successful conversion.
-Each executable has a 90-second CTest timeout. Results go directly to stderr so
+The image/native executables have a 90-second CTest timeout and the PDF executable
+has a 180-second timeout. PDF test-only budgets can only reduce production limits;
+they never replace qpdf with a stub or permit an unverified tool. Results go directly to stderr so
 host Qt logging rules cannot suppress their verdicts.
 
 The separate project GoogleTest file additionally covers the catalog and queue

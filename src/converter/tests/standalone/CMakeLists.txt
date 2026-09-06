@@ -20,6 +20,15 @@ add_test(NAME converter_core_smoke COMMAND converter_core_smoke)
 set_tests_properties(converter_core_smoke PROPERTIES TIMEOUT 90)
 
 if(WIN32)
+    add_executable(converter_pdf_operations ../pdf_operations.cpp ../../pdfprocessor.cpp)
+    target_include_directories(converter_pdf_operations PRIVATE ../..)
+    target_compile_definitions(converter_pdf_operations PRIVATE AU_CONVERTER_TEST_HOOKS
+        AU_QPDF_LOCK_FILE="${CMAKE_CURRENT_SOURCE_DIR}/../../../../buildscripts/converter-tools/qpdf.lock.json")
+    target_link_libraries(converter_pdf_operations PRIVATE Qt6::Core)
+    set_target_properties(converter_pdf_operations PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
+    add_test(NAME converter_pdf_operations COMMAND converter_pdf_operations)
+    set_tests_properties(converter_pdf_operations PROPERTIES TIMEOUT 180)
+
     add_executable(converter_native_transactions
         ../native_transactions.cpp
         ../../convertercatalog.cpp
