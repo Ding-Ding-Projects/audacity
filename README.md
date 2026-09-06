@@ -360,6 +360,15 @@ and the packaging tools on their own, so it can also be run standalone.
 `build-installer.bat` produces the Squirrel.Windows installer in
 `dist\squirrel-windows`.
 
+Package the completed build that belongs to the intended source candidate; an
+existing executable is not proof that current source was rebuilt. The current
+build and CI packaging routes provision the pinned qpdf bundle. Squirrel output
+now carries an exact package manifest and checksums, validates any older baseline,
+and preserves a previous verified output through recoverable directory activation.
+See [release packaging](docs/design/RELEASE.md) and [the current handoff](HANDOFF.md)
+for measured evidence and the distinction between packaging tests and a final
+rebuilt application.
+
 The installer is intentionally **not code signed**. Code signing is
 permanently prohibited for this project, so Windows SmartScreen shows a
 warning on first run. Verify the download yourself instead, in PowerShell:

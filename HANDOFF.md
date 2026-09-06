@@ -1,5 +1,47 @@
 # Handoff
 
+## Verified packaging integration
+
+The packaging candidate `30cda45b51fbccf2d01ca5af7ca27169478e5aab`
+combines transactional Squirrel publication with pinned qpdf provisioning and
+package inspection. The actual `package.cmake` route completed with exit 0,
+without `RELEASE_TAG`, using run 903 and the retained run-902 package as baseline.
+This integration preserves the earlier source history.
+
+Package generation now validates coherent older baseline identity using the
+version comparer in pinned Squirrel, exact feed hashes and byte counts, exact
+manifest ownership, and recoverable directory activation. Unknown output files
+are retained through refusal. Publication keeps package-level checksums as
+`PACKAGE-SHA256SUMS`, separate from the later release-wide checksum inventory.
+All four supported Windows packaging modes use Squirrel; archive-only overrides
+are rejected. CI and packaging both provision qpdf through the shared hook.
+
+Local evidence:
+
+- Publication boundary suite: 40 cases passed at `3b7fa920c9c43c5919d177041cf4d1757a2187f6`.
+- PDF operations: 34 passed; native transactions: 28 passed, no skips; three CTest executables passed at `c7f0f0f9ceb5c4aabf47de49a03a2b2753c9a0f7`.
+- qpdf bootstrap: 13 cases passed; package inspector: seven synthetic ZIP cases passed at that same source.
+- Actual full and delta packages generated from the frozen combined source. The full package independently passed all ten qpdf component hashes, with no bootstrap administration records included.
+- All 518 original payload files, all 530 provisioned-copy files, and the prior baseline remained unchanged.
+- Combined receipt SHA-256: `64A2D4E054FFF239DBBCE7955BC24960D40AA2DCD7ED57CC2B5E150FAE2A3E5B`.
+
+| Local output | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `Setup.exe` | 82,859,008 | `3a371c49836e3a8d12fe15dffea5f289098e436c8b54056a410cabe6b04ca764` |
+| `Audacity-4.0.0-ci000903-full.nupkg` | 82,002,241 | `583907f955c4f02d8c84a00054f33ac9ad05e1dc1f390604b6ef37572765a3dd` |
+| `Audacity-4.0.0-ci000903-delta.nupkg` | 3,353,073 | `d63e3056a0b919a767c826e6b3ff4936bf07724a2bd3e9d3f614cb21aed08f23` |
+
+The executable remains the older `bbeb45e1ebbc281d051ff8a9b95f012e54a4e734`
+payload identified below. These files prove real packaging and tool inclusion,
+not a rebuilt combined application, installed-client update, UI behavior, or a
+published release. Do not publish them as the final full-product candidate.
+
+The converter backend is present, but its complete user-facing registration and
+restricted subprocess containment remain separate implementation work. Resource
+limits and pinned binaries alone do not prove network or file-access isolation.
+The profile, appearance, logo, experience, Ollama and website lanes also retain
+their separate implementation and runtime-evidence boundaries.
+
 ## Current delivery integration
 
 The delivery workflow targets `main` and Windows x64. It builds and packages an unsigned Squirrel.Windows installer, then publishes one unique non-draft prerelease for the run. Tags do not trigger recursive delivery. Tests and lint remain local; their results are not workflow release prerequisites.

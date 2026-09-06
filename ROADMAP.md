@@ -6,6 +6,8 @@ Previous completion ticks below are reopened: source presence and historical cap
 - [x] Produce and inspect a genuine unsigned Squirrel package, with the application/package source distinction recorded in `HANDOFF.md`.
 - [x] Replace permissive completion claims with a candidate-bound verifier and negative regressions.
 - [x] Set the repository About URL to the canonical documentation address.
+- [x] Verify transactional Squirrel output, coherent older seed selection, and real full/delta packaging with pinned qpdf inclusion at candidate `30cda45b`.
+- [x] Record and validate the project-specific operational procedure, with a matching installed shared-catalog copy.
 - [ ] Verify main migration and its delivery run.
 - [ ] Integrate and verify all feature lanes on one candidate.
 - [ ] Complete every canonical feature on every registered surface.

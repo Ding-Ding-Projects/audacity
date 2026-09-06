@@ -148,7 +148,55 @@ coreutils available the whole file can be checked at once with
 7. Fails if `Setup.exe`, `RELEASES` or the full `.nupkg` is missing, if an MSI
    appears, if a delta was expected but not produced, or if any executable,
    including the `Update.exe` inside the package, is signed.
-8. Writes `SHA256SUMS` next to the artifacts.
+8. Writes `SHA256SUMS` and `package-output-manifest.json` for exactly the current
+   version's setup, feed, full package and optional delta. Feed entries must use
+   unique case-insensitive leaf names and match the package SHA1 and byte size.
+   A seed feed additionally identifies this package and one older baseline
+   version, with exactly one full package and at most its matching delta.
+   Ordering uses `NuGet.SemanticVersion` from the pinned Squirrel executable,
+   including its prerelease rules, rather than string or numeric-version guesses.
+9. Validates a same-volume candidate directory and activates it with directory
+   renames under an exclusive output lock. A durable journal precedes the first
+   rename. The previous generation remains in a uniquely named sibling directory;
+   packaging never deletes it. The two renames have a brief interval when `OutDir`
+   is absent, but never expose partially copied files. After interruption, the
+   next invocation recovers under the same lock before doing packaging work.
+
+An existing nonempty output directory can be replaced only when its exact names,
+file hashes, sizes, feed and checksums agree with its manifest. An unknown file
+(including `notes.nupkg`), a directory, or modified bytes stops replacement and
+preserves all existing content. Legacy output without a manifest needs a **new
+output path**. Packaging does not infer ownership from a filename extension.
+Interrupted candidates, transaction journals, and previous directories remain
+available for inspection and separately authorized cleanup. Malformed journals
+fail closed; packaging does not guess which directory to restore.
+
+The release collector uses `squirrel_output.ps1` to validate the exact package
+directory against the intended release version and package id before copying.
+It publishes `package-output-manifest.json` and preserves the package checksum
+record as `PACKAGE-SHA256SUMS`. The release-wide `SHA256SUMS` is separate and also
+covers those records plus added release assets. It never recursively selects
+packages from retained previous-generation directories.
+
+Focused local verification commands:
+
+```powershell
+pwsh -NoProfile -File buildscripts/ci/windows/test_squirrel_output_transaction.ps1
+pwsh -NoProfile -File buildscripts/ci/windows/test_package_squirrel_output.ps1 -InstallDir build.install
+```
+
+The first uses small byte fixtures for ownership, seed validation, manifest
+mismatch, interruption recovery and cross-process activation contention. The
+version-order cases load the existing pinned Squirrel executable under
+`build.tools`, or the exact path supplied through `-SquirrelExecutable`.
+The payload cases verify that only the ten hash-pinned qpdf components enter
+staging. qpdf activation locks, journals, stages, quarantines and backups remain
+in the input tree and are omitted from the package; no recovery evidence is
+deleted. Additional files inside the qpdf input directory are not package
+components and are not copied. Unknown administration-name variants fail closed.
+The second builds real full and delta packages from an existing immutable application
+tree and validates release collection without rebuilding the application.
+Neither test proves installation, installed-client updates or UI behavior.
 
 ### Shortcuts: the root launcher
 
