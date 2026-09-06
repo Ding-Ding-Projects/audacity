@@ -21,6 +21,21 @@ the settings file and the preset files. That is why a revision reads as one
 coherent picture and why the file list of a revision names files you
 recognise.
 
+### The project id
+
+`<project-id>` is a stable identifier stored in a small table of the
+project's own `.aup4` database (`chronicle_meta`), not a hash of the file's
+path. It is created the first time it is needed and then read back unchanged
+every time after that, so a project's history follows the project across a
+rename or a move rather than starting over, and two different files that
+happen to sit at the same path at different times never share one history.
+
+A project that has never reached its own database (a genuine disk or I/O
+failure reaching it) falls back to a hash of the file's path instead, exactly
+as every project's history worked before this identifier existed. That
+fallback history does not follow a rename, which is the one difference a
+user might notice.
+
 ## The two stores
 
 | Store | When it is used | What it does |
