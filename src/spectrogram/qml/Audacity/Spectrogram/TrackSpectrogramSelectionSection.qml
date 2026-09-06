@@ -6,6 +6,8 @@ import QtQuick.Controls 2.15
 
 import Muse.UiComponents
 
+import Audacity.M3
+
 import Audacity.Spectrogram 1.0
 
 TrackSpectrogramBaseSection {
@@ -17,7 +19,7 @@ TrackSpectrogramBaseSection {
 
         spacing: root.mediumSpacing
 
-        CheckBox {
+        M3Checkbox {
             text: qsTrc("appshell/preferences/spectrogram", "Use global settings")
             checked: settingsModel.useGlobalSettings
 

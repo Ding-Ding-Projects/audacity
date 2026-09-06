@@ -132,7 +132,7 @@ StyledPopupView {
             }
         }
 
-        CheckBox {
+        M3Checkbox {
             id: halfwave
 
             text: qsTrc("trackruler", "Half wave")

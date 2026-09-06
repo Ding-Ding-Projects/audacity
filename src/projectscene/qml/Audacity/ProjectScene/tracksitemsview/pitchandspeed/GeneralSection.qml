@@ -37,7 +37,7 @@ Column {
         font: M3.typography.titleSmall
     }
 
-    CheckBox {
+    M3Checkbox {
         id: optimizeCheckBox
 
         text: qsTrc("projectscene", "Optimize for voice")

@@ -1,5 +1,13 @@
 /*
 * Audacity: A Digital Audio Editor
+*
+* This developer tools gallery intentionally keeps its legacy Muse.UiComponents
+* controls (FlatButton, StyledSlider, CheckBox, RadioButton and the rest)
+* alongside the equivalent Material 3 components shown elsewhere in the
+* application, so a developer can compare the old and new look side by side.
+* It is reachable only from Diagnostics > Dev tools, never from an ordinary
+* user-facing surface, so it is exempt from the project wide Material 3
+* conversion rather than converted or left silently unconverted.
 */
 import QtQuick 2.15
 import QtQuick.Controls 2.15

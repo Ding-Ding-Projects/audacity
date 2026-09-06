@@ -207,7 +207,7 @@ StyledPopupView {
             anchors.right: parent.right
             spacing: prv.spacing
 
-            CheckBox {
+            M3Checkbox {
                 id: enableMonitoringCheckbox
 
                 height: prv.checkboxHeight
@@ -224,7 +224,7 @@ StyledPopupView {
                 }
             }
 
-            CheckBox {
+            M3Checkbox {
                 id: showMeterMeteringCheckbox
 
                 height: prv.checkboxHeight

@@ -1,5 +1,12 @@
 /*
 * Audacity: A Digital Audio Editor
+*
+* FlatButton is kept here on purpose: this is the up/down arrow half of a
+* numeric stepper, so it needs asymmetric corner radii (only the two right
+* corners are rounded, to sit flush against the field it steps) and a
+* press-and-hold timer that keeps firing clicked() every 100 ms while held.
+* M3IconButton exposes neither a per-corner radius nor a backgroundItem
+* override, so this stays on FlatButton until that gains the capability.
 */
 import QtQuick
 
