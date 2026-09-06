@@ -28,33 +28,64 @@ superseded captures are kept alongside them as before/after evidence.
 | `12-scale2x-home-light.png` | The Home page with `QT_SCALE_FACTOR=2`. No clipping observed; the menu bar simply runs past the 1600px capture width because the scaled window is wider than the Xvfb screen, which is a capture-width limit, not an application defect. | `QT_SCALE_FACTOR=2 xvfb-run -a -s "-screen 0 1600x1000x24" ./build/linux/src/app/audacity`. |
 | `13-preferences-personalize-light.png` | The Personalize preferences page, reached from the now-populated page list: Rename / Locks / Authenticator / Support Tickets tabs, the application-rename explanation text, and the "Application name" field with its current value and reset button. | Click "Personalize" in the scrolled page list. |
 | `14-preferences-updates-light.png` | The Updates preferences page (defect 8): the "Automatic updates" title with its body message rendered underneath. On this Linux build `updateModel.state` reports the not-applicable state, so the message shown is the "Automatic updates are not applicable on this platform… replaced by hand" text. | Click "Updates" in the scrolled page list. |
+| `13-settings-search-regex-builder-light.png` | The Preferences search field with the regular expression builder side sheet open beside it: pattern field pre-filled with `test.*pattern`, "Applies to: Search settings", "Use this pattern" / "Escape as literal" actions, flag toggles (Ignore case, Multiline, Dot matches newline, Extended, Unicode properties), and the start of the guided "Build" section (character classes). See defect 9: this sheet was invisible until fixed in this lane. | `AU_OPEN_PREFERENCES=general`, click the search field and type `test.*pattern`, click the "{" regex builder icon at the top right of the search bar. |
+| `15-personalize-locks-light.png` | The Locks tab of Personalize preferences: the "just for fun" explanation, the recovery folder path, and a "Find a lock" search field. The list itself is empty; see defect 10. | `AU_OPEN_PREFERENCES=personalize`, click the "Locks" segment. |
+| `16-authenticator-qr-light.png` | The Authenticator tab after "Add an entry": the manual base32 secret, an "Issuer" field pre-filled with the app's display name, and the QR code area, which renders as a blank white square. See defect 11. | `AU_OPEN_PREFERENCES=personalize`, click "Authenticator", click "Add an entry". |
+| `17-support-tickets-light.png` | The Support Tickets tab: the "nothing leaves this machine" notice, a Category field defaulted to "Locked out", a problem description field, and "Open a ticket". | `AU_OPEN_PREFERENCES=personalize`, click "Support Tickets". |
+| `18-history-panel-light.png` | The History dock panel opened on the right of a project: "Undo history" / "Versions" segmented control, a search field, and one "File opened" entry in the undo history list. | `xdotool key alt+v` then click "Show history" in the resulting View menu. |
+| `19-version-history-light.png` | The Versions tab of the same panel: date range fields, "Today" / "Last 7 days" / "Last 30 days" / "All time" presets, a "No revision matches these filters yet" message, and retention controls ("Keep at most N revisions", "Keep for N days", "Apply retention"). The two date fields' placeholder text overlaps because the panel is docked narrower than the row needs; see defect 12. | Same as above, then click "Versions" in the segmented control. |
+| `20-changelog-light.png` | The "What's new" dialog: title, one line of explanation, and "Export Markdown" / "Export JSON" / "Export HTML" / "Close" actions. The body below is empty even though `CHANGELOG.md` parses successfully; see defect 13. | `xdotool key alt+h` (Help menu), click "What's new...". |
+| `21-updater-banner-light.png` | The corner update-ready banner: "Material Audacity 4.1.0-demo is ready to install", "This build is unsigned. No signature is checked, only the file's own hash from the release feed.", and "Later" / "Restart to install update" actions. | `AU_SQUIRREL_DEMO_BANNER=1 ./build/linux/src/app/audacity`. |
+| `22-attention-support-light.png` | The Attention support section: the "works on its own... off until you turn them on" explanation and five independent toggle switches (Focus, Low stimulation, Time awareness, One thing at a time, Momentum), all off. | `AU_OPEN_PREFERENCES=experience#ExperienceAttentionSection` (objectName added in this lane; see below). |
+| `23-personal-vocabulary-light.png` | The Personal vocabulary section: the local-only explanation, a "Choose JSON file" button, "No file chosen." status text, and the size/term limit note, with the Dim sum surprise and School mode sections visible further down the same scrolled page. | `AU_OPEN_PREFERENCES=experience#ExperienceVocabularySection` (objectName added in this lane; see below). |
+| `24-preferences-appearance-dark.png` | The Appearance page with "Dark" selected: the Theme cards, the page list and the Clip style section switch to the dark palette, but the dialog's title/search header and its Reset/Cancel/OK footer stay on the light background. See defect 14. | `AU_OPEN_PREFERENCES=appearance`, click the "Dark" radio button. |
+
+Two `objectName` values were added in this lane so `AU_OPEN_PREFERENCES`
+could target them directly: `ExperienceAttentionSection` on
+`src/preferences/qml/Audacity/Preferences/internal/ExperienceAttentionSection.qml`
+and `ExperienceVocabularySection` on
+`src/preferences/qml/Audacity/Preferences/internal/ExperienceVocabularySection.qml`.
+No other behaviour in either file changed.
 
 ## Not captured, and why
 
-- **The command palette (`Ctrl+Shift+F`) and the regex builder sheet.** The
-  one capture attempted was taken after the application had already
-  crashed from the Preferences defect below, so the image was blank and
-  was discarded rather than published as evidence of something it did
-  not show. This needs a second pass once the Preferences crash is
-  fixed.
-- **Every Preferences page other than Personalize and Updates** (Appearance,
-  Language and accessibility, Toolkit, Shortcuts, and the settings search
-  results themselves) and the **super confirmation dialog**, which is
-  reached from a Preferences action. The page-list and no-crash-on-close
-  defects that previously blocked reaching any page safely are fixed (see
-  defects 4 and 4b), so the remaining pages are now reachable; they were
-  simply not captured in the time available for this lane.
-- **The version history panel and the changelog dialog.** Both QML files
-  exist and are registered (`Audacity/Chronicle/VersionHistoryPanel.qml`,
-  `Audacity/Chronicle/ChangelogDialog.qml`, reachable via the `whats-new`
-  action already wired into Help), but the History dock panel referenced
-  from the new tab strip (`dockPanels` in `WindowContent.qml`) has no
-  `uri`, so there is nothing to actually open it from a running window
-  yet. Not captured for lack of a real path to it in this build.
-- **A notification toast and the notification centre**, the **Ollama page
-  offline state and the docs browser**, and the **updater banner** with
-  `AU_SQUIRREL_DEMO_BANNER=1`. Not reached in the time available for this
-  pass; no defect is claimed for any of them one way or the other.
+- **The toy lock wizard and its PIN keypad.** `LockWizardPopover.qml`
+  exists and is fully implemented, but the only thing that opens it is
+  `PersonalizableItem.qml`'s "Lock this element..." context menu entry,
+  and nothing in the running application currently wraps a real element
+  in a `PersonalizableItem`. Confirmed with
+  `grep -rln "PersonalizableItem {" src`, which finds only the component's
+  own definition file. The Locks tab (`15-personalize-locks-light.png`)
+  is reachable and its list is genuinely empty, not broken; there is
+  simply no element yet whose context menu can create the first lock.
+  This is outside this lane's file ownership to fix (it belongs to
+  whichever surface is meant to wrap its elements in `PersonalizableItem`,
+  not to the Personalize module itself).
+- **The command palette itself (`Ctrl+Shift+F`).** Tried `xdotool key`,
+  `xdotool key --window <id>`, `--clearmodifiers`, and explicit
+  `keydown`/`keyup` pairs for `Control_L`/`Shift_L`/`f`, against a window
+  manager-less Xvfb session; none of them produced the
+  `ActionsDispatcher::doDispatch | try call action:
+  companion-command-palette` log line that a delivered chord produces
+  (confirmed other shortcuts like plain `Escape` and `alt+<letter>` menu
+  mnemonics do dispatch and do get logged in the same session, so this is
+  specific to this one chord, not a general keyboard-delivery failure).
+  There is no menu entry or other route to it
+  (`grep -rn companion-command-palette src` finds only the shortcut
+  registration and the dispatcher registration). Not captured.
+- **The local model manager for Ollama, the in-app documentation browser
+  and its bookmarks, and the universal export service's non-audio
+  formats.** All three currently fail to load behind one shared defect
+  (defect 15): `ToolkitPreferencesPage.qml` embeds `OllamaPage.qml`,
+  which embeds `ExportSheet.qml`; `ExportSheet.qml` has a live QML load
+  error (an `M3RadioButton` bound to a nonexistent `onClicked` signal),
+  so the entire Toolkit preferences page fails to construct and
+  `AU_OPEN_PREFERENCES=toolkit` silently falls back to the General page
+  instead. This file is under active work by another lane in this same
+  pass; not fixed here.
+- **The notification centre and corner toast stack**, beyond the one
+  update-ready banner captured above. Not reached in the time available
+  for this lane; no defect is claimed for either one way or the other.
 - **The 900x700 narrow window check.** `xdotool windowsize` against the
   running window did not change its reported size (still captured at the
   full 1600x1000 launch geometry), so no narrow-width evidence exists yet.
@@ -75,6 +106,13 @@ superseded captures are kept alongside them as before/after evidence.
 | 6 | Every application menu dropdown (for example the Generate menu in `03-generatemenu-light.png`; also seen on File, Edit, and every other top menu) | Every dropdown renders as a plain, square-cornered, solid black popup with no Material styling, rather than the light `#ECE6EF` rounded `M3Roles.surfaceContainerHigh` surface that `PopupContent.qml` (`muse/framework/uicomponents/qml/Muse/UiComponents/internal/PopupContent.qml`) is written to draw. | **Root-caused and fixed** (Lane T), via the `muse` submodule patch overlay (`buildscripts/muse-patches/0003-m3-popups-and-dialogs.patch`, regenerated with `python3 buildscripts/tools/muse_patches.py regenerate`): confirmed the theory recorded in the earlier version of this row. The popup is a separate `QQuickWindow` sized a little larger than its own content so a drop shadow has room to blur outward past the content's edges; that shadow margin is only ever alpha-blended by a compositing window manager, and Xvfb runs with none, so X11 painted the margin as solid opaque black around every menu instead of a soft fade. Added an opaque `Rectangle` filling the whole popup window with `root.backgroundColor` underneath the existing shadow and content, which removes the visible black edge in both cases: a real compositor still draws the shadow on top of it as before, and a non-compositing one now shows the correct Material surface colour instead of black. Verified with `03-filemenu-fixed-light.png`, which shows a cleanly rounded, correctly coloured File menu with no black frame. |
 | 7 | `src/uicomponents/qml/Audacity/M3/M3SearchBar.qml` (regex builder icon) | The button meant to open the regex builder showed a literal `[ ]` rather than an icon: it used `IconCode.BRACKET_PARENTHESES_SQUARE`, and that codepoint in the bundled `MusescoreIcon.ttf` font draws exactly that, a bracket-parenthesis shape that reads as missing-icon fallback text rather than as an icon. | **Fixed** (Lane T): swapped to `IconCode.BRACE`, which draws a single curly-brace glyph, unambiguously an icon rather than punctuation. Also gave the button `accessibleName: "Open regular expression builder"`. Confirmed the codepoint mapping against the shipped font with `fontTools`/`PIL` before making the change. Visible as the "{" glyph at the right of the search bar in `06-preferences-populated-light.png`. |
 | 8 | `src/preferences/qml/Audacity/Preferences/UpdatesPreferencesPage.qml` (body content) | Reported separately from `docs/design/captures/lane-g2/preferences-updates-page.png`, which showed the "Automatic updates" title with an empty body. Every preferences page is created up front by `PreferencesDialog.qml`, long before the user navigates to it, and only becomes the visible current page later. The original page wrapped its whole body in a second `Column` whose `visible` binding flipped from false to true only once `updateModel.state` finished loading; on this build an item whose own `visible` (or an ancestor's height) starts bound to a false/zero value at creation time and is only later flipped by a state change did not reliably repaint, even though every other property, including the flipped boolean itself, reported the correct value once queried. | **Fixed** (Lane T): rewrote the body so every label stays visible, laid out and full height always, and only its own `text` switches to the empty string on a platform where updates are not applicable; only the `M3Switch` and the "Check for updates" `M3Button`, which cannot be text-blanked the same way, keep an ordinary `visible` binding. Verified with `14-preferences-updates-light.png`, which shows the "Automatic updates" title with its body message rendered underneath (this Linux build reports the not-applicable state, since Squirrel.Windows updates do not apply here). |
+| 9 | `src/preferences/qml/Audacity/Preferences/PreferencesDialog.qml` (`RegexBuilderSheet { id: regexBuilder }`) | The regex builder icon on the Preferences search field opened its sheet (confirmed via the log line `QML Repeater: Binding loop detected for property "model"` from `RegexBuilder.qml`, which only fires once the builder is instantiated) but nothing ever became visible on screen. `RegexBuilderSheet` is a plain `Item`, not a `Popup`, so it has no automatic overlay behaviour; it was declared as a sibling *before* the `ColumnLayout` that holds the search bar and every page, inside the same parent `Item` with both set to `anchors.fill: parent`. QML paints later siblings on top of earlier ones by default, so the fully-opened sheet was rendering, correctly, one layer underneath the entire visible dialog content. | **Fixed** in this lane: added `z: 10` to the `RegexBuilderSheet` in `PreferencesDialog.qml` (on the shared-files list, smallest anchored hunk). Verified with `13-settings-search-regex-builder-light.png`, which shows the fully rendered builder (pattern field, flags, guided character-class buttons) sitting correctly on top of the Preferences dialog. The command palette's own `RegexBuilderSheet` in `CommandPalette.qml` is declared *last* among its siblings, so it does not have this defect; not touched. |
+| 10 | `src/personalize/qml/Audacity/Personalize/PersonalizableItem.qml` | Not a code defect so much as a wiring gap: this component is the only thing in the tree that exposes "Lock this element..." on a context menu and opens `LockWizardPopover`, and nothing in the running application wraps a real element in it (`grep -rln "PersonalizableItem {" src` finds only the component's own file). The result is a Locks tab that can never gain its first entry from anywhere in this build. | **Not fixed here**: outside this lane's ownership (`src/personalize` is under active work by another lane in this pass), and the fix belongs wherever elements are meant to opt into being personalizable, not to this file itself. Recorded with `15-personalize-locks-light.png` as the empty-list evidence. |
+| 11 | `src/personalize/qml/Audacity/Personalize/QrCodeImage.qml` and `src/personalize/internal/qrencoder.cpp` | The authenticator's "Add an entry" flow renders a genuine `otpauth://` URI and a genuine base32 secret (both visible as text in `16-authenticator-qr-light.png`), but the QR code `Canvas` next to them paints as a blank white square. Traced as far as: `QrCodeImage.qml`'s paint handler correctly returns early (leaving only the white background fill) whenever `model.ok` is false or `model.size <= 0`; `QrCodeModel::setText` sets both of those from `QrEncoder::encode()`'s result, and no QML error or warning is logged anywhere around this, meaning either the encoder is returning `ok == false` for this specific input, or the binding from `root.pendingUri` (set inside `AuthenticatorPage.qml`'s `startAdding()`) never reaches the model in time. Not confirmed further, which of the two, in the time available. | **Not fixed here**: `src/personalize` is under active work by another lane in this pass. |
+| 12 | `src/chronicle/qml/Audacity/Chronicle/VersionHistoryPanel.qml` (the two date-range fields) | The Versions tab's "From" and "To" date fields render with overlapping placeholder text (`From▯YYYY-MM-DD▯YYYY-MM-D`, visible in `19-version-history-light.png`) and the "Keep at / Keep for" retention labels crowd together, because the panel is docked at a fixed narrow width (`root.verticalPanelDefaultWidth` in `ProjectPage.qml`) that the row of two date fields plus their labels does not fit inside. | **Not fixed here**: `src/chronicle` is one of the modules under active work by another lane in this pass. |
+| 13 | `src/chronicle/view/changelogmodel.cpp` / `src/chronicle/qml/Audacity/Chronicle/ChangelogDialog.qml` | The "What's new" dialog's title, description and Export/Close row all render correctly, but the body is completely empty (`20-changelog-light.png`), including neither the release list nor the "This build does not carry a changelog" fallback label that `ChangelogDialog.qml` shows when `changelogModel.available` is false. The `:/chronicle/CHANGELOG.md` resource is registered (`src/chronicle/au_chronicle.qrc`) and does exist on disk at the repository root; no `LOGW() << "the changelog is not present in this build"` line appears in the session log, meaning the file did open, and `ChangelogParser::parse()`'s heading/list-item regular expressions do match the file's actual `## Unreleased` / `### Added` / `- ` structure by inspection. Not confirmed further why the populated model does not reach the `ListView`'s `Repeater`, in the time available. | **Not fixed here**: `src/chronicle` is one of the modules under active work by another lane in this pass. |
+| 14 | `src/preferences/qml/Audacity/Preferences/PreferencesDialog.qml` (dialog header and footer backgrounds) | Selecting "Dark" in Appearance correctly re-themes the page list, the Theme cards and the Clip style section, but the dialog's own title/search header strip and its Reset preferences/Cancel/OK footer strip both stay on the light background (`24-preferences-appearance-dark.png`), giving the dialog a light-dark-light sandwich appearance. Not investigated further than the visual symptom in the time available. | **Not fixed here**: `PreferencesDialog.qml` is a shared file, but this needs a real audit of which background `Rectangle`s bind to the theme and which do not, which is more than a smallest-anchored-hunk fix. |
+| 15 | `src/toolkit/qml/Audacity/Toolkit/ExportSheet.qml` (line 89) | `M3RadioButton { onClicked: root.selectedFormatIndex = formatRow.index }`. `M3RadioButton.qml` declares `signal toggled`, not `clicked`; there is no `clicked` signal on this component, so this is a hard QML load error (`Cannot assign to non-existent property "onClicked"`) on every load of `ExportSheet.qml`. Because `ExportSheet` is embedded by both `OllamaPage.qml` and `DocsBrowserPage.qml`, which are both embedded by `ToolkitPreferencesPage.qml`, this one line takes down the entire Toolkit preferences page: `initPagesObjects` fails to construct it, so it is silently excluded from the page list and `AU_OPEN_PREFERENCES=toolkit` falls back to showing the General page instead. Confirmed present as of the last rebuild in this lane (line unchanged after multiple checks spaced across this session). | **Not fixed here**: `src/toolkit` is under active work by another lane in this pass; the fix is `onToggled:` in place of `onClicked:`. |
 
 ## Build note
 
@@ -84,3 +122,13 @@ defects 1 and 2, once more after fixing defect 3, once after fixing
 defects 4/4b/5/7 together, and once more after fixing defect 8
 (`UpdatesPreferencesPage.qml`), which needed its own recapture once the
 Personalize/tab-strip fixes had already landed.
+
+A later pass in this same lane (Lane V) added two rebuilds of its own:
+one for the `ExperienceAttentionSection.qml` / `ExperienceVocabularySection.qml`
+`objectName` additions, and one for the defect-9 `z: 10` fix in
+`PreferencesDialog.qml`. Both were built and captured under heavy
+concurrent build-lock contention from other lanes rebuilding the same
+`audacity` target at the same time; several launches of the built binary
+transiently failed with `Permission denied` or `No such file or
+directory` mid-relink and were simply retried once the binary was stable
+again.

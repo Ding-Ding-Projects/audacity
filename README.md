@@ -89,6 +89,53 @@ PIN or password to turn it back off. Capture: `lane-k2`.
 Narrator section: an off by default toggle, English or Cantonese or Both,
 and a Quiet mode switch. Capture: `lane-k2`.
 
+![Preferences search field with the regular expression builder open](docs/design/captures/phase2/13-settings-search-regex-builder-light.png)
+
+The regular expression builder opened from the Preferences search field:
+pattern, flags, and guided construction blocks for character classes.
+Capture: `phase2`.
+
+![Attention support section with five toggles](docs/design/captures/phase2/22-attention-support-light.png)
+
+The five attention support toggles (Focus, Low stimulation, Time
+awareness, One thing at a time, Momentum), off by default and
+independently switchable. Capture: `phase2`.
+
+![Personal vocabulary upload control](docs/design/captures/phase2/23-personal-vocabulary-light.png)
+
+The personal vocabulary JSON upload control, with the dim sum surprise
+and School mode explanations further down the same page. Capture:
+`phase2`.
+
+![Preferences Appearance page in the dark theme](docs/design/captures/phase2/24-preferences-appearance-dark.png)
+
+The Appearance page with Dark selected. The middle content area switches
+to the dark palette; the dialog header and footer do not (see
+[HANDOFF.md](HANDOFF.md)). Capture: `phase2`.
+
+</details>
+
+<details>
+<summary><strong>Personalize</strong></summary>
+
+![Personalize preferences, Locks tab](docs/design/captures/phase2/15-personalize-locks-light.png)
+
+The Locks tab of Personalize preferences, with the recovery folder path
+and a search field. No element in this build wraps the lock wizard yet,
+so the list is empty; see [HANDOFF.md](HANDOFF.md). Capture: `phase2`.
+
+![Authenticator pairing screen](docs/design/captures/phase2/16-authenticator-qr-light.png)
+
+Starting a new authenticator entry: the manual secret and issuer field
+render correctly, though the QR code area itself renders blank in this
+build. Capture: `phase2`.
+
+![Support Tickets joke desk](docs/design/captures/phase2/17-support-tickets-light.png)
+
+The Support Tickets desk: a plain statement that nothing leaves the
+machine, a category chooser, and the one real action of opening the
+application data folder. Capture: `phase2`.
+
 </details>
 
 <details>
@@ -124,6 +171,24 @@ format, channels, sample rate, and encoding. Capture: `lane-d`.
 A project with one track and a generated tone clip, with the History panel
 and its search field open on the right. Capture: `lane-c`.
 
+![History dock panel with Undo history and Versions tabs](docs/design/captures/phase2/18-history-panel-light.png)
+
+The History dock panel opened from View > Show history, with its Undo
+history and Versions tabs. Capture: `phase2`.
+
+![Local version history panel with date range filters](docs/design/captures/phase2/19-version-history-light.png)
+
+The Versions tab: date range filters, quick presets, and retention
+settings. The panel is narrower than its content needs, so the two date
+fields overlap (see [HANDOFF.md](HANDOFF.md)). Capture: `phase2`.
+
+![What's new changelog dialog](docs/design/captures/phase2/20-changelog-light.png)
+
+The What's new dialog reached from Help, with its export actions. The
+changelog body renders empty in this build even though the bundled
+CHANGELOG.md parses successfully (see [HANDOFF.md](HANDOFF.md)). Capture:
+`phase2`.
+
 </details>
 
 <details>
@@ -149,6 +214,16 @@ plus a dim sum surprise card naming a real dish with its photo. Capture:
 </details>
 
 <details>
+<summary><strong>Automatic updates</strong></summary>
+
+![Update ready banner](docs/design/captures/phase2/21-updater-banner-light.png)
+
+The corner update banner, naming the unsigned build plainly and offering
+Later or Restart to install update. Capture: `phase2`.
+
+</details>
+
+<details>
 <summary><strong>Display scale</strong></summary>
 
 ![Home page at 200 percent display scale](docs/design/captures/phase2/12-scale2x-home-light.png)
@@ -162,13 +237,16 @@ all remain legible with no clipping. Capture: `phase2`.
 <summary><strong>No capture yet</strong></summary>
 
 These surfaces exist in the code but do not have a reviewed capture in
-this pass: the toy lock wizard and PIN keypad, the built in authenticator's
-QR pairing screen, the Support Tickets desk, the local model manager for
-Ollama, the universal export service's non-audio formats, the in app
-documentation browser and its bookmarks, the command palette itself, the
-notification centre and corner toast stack, the updater's "Restart to
-install" banner, and the attention support mode toggles. See
-[HANDOFF.md](HANDOFF.md) for the current gap list; more captures under
+this pass: the toy lock wizard and its PIN keypad (no element in this
+build routes to it yet, so there is nothing to right click), the local
+model manager for Ollama and the universal export service's non-audio
+formats and the in app documentation browser with its bookmarks (all
+three currently fail to load in this build behind one shared defect, see
+[HANDOFF.md](HANDOFF.md)), the command palette itself (its Ctrl+Shift+F
+shortcut could not be delivered through the input tooling used for this
+pass, and it has no menu entry as a fallback route), and the notification
+centre and corner toast stack. See [HANDOFF.md](HANDOFF.md) for the
+current gap list; more captures under
 [docs/design/captures/](docs/design/captures/) exist from earlier passes
 (lanes `lane-b`, `lane-d`, `lane-g2`, `lane-p`, `lane-s`, `phase1`) and may
 cover some of these once reviewed.

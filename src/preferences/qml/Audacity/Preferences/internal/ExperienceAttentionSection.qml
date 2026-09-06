@@ -12,6 +12,8 @@ import Audacity.M3
 BaseSection {
     id: root
 
+    objectName: "ExperienceAttentionSection"
+
     property var settingsModel: null
 
     title: qsTrc("preferences", "Attention support")

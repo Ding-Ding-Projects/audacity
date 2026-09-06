@@ -126,5 +126,93 @@
     "caption": "Home page at 200 percent display scale: menu bar, tab labels, and cards all remain legible with no clipping.",
     "theme": "light",
     "lane": "phase2"
+  },
+  {
+    "file": "13-settings-search-regex-builder-light.png",
+    "group": "Design system",
+    "alt": "Preferences search field with the regular expression builder side sheet open beside it",
+    "caption": "The regular expression builder opened from the Preferences search field: pattern, flags, and guided construction blocks for character classes.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "15-personalize-locks-light.png",
+    "group": "Personalize",
+    "alt": "Personalize preferences, Locks tab with an empty list of locked elements",
+    "caption": "The Locks tab of Personalize preferences, with the recovery folder path and search field. No element in this build wraps the lock wizard yet, so the list is empty; see the completeness inventory for the gap.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "16-authenticator-qr-light.png",
+    "group": "Personalize",
+    "alt": "Authenticator pairing screen with a base32 secret and issuer field",
+    "caption": "Starting a new authenticator entry: the manual secret and issuer field render correctly, though the QR code area itself renders blank in this build.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "17-support-tickets-light.png",
+    "group": "Personalize",
+    "alt": "Support Tickets joke desk with category and description fields",
+    "caption": "The Support Tickets desk: a plain statement that nothing leaves the machine, a category chooser, and the one real action of opening the application data folder.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "18-history-panel-light.png",
+    "group": "Project window and tracks",
+    "alt": "History dock panel with Undo history and Versions tabs",
+    "caption": "The History dock panel opened from View > Show history, with its Undo history and Versions tabs and a search field.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "19-version-history-light.png",
+    "group": "Project window and tracks",
+    "alt": "Local version history panel with date range filters and retention settings",
+    "caption": "The Versions tab of the History panel: date range filters, quick presets, and retention settings. The panel is narrower than its content needs, so the two date fields overlap.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "20-changelog-light.png",
+    "group": "Project window and tracks",
+    "alt": "What's new changelog dialog with export actions and an empty body",
+    "caption": "The What's new dialog reached from Help, with its export actions. The changelog body renders empty in this build even though the bundled CHANGELOG.md parses successfully.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "21-updater-banner-light.png",
+    "group": "Automatic updates",
+    "alt": "Update ready banner naming an unsigned build with Later and Restart actions",
+    "caption": "The corner update banner, forced on with AU_SQUIRREL_DEMO_BANNER, naming the unsigned build plainly and offering Later or Restart to install update.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "22-attention-support-light.png",
+    "group": "Preferences",
+    "alt": "Attention support section with five independent toggles",
+    "caption": "The five attention support toggles (Focus, Low stimulation, Time awareness, One thing at a time, Momentum), each off by default and independently switchable.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "23-personal-vocabulary-light.png",
+    "group": "Preferences",
+    "alt": "Personal vocabulary upload control with dim sum surprise and School mode explanations below it",
+    "caption": "The personal vocabulary JSON upload control, with the dim sum surprise and School mode explanations visible further down the same page.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "24-preferences-appearance-dark.png",
+    "group": "Preferences",
+    "alt": "Preferences Appearance page in the dark theme with a light-colored header and footer",
+    "caption": "The Appearance page with Dark selected: the middle content area switches to the dark palette, but the dialog header and footer stay on the light background.",
+    "theme": "dark",
+    "lane": "phase2"
   }
 ]

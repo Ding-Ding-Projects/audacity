@@ -313,6 +313,10 @@ M3Dialog {
         RegexBuilderSheet {
             id: regexBuilder
 
+            // Declared before the page content below, so without an explicit
+            // z it would paint underneath that content and never be seen.
+            z: 10
+
             anchors.fill: parent
 
             storeName: "preferences"

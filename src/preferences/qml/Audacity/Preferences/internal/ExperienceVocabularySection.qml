@@ -12,6 +12,8 @@ import Audacity.M3
 BaseSection {
     id: root
 
+    objectName: "ExperienceVocabularySection"
+
     property var settingsModel: null
 
     readonly property bool hasFile: root.settingsModel && root.settingsModel.vocabularyFileName !== ""
