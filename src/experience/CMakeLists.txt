@@ -20,6 +20,16 @@ target_sources(experience PRIVATE
     internal/experienceservice.h
     internal/experiencetranslator.cpp
     internal/experiencetranslator.h
+    internal/dimsumcatalog.cpp
+    internal/dimsumcatalog.h
+    internal/dimsumsurprise.cpp
+    internal/dimsumsurprise.h
+    internal/narratorqueue.cpp
+    internal/narratorqueue.h
+    internal/narratorservice.cpp
+    internal/narratorservice.h
+    internal/schoolmode.cpp
+    internal/schoolmode.h
     internal/messagestyler.cpp
     internal/messagestyler.h
     internal/notificationcenter.cpp

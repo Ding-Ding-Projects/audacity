@@ -29,6 +29,13 @@ static const Settings::Key MODE_MOMENTUM(moduleName, "experience/modes/momentum"
 static const Settings::Key SCHEDULE(moduleName, "experience/schedule/entries");
 static const Settings::Key VOCABULARY_FILE_NAME(moduleName, "experience/vocabulary/fileName");
 
+static const Settings::Key NARRATOR_ENABLED(moduleName, "experience/narrator/enabled");
+static const Settings::Key NARRATOR_LANGUAGE(moduleName, "experience/narrator/language");
+static const Settings::Key NARRATOR_ENGLISH_VOICE(moduleName, "experience/narrator/englishVoiceId");
+static const Settings::Key NARRATOR_CANTONESE_VOICE(moduleName, "experience/narrator/cantoneseVoiceId");
+static const Settings::Key NARRATOR_RATE(moduleName, "experience/narrator/rate");
+static const Settings::Key NARRATOR_PITCH(moduleName, "experience/narrator/pitch");
+
 //! Kept in the local settings file only. Never included in export, sync, or
 //! local history, and never printed or logged; a scheduled row that needs
 //! it reads it directly through this configuration interface.
@@ -70,6 +77,22 @@ void ExperienceConfiguration::init()
 
     settings()->setDefaultValue(VOCABULARY_FILE_NAME, Val(std::string()));
     settings()->valueChanged(VOCABULARY_FILE_NAME).onReceive(this, [this](const Val&) { m_vocabularyChanged.notify(); });
+
+    // The narrator is off by default; a user must explicitly turn it on.
+    settings()->setDefaultValue(NARRATOR_ENABLED, Val(false));
+    settings()->setDefaultValue(NARRATOR_LANGUAGE, Val(0));
+    settings()->setDefaultValue(NARRATOR_ENGLISH_VOICE, Val(std::string()));
+    settings()->setDefaultValue(NARRATOR_CANTONESE_VOICE, Val(std::string()));
+    settings()->setDefaultValue(NARRATOR_RATE, Val(0.0));
+    settings()->setDefaultValue(NARRATOR_PITCH, Val(0.0));
+
+    const std::vector<Settings::Key> narratorKeys {
+        NARRATOR_ENABLED, NARRATOR_LANGUAGE, NARRATOR_ENGLISH_VOICE, NARRATOR_CANTONESE_VOICE, NARRATOR_RATE,
+        NARRATOR_PITCH
+    };
+    for (const Settings::Key& key : narratorKeys) {
+        settings()->valueChanged(key).onReceive(this, [this](const Val&) { m_narratorSettingsChanged.notify(); });
+    }
 }
 
 LanguageMode ExperienceConfiguration::languageMode() const
@@ -256,5 +279,71 @@ QString ExperienceConfiguration::vocabularyStoragePath() const
 async::Notification ExperienceConfiguration::vocabularyChanged() const
 {
     return m_vocabularyChanged;
+}
+
+bool ExperienceConfiguration::narratorEnabled() const
+{
+    return settings()->value(NARRATOR_ENABLED).toBool();
+}
+
+void ExperienceConfiguration::setNarratorEnabled(bool value)
+{
+    settings()->setSharedValue(NARRATOR_ENABLED, Val(value));
+}
+
+int ExperienceConfiguration::narratorLanguage() const
+{
+    const int raw = settings()->value(NARRATOR_LANGUAGE).toInt();
+    return (raw < 0 || raw > 2) ? 0 : raw;
+}
+
+void ExperienceConfiguration::setNarratorLanguage(int value)
+{
+    settings()->setSharedValue(NARRATOR_LANGUAGE, Val((value < 0 || value > 2) ? 0 : value));
+}
+
+QString ExperienceConfiguration::narratorEnglishVoiceId() const
+{
+    return QString::fromStdString(settings()->value(NARRATOR_ENGLISH_VOICE).toString());
+}
+
+void ExperienceConfiguration::setNarratorEnglishVoiceId(const QString& id)
+{
+    settings()->setSharedValue(NARRATOR_ENGLISH_VOICE, Val(id.toStdString()));
+}
+
+QString ExperienceConfiguration::narratorCantoneseVoiceId() const
+{
+    return QString::fromStdString(settings()->value(NARRATOR_CANTONESE_VOICE).toString());
+}
+
+void ExperienceConfiguration::setNarratorCantoneseVoiceId(const QString& id)
+{
+    settings()->setSharedValue(NARRATOR_CANTONESE_VOICE, Val(id.toStdString()));
+}
+
+double ExperienceConfiguration::narratorRate() const
+{
+    return settings()->value(NARRATOR_RATE).toDouble();
+}
+
+void ExperienceConfiguration::setNarratorRate(double value)
+{
+    settings()->setSharedValue(NARRATOR_RATE, Val(value));
+}
+
+double ExperienceConfiguration::narratorPitch() const
+{
+    return settings()->value(NARRATOR_PITCH).toDouble();
+}
+
+void ExperienceConfiguration::setNarratorPitch(double value)
+{
+    settings()->setSharedValue(NARRATOR_PITCH, Val(value));
+}
+
+async::Notification ExperienceConfiguration::narratorSettingsChanged() const
+{
+    return m_narratorSettingsChanged;
 }
 }

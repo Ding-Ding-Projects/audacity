@@ -10,6 +10,16 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Experience module: a dim sum surprise card that draws once per launch with
+  a fresh 10% chance and names a random dish bilingually with a photo cached
+  from the public catalog and never vendored in this repository, a universal
+  School mode shared across every app on the machine with a rename path, a
+  shared PIN/password unlock, live file watching, and full suppression of
+  Cantonese, bilingual presentation, funny levels, personal vocabulary and
+  the dim sum surprise while it is on, and an off by default narrator with
+  English/Cantonese/Both speech, per-language voice pickers, rate and pitch
+  controls, and a serialized, debounced, cooldown-aware queue that never
+  suppresses an error
 - Personalize module: a per element appearance editor reachable from every
   element's right click menu and Shift+right-click (typography, colour with
   the animated rainbow option, corner radius, and per state overrides), an

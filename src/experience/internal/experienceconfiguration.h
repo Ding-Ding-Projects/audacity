@@ -57,6 +57,20 @@ public:
     QString vocabularyStoragePath() const override;
     muse::async::Notification vocabularyChanged() const override;
 
+    bool narratorEnabled() const override;
+    void setNarratorEnabled(bool value) override;
+    int narratorLanguage() const override;
+    void setNarratorLanguage(int value) override;
+    QString narratorEnglishVoiceId() const override;
+    void setNarratorEnglishVoiceId(const QString& id) override;
+    QString narratorCantoneseVoiceId() const override;
+    void setNarratorCantoneseVoiceId(const QString& id) override;
+    double narratorRate() const override;
+    void setNarratorRate(double value) override;
+    double narratorPitch() const override;
+    void setNarratorPitch(double value) override;
+    muse::async::Notification narratorSettingsChanged() const override;
+
 private:
     muse::async::Channel<LanguageMode> m_languageModeChanged;
     muse::async::Notification m_funnyLevelChanged;
@@ -64,5 +78,6 @@ private:
     muse::async::Notification m_attentionModesChanged;
     muse::async::Notification m_scheduleChanged;
     muse::async::Notification m_vocabularyChanged;
+    muse::async::Notification m_narratorSettingsChanged;
 };
 }

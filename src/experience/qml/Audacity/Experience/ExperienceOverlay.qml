@@ -28,7 +28,10 @@ Item {
         Component.onCompleted: settingsModel.load()
     }
 
-    Component.onCompleted: ExperienceBridge.overlay = root
+    Component.onCompleted: {
+        ExperienceBridge.overlay = root
+        dimSumSurprise.offer(false)
+    }
 
     function confirmDestructive(actionName, dataSummary, recoveryNote, invoker, onConfirmed) {
         superConfirmation.pendingCallback = onConfirmed || null
@@ -197,6 +200,12 @@ Item {
             interval: 2400
             onTriggered: momentum.opacity = 0
         }
+    }
+
+    DimSumSurpriseCard {
+        id: dimSumSurprise
+
+        anchors.fill: parent
     }
 
     NotificationHost {

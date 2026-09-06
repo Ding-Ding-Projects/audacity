@@ -729,6 +729,33 @@
       "keywords": "vocabulary personal words replace json"
     },
     {
+      "page": "experience",
+      "group": "School mode",
+      "label": "School mode",
+      "control": "action",
+      "key": "experience/schoolMode",
+      "target": "School mode",
+      "keywords": "school mode focus lock shared quiet"
+    },
+    {
+      "page": "experience",
+      "group": "Narrator",
+      "label": "Narrator",
+      "control": "switch",
+      "key": "experience/narrator/enabled",
+      "target": "Narrator",
+      "keywords": "narrator speech read aloud text to speech voice"
+    },
+    {
+      "page": "experience",
+      "group": "Narrator",
+      "label": "Narrator language",
+      "control": "select",
+      "key": "experience/narrator/language",
+      "target": "Narrator language",
+      "keywords": "narrator language english cantonese both"
+    },
+    {
       "page": "music",
       "group": "Workspaces and tempo detection",
       "label": "Tempo detection per workspace",

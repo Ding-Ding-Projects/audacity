@@ -33,6 +33,17 @@ void ExperienceSettingsModel::load()
     service()->restartRequiredChanged().onNotify(this, [this]() {
         emit restartRequiredChanged();
     });
+    configuration()->narratorSettingsChanged().onNotify(this, [this]() {
+        emit narratorSettingsChanged();
+    });
+
+    if (!m_schoolMode) {
+        m_schoolMode = new SchoolModeService(this);
+        connect(m_schoolMode, &SchoolModeService::stateChanged, this, &ExperienceSettingsModel::schoolModeChanged);
+    }
+    if (!m_narratorEngine) {
+        m_narratorEngine = new NarratorEngine(this);
+    }
 }
 
 int ExperienceSettingsModel::languageMode() const
@@ -224,6 +235,103 @@ void ExperienceSettingsModel::retranslate()
     //! and text owned by the platform, still needs a restart.
     if (uiEngine() && uiEngine()->qmlEngine()) {
         uiEngine()->qmlEngine()->retranslate();
+    }
+}
+
+bool ExperienceSettingsModel::narratorEnabled() const
+{
+    return configuration()->narratorEnabled();
+}
+
+void ExperienceSettingsModel::setNarratorEnabled(bool value)
+{
+    configuration()->setNarratorEnabled(value);
+}
+
+int ExperienceSettingsModel::narratorLanguage() const
+{
+    return configuration()->narratorLanguage();
+}
+
+void ExperienceSettingsModel::setNarratorLanguage(int value)
+{
+    configuration()->setNarratorLanguage(value);
+}
+
+QString ExperienceSettingsModel::narratorEnglishVoiceId() const
+{
+    return configuration()->narratorEnglishVoiceId();
+}
+
+void ExperienceSettingsModel::setNarratorEnglishVoiceId(const QString& id)
+{
+    configuration()->setNarratorEnglishVoiceId(id);
+}
+
+QString ExperienceSettingsModel::narratorCantoneseVoiceId() const
+{
+    return configuration()->narratorCantoneseVoiceId();
+}
+
+void ExperienceSettingsModel::setNarratorCantoneseVoiceId(const QString& id)
+{
+    configuration()->setNarratorCantoneseVoiceId(id);
+}
+
+double ExperienceSettingsModel::narratorRate() const
+{
+    return configuration()->narratorRate();
+}
+
+void ExperienceSettingsModel::setNarratorRate(double value)
+{
+    configuration()->setNarratorRate(value);
+}
+
+double ExperienceSettingsModel::narratorPitch() const
+{
+    return configuration()->narratorPitch();
+}
+
+void ExperienceSettingsModel::setNarratorPitch(double value)
+{
+    configuration()->setNarratorPitch(value);
+}
+
+QString ExperienceSettingsModel::narratorEngineDescription() const
+{
+    return m_narratorEngine ? m_narratorEngine->engineDescription() : QString();
+}
+
+bool ExperienceSettingsModel::schoolModeOn() const
+{
+    return m_schoolMode && m_schoolMode->isOn();
+}
+
+QString ExperienceSettingsModel::schoolModeDisplayName() const
+{
+    return m_schoolMode ? m_schoolMode->displayName() : QStringLiteral("School mode");
+}
+
+bool ExperienceSettingsModel::schoolModeHasCredential() const
+{
+    return m_schoolMode && m_schoolMode->hasCredential();
+}
+
+bool ExperienceSettingsModel::turnSchoolModeOn(const QString& newCredential)
+{
+    return m_schoolMode && m_schoolMode->turnOn(newCredential);
+}
+
+bool ExperienceSettingsModel::turnSchoolModeOff(const QString& credential)
+{
+    return m_schoolMode && m_schoolMode->turnOff(credential);
+}
+
+void ExperienceSettingsModel::renameSchoolMode(const QString& newDisplayName)
+{
+    if (m_schoolMode) {
+        m_schoolMode->rename(newDisplayName);
     }
 }
 }

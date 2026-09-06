@@ -67,5 +67,30 @@ PreferencesPage {
             navigation.section: root.navigationSection
             navigation.order: root.navigationOrderStart + 5
         }
+
+        M3Divider {}
+
+        ExperienceDimSumSection {
+            navigation.section: root.navigationSection
+            navigation.order: root.navigationOrderStart + 6
+        }
+
+        M3Divider {}
+
+        ExperienceSchoolModeSection {
+            settingsModel: settingsModel
+
+            navigation.section: root.navigationSection
+            navigation.order: root.navigationOrderStart + 7
+        }
+
+        M3Divider {}
+
+        ExperienceNarratorSection {
+            settingsModel: settingsModel
+
+            navigation.section: root.navigationSection
+            navigation.order: root.navigationOrderStart + 8
+        }
     }
 }

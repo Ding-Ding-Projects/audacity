@@ -15,6 +15,8 @@
 #include "iexperienceservice.h"
 #include "imessagestyler.h"
 #include "inotificationcenter.h"
+#include "internal/narratorservice.h"
+#include "internal/schoolmode.h"
 
 namespace au::experience {
 //! The model behind the Experience preferences page and the companion
@@ -45,6 +47,20 @@ class ExperienceSettingsModel : public QObject, public muse::Contextable, public
     //! Write only. The stored token is never read back into the interface,
     //! the same way a stored password never is; this always reports empty.
     Q_PROPERTY(bool homeAssistantTokenSet READ homeAssistantTokenSet NOTIFY homeAssistantTokenChanged FINAL)
+
+    Q_PROPERTY(bool narratorEnabled READ narratorEnabled WRITE setNarratorEnabled NOTIFY narratorSettingsChanged FINAL)
+    Q_PROPERTY(int narratorLanguage READ narratorLanguage WRITE setNarratorLanguage NOTIFY narratorSettingsChanged FINAL)
+    Q_PROPERTY(
+        QString narratorEnglishVoiceId READ narratorEnglishVoiceId WRITE setNarratorEnglishVoiceId NOTIFY narratorSettingsChanged FINAL)
+    Q_PROPERTY(
+        QString narratorCantoneseVoiceId READ narratorCantoneseVoiceId WRITE setNarratorCantoneseVoiceId NOTIFY narratorSettingsChanged FINAL)
+    Q_PROPERTY(double narratorRate READ narratorRate WRITE setNarratorRate NOTIFY narratorSettingsChanged FINAL)
+    Q_PROPERTY(double narratorPitch READ narratorPitch WRITE setNarratorPitch NOTIFY narratorSettingsChanged FINAL)
+    Q_PROPERTY(QString narratorEngineDescription READ narratorEngineDescription CONSTANT FINAL)
+
+    Q_PROPERTY(bool schoolModeOn READ schoolModeOn NOTIFY schoolModeChanged FINAL)
+    Q_PROPERTY(QString schoolModeDisplayName READ schoolModeDisplayName NOTIFY schoolModeChanged FINAL)
+    Q_PROPERTY(bool schoolModeHasCredential READ schoolModeHasCredential NOTIFY schoolModeChanged FINAL)
 
     muse::GlobalInject<IExperienceConfiguration> configuration;
     muse::GlobalInject<IExperienceService> service;
@@ -101,6 +117,32 @@ public:
     //! Shows a demonstration toast, used by the settings page and the captures.
     Q_INVOKABLE void showExampleNotification();
 
+    bool narratorEnabled() const;
+    void setNarratorEnabled(bool value);
+    int narratorLanguage() const;
+    void setNarratorLanguage(int value);
+    QString narratorEnglishVoiceId() const;
+    void setNarratorEnglishVoiceId(const QString& id);
+    QString narratorCantoneseVoiceId() const;
+    void setNarratorCantoneseVoiceId(const QString& id);
+    double narratorRate() const;
+    void setNarratorRate(double value);
+    double narratorPitch() const;
+    void setNarratorPitch(double value);
+    QString narratorEngineDescription() const;
+
+    bool schoolModeOn() const;
+    QString schoolModeDisplayName() const;
+    bool schoolModeHasCredential() const;
+    //! Turns School mode on. When no credential exists yet, newCredential
+    //! becomes the unlock PIN or password. Returns false when a credential
+    //! already exists and none was needed, or none was given for the first
+    //! activation.
+    Q_INVOKABLE bool turnSchoolModeOn(const QString& newCredential);
+    //! Turns School mode off. Returns false when the credential is wrong.
+    Q_INVOKABLE bool turnSchoolModeOff(const QString& credential);
+    Q_INVOKABLE void renameSchoolMode(const QString& newDisplayName);
+
 signals:
     void languageModeChanged();
     void funnyLevelsChanged();
@@ -109,10 +151,14 @@ signals:
     void restartRequiredChanged();
     void vocabularyChanged();
     void homeAssistantTokenChanged();
+    void narratorSettingsChanged();
+    void schoolModeChanged();
 
 private:
     void retranslate();
 
     QString m_vocabularyError;
+    SchoolModeService* m_schoolMode = nullptr;
+    NarratorEngine* m_narratorEngine = nullptr;
 };
 }

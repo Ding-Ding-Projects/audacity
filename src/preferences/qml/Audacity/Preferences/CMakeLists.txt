@@ -65,8 +65,11 @@ qt_add_qml_module(preferences_qml
         internal/EffectBehaviorSection.qml
         internal/EffectOptionsSection.qml
         internal/ExperienceAttentionSection.qml
+        internal/ExperienceDimSumSection.qml
         internal/ExperienceLanguageSection.qml
+        internal/ExperienceNarratorSection.qml
         internal/ExperienceScheduleSection.qml
+        internal/ExperienceSchoolModeSection.qml
         internal/ExperienceToneSection.qml
         internal/ExperienceVocabularySection.qml
         internal/ExportBehaviorSection.qml

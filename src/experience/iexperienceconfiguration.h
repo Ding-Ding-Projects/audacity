@@ -69,5 +69,23 @@ public:
     //! Absolute path of the parsed vocabulary table inside the application data directory.
     virtual QString vocabularyStoragePath() const = 0;
     virtual muse::async::Notification vocabularyChanged() const = 0;
+
+    // Narrator, off by default
+    virtual bool narratorEnabled() const = 0;
+    virtual void setNarratorEnabled(bool value) = 0;
+    //! 0 = English, 1 = Cantonese, 2 = Both. Kept as int at this boundary so
+    //! the header does not need to include narratorqueue.h.
+    virtual int narratorLanguage() const = 0;
+    virtual void setNarratorLanguage(int value) = 0;
+    //! Stable engine reported voice id, or empty for "choose automatically".
+    virtual QString narratorEnglishVoiceId() const = 0;
+    virtual void setNarratorEnglishVoiceId(const QString& id) = 0;
+    virtual QString narratorCantoneseVoiceId() const = 0;
+    virtual void setNarratorCantoneseVoiceId(const QString& id) = 0;
+    virtual double narratorRate() const = 0;
+    virtual void setNarratorRate(double value) = 0;
+    virtual double narratorPitch() const = 0;
+    virtual void setNarratorPitch(double value) = 0;
+    virtual muse::async::Notification narratorSettingsChanged() const = 0;
 };
 }

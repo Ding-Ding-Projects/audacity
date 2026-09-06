@@ -127,6 +127,28 @@
         <translation>關於 Audacity(&amp;A)…</translation>
     </message>
     <message>
+        <location filename="../../src/appshell/internal/applicationuiactions.cpp" line="66" />
+        <source>&amp;Welcome tour</source>
+        <extracomment>Action title: shown as a menu item or a button label; keep it short</extracomment>
+        <translation>歡迎導覽(&amp;W)</translation>
+    </message>
+    <message>
+        <source>Open the welcome tour</source>
+        <extracomment>Action description: shown as a tooltip; can be a full sentence</extracomment>
+        <translation>打開歡迎導覽,想睇先睇,唔想睇就唔洗睇</translation>
+    </message>
+    <message>
+        <location filename="../../src/appshell/internal/applicationuiactions.cpp" line="73" />
+        <source>&amp;Set up Material Audacity…</source>
+        <extracomment>Action title: shown as a menu item or a button label; keep it short</extracomment>
+        <translation>設定 Material Audacity(&amp;S)…</translation>
+    </message>
+    <message>
+        <source>Open the setup pages for language, theme and appearance</source>
+        <extracomment>Action description: shown as a tooltip; can be a full sentence</extracomment>
+        <translation>打開語言、主題同外觀嘅設定頁面,唔會再喺一開機就彈出嚟煩你</translation>
+    </message>
+    <message>
         <location filename="../../src/appshell/internal/applicationuiactions.cpp" line="136" />
         <source>&amp;Status bar</source>
         <extracomment>Action title: shown as a menu item or a button label; keep it short</extracomment>
@@ -24476,6 +24498,121 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <location filename="../../src/squirrelupdate/qml/Audacity/SquirrelUpdate/squirrelupdatemodel.cpp" line="1" />
         <source>No check has run yet in this session.</source>
         <translation>今次開機仲未 check 過。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceDimSumSection.qml" line="1" />
+        <source>Dim sum surprise</source>
+        <translation>點心驚喜</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceDimSumSection.qml" line="1" />
+        <source>On about one launch in ten, a small card names a random dim sum dish in English and Traditional Chinese, with a photo when one is available offline or online. It never blocks startup and there is no setting to turn it off. School mode suppresses it while it is on.</source>
+        <translation>大概開機十次會有一次，跳張細細張卡話你知有隻乜嘢點心，中英文都有，仲有相睇（如果拎到嘅話）。唔會擋住個開機過程，亦冇得閂。School mode 開住嗰陣就會靜晒。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>School mode</source>
+        <translation>School mode</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>One shared mode for every app on this computer. While it is on, everything switches to English, and Cantonese, bilingual presentation, the funny level sliders, personal vocabulary and the dim sum surprise all behave as if they were not installed. This is a self imposed speed bump, not a security feature.</source>
+        <translation>呢部機入面所有 app 共用嘅一個模式。開咗嗰陣，全部轉英文，廣東話、雙語顯示、搞笑程度滑桿、個人用詞同埋點心驚喜全部當冇裝過咁。呢個淨係自己整嘅減速丘，唔係安全措施。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>%1 is on.</source>
+        <translation>%1 而家開咗。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>%1 is off.</source>
+        <translation>%1 而家閂咗。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>Rename this mode</source>
+        <translation>幫呢個模式改個名</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>Enter the unlock PIN or password</source>
+        <translation>打返個解鎖 PIN 或密碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>Set an unlock PIN or password</source>
+        <translation>設定一個解鎖 PIN 或密碼</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>Needed to turn this back off. If you forget it, delete the shared record file to reset it.</source>
+        <translation>閂返呢個模式就要用呢個。唔記得嘅話，刪咗個共用記錄檔案就會重設。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>Turn off</source>
+        <translation>閂咗佢</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceSchoolModeSection.qml" line="1" />
+        <source>Turn on</source>
+        <translation>開咗佢</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>Narrator</source>
+        <translation>讀報員</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>Speaks a short line for selected events. Off until you turn it on.</source>
+        <translation>㨂幾件事出嚟讀一句畀你聽。未開之前預設係閂嘅。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>Narrator. Speaks selected events out loud</source>
+        <translation>讀報員：揀幾件事出聲讀畀你聽</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>English</source>
+        <translation>英文</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>Cantonese</source>
+        <translation>廣東話</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>Both</source>
+        <translation>兩種都要</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/internal/ExperienceNarratorSection.qml" line="1" />
+        <source>Choose automatically is the default for each language. Voice pickers list whatever the active speech engine reports on this machine.</source>
+        <translation>每種語言預設都係「自動揀」。個聲揀選器會列晒呢部機而家用緊嗰個讀聲引擎報返嚟嘅聲。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/DimSumSurpriseCard.qml" line="1" />
+        <source>Dim sum surprise: %1</source>
+        <translation>點心驚喜：%1</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/DimSumSurpriseCard.qml" line="1" />
+        <source>A little dim sum surprise</source>
+        <translation>一個細細嘅點心驚喜</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/DimSumSurpriseCard.qml" line="1" />
+        <source>Photo unavailable offline</source>
+        <translation>離線嘅時候攞唔到張相</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/DimSumSurpriseCard.qml" line="1" />
+        <source>Photo of %1, unavailable offline</source>
+        <translation>%1 嘅相，離線嗰陣攞唔到</translation>
     </message>
 </context>
 </TS>

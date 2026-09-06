@@ -6,6 +6,8 @@ qt_add_qml_module(experience_qml
     URI Audacity.Experience
     VERSION 1.0
     SOURCES
+        dimsumsurprisemodel.cpp
+        dimsumsurprisemodel.h
         experiencesettingsmodel.cpp
         experiencesettingsmodel.h
         notificationlistmodel.cpp
@@ -13,6 +15,7 @@ qt_add_qml_module(experience_qml
         schedulelistmodel.cpp
         schedulelistmodel.h
     QML_FILES
+        DimSumSurpriseCard.qml
         ExperienceBridge.qml
         ExperienceOverlay.qml
         ExperienceToast.qml
