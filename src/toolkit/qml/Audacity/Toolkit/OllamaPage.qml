@@ -38,6 +38,7 @@ Item {
     property string systemPrompt: "You are a helpful local assistant."
     property bool imageAttachmentsSupported: false
     property string attachmentStatus: ""
+    property string selectedSessionId: ""
 
     onSelectedModelChanged: {
         root.imageAttachmentsSupported = false
@@ -303,6 +304,18 @@ Item {
         }
 
         Repeater {
+            model: ollama.queuedPulls
+            delegate: M3ListItem {
+                required property var modelData
+                Layout.fillWidth: true
+                headline: modelData.tag
+                supportingText: qsTrc("toolkit", "Recovered local pull: %1").arg(modelData.state)
+                trailingText: qsTrc("toolkit", "Cancel")
+                onClicked: ollama.cancelPull(modelData.tag)
+            }
+        }
+
+        Repeater {
             model: root.filteredInstalled
 
             delegate: RowLayout {
@@ -389,6 +402,18 @@ Item {
             onAccepted: {
                 if (ollama.attachImage(root.selectedModel, selectedFile)) {
                     root.attachmentStatus = qsTrc("toolkit", "Image attached locally for the next message.")
+                }
+            }
+        }
+
+        FileDialog {
+            id: sessionExportDialog
+            title: qsTrc("toolkit", "Export redacted local chat")
+            fileMode: FileDialog.SaveFile
+            nameFilters: [qsTrc("toolkit", "JSON (*.json)")]
+            onAccepted: {
+                if (!ollama.writeChatSessionExport(root.selectedSessionId, selectedFile)) {
+                    root.chatFailure = qsTrc("toolkit", "Could not write the redacted local chat export.")
                 }
             }
         }
@@ -503,8 +528,28 @@ Item {
                 trailingText: qsTrc("toolkit", "Load")
                 onClicked: {
                     var session = ollama.loadChatSession(modelData.id)
+                    root.selectedSessionId = modelData.id
                     root.systemPrompt = session.systemPrompt
                     root.chatMessages = session.messages
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            M3Button {
+                text: qsTrc("toolkit", "Export selected session")
+                variant: "outlined"
+                enabled: root.selectedSessionId.length > 0
+                onClicked: sessionExportDialog.open()
+            }
+            M3Button {
+                text: qsTrc("toolkit", "Delete selected session")
+                variant: "text"
+                enabled: root.selectedSessionId.length > 0
+                onClicked: {
+                    ollama.deleteChatSession(root.selectedSessionId)
+                    root.selectedSessionId = ""
                 }
             }
         }

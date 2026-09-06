@@ -124,6 +124,11 @@ QVariantMap OllamaClient::catalogSnapshot() const
     return m_catalogSnapshot;
 }
 
+QVariantList OllamaClient::queuedPulls() const
+{
+    return m_queuedPulls;
+}
+
 void OllamaClient::setPullConcurrency(int value)
 {
     value = qBound(1, value, 4);
@@ -464,6 +469,22 @@ QString OllamaClient::exportChatSession(const QString& id) const
     return QString::fromUtf8(QJsonDocument(exported).toJson(QJsonDocument::Indented));
 }
 
+bool OllamaClient::writeChatSessionExport(const QString& id, const QUrl& fileUrl) const
+{
+    if (!fileUrl.isLocalFile()) {
+        return false;
+    }
+    const QString content = exportChatSession(id);
+    if (content.isEmpty()) {
+        return false;
+    }
+    QFile output(fileUrl.toLocalFile());
+    if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        return false;
+    }
+    return output.write(content.toUtf8()) == content.toUtf8().size();
+}
+
 bool OllamaClient::importCatalogSnapshot(const QUrl& fileUrl)
 {
     if (!fileUrl.isLocalFile()) {
@@ -521,7 +542,9 @@ void OllamaClient::persistPullQueue() const
     for (const QString& tag : queue) {
         state << QVariantMap { { QStringLiteral("tag"), tag }, { QStringLiteral("state"), QStringLiteral("queued") } };
     }
-    Q_EMIT const_cast<OllamaClient*>(this)->queuedPullsChanged(state);
+    OllamaClient* self = const_cast<OllamaClient*>(this);
+    self->m_queuedPulls = state;
+    Q_EMIT self->queuedPullsChanged(state);
 }
 
 void OllamaClient::restorePullQueue()

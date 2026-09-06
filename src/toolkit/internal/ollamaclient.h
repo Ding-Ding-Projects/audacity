@@ -30,6 +30,7 @@ class OllamaClient : public QObject
     Q_PROPERTY(int capabilityRevision READ capabilityRevision NOTIFY capabilityRevisionChanged)
     Q_PROPERTY(QVariantList chatSessions READ chatSessions NOTIFY chatSessionsChanged)
     Q_PROPERTY(QVariantMap catalogSnapshot READ catalogSnapshot NOTIFY catalogSnapshotChanged)
+    Q_PROPERTY(QVariantList queuedPulls READ queuedPulls NOTIFY queuedPullsChanged)
 
 public:
     explicit OllamaClient(QObject* parent = nullptr);
@@ -44,6 +45,7 @@ public:
     int capabilityRevision() const;
     QVariantList chatSessions() const;
     QVariantMap catalogSnapshot() const;
+    QVariantList queuedPulls() const;
     void setPullConcurrency(int value);
 
     //! Returns true only when the host is loopback or a private network
@@ -65,6 +67,7 @@ public:
     Q_INVOKABLE QVariantMap loadChatSession(const QString& id) const;
     Q_INVOKABLE void deleteChatSession(const QString& id);
     Q_INVOKABLE QString exportChatSession(const QString& id) const;
+    Q_INVOKABLE bool writeChatSessionExport(const QString& id, const QUrl& fileUrl) const;
     Q_INVOKABLE bool importCatalogSnapshot(const QUrl& fileUrl);
 
 signals:
@@ -114,5 +117,6 @@ private:
     QHash<QString, QStringList> m_pendingImages;
     QVariantList m_chatSessions;
     QVariantMap m_catalogSnapshot;
+    QVariantList m_queuedPulls;
 };
 }
