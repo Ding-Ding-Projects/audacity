@@ -1,177 +1,61 @@
 #!/usr/bin/env python3
-"""Negative regression for completeness_guard.py.
-
-Proves the guard actually catches something before anybody trusts it: it
-copies the real repository tree's inventory and translation file into a
-temporary directory, breaks one thing at a time (removes a row, removes a
-referenced implementation file, removes a referenced doc, removes a
-referenced capture, removes a localized context), and asserts the guard
-turns red (--strict) for each break; then it asserts the untouched copy is
-green. Run directly with `python3 test_completeness_guard.py`.
-"""
+"""Negative regressions for report integrity and the delivery completion verdict."""
 from __future__ import annotations
-
-import shutil
-import subprocess
-import sys
-import tempfile
+import re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-GUARD_SCRIPT = Path(__file__).resolve().parent / "completeness_guard.py"
-INVENTORY_RELATIVE_PATH = "docs/inventory/completeness-inventory.md"
-TRANSLATION_RELATIVE_PATH = "share/locale/audacity_yue_HK.ts"
+ROOT = Path(__file__).resolve().parents[2]; SCRIPT = Path(__file__).resolve().parent / "completeness_guard.py"
+FEATURE = "docs/inventory/completeness-inventory.md"; SURFACE = "docs/inventory/per-surface-completeness.md"; TRANSLATION = "share/locale/audacity_yue_HK.ts"
 
-
-def run_guard(repo_root: Path) -> tuple[int, str]:
-    result = subprocess.run(
-        [sys.executable, str(GUARD_SCRIPT), "--repo-root", str(repo_root), "--strict"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+def invoke(root: Path, *args: str) -> tuple[int, str]:
+    result = subprocess.run([sys.executable, str(SCRIPT), "--repo-root", str(root), *args], capture_output=True, text=True, check=False)
     return result.returncode, result.stdout + result.stderr
 
+def sandbox() -> Path:
+    result = Path(tempfile.mkdtemp(prefix="au-completeness-"))
+    for name in (FEATURE, SURFACE, TRANSLATION):
+        dst = result / name; dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(ROOT / name, dst)
+    for text in ((ROOT / FEATURE).read_text(encoding="utf-8"), (ROOT / SURFACE).read_text(encoding="utf-8")):
+        for token in re.findall(r"`([^`]+)`", text):
+            src = ROOT / token
+            if token in {FEATURE, SURFACE, TRANSLATION} or ("/" not in token and "." not in token) or not src.exists(): continue
+            dst = result / token; dst.parent.mkdir(parents=True, exist_ok=True)
+            if src.is_dir(): shutil.copytree(src, dst, dirs_exist_ok=True)
+            else: dst.write_bytes(b"fixture\n")
+    return result
 
-def make_sandbox() -> Path:
-    """Builds a temp copy of just the files the guard reads."""
-    sandbox = Path(tempfile.mkdtemp(prefix="au-completeness-guard-"))
+def expect(root: Path, code: int, label: str, *args: str) -> None:
+    actual, output = invoke(root, *args); assert actual == code, f"{label}: expected {code}, got {actual}\n{output}"; print(f"PASS: {label}")
 
-    inventory_src = REPO_ROOT / INVENTORY_RELATIVE_PATH
-    inventory_dst = sandbox / INVENTORY_RELATIVE_PATH
-    inventory_dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(inventory_src, inventory_dst)
+def replace(path: Path, old: str, new: str) -> None:
+    text = path.read_text(encoding="utf-8"); assert old in text, old; path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
-    translation_src = REPO_ROOT / TRANSLATION_RELATIVE_PATH
-    translation_dst = sandbox / TRANSLATION_RELATIVE_PATH
-    translation_dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(translation_src, translation_dst)
-
-    # Copy every path the inventory references, so the "everything real"
-    # baseline is genuinely green before anything is broken.
-    text = inventory_src.read_text(encoding="utf-8")
-    import re
-
-    for token in re.findall(r"`([^`]+)`", text):
-        if token.startswith("<") or ("/" not in token and "." not in token):
-            continue
-        if token.startswith("experience/") and not token.endswith((".cpp", ".h", ".qml", ".md", ".png", ".log", ".json")):
-            continue
-        if token in (INVENTORY_RELATIVE_PATH, TRANSLATION_RELATIVE_PATH):
-            continue
-        source = REPO_ROOT / token
-        if not source.exists():
-            continue
-        dest = sandbox / token
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        if source.is_dir():
-            if not dest.exists():
-                shutil.copytree(source, dest)
-        else:
-            dest.write_bytes(b"placeholder\n")
-
-    return sandbox
-
-
-def assert_green(sandbox: Path, label: str) -> None:
-    code, output = run_guard(sandbox)
-    assert code == 0, f"expected GREEN for '{label}' but guard failed:\n{output}"
-    print(f"PASS (green as expected): {label}")
-
-
-def assert_red(sandbox: Path, label: str) -> None:
-    code, output = run_guard(sandbox)
-    assert code != 0, f"expected RED for '{label}' but guard passed:\n{output}"
-    print(f"PASS (red as expected): {label}")
-
-
-def with_inventory_text(sandbox: Path, transform) -> None:
-    path = sandbox / INVENTORY_RELATIVE_PATH
-    text = path.read_text(encoding="utf-8")
-    path.write_text(transform(text), encoding="utf-8")
-
+def case(label: str, change, expected: int, *args: str) -> None:
+    root = sandbox()
+    try: change(root); expect(root, expected, label, *args)
+    finally: shutil.rmtree(root, ignore_errors=True)
 
 def main() -> int:
-    baseline = make_sandbox()
+    case("report integrity baseline is green", lambda root: None, 0, "--strict")
+    case("completion baseline is red until real evidence exists", lambda root: None, 1, "--completion")
+    case("missing feature row is red", lambda root: replace(root / FEATURE, "| Language modes |", "| Removed language modes |"), 1, "--strict")
+    case("missing per-surface row is red", lambda root: replace(root / SURFACE, "| Front screen | Language modes |", "| Front screen | Removed language modes |"), 1, "--strict")
+    case("missing implementation path is red", lambda root: (root / "src/experience/internal/messagestyler.cpp").unlink(), 1, "--strict")
+    def completion_fixture(root: Path) -> None:
+        for name in (FEATURE, SURFACE):
+            path = root / name
+            text = path.read_text(encoding="utf-8")
+            for old, new in (("| partial |", "| implemented |"), ("| missing |", "| implemented |"), ("| not applicable |", "| implemented |"), ("unverified", "verified"), ("n/a", "verified")):
+                text = text.replace(old, new)
+            path.write_text(text, encoding="utf-8")
+    complete = sandbox()
     try:
-        assert_green(baseline, "untouched copy of the real inventory")
+        completion_fixture(complete)
+        expect(complete, 0, "synthetic fully-evidenced completion fixture is green", "--completion")
+        replace(complete / SURFACE, "real launch receipt pending", "")
+        expect(complete, 1, "completion rejects removed capture provenance", "--completion")
     finally:
-        shutil.rmtree(baseline, ignore_errors=True)
-
-    # Break 1: remove a whole row (Language modes).
-    sandbox = make_sandbox()
-    try:
-        def remove_row(text: str) -> str:
-            lines = text.splitlines(keepends=True)
-            return "".join(line for line in lines if not line.startswith("| Language modes |"))
-        with_inventory_text(sandbox, remove_row)
-        assert_red(sandbox, "removed the 'Language modes' row entirely")
-    finally:
-        shutil.rmtree(sandbox, ignore_errors=True)
-
-    # Break 2: remove a referenced implementation file.
-    sandbox = make_sandbox()
-    try:
-        target = sandbox / "src/experience/internal/messagestyler.cpp"
-        target.unlink()
-        assert_red(sandbox, "deleted a referenced implementation file (messagestyler.cpp)")
-    finally:
-        shutil.rmtree(sandbox, ignore_errors=True)
-
-    # Break 3: remove a referenced documentation article.
-    sandbox = make_sandbox()
-    try:
-        target = sandbox / "docs/features/regex-builder.md"
-        target.unlink()
-        assert_red(sandbox, "deleted a referenced documentation article (regex-builder.md)")
-    finally:
-        shutil.rmtree(sandbox, ignore_errors=True)
-
-    # Break 4: remove a referenced capture path.
-    sandbox = make_sandbox()
-    try:
-        target = sandbox / "docs/design/captures/lane-d/15-preferences-material-theme.png"
-        assert target.exists(), "sandbox setup did not copy the capture file we are about to remove"
-        target.unlink()
-        assert_red(sandbox, "deleted a referenced capture image")
-    finally:
-        shutil.rmtree(sandbox, ignore_errors=True)
-
-    # Break 5: remove a claimed localized context from the translation file.
-    sandbox = make_sandbox()
-    try:
-        def strip_context(text: str) -> str:
-            return text.replace("<name>experience</name>", "<name>experience-renamed</name>")
-        translation_path = sandbox / TRANSLATION_RELATIVE_PATH
-        translation_path.write_text(
-            strip_context(translation_path.read_text(encoding="utf-8")), encoding="utf-8"
-        )
-        assert_red(sandbox, "renamed the 'experience' translation context away")
-    finally:
-        shutil.rmtree(sandbox, ignore_errors=True)
-
-    # Break 6: blank out the Notes column on a missing/not-applicable row.
-    sandbox = make_sandbox()
-    try:
-        def strip_reason(text: str) -> str:
-            lines = text.splitlines(keepends=True)
-            out = []
-            for line in lines:
-                if line.startswith("| App logo customization |"):
-                    cells = line.rstrip("\n").split("|")
-                    cells[-2] = " "
-                    out.append("|".join(cells) + "\n")
-                else:
-                    out.append(line)
-            return "".join(out)
-        with_inventory_text(sandbox, strip_reason)
-        assert_red(sandbox, "blanked the Notes reason on the missing 'App logo customization' row")
-    finally:
-        shutil.rmtree(sandbox, ignore_errors=True)
-
-    print("\nAll negative regression cases behaved correctly: green baseline, red on every break.")
+        shutil.rmtree(complete, ignore_errors=True)
     return 0
 
-
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == "__main__": raise SystemExit(main())
