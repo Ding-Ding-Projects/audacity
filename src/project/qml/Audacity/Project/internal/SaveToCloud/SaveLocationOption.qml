@@ -48,7 +48,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: 208
 
-        color: ui.theme.extra["save_option_background_color"]
+        color: M3.color.surfaceContainer
 
         topLeftRadius: root.radius
         topRightRadius: root.radius
