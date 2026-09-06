@@ -17769,6 +17769,11 @@ It 唔會 be 載入咗.</translation>
         <translation>鎖</translation>
     </message>
     <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="28" />
+        <source>Logo</source>
+        <translation>標誌</translation>
+    </message>
+    <message>
         <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="29" />
         <source>Authenticator</source>
         <translation>驗證器</translation>
@@ -25153,5 +25158,14 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <source>Timeline</source>
         <translation>時間軸</translation>
     </message>
+</context>
+<context>
+    <name>personalize/branding</name>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="11" /><source>Application logo</source><translation>程式標誌</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="12" /><source>This changes the local Personalize preview only. It never changes the executable, installer, updater or release identity.</source><translation>呢個淨係改本機個人化預覽，唔會改執行檔、安裝程式、更新器或者發行身份。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="18" /><source>Choose logo</source><translation>揀標誌</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="19" /><source>Crop to fill the preview</source><translation>裁剪填滿預覽</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="20" /><source>Background colour</source><translation>背景顏色</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="22" /><source>Reset logo</source><translation>重設標誌</translation></message>
 </context>
 </TS>

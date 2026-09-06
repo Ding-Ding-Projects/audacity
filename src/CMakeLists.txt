@@ -81,6 +81,8 @@ add_subdirectory(toolkit)
 
 add_subdirectory(chronicle)
 
+add_subdirectory(branding)
+
 add_subdirectory(personalize)
 
 # Stubs

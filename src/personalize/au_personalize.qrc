@@ -8,5 +8,6 @@
         <file>qml/Audacity/Personalize/QrCodeImage.qml</file>
         <file>qml/Audacity/Personalize/SupportTicketsPage.qml</file>
         <file>qml/Audacity/Personalize/AuthenticatorPage.qml</file>
+        <file>qml/Audacity/Personalize/LogoCustomizationPanel.qml</file>
     </qresource>
 </RCC>

@@ -24,7 +24,7 @@ PreferencesPage {
     height: content.height
 
     property int currentTab: 0
-    readonly property var tabTitles: [qsTrc("preferences", "Rename"), qsTrc("preferences", "Locks"), qsTrc("preferences", "Authenticator"), qsTrc("preferences", "Support Tickets")]
+    readonly property var tabTitles: [qsTrc("preferences", "Rename"), qsTrc("preferences", "Logo"), qsTrc("preferences", "Locks"), qsTrc("preferences", "Authenticator"), qsTrc("preferences", "Support Tickets")]
 
     Column {
         id: content
@@ -80,9 +80,10 @@ PreferencesPage {
             }
         }
 
+        LogoCustomizationPanel { visible: root.currentTab === 1; width: parent.width - 48 }
         // --- Locks ---
         Column {
-            visible: root.currentTab === 1
+            visible: root.currentTab === 2
             width: parent.width - 48
             spacing: 12
 
@@ -131,16 +132,16 @@ PreferencesPage {
 
         // --- Authenticator ---
         Loader {
-            visible: root.currentTab === 2
-            active: root.currentTab === 2
+            visible: root.currentTab === 3
+            active: root.currentTab === 3
             width: parent.width
             sourceComponent: authenticatorComponent
         }
 
         // --- Support Tickets ---
         Loader {
-            visible: root.currentTab === 3
-            active: root.currentTab === 3
+            visible: root.currentTab === 4
+            active: root.currentTab === 4
             width: parent.width
             sourceComponent: supportComponent
         }

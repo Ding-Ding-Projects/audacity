@@ -4,6 +4,7 @@
 #include <QTemporaryDir>
 
 #include "brandingstore.h"
+#include "brandingmodel.h"
 
 using namespace au::branding;
 
@@ -28,6 +29,7 @@ private slots:
     void failuresAndCancellationLeaveExistingStateIntact();
     void refusesUnsafeSvgWithoutNetworkAccess();
     void acceptsSafeSvgAndIcoWhenQtCodecsAreAvailable();
+    void modelLoadsAndResetsTheSameLocalCache();
 };
 
 void BrandingStoreTests::rejectsMalformedAndOversizedContent()
@@ -128,6 +130,26 @@ void BrandingStoreTests::acceptsSafeSvgAndIcoWhenQtCodecsAreAvailable()
         QSKIP("The installed Qt image plugins do not provide ICO encoding");
     }
     QVERIFY(store.loadCustom(ico.data()).ok);
+}
+
+void BrandingStoreTests::modelLoadsAndResetsTheSameLocalCache()
+{
+    QTemporaryDir directory;
+    QImage image(3, 3, QImage::Format_ARGB32);
+    image.fill(Qt::magenta);
+    const QString sourcePath = directory.filePath("candidate.png");
+    QFile source(sourcePath);
+    QVERIFY(source.open(QIODevice::WriteOnly));
+    source.write(png(image));
+    source.close();
+    au::personalize::BrandingModel model(directory.filePath("profile"), QByteArray("shipped"));
+    QVERIFY(model.loadFile(sourcePath));
+    QVERIFY(model.hasCustomLogo());
+    QVERIFY(!model.previewPath().isEmpty());
+    model.setCrop(true);
+    QVERIFY(model.crop());
+    model.reset();
+    QVERIFY(!model.hasCustomLogo());
 }
 
 QTEST_MAIN(BrandingStoreTests)

@@ -9,11 +9,14 @@
 
 #include "internal/appearanceoverrides.h"
 #include "internal/authenticatormodel.h"
+#include "internal/brandingmodel.h"
 #include "internal/displaynamesettings.h"
 #include "internal/lockregistry.h"
 #include "internal/mutationhistory.h"
 #include "internal/qrcodemodel.h"
 #include "internal/supporttickets.h"
+#include "framework/global/iglobalconfiguration.h"
+#include <QFile>
 
 using namespace au::personalize;
 using namespace muse::modularity;
@@ -37,6 +40,13 @@ void PersonalizeModule::registerResources()
 
 void PersonalizeModule::registerUiTypes()
 {
+    auto brandingCreator = [](QQmlEngine*, QJSEngine*) -> QObject* {
+        static muse::GlobalInject<muse::IGlobalConfiguration> configuration;
+        QFile shipped(":/images/AudacityLogo.png");
+        shipped.open(QIODevice::ReadOnly);
+        return new BrandingModel(configuration()->userAppDataPath().toQString() + "/personalize", shipped.readAll());
+    };
+    qmlRegisterSingletonType<BrandingModel>("Audacity.Personalize", 1, 0, "BrandingModel", brandingCreator);
     // The overrides store is registered under both the Audacity.Personalize
     // module (where the editor popover lives) and the Audacity.M3 module
     // (where every Material 3 component resolves its own overrides), so the

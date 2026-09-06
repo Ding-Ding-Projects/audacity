@@ -12,10 +12,12 @@ The bounded input limit is 8 MiB with a maximum raster dimension of 4096 by 4096
 
 The caller selects `Fit` or `Crop` and a background colour. Derivatives are rendered in memory, then written into a staging cache with atomic file writes. The staging cache is activated only after every derivative and metadata file succeeds. Decode, write, and cancellation failures retain the prior active state. Reset removes only this local presentation cache and restores the shipped mark selected by the owning UI.
 
-## API and future integration
+## Integrated personalization surface
 
-The owning personalization surface will need to: supply the shipped mark bytes to `presetDefaultMark`, choose an explicit shared-profile root, call `loadCustom`, expose fit/crop and background controls through `update`, render `derivativePaths`, and call `reset`. It must localize and persist its own controls, accessibility labels, history entries, and notifications. This backend intentionally does not register a QML type, alter app chrome, or ship a UI.
+The Personalize preferences page supplies the shipped mark bytes, derives its profile root from the injected global configuration, calls `loadCustom`, exposes fit/crop and background controls through `update`, renders the generated preview, and resets the cache. The selected file path is read once and is never persisted. The status text reports saved, reset, and rejected states locally.
+
+The current integration intentionally changes only the Personalize preview. App-window chrome requires an explicit consumer in the app-shell icon/title-bar path to request the generated 16/32/48/64 variants. Installer, executable, updater, package, and release metadata must continue using the shipped identity.
 
 ## Verification
 
-The standalone Qt/MSVC test target at `src/branding/tests` covers malformed and oversized input, crop and fit pixels, alpha and background handling, persistence/reset, cancellation and failed replacement preservation, and unsafe SVG rejection. Its bytes-only API makes the no-network boundary directly testable without a network fixture.
+The standalone Qt/MSVC test target at `src/branding/tests` covers malformed and oversized input, crop and fit pixels, alpha and background handling, persistence/reset, cancellation and failed replacement preservation, and unsafe SVG rejection. The integration model uses the same bytes-only backend and performs no network operation.
