@@ -66,7 +66,7 @@ Column {
         width: parent.width
         height: gapBehaviorColumn.implicitHeight
 
-        radius: 4
+        radius: M3.shape.extraSmall
         color: parentBackgroundColor === M3.color.surface ? M3.color.surfaceContainer : M3.color.surface
         border.color: M3.color.outlineVariant
         border.width: 1

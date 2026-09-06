@@ -8,6 +8,8 @@ import Muse.UiComponents
 
 import Audacity.Spectrogram 1.0
 
+import Audacity.M3
+
 TrackSpectrogramBaseSection {
     id: root
 
@@ -41,7 +43,7 @@ TrackSpectrogramBaseSection {
                     horizontalAlignment: Text.AlignLeft
                 }
 
-                IncrementalPropertyControl {
+                M3NumberField {
                     width: root.mediumControlWidth
 
                     navigation.panel: root.navigation
