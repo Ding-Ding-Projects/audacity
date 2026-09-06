@@ -8,9 +8,11 @@ on:
       - 'v4.0.0-m3.*'
   workflow_dispatch:
 
+# Releases are never cancelled by a later push: every push gets its own
+# uniquely tagged release, so runs queue behind each other instead.
 concurrency:
   group: material-audacity-release-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
