@@ -22,10 +22,12 @@ static const std::string MODULE_NAME("chronicle");
 static const muse::Settings::Key RETENTION_COUNT(MODULE_NAME, "chronicle/retentionCount");
 static const muse::Settings::Key RETENTION_DAYS(MODULE_NAME, "chronicle/retentionDays");
 static const muse::Settings::Key COMMIT_ON_EVERY_ACTION(MODULE_NAME, "chronicle/commitOnEveryAction");
+static const muse::Settings::Key EMBED_HISTORY_IN_SAVE_FILE(MODULE_NAME, "chronicle/embedHistoryInSaveFile");
 
 static const int DEFAULT_RETENTION_COUNT = 200;
 static const int DEFAULT_RETENTION_DAYS = 90;
 static const bool DEFAULT_COMMIT_ON_EVERY_ACTION = true;
+static const bool DEFAULT_EMBED_HISTORY_IN_SAVE_FILE = true;
 
 static const int SETTINGS_DEBOUNCE_MS = 1500;
 
@@ -201,6 +203,7 @@ void VersionHistoryService::init()
     muse::settings()->setDefaultValue(RETENTION_COUNT, muse::Val(DEFAULT_RETENTION_COUNT));
     muse::settings()->setDefaultValue(RETENTION_DAYS, muse::Val(DEFAULT_RETENTION_DAYS));
     muse::settings()->setDefaultValue(COMMIT_ON_EVERY_ACTION, muse::Val(DEFAULT_COMMIT_ON_EVERY_ACTION));
+    muse::settings()->setDefaultValue(EMBED_HISTORY_IN_SAVE_FILE, muse::Val(DEFAULT_EMBED_HISTORY_IN_SAVE_FILE));
 
     // The settings file is watched rather than every individual key, so any
     // preference change produces exactly one snapshot rather than one per key.
@@ -468,4 +471,44 @@ bool VersionHistoryService::commitOnEveryAction() const
 void VersionHistoryService::setCommitOnEveryAction(bool value)
 {
     muse::settings()->setSharedValue(COMMIT_ON_EVERY_ACTION, muse::Val(value));
+}
+
+bool VersionHistoryService::embedHistoryInSaveFile() const
+{
+    return muse::settings()->value(EMBED_HISTORY_IN_SAVE_FILE).toBool();
+}
+
+void VersionHistoryService::setEmbedHistoryInSaveFile(bool value)
+{
+    muse::settings()->setSharedValue(EMBED_HISTORY_IN_SAVE_FILE, muse::Val(value));
+}
+
+QByteArray VersionHistoryService::packHistoryForEmbedding() const
+{
+    if (!m_store || !m_store->isOpen()) {
+        return QByteArray();
+    }
+    return m_store->packHistory();
+}
+
+QString VersionHistoryService::embeddedHistoryFormat() const
+{
+    if (!m_store) {
+        return QString();
+    }
+    return m_store->kind() == QStringLiteral("git")
+           ? QStringLiteral("git-bundle")
+           : QStringLiteral("chronicle-file-store-v1");
+}
+
+bool VersionHistoryService::absorbEmbeddedHistory(const QByteArray& data)
+{
+    if (!m_store || !m_store->isOpen() || data.isEmpty()) {
+        return false;
+    }
+    const bool adopted = m_store->unpackHistory(data);
+    if (adopted) {
+        m_revisionsChanged.notify();
+    }
+    return adopted;
 }

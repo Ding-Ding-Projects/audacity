@@ -48,6 +48,9 @@ public:
     bool setLabel(const QString& revisionId, const QString& label) override;
     int prune(int keepCount, int keepDays) override;
 
+    QByteArray packHistory() const override;
+    bool unpackHistory(const QByteArray& data) override;
+
 private:
     bool run(const QStringList& arguments, QString* output = nullptr,
              const QString& workTree = QString(), const QStringList& extraEnvironment = QStringList()) const;

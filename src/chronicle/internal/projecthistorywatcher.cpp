@@ -5,6 +5,8 @@
 
 #include <QCryptographicHash>
 
+#include "framework/global/translation.h"
+
 #include "au3wrap/au3projectmetadata.h"
 
 using namespace au::chronicle;
@@ -46,6 +48,16 @@ void ProjectHistoryWatcher::onCurrentProjectChanged()
 
     versionHistory()->setCurrentProject(id, path);
 
+    // If this file was last saved somewhere else, its embedded history can be
+    // ahead of whatever this machine has recorded for the same project id.
+    // Absorbing is fast forward only, so an older or unrelated bundle simply
+    // does nothing here.
+    QString embeddedFormat;
+    const QByteArray embedded = au::au3::readChronicleBundle(project->au3ProjectPtr(), &embeddedFormat);
+    if (!embedded.isEmpty()) {
+        versionHistory()->absorbEmbeddedHistory(embedded);
+    }
+
     m_lastNeedSave = project->needSave().val;
     m_lastActionCount = projectHistory()->undoRedoActionCount();
 
@@ -58,6 +70,7 @@ void ProjectHistoryWatcher::onCurrentProjectChanged()
         // A save is the moment unsaved work stops being unsaved.
         if (m_lastNeedSave && !needSave) {
             versionHistory()->recordSnapshot(actions::ProjectSave, current->displayName());
+            embedHistoryIfEnabled(*current);
         }
         m_lastNeedSave = needSave;
     });
@@ -70,6 +83,34 @@ void ProjectHistoryWatcher::onCurrentProjectChanged()
             versionHistory()->recordSnapshot(actions::DiscardUnsaved, current->displayName());
         }
     });
+}
+
+void ProjectHistoryWatcher::embedHistoryIfEnabled(const project::IAudacityProject& project)
+{
+    if (!versionHistory()->embedHistoryInSaveFile()) {
+        return;
+    }
+
+    const QByteArray packed = versionHistory()->packHistoryForEmbedding();
+    if (packed.isEmpty()) {
+        // Nothing to embed yet (a brand new project with no recorded
+        // revision), which is not a failure worth telling anyone about.
+        return;
+    }
+
+    const bool embedded = au::au3::writeChronicleBundle(
+        project.au3ProjectPtr(), packed, versionHistory()->embeddedHistoryFormat());
+
+    if (!embedded) {
+        // The save itself already succeeded by the time this runs, so this
+        // is reported as its own, separate, non-blocking notice rather than
+        // as a reason the save failed.
+        notificationCenter()->push(
+            au::experience::NotificationType::Warning,
+            muse::qtrc("chronicle", "Project history was not saved"),
+            muse::qtrc("chronicle", "The project itself saved correctly, but its local version history "
+                                    "could not be embedded in the file this time."));
+    }
 }
 
 void ProjectHistoryWatcher::onHistoryChanged(trackedit::HistoryEvent event)

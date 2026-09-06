@@ -10,6 +10,16 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Local history: the whole local history is now packed and embedded into the
+  project's own `.aup4` save file after every save (controlled by the new
+  `chronicle/embedHistoryInSaveFile` setting, on by default), so a project's
+  history travels with the file to another machine. Opening a project reads
+  back whatever is embedded and merges it in fast forward only, so an older
+  bundle, an unrelated one, or one this machine already has can never
+  discard a locally recorded revision. Embedding happens after the project
+  itself has already saved and can never fail the save: if it does not go
+  through, a non-blocking notification says so and the previously embedded
+  copy, if any, is left in place.
 - Local history: the identifier a project's history is filed under is now a
   stable id stored in the project's own `.aup4` database, created the first
   time it is needed, rather than a hash of the file's path. A project's

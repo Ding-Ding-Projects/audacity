@@ -161,6 +161,100 @@ TEST(ChronicleSnapshotStore, FallbackStoreDeduplicatesIdenticalContent)
     EXPECT_EQ(objectCount, 1);
 }
 
+TEST(ChronicleSnapshotStore, FallbackStorePackAndUnpackRoundTripsTheWholeHistory)
+{
+    QTemporaryDir sourceDir;
+    QTemporaryDir targetDir;
+    ASSERT_TRUE(sourceDir.isValid());
+    ASSERT_TRUE(targetDir.isValid());
+
+    const QString workTree = sourceDir.path() + "/stage";
+
+    FileSnapshotStore source;
+    ASSERT_TRUE(source.open(sourceDir.path() + "/history.store"));
+    writeFile(workTree + "/song.aup4", "first");
+    source.commit(workTree, "First save", actions::ProjectSave, QDateTime::currentDateTimeUtc());
+    writeFile(workTree + "/song.aup4", "second, now longer");
+    const QString head = source.commit(workTree, "Second save", actions::ProjectSave, QDateTime::currentDateTimeUtc());
+    ASSERT_FALSE(head.isEmpty());
+
+    const QByteArray packed = source.packHistory();
+    ASSERT_FALSE(packed.isEmpty());
+
+    FileSnapshotStore target;
+    ASSERT_TRUE(target.open(targetDir.path() + "/history.store"));
+    EXPECT_TRUE(target.revisions().isEmpty());
+
+    ASSERT_TRUE(target.unpackHistory(packed));
+
+    const QList<Revision> sourceRevisions = source.revisions();
+    const QList<Revision> targetRevisions = target.revisions();
+    ASSERT_EQ(sourceRevisions.size(), targetRevisions.size());
+    for (int i = 0; i < sourceRevisions.size(); ++i) {
+        EXPECT_EQ(sourceRevisions.at(i).id, targetRevisions.at(i).id);
+        EXPECT_EQ(sourceRevisions.at(i).label, targetRevisions.at(i).label);
+    }
+
+    // The restored history is actually usable, not just listed: exporting the
+    // newest revision on the receiving end produces the real file content.
+    const QString exportDir = targetDir.path() + "-export";
+    ASSERT_TRUE(target.exportTo(head, exportDir));
+    EXPECT_EQ(readFile(exportDir + "/song.aup4"), QByteArray("second, now longer"));
+
+    // Unpacking an unrelated or already-current history is a safe no-op: it
+    // never discards what the receiving store already has.
+    EXPECT_FALSE(target.unpackHistory(packed));
+    EXPECT_EQ(target.revisions().size(), targetRevisions.size());
+}
+
+TEST(ChronicleSnapshotStore, GitBackedStorePackAndUnpackRoundTripsTheWholeHistory)
+{
+    if (!GitSnapshotStore::isGitAvailable()) {
+        GTEST_SKIP() << "git is not on PATH, the fallback store carries this contract instead";
+    }
+
+    QTemporaryDir sourceDir;
+    QTemporaryDir targetDir;
+    ASSERT_TRUE(sourceDir.isValid());
+    ASSERT_TRUE(targetDir.isValid());
+
+    const QString workTree = sourceDir.path() + "/stage";
+
+    GitSnapshotStore source;
+    ASSERT_TRUE(source.open(sourceDir.path() + "/history.git"));
+    writeFile(workTree + "/song.aup4", "first");
+    source.commit(workTree, "First save", actions::ProjectSave, QDateTime::currentDateTimeUtc());
+    writeFile(workTree + "/song.aup4", "second, now longer");
+    const QString head = source.commit(workTree, "Second save", actions::ProjectSave, QDateTime::currentDateTimeUtc());
+    ASSERT_FALSE(head.isEmpty());
+
+    const QByteArray bundle = source.packHistory();
+    ASSERT_FALSE(bundle.isEmpty());
+
+    GitSnapshotStore target;
+    ASSERT_TRUE(target.open(targetDir.path() + "/history.git"));
+    EXPECT_TRUE(target.revisions().isEmpty());
+
+    ASSERT_TRUE(target.unpackHistory(bundle));
+
+    const QList<Revision> sourceRevisions = source.revisions();
+    const QList<Revision> targetRevisions = target.revisions();
+    ASSERT_EQ(sourceRevisions.size(), targetRevisions.size());
+    for (int i = 0; i < sourceRevisions.size(); ++i) {
+        EXPECT_EQ(sourceRevisions.at(i).id, targetRevisions.at(i).id);
+    }
+
+    const QString exportDir = targetDir.path() + "-export";
+    ASSERT_TRUE(target.exportTo(head, exportDir));
+    EXPECT_EQ(readFile(exportDir + "/song.aup4"), QByteArray("second, now longer"));
+
+    // Unbundling the exact same history again is a fast forward no-op for
+    // git (already up to date counts as success, the same as a real
+    // advance), and nothing here is lost or duplicated either way.
+    target.unpackHistory(bundle);
+    EXPECT_EQ(target.revisions().size(), targetRevisions.size());
+}
+
 TEST(ChronicleVersionHistory, LabelsDescribeWhatChanged)
 {
     EXPECT_EQ(VersionHistoryService::deriveLabel(actions::ProjectSave, "Interview take 2"),

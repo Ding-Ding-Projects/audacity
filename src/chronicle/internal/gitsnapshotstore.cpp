@@ -13,6 +13,7 @@
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
+#include <QTemporaryFile>
 
 #include "log.h"
 
@@ -468,4 +469,53 @@ int GitSnapshotStore::prune(int keepCount, int keepDays)
     // stays reachable. Space is reclaimed when the whole history repository is
     // removed. This is the price of a history that is honestly append only.
     return count;
+}
+
+QByteArray GitSnapshotStore::packHistory() const
+{
+    if (!m_open) {
+        return QByteArray();
+    }
+
+    QTemporaryFile bundleFile;
+    if (!bundleFile.open()) {
+        return QByteArray();
+    }
+    const QString bundlePath = bundleFile.fileName();
+    bundleFile.close();
+
+    // git bundle create refuses an empty repository (nothing reachable from
+    // the branch yet), which is exactly the case where there is nothing to
+    // embed, so that failure is silent here rather than logged.
+    if (!run({ QStringLiteral("bundle"), QStringLiteral("create"), bundlePath, BRANCH })) {
+        return QByteArray();
+    }
+
+    QFile file(bundlePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QByteArray();
+    }
+    return file.readAll();
+}
+
+bool GitSnapshotStore::unpackHistory(const QByteArray& data)
+{
+    if (!m_open || data.isEmpty()) {
+        return false;
+    }
+
+    QTemporaryFile bundleFile;
+    if (!bundleFile.open()) {
+        return false;
+    }
+    bundleFile.write(data);
+    const QString bundlePath = bundleFile.fileName();
+    bundleFile.close();
+
+    // Fetching without --force only ever moves the branch forward. When the
+    // embedded bundle is not strictly ahead of what is already here, git
+    // refuses the update and this store is left exactly as it was, which is
+    // what keeps an older or unrelated bundle from ever discarding a local
+    // revision.
+    return run({ QStringLiteral("fetch"), bundlePath, BRANCH + QStringLiteral(":") + BRANCH });
 }

@@ -35,6 +35,9 @@ public:
     bool setLabel(const QString& revisionId, const QString& label) override;
     int prune(int keepCount, int keepDays) override;
 
+    QByteArray packHistory() const override;
+    bool unpackHistory(const QByteArray& data) override;
+
 private:
     QString manifestPath() const;
     QJsonArray readManifest() const;
