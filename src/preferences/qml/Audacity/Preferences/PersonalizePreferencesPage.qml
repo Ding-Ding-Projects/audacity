@@ -18,19 +18,17 @@ import Muse.UiComponents
 import Audacity.M3
 import Audacity.Personalize
 
-Flickable {
+PreferencesPage {
     id: root
 
-    contentWidth: width
-    contentHeight: content.height
-    clip: true
+    height: content.height
 
     property int currentTab: 0
     readonly property var tabTitles: [qsTrc("preferences", "Rename"), qsTrc("preferences", "Locks"), qsTrc("preferences", "Authenticator"), qsTrc("preferences", "Support Tickets")]
 
     Column {
         id: content
-        width: root.width
+        width: parent.width
         spacing: 16
         padding: 24
 
