@@ -49,6 +49,10 @@ if (new Set(assets.map(a => a.name)).size !== assets.length
 mkdirSync(output, { recursive: true });
 cpSync(join(root, 'docs/site'), output, { recursive: true, filter: source => {
   if (lstatSync(source).isSymbolicLink()) throw new Error('Documentation source must not contain symbolic links.');
+  // Developer tools and compiled interpreter caches are not public web assets.
+  if (source === join(root, 'docs/site/scripts')
+      || ['__pycache__', 'fetch-fonts.sh', 'tests.html'].includes(basename(source))
+      || /\.py[co]$/i.test(source)) return false;
   return true;
 } });
 writeFileSync(join(output, '.nojekyll'), '');

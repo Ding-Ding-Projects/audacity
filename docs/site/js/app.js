@@ -95,19 +95,49 @@
   }
 
   // ---------- Personal vocabulary ----------
+  let vocabularyCacheUnavailable = false;
   function loadVocab() {
-    try { return JSON.parse(localStorage.getItem(LS.vocab) || 'null'); } catch (e) { return null; }
+    try {
+      const raw = localStorage.getItem(LS.vocab);
+      return raw === null ? null : window.PersonalVocabulary.parse(raw);
+    } catch (_) { vocabularyCacheUnavailable = true; return null; }
   }
-  function applyVocabulary(text) {
-    const v = loadVocab();
-    if (!v || !Array.isArray(v.entries)) return text;
-    let out = text;
-    v.entries.forEach((e) => {
-      if (e && typeof e.from === 'string' && e.from) {
-        out = out.split(e.from).join(e.to != null ? e.to : '');
+  let activeVocabulary = loadVocab();
+  let replaceVocabulary = activeVocabulary ? window.PersonalVocabulary.createReplacer(activeVocabulary) : text => text;
+  let vocabularyLoadSequence = 0;
+  const vocabularyTextState = new WeakMap();
+  const vocabularyAttributeState = new WeakMap();
+  const vocabularyExcluded = 'script,style,code,pre,textarea,[contenteditable],#release-line,#assets-list,#docs-content,[data-vocabulary-exclude]';
+  function applyVocabularyBoundary() {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (!node.parentElement || node.parentElement.closest(vocabularyExcluded)) continue;
+      let state = vocabularyTextState.get(node);
+      if (!state || node.nodeValue !== state.applied) state = { original: node.nodeValue };
+      let next = replaceVocabulary(state.original);
+      if (!next.trim() && node.parentElement.closest('button,a,label')) next = state.original;
+      state.applied = next; vocabularyTextState.set(node, state);
+      if (node.nodeValue !== next) node.nodeValue = next;
+    }
+    document.body.querySelectorAll('[aria-label],[placeholder],[title]').forEach(element => {
+      if (element.closest(vocabularyExcluded)) return;
+      const states = vocabularyAttributeState.get(element) || {};
+      for (const name of ['aria-label', 'placeholder', 'title']) {
+        if (!element.hasAttribute(name)) continue;
+        const value = element.getAttribute(name);
+        const state = !states[name] || value !== states[name].applied ? { original: value } : states[name];
+        state.applied = replaceVocabulary(state.original) || state.original;
+        if (value !== state.applied) element.setAttribute(name, state.applied);
+        states[name] = state;
       }
+      vocabularyAttributeState.set(element, states);
     });
-    return out;
+  }
+  function refreshVocabularyBoundary(record) {
+    activeVocabulary = record;
+    replaceVocabulary = record ? window.PersonalVocabulary.createReplacer(record) : text => text;
+    applyVocabularyBoundary();
   }
 
   // ---------- Routing ----------
@@ -211,6 +241,7 @@
       const btn = document.createElement('button');
       btn.className = 'md-tab'; btn.id = 'hometab-' + t.id; btn.setAttribute('role', 'tab');
       btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      btn.tabIndex = i === 0 ? 0 : -1;
       btn.setAttribute('aria-controls', 'homepanel-' + t.id);
       btn.textContent = t.label;
       btn.addEventListener('click', () => selectHomeTab(t.id));
@@ -225,9 +256,23 @@
     function selectHomeTab(id) {
       tabs.forEach((t) => {
         document.getElementById('hometab-' + t.id).setAttribute('aria-selected', String(t.id === id));
+        document.getElementById('hometab-' + t.id).tabIndex = t.id === id ? 0 : -1;
         document.getElementById('homepanel-' + t.id).hidden = t.id !== id;
       });
     }
+    tablist.addEventListener('keydown', (event) => {
+      const index = tabs.findIndex(t => 'hometab-' + t.id === event.target.id);
+      if (index < 0) return;
+      let next;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectHomeTab(tabs[next].id);
+      document.getElementById('hometab-' + tabs[next].id).focus();
+    });
   };
 
   renderers.gallery = function (root) {
@@ -684,7 +729,7 @@
     const vocabTitle = document.createElement('h3'); vocabTitle.textContent = 'Personal vocabulary'; body.appendChild(vocabTitle);
     const vocabWrap = document.createElement('div'); vocabWrap.className = 'settings-row'; vocabWrap.dataset.searchText = 'personal vocabulary upload substitution json';
     vocabWrap.innerHTML = '<div style="width:100%">' +
-      '<div class="desc">Upload a JSON file: {"version":1,"entries":[{"from":"...","to":"..."}]}. Bounded to 256 KB and 2000 entries. Applied to visible text only, client-side, never logged.</div>' +
+      '<div class="desc">Choose a version 1 personal vocabulary JSON file. Up to 256 KiB and 4096 string entries. Processing and validated storage stay in this browser; file contents and names are not logged or transmitted.</div>' +
       '<label class="md-field" for="vocab-file"><span>Choose personal vocabulary JSON file</span><input type="file" id="vocab-file" accept="application/json"></label>' +
       '<div id="vocab-status"></div>' +
       '<button type="button" class="md-text-button" id="vocab-clear">Clear</button>' +
@@ -692,30 +737,39 @@
     body.appendChild(vocabWrap);
     const status = vocabWrap.querySelector('#vocab-status');
     function refreshVocabStatus() {
-      const v = loadVocab();
-      status.textContent = v ? ('Loaded: ' + v.entries.length + ' entries.') : 'No file loaded.';
+      status.textContent = vocabularyCacheUnavailable ? 'Saved vocabulary is unavailable. Choose a valid file or clear it.'
+        : activeVocabulary ? 'Personal vocabulary loaded.' : 'No file loaded.';
     }
     refreshVocabStatus();
     vocabWrap.querySelector('#vocab-file').addEventListener('change', (e) => {
       const f = e.target.files[0];
       if (!f) return;
+      e.target.value = '';
+      const sequence = ++vocabularyLoadSequence;
       if (f.size > 256 * 1024) { status.textContent = 'Invalid: file exceeds 256 KB.'; return; }
       const reader = new FileReader();
       reader.onload = () => {
+        if (sequence !== vocabularyLoadSequence) return;
         try {
-          const data = JSON.parse(reader.result);
-          if (!data || !Array.isArray(data.entries) || data.entries.length > 2000) throw new Error('Bad shape or too many entries');
+          const text = new TextDecoder('utf-8', { fatal: true }).decode(reader.result);
+          const data = window.PersonalVocabulary.parse(text);
           localStorage.setItem(LS.vocab, JSON.stringify(data));
-          appendHistory('Loaded personal vocabulary (' + data.entries.length + ' entries)');
-          status.textContent = 'Loaded: ' + data.entries.length + ' entries.';
+          vocabularyCacheUnavailable = false;
+          refreshVocabularyBoundary(data);
+          appendHistory('Updated local display preferences; private data omitted');
+          status.textContent = 'Personal vocabulary loaded.';
           notify('Personal vocabulary loaded');
-        } catch (err) { status.textContent = 'Invalid: ' + err.message; }
+        } catch (_) { status.textContent = 'The file could not be validated or stored. Previous valid vocabulary remains unchanged.'; }
       };
-      reader.readAsText(f);
+      reader.onerror = reader.onabort = () => { if (sequence === vocabularyLoadSequence) status.textContent = 'The file could not be read. Previous vocabulary remains unchanged.'; };
+      reader.readAsArrayBuffer(f);
     });
     vocabWrap.querySelector('#vocab-clear').addEventListener('click', () => {
-      localStorage.removeItem(LS.vocab);
-      appendHistory('Cleared personal vocabulary');
+      vocabularyLoadSequence++;
+      try { localStorage.removeItem(LS.vocab); } catch (_) { status.textContent = 'The saved vocabulary could not be cleared.'; return; }
+      vocabularyCacheUnavailable = false;
+      refreshVocabularyBoundary(null);
+      appendHistory('Reset local display preferences; private data omitted');
       refreshVocabStatus();
       notify('Personal vocabulary cleared');
     });
@@ -725,7 +779,8 @@
     document.getElementById('settings-search-input').addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
       body.querySelectorAll('.settings-row').forEach((r) => {
-        r.style.display = !q || (r.dataset.searchText || '').includes(q) ? '' : 'none';
+        const searchable = (r.dataset.searchText || '') + ' ' + replaceVocabulary(r.dataset.searchText || '');
+        r.style.display = !q || searchable.toLowerCase().includes(q) ? '' : 'none';
       });
     });
 
@@ -931,35 +986,61 @@
     const index = buildPaletteIndex();
     let activeIdx = 0;
     let regexState = null;
+    let shownItems = [];
+    let returnFocus = null;
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-controls', results.id);
+    input.setAttribute('aria-expanded', 'false');
     window.RegexBuilder.attach(input, { inventoryId: 'palette-search', onApply(s) { regexState = s; renderResults(); } });
 
     function renderResults() {
       const q = input.value;
       let filtered;
       if (regexState && regexState.pattern) {
-        try { const re = new RegExp(regexState.pattern, regexState.flags || 'i'); filtered = index.filter((it) => re.test(it.label)); } catch (e) { filtered = index; }
+        try { const re = new RegExp(regexState.pattern, regexState.flags || 'i'); filtered = index.filter((it) => { re.lastIndex = 0; return re.test(it.label + ' ' + replaceVocabulary(it.label)); }); } catch (e) { filtered = index; }
       } else {
-        filtered = q ? index.filter((it) => it.label.toLowerCase().includes(q.toLowerCase())) : index;
+        filtered = q ? index.filter((it) => (it.label + ' ' + replaceVocabulary(it.label)).toLowerCase().includes(q.toLowerCase())) : index;
       }
       results.innerHTML = '';
-      filtered.slice(0, 30).forEach((it, i) => {
+      shownItems = filtered.slice(0, 30);
+      activeIdx = Math.max(0, Math.min(activeIdx, shownItems.length - 1));
+      if (shownItems.length) input.setAttribute('aria-activedescendant', 'palette-option-' + activeIdx);
+      else input.removeAttribute('aria-activedescendant');
+      shownItems.forEach((it, i) => {
         const div = document.createElement('div');
+        div.id = 'palette-option-' + i;
         div.className = 'palette-result' + (i === activeIdx ? ' active' : '');
         div.setAttribute('role', 'option');
+        div.setAttribute('aria-selected', String(i === activeIdx));
         div.innerHTML = '<span>' + it.label + '</span><span class="kind">' + it.kind + '</span>';
         div.addEventListener('click', () => { it.go(); closePalette(); });
         results.appendChild(div);
       });
     }
     function openPalette() {
+      returnFocus = document.activeElement;
       backdrop.hidden = false; input.value = ''; activeIdx = 0; renderResults(); input.focus();
+      input.setAttribute('aria-expanded', 'true');
       document.addEventListener('keydown', onKey);
     }
-    function closePalette() { backdrop.hidden = true; document.removeEventListener('keydown', onKey); }
-    function onKey(e) {
-      if (e.key === 'Escape') closePalette();
+    function closePalette() {
+      backdrop.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('keydown', onKey);
+      (returnFocus && returnFocus.isConnected ? returnFocus : document.getElementById('palette-btn')).focus();
     }
-    input.addEventListener('input', renderResults);
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+      else if (e.target === input && ['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
+        e.preventDefault();
+        if (!shownItems.length) return;
+        if (e.key === 'Enter') { shownItems[activeIdx].go(); closePalette(); return; }
+        activeIdx = (activeIdx + (e.key === 'ArrowDown' ? 1 : -1) + shownItems.length) % shownItems.length;
+        renderResults();
+        document.getElementById('palette-option-' + activeIdx).scrollIntoView({ block: 'nearest' });
+      }
+    }
+    input.addEventListener('input', () => { activeIdx = 0; renderResults(); });
     document.getElementById('palette-btn').addEventListener('click', openPalette);
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closePalette(); });
     document.addEventListener('keydown', (e) => {
@@ -981,6 +1062,10 @@
     initPalette();
     initNotifCentre();
     render();
-    notify('Welcome to Material Audacity');
+    applyVocabularyBoundary();
+    new MutationObserver(applyVocabularyBoundary).observe(document.body, {
+      childList: true, subtree: true, characterData: true, attributes: true,
+      attributeFilter: ['aria-label', 'placeholder', 'title'],
+    });
   });
 })();
