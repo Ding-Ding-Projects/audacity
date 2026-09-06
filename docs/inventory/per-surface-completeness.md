@@ -9,7 +9,7 @@ source code or a design image.
 `completeness_guard.py --completion` requires every row to be implemented and
 to carry implementation, documentation, localized copy, persistence, focused
 test, real interaction, capture, and capture-provenance evidence. It is a
-delivery gate only, never an ordinary configure, build, or release requirement.
+delivery check only, never an ordinary configure, build, or release requirement.
 
 | Surface | Feature | Implementation | Documentation | Localized copy | Persistence | Focused test | Real interaction | Capture | Capture provenance | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
