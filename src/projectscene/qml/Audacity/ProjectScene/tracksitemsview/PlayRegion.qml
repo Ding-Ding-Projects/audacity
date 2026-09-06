@@ -21,7 +21,10 @@ Rectangle {
     height: parent.height / 2
 
     color: M3.color.primary
-    opacity: active ? ui.theme.accentOpacityNormal : ui.theme.accentOpacityHover
+    // No dedicated Material 3 token exists yet for a persistent selection-region
+    // overlay, so the closest state layer levels on the same primary role stand
+    // in: the region reads more strongly while active than while merely shown.
+    opacity: active ? M3.stateLayer.dragged : M3.stateLayer.hover
 
     function updatePosition() {
         let newX = context.timeToPosition(start)

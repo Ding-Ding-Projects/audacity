@@ -35,7 +35,7 @@ Rectangle {
 
     color: baseColor
 
-    border.width: ui.theme.borderWidth
+    border.width: 1
     border.color: M3.color.outlineVariant
 
     Rectangle {

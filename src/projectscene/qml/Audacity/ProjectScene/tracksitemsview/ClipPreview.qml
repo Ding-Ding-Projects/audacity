@@ -4,6 +4,7 @@ import Muse.UiComponents
 
 import Audacity.UiComponents
 import Audacity.ProjectScene
+import Audacity.M3
 
 Rectangle {
     id: root
@@ -29,7 +30,7 @@ Rectangle {
 
     width: desiredWidth <= 0 ? titleLabel.implicitWidth + 20 : desiredWidth
 
-    radius: 4
+    radius: M3.shape.extraSmall
     border.width: 1
     border.color: ui.theme.extra["black_color"]
 
@@ -44,7 +45,7 @@ Rectangle {
 
         border.width: 1
         border.color: ui.theme.extra["white_color"]
-        radius: 4
+        radius: M3.shape.extraSmall
 
         Rectangle {
             id: contentBackground
@@ -54,7 +55,7 @@ Rectangle {
             color: ui.theme.extra["white_color"]
             opacity: 0.3
 
-            radius: 4
+            radius: M3.shape.extraSmall
         }
 
         Rectangle {
@@ -65,7 +66,7 @@ Rectangle {
             color: root.currentClipStyle == ClipStyle.COLORFUL ? root.clipColor : root.classicThemeBackground
             opacity: 0.4
 
-            radius: 4
+            radius: M3.shape.extraSmall
         }
 
         Rectangle {

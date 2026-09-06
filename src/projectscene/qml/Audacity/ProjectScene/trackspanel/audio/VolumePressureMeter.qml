@@ -5,6 +5,7 @@ import QtQuick 2.15
 
 import Muse.Ui 1.0
 
+import Audacity.M3
 import Audacity.Playback 1.0
 import Audacity.ProjectScene 1.0
 
@@ -13,7 +14,7 @@ VolumePressureMeterItem {
 
     width: indicatorWidth
 
-    opacity: enabled ? 1.0 : ui.theme.itemOpacityDisabled
+    opacity: enabled ? 1.0 : M3.stateLayer.disabledContent
 
     clippedColor: MeterStyle.clippedColor
     noClippedColor: MeterStyle.noClippedColor

@@ -123,7 +123,7 @@ Item {
 
         border.color: M3.color.onSurface
         border.width: 2
-        radius: 4
+        radius: M3.shape.extraSmall
     }
 
     // panel for navigating within the label's items
