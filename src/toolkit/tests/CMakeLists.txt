@@ -10,6 +10,7 @@ set(MODULE_TEST_SRC
     ${CMAKE_CURRENT_LIST_DIR}/exportservice_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/bulkselectionmodel_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/pullcart_tests.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/bookmarkmodel_tests.cpp
 )
 
 set(MODULE_TEST_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/..)

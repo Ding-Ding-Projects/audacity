@@ -29,14 +29,42 @@ RowLayout {
     id: root
 
     property string currentArticleId: ""
-    property var bookmarkedIds: []
+
+    // Kept for source compatibility with anything that read the article
+    // list's bookmark state directly; the actual bookmarks live in
+    // BookmarkModel below.
+    readonly property var bookmarkedIds: {
+        var ids = []
+        for (var i = 0; i < bookmarks.count; ++i) {
+            ids.push(bookmarks.data(bookmarks.index(i, 0), BookmarkModel.ArticleIdRole))
+        }
+        return ids
+    }
 
     DocsIndex {
         id: docsIndex
     }
 
+    BookmarkModel {
+        id: bookmarks
+    }
+
+    ExportSheet {
+        id: exportSheet
+
+        rows: bookmarks.toExportRows()
+    }
+
     function openArticle(id) {
         root.currentArticleId = id
+    }
+
+    function isBookmarked(articleId) {
+        return bookmarks.isBookmarked(articleId)
+    }
+
+    function toggleBookmark(articleId, title) {
+        bookmarks.toggle(articleId, title)
     }
 
     ColumnLayout {
@@ -65,16 +93,6 @@ RowLayout {
             }
         }
 
-        BulkSelectionController {
-            Layout.fillWidth: true
-            totalCount: articleRepeater.count
-            destructiveActionLabel: qsTrc("toolkit", "Remove bookmark")
-            onActionRequested: function (actionId, indexes) {
-            // The host page owns which articles are bookmarked; this
-            // only reports which rows were chosen.
-            }
-        }
-
         ListView {
             id: articleListView
 
@@ -85,20 +103,63 @@ RowLayout {
             model: docsIndex.search(searchBar.searchText)
 
             delegate: M3ListItem {
+                id: articleDelegate
+
                 required property var modelData
 
                 width: articleListView.width
                 headline: modelData.title
                 onClicked: root.openArticle(modelData.id)
+
+                trailingContent: Component {
+                    M3IconButton {
+                        variant: root.isBookmarked(articleDelegate.modelData.id) ? "filled" : "standard"
+                        icon: IconCode.STAR
+                        accessibleName: root.isBookmarked(articleDelegate.modelData.id) ? qsTrc("toolkit", "Remove bookmark") : qsTrc("toolkit", "Add bookmark")
+                        onClicked: root.toggleBookmark(articleDelegate.modelData.id, articleDelegate.modelData.title)
+                    }
+                }
             }
         }
 
-        Repeater {
-            id: articleRepeater
+        StyledTextLabel {
+            visible: bookmarks.count > 0
+            text: qsTrc("toolkit", "Bookmarks (%1)").arg(bookmarks.count)
+            font: M3.typography.titleMedium
+        }
 
-            model: docsIndex.articles.length
+        BulkSelectionController {
+            visible: bookmarks.count > 0
+            Layout.fillWidth: true
+            totalCount: bookmarks.count
+            destructiveActionLabel: qsTrc("toolkit", "Remove bookmark")
+            onActionRequested: function (actionId, indexes) {
+                if (actionId === "export") {
+                    exportSheet.open()
+                } else if (actionId === "destructive") {
+                    bookmarks.removeMany(indexes)
+                }
+            }
+        }
 
-            delegate: Item {}
+        ListView {
+            id: bookmarkListView
+
+            visible: bookmarks.count > 0
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.min(bookmarks.count * 56, 168)
+            clip: true
+
+            model: bookmarks
+
+            delegate: M3ListItem {
+                required property string title
+                required property string articleId
+
+                width: bookmarkListView.width
+                headline: title
+                onClicked: root.openArticle(articleId)
+            }
         }
     }
 

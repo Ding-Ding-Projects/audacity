@@ -71,6 +71,8 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/internal/pullcartmodel.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/docsindex.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/docsindex.h
+    ${CMAKE_CURRENT_LIST_DIR}/internal/bookmarkmodel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/internal/bookmarkmodel.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/externaleditorservice.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/externaleditorservice.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/ollamaclient.cpp

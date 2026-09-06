@@ -39,8 +39,10 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   CSV, TSV, Markdown, HTML, SQL and a store-only ZIP archive) with
   field-dropping disclosure, a reusable bulk selection control, external
   code editor detection and handoff, an in-app documentation browser
-  bundling the feature articles for offline reading, and a reusable failure
-  recovery card, all reachable from a new Toolkit preferences page
+  bundling the feature articles for offline reading with per-article
+  bookmarks (a small persisted list model with add, remove, rename and bulk
+  export or removal), and a reusable failure recovery card, all reachable
+  from a new Toolkit preferences page
 - Language mode setting with English, playful Hong Kong Cantonese and a
   bilingual mode, applied live to the interface translator where the platform
   allows it
