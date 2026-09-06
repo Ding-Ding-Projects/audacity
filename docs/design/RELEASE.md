@@ -11,8 +11,8 @@ built, packaged, verified and published. Anything that contradicts it is a bug.
 | Windows installer format | `Setup.exe` plus `RELEASES`, a full `.nupkg` and a delta `.nupkg` |
 | Code signing | Permanently prohibited |
 | Linux artifact | AppImage, produced by the existing `buildscripts/ci/linux` scripts |
-| Releases | One per push to `master`, per manual dispatch and per tag push, always non-draft |
-| Tag on a plain push | `v<version.cmake>-m3.<run number>`, unique and monotonic; an existing tag is never recycled |
+| Releases | The delivery workflow runs on pushes to `main` and manual dispatch, not tag pushes; publication is non-draft |
+| Tag on a plain push | Shared create-only reservation of `v<version.cmake>-m3.<sequence>`; the run number is a minimum, not the tag identity |
 | Dim sum code name | Next unused dish from the public catalog, photo attached, resolved by `buildscripts/ci/tools/dim_sum_release.py` |
 | Documentation site | `docs/` deployed to GitHub Pages |
 | Secrets used | `GITHUB_TOKEN` only |
@@ -53,6 +53,102 @@ The NuGet package id stays `Audacity`, matching `MUSE_APP_NAME` in
 installed application by its id, and a new id would install a second copy
 instead of upgrading the existing one. The human readable title is
 `Material Audacity`.
+
+### Shared manual and workflow tag reservation
+
+`buildscripts/ci/tools/reserve_release_tag.py` is the shared manual CLI and
+workflow entry point. It uses the existing authenticated `gh` CLI, requires an
+explicit repository and full candidate commit SHA, confirms that commit exists,
+reads all matching tag-reference pages, and chooses the next numeric suffix for
+that exact product-version prefix. `--minimum` supplies an optional sequence
+floor, normally the workflow run number. A manual `v4.0.0-m3.14` therefore makes
+the next workflow reserve at least `v4.0.0-m3.15`, even if its run number is 14.
+
+After the release coordinator explicitly selects the immutable candidate:
+
+```powershell
+python buildscripts/ci/tools/reserve_release_tag.py reserve `
+  --repo Ding-Ding-Projects/audacity --sha <full-candidate-commit-sha> `
+  --version 4.0.0 --output <new-reservation-receipt.json>
+```
+
+The helper creates the exact tag reference through `gh api` and reads it back
+to verify that it points directly to the intended commit. Creation is atomic
+and never updates, deletes, force-moves or reuses a tag. Only a confirmed
+reference-already-exists response permits a retry; each retry starts with a
+fresh complete inventory, and three collisions stop the operation. Invalid
+SHAs, malformed refs, authentication errors and uncertain network outcomes
+stop immediately. An uncertain POST may already have created its tag and must
+be investigated before retrying publication.
+
+`--output` is mandatory for reservation. A timed-out POST, malformed successful
+response, unconfirmed server error or failed target readback preserves an
+`uncertain` receipt containing the exact repository, tag, full ref, candidate
+SHA and attempt number. The CLI repeats that identity in stderr and exits
+nonzero without retrying the POST. An immediate missing-ref response would not
+prove that the original request cannot still complete; the coordinator must
+settle that uncertainty before proceeding. The helper does not automatically
+retry or treat absence as permission to reuse the name.
+
+Both verified and uncertain receipts are written beside their destination,
+flushed, and atomically linked into a previously absent output path. Existing
+receipts are never overwritten. A persistence failure retains any staged record
+for inspection and reports its path plus the complete attempted identity in
+stderr. It does not roll back or retry a possibly completed tag creation.
+
+Immediately before publishing, both routes use:
+
+```powershell
+python buildscripts/ci/tools/reserve_release_tag.py verify `
+  --repo Ding-Ding-Projects/audacity --sha <full-candidate-commit-sha> `
+  --tag <reserved-tag>
+```
+
+Then the explicitly coordinated publisher calls `gh release create` with
+`--verify-tag`, the exact repository and candidate, and the verified assets.
+The workflow grants its reservation job `contents: write` and uses
+`secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN` through
+`GH_TOKEN`; the helper never reads or prints credentials itself.
+
+The reservation job provisions Python before its first command, then checks
+the CLI before the workflow timing request or Configure step uses it:
+
+| Tool | Provisioning and compatibility boundary |
+| --- | --- |
+| Python | `actions/setup-python@v6` supplies Python 3.12; the job confirms `sys.version_info >= (3, 12)` before configuration. |
+| GitHub CLI | The job checks `gh api --paginate --slurp` and `gh release create --verify-tag` support through CLI help. If absent or incompatible, it uses Chocolatey's `gh` package and refreshes the current and subsequent-step PATH, then repeats the capability check. |
+| Chocolatey | Needed only for GitHub CLI repair on the Windows delivery worker. Its absence is reported explicitly and stops the job before any reservation attempt. |
+
+These checks no longer infer command availability from the worker image name.
+The offline reservation fixtures do not install tools or prove a hosted worker's
+network bootstrap; the workflow's actual provisioning result remains separate
+evidence.
+
+Reservation is **not a build or publisher lock**. It does not serialize final
+publication, stop an older candidate finishing after a newer candidate, or
+prove that a package belongs to its tag. The release coordinator still selects
+one publisher and binds the build, package version and assets to its candidate.
+A failed build can leave a reserved tag without a release. That tag remains
+consumed; a later attempt reserves a new suffix instead of deleting or reusing
+it. Tag creation cannot trigger this workflow because only `main` pushes and
+manual dispatch are configured.
+
+Sequence ordering is numeric within one product version. Package labels keep
+the existing mapping, for example `.14` becomes `-m3014` and `.15` becomes
+`-m3015`. Other product-version prefixes do not participate in the suffix
+counter. The sequence is bounded to Int32 because the packaging script parses
+it that way; exhaustion fails instead of wrapping. This helper does not change
+Squirrel's prerelease ordering or the separately validated older-seed rule.
+
+Offline fixtures run with:
+
+```powershell
+python -m unittest discover -s buildscripts/ci/tools -p test_reserve_release_tag.py -v
+```
+
+These fixtures create no real tag or release. They exercise manual/workflow
+coexistence, pagination, collisions, authentication and malformed responses,
+exact target checks, foreign version prefixes, bounds and transport arguments.
 
 The installer icon is `share/icons/AppIcon/AU4_AppIcon.ico`, a multi resolution
 icon that is applied both to `Setup.exe` and to the packaged application.
