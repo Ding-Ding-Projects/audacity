@@ -602,6 +602,11 @@ $publishReleaseFile = Join-Path $releasifyDir "RELEASES.current"
 $publishedReleaseEntries | ForEach-Object Line | Set-Content -LiteralPath $publishReleaseFile -Encoding ASCII
 Write-Host "Published RELEASES has $($publishedReleaseEntries.Count) current-version entries; baseline files were delta inputs only."
 
+function Get-PublishedFileName([IO.FileInfo] $File) {
+    if ($File.Name -eq "RELEASES.current") { return "RELEASES" }
+    return $File.Name
+}
+
 # Any MSI is a contract violation: Squirrel.Windows is the only installer.
 $strayMsi = Get-ChildItem -LiteralPath $releasifyDir -Filter "*.msi" -ErrorAction SilentlyContinue
 if ($strayMsi) {
@@ -652,7 +657,7 @@ $publishedFiles |
     Get-Item |
     Sort-Object Name |
     ForEach-Object {
-        $publishedName = if ($_.Name -eq "RELEASES.current") { "RELEASES" } else { $_.Name }
+        $publishedName = Get-PublishedFileName $_
         "{0}  {1}" -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLower(), $publishedName
     } | Set-Content -LiteralPath $checksums -Encoding ASCII
 
@@ -663,7 +668,7 @@ $manifest = [ordered]@{
     seedMode = if ($hasPrevious) { "baseline-used-for-delta-only" } else { "no-baseline" }
     releaseEntries = @($publishedReleaseEntries | ForEach-Object { [ordered]@{ name=$_.Name; sha1=$_.Sha1.ToLowerInvariant(); bytes=$_.Size } })
     files = @($publishedFiles | Get-Item | Sort-Object Name | ForEach-Object {
-        [ordered]@{ name=(if ($_.Name -eq "RELEASES.current") { "RELEASES" } else { $_.Name }); bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
+        [ordered]@{ name=(Get-PublishedFileName $_); bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     })
 }
 $manifestPath = Join-Path $releasifyDir "package-output-manifest.json"
