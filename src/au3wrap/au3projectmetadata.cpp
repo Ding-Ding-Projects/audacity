@@ -77,12 +77,12 @@ sqlite3* dbForProject(uintptr_t au3ProjectPtr)
     }
 }
 
-const char* CHRONICLE_BUNDLE_TABLE_SQL =
-    "CREATE TABLE IF NOT EXISTS chronicle_bundle ("
-    "id INTEGER PRIMARY KEY CHECK (id = 1), "
-    "format TEXT, "
-    "bytes BLOB, "
-    "created_at INTEGER);";
+const char* CHRONICLE_BUNDLE_TABLE_SQL
+    ="CREATE TABLE IF NOT EXISTS chronicle_bundle ("
+     "id INTEGER PRIMARY KEY CHECK (id = 1), "
+     "format TEXT, "
+     "bytes BLOB, "
+     "created_at INTEGER);";
 
 bool ensureBundleTable(sqlite3* db)
 {
