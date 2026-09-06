@@ -150,7 +150,7 @@ public:
     Q_INVOKABLE bool turnSchoolModeOn(const QString& newCredential);
     //! Turns School mode off. Returns false when the credential is wrong.
     Q_INVOKABLE bool turnSchoolModeOff(const QString& credential);
-    Q_INVOKABLE void renameSchoolMode(const QString& newDisplayName);
+    Q_INVOKABLE bool renameSchoolMode(const QString& newDisplayName);
 
 signals:
     void languageModeChanged();

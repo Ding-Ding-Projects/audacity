@@ -348,10 +348,8 @@ bool ExperienceSettingsModel::turnSchoolModeOff(const QString& credential)
     return m_schoolMode && m_schoolMode->turnOff(credential);
 }
 
-void ExperienceSettingsModel::renameSchoolMode(const QString& newDisplayName)
+bool ExperienceSettingsModel::renameSchoolMode(const QString& newDisplayName)
 {
-    if (m_schoolMode) {
-        m_schoolMode->rename(newDisplayName);
-    }
+    return m_schoolMode && m_schoolMode->rename(newDisplayName);
 }
 }

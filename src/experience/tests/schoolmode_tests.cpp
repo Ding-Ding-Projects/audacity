@@ -46,6 +46,14 @@ TEST(SchoolModeStoreTests, RejectsAnEmptyDisplayName)
     EXPECT_FALSE(SchoolModeStore::parse(json).ok);
 }
 
+TEST(SchoolModeStoreTests, RejectsRecordsWithMissingSchemaOrInvalidCredentialFields)
+{
+    EXPECT_FALSE(SchoolModeStore::parse(R"({"on":false,"displayName":"School mode","credentialHashHex":"","credentialSaltHex":""})").ok);
+    EXPECT_FALSE(SchoolModeStore::parse(
+                     R"({"version":1,"on":true,"displayName":"School mode","credentialHashHex":"bad","credentialSaltHex":"bad"})")
+                     .ok);
+}
+
 TEST(SchoolModeStoreTests, VerifiesTheRightCredential)
 {
     const QString salt = SchoolModeStore::newSaltHex();
@@ -135,5 +143,40 @@ TEST(SchoolModeServiceTests, CorruptLiveRecordIsUnavailableAndKeepsTheLastKnownM
 
     EXPECT_FALSE(service.isAvailable());
     EXPECT_TRUE(service.isOn());
+    EXPECT_FALSE(service.error().isEmpty());
+}
+
+TEST(SchoolModeServiceTests, CorruptLiveRecordKeepsTheLastKnownOffMode)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString path = directory.filePath(QStringLiteral("school-mode.json"));
+    SchoolModeService service(nullptr, path);
+    ASSERT_TRUE(service.turnOn(QStringLiteral("1234")));
+    ASSERT_TRUE(service.turnOff(QStringLiteral("1234")));
+
+    QFile file(path);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    ASSERT_EQ(file.write("{ malformed"), QByteArray("{ malformed").size());
+    file.close();
+    service.reload();
+
+    EXPECT_FALSE(service.isAvailable());
+    EXPECT_FALSE(service.isOn());
+}
+
+TEST(SchoolModeServiceTests, PersistenceFailureDoesNotStageAChangedRecord)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString parentFile = directory.filePath(QStringLiteral("not-a-directory"));
+    QFile file(parentFile);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly));
+    file.close();
+
+    SchoolModeService service(nullptr, parentFile + QStringLiteral("/school-mode.json"));
+    EXPECT_FALSE(service.turnOn(QStringLiteral("1234")));
+    EXPECT_FALSE(service.isOn());
+    EXPECT_FALSE(service.isAvailable());
     EXPECT_FALSE(service.error().isEmpty());
 }

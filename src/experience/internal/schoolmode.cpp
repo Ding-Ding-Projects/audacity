@@ -12,6 +12,7 @@
 #include <QFileSystemWatcher>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSaveFile>
 #include <QStandardPaths>
 
 using namespace au::experience;
@@ -21,11 +22,31 @@ QString bytesToHex(const QByteArray& bytes)
 {
     return QString::fromLatin1(bytes.toHex());
 }
+
+bool isLowerHex(const QString& value, int expectedLength)
+{
+    if (value.size() != expectedLength) {
+        return false;
+    }
+    for (const QChar ch : value) {
+        if (!((ch >= QLatin1Char('0') && ch <= QLatin1Char('9'))
+              || (ch >= QLatin1Char('a') && ch <= QLatin1Char('f')))) {
+            return false;
+        }
+    }
+    return true;
+}
 }
 
 SchoolModeStore::ParseResult SchoolModeStore::parse(const QByteArray& json)
 {
     ParseResult result;
+
+    constexpr qsizetype MAX_RECORD_BYTES = 16 * 1024;
+    if (json.size() > MAX_RECORD_BYTES) {
+        result.error = QStringLiteral("The shared School mode record is too large.");
+        return result;
+    }
 
     if (json.isEmpty()) {
         // An absent or empty file simply means the mode has never been
@@ -44,14 +65,34 @@ SchoolModeStore::ParseResult SchoolModeStore::parse(const QByteArray& json)
 
     const QJsonObject obj = doc.object();
 
+    const QJsonValue version = obj.value(QStringLiteral("version"));
+    const QJsonValue on = obj.value(QStringLiteral("on"));
+    const QJsonValue displayName = obj.value(QStringLiteral("displayName"));
+    const QJsonValue credentialHash = obj.value(QStringLiteral("credentialHashHex"));
+    const QJsonValue credentialSalt = obj.value(QStringLiteral("credentialSaltHex"));
+    if (!version.isDouble() || version.toDouble() != 1.0 || !on.isBool() || !displayName.isString()
+        || !credentialHash.isString() || !credentialSalt.isString()) {
+        result.error = QStringLiteral("The shared School mode record has an unsupported schema.");
+        return result;
+    }
+
     SchoolModeRecord record;
-    record.on = obj.value(QStringLiteral("on")).toBool(false);
-    record.displayName = obj.value(QStringLiteral("displayName")).toString(QStringLiteral("School mode"));
-    record.credentialHashHex = obj.value(QStringLiteral("credentialHashHex")).toString();
-    record.credentialSaltHex = obj.value(QStringLiteral("credentialSaltHex")).toString();
+    record.on = on.toBool();
+    record.displayName = displayName.toString();
+    record.credentialHashHex = credentialHash.toString();
+    record.credentialSaltHex = credentialSalt.toString();
 
     if (!record.isValid()) {
-        result.error = QStringLiteral("The shared School mode record has an empty display name.");
+        result.error = QStringLiteral("The shared School mode record has an invalid display name.");
+        return result;
+    }
+
+    const bool hasCredentialHash = !record.credentialHashHex.isEmpty();
+    const bool hasCredentialSalt = !record.credentialSaltHex.isEmpty();
+    if (hasCredentialHash != hasCredentialSalt
+        || (hasCredentialHash && (!isLowerHex(record.credentialHashHex, 64) || !isLowerHex(record.credentialSaltHex, 32)))
+        || (record.on && !hasCredentialHash)) {
+        result.error = QStringLiteral("The shared School mode record has inconsistent credential data.");
         return result;
     }
 
@@ -63,6 +104,7 @@ SchoolModeStore::ParseResult SchoolModeStore::parse(const QByteArray& json)
 QByteArray SchoolModeStore::serialize(const SchoolModeRecord& record)
 {
     QJsonObject obj;
+    obj[QStringLiteral("version")] = 1;
     obj[QStringLiteral("on")] = record.on;
     obj[QStringLiteral("displayName")] = record.displayName;
     obj[QStringLiteral("credentialHashHex")] = record.credentialHashHex;
@@ -115,6 +157,11 @@ SchoolModeStore::ParseResult SchoolModeStore::readRecordFile(const QString& path
     QFile file(path);
     if (!file.exists()) {
         return parse(QByteArray());
+    }
+    if (file.size() > 16 * 1024) {
+        ParseResult result;
+        result.error = QStringLiteral("The shared School mode record is too large.");
+        return result;
     }
     if (!file.open(QIODevice::ReadOnly)) {
         ParseResult result;
@@ -179,42 +226,51 @@ void SchoolModeService::reload()
     }
 }
 
-void SchoolModeService::save()
+bool SchoolModeService::save(const SchoolModeRecord& record)
 {
     const QString path = m_recordPath;
-    QDir().mkpath(QFileInfo(path).absolutePath());
+    if (!QDir().mkpath(QFileInfo(path).absolutePath())) {
+        m_available = false;
+        m_error = QStringLiteral("The shared School mode record directory could not be created.");
+        emit stateChanged();
+        return false;
+    }
 
-    QFile file(path);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        file.write(SchoolModeStore::serialize(m_record));
-        m_available = true;
-        m_hasKnownRecord = true;
-        m_error.clear();
-    } else {
+    QSaveFile file(path);
+    const QByteArray serialized = SchoolModeStore::serialize(record);
+    if (!file.open(QIODevice::WriteOnly) || file.write(serialized) != serialized.size() || !file.commit()) {
         m_available = false;
         m_error = QStringLiteral("The shared School mode record could not be written.");
+        emit stateChanged();
+        return false;
     }
+
+    m_record = record;
+    m_available = true;
+    m_hasKnownRecord = true;
+    m_error.clear();
 
     if (!m_watcher->files().contains(path)) {
         m_watcher->addPath(path);
     }
 
     emit stateChanged();
+    return true;
 }
 
 bool SchoolModeService::turnOn(const QString& newCredential)
 {
-    if (m_record.credentialHashHex.isEmpty()) {
+    SchoolModeRecord updated = m_record;
+    if (updated.credentialHashHex.isEmpty()) {
         if (newCredential.isEmpty()) {
             return false;
         }
-        m_record.credentialSaltHex = SchoolModeStore::newSaltHex();
-        m_record.credentialHashHex = SchoolModeStore::hashCredential(newCredential, m_record.credentialSaltHex);
+        updated.credentialSaltHex = SchoolModeStore::newSaltHex();
+        updated.credentialHashHex = SchoolModeStore::hashCredential(newCredential, updated.credentialSaltHex);
     }
 
-    m_record.on = true;
-    save();
-    return true;
+    updated.on = true;
+    return save(updated);
 }
 
 bool SchoolModeService::turnOff(const QString& credential)
@@ -223,18 +279,19 @@ bool SchoolModeService::turnOff(const QString& credential)
         return false;
     }
 
-    m_record.on = false;
-    save();
-    return true;
+    SchoolModeRecord updated = m_record;
+    updated.on = false;
+    return save(updated);
 }
 
-void SchoolModeService::rename(const QString& newDisplayName)
+bool SchoolModeService::rename(const QString& newDisplayName)
 {
-    if (newDisplayName.isEmpty()) {
-        return;
+    if (newDisplayName.isEmpty() || newDisplayName.size() > 80) {
+        return false;
     }
-    m_record.displayName = newDisplayName;
-    save();
+    SchoolModeRecord updated = m_record;
+    updated.displayName = newDisplayName;
+    return save(updated);
 }
 
 void SchoolModeService::onFileChanged()
