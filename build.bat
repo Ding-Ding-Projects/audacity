@@ -18,15 +18,23 @@ if /I "%~1"=="/s" set "SILENT=1"
 
 echo === Material Audacity build
 
+rem A build must be usable from a fresh checkout. Keep the dependency fetcher
+rem as the single bootstrap path instead of requiring a preparatory command.
+call "%ROOT%download-dependencies.bat" /s
+if errorlevel 1 (
+  echo ERROR: dependency bootstrap failed. See the phase above for the exact missing tool or download error.
+  exit /b 1
+)
+
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
-  echo ERROR: Visual Studio 2022 build tools were not found. Run download-dependencies.bat first.
+  echo ERROR: Visual Studio 2022 build tools were not found after bootstrap.
   exit /b 1
 )
 set "VS_INSTALL_DIR="
 for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VS_INSTALL_DIR=%%i"
 if not defined VS_INSTALL_DIR (
-  echo ERROR: the MSVC x64 toolset was not found. Run download-dependencies.bat first.
+  echo ERROR: the MSVC x64 toolset was not found after bootstrap.
   exit /b 1
 )
 call "%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat" >nul
