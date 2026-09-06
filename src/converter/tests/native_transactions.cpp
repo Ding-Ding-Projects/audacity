@@ -10,6 +10,7 @@
 #include <QtEndian>
 #include <winioctl.h>
 #include <functional>
+#include <cstdio>
 #include <stdexcept>
 
 using namespace au::converter;
@@ -273,10 +274,10 @@ int main(int argc, char** argv)
     int failed = 0;
     for (const auto& test : tests) {
         ConversionEngine::testHook = {};
-        try { test.second(); qInfo("PASS %s", test.first); }
-        catch (const std::exception& error) { ++failed; qCritical("FAIL %s: %s (Win32 %lu)", test.first, error.what(), GetLastError()); }
+        try { test.second(); std::fprintf(stderr, "PASS %s\n", test.first); }
+        catch (const std::exception& error) { ++failed; std::fprintf(stderr, "FAIL %s: %s (Win32 %lu)\n", test.first, error.what(), GetLastError()); }
         ConversionEngine::testHook = {};
     }
-    qInfo("Native transaction cases: %zu passed, %d failed, 0 skipped", tests.size() - failed, failed);
+    std::fprintf(stderr, "Native transaction cases: %zu passed, %d failed, 0 skipped\n", tests.size() - failed, failed);
     return failed ? 1 : 0;
 }
