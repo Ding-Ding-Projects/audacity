@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QFile>
 #include <QNetworkAccessManager>
+#include <QNetworkProxyFactory>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QStandardPaths>
@@ -58,9 +59,36 @@ QString DimSumSurpriseService::releaseAssetUrl(const QString& assetFileName)
            + assetFileName;
 }
 
+bool DimSumSurpriseService::isAllowedRedirectTarget(const QUrl& url)
+{
+    if (!url.isValid() || url.scheme() != QStringLiteral("https")) {
+        return false;
+    }
+
+    // The exact hosts a genuine GitHub release asset download can redirect
+    // through. github.com and raw.githubusercontent.com are included for
+    // completeness even though the observed chain only ever needs the two
+    // signed object storage hosts; nothing outside this exact set is ever
+    // trusted, regardless of what a redirect response claims.
+    static const QVector<QString> allowedHosts = {
+        QStringLiteral("github.com"),
+        QStringLiteral("objects.githubusercontent.com"),
+        QStringLiteral("release-assets.githubusercontent.com"),
+        QStringLiteral("raw.githubusercontent.com"),
+    };
+
+    return allowedHosts.contains(url.host());
+}
+
 DimSumSurpriseService::DimSumSurpriseService(QObject* parent)
     : QObject(parent), m_network(new QNetworkAccessManager(this))
 {
+    // Honour the desktop's own proxy configuration (an http_proxy or
+    // https_proxy environment variable, or the platform's system proxy
+    // settings), exactly as an ordinary desktop browser or download tool
+    // would. Without this, a machine that only reaches the public internet
+    // through a configured proxy would silently fail every fetch here.
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
 }
 
 QString DimSumSurpriseService::cacheDirectory() const
@@ -168,7 +196,17 @@ void DimSumSurpriseService::refreshPhotoAsync(const DimSumDish& dish)
     }
     m_photoFetchesInFlight.push_back(dish.id);
 
-    QNetworkRequest request { QUrl(releaseAssetUrl(dish.photoAsset)) };
+    startPhotoRequest(QUrl(releaseAssetUrl(dish.photoAsset)), dish.id, photoCachePath(dish), MAX_REDIRECTS);
+}
+
+void DimSumSurpriseService::startPhotoRequest(const QUrl& url, const QString& dishId,
+                                              const QString& destinationPath, int redirectsRemaining)
+{
+    QNetworkRequest request { url };
+    // Redirects are followed manually, one hop at a time, only after the
+    // target has been checked against the exact allowed host list below.
+    // Qt's own automatic policy has no such allowlist, so it is never used
+    // here even though it would happily also fetch the redirected asset.
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     request.setMaximumRedirectsAllowed(0);
 
@@ -179,21 +217,32 @@ void DimSumSurpriseService::refreshPhotoAsync(const DimSumDish& dish)
     QObject::connect(timeoutTimer, &QTimer::timeout, reply, &QNetworkReply::abort);
     timeoutTimer->start(TIMEOUT_MS);
 
-    const QString destinationPath = photoCachePath(dish);
-    const QString dishId = dish.id;
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, dishId, destinationPath]() {
-        handlePhotoReply(reply, dishId, destinationPath);
+    QObject::connect(reply, &QNetworkReply::finished, this,
+                     [this, reply, dishId, destinationPath, redirectsRemaining]() {
+        handlePhotoReply(reply, dishId, destinationPath, redirectsRemaining);
     });
 }
 
 void DimSumSurpriseService::handlePhotoReply(QNetworkReply* reply, const QString& dishId,
-                                             const QString& destinationPath)
+                                             const QString& destinationPath, int redirectsRemaining)
 {
-    m_photoFetchesInFlight.removeAll(dishId);
     reply->deleteLater();
 
     if (reply->error() != QNetworkReply::NoError) {
+        m_photoFetchesInFlight.removeAll(dishId);
         emit photoRefreshed(dishId, false);
+        return;
+    }
+
+    const QVariant redirectAttribute = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if (redirectAttribute.isValid()) {
+        const QUrl redirectTarget = reply->url().resolved(redirectAttribute.toUrl());
+        if (redirectsRemaining <= 0 || !isAllowedRedirectTarget(redirectTarget)) {
+            m_photoFetchesInFlight.removeAll(dishId);
+            emit photoRefreshed(dishId, false);
+            return;
+        }
+        startPhotoRequest(redirectTarget, dishId, destinationPath, redirectsRemaining - 1);
         return;
     }
 
@@ -201,6 +250,7 @@ void DimSumSurpriseService::handlePhotoReply(QNetworkReply* reply, const QString
     // generously but still refuse an unbounded response.
     static constexpr int MAX_PHOTO_BYTES = 8 * 1024 * 1024;
     const QByteArray body = reply->read(MAX_PHOTO_BYTES + 1);
+    m_photoFetchesInFlight.removeAll(dishId);
     if (body.isEmpty() || body.size() > MAX_PHOTO_BYTES) {
         emit photoRefreshed(dishId, false);
         return;

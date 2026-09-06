@@ -49,7 +49,88 @@ M3Dialog {
     //! Passed as the "highlight" parameter of audacity://preferences.
     property string highlight: ""
 
+    //! objectName of a section to scroll to the top of the page's
+    //! Flickable once the target page has finished loading. Passed as the
+    //! "highlightObjectName" parameter of audacity://preferences; used by
+    //! the deterministic AU_OPEN_PREFERENCES capture hook, and by anything
+    //! else that wants an exact section rather than a fuzzy text match.
+    property string highlightObjectName: ""
+
     signal regexBuilderRequested
+
+    //! Finds a descendant of item whose objectName matches name. Returns
+    //! null when nothing matches.
+    function findByObjectName(item, name, depth) {
+        if (!Boolean(item) || name === "" || depth > 16) {
+            return null
+        }
+        if (item.objectName === name) {
+            return item
+        }
+        var children = item.children
+        if (Boolean(children)) {
+            for (var c = 0; c < children.length; ++c) {
+                var hit = root.findByObjectName(children[c], name, depth + 1)
+                if (hit !== null) {
+                    return hit
+                }
+            }
+        }
+        return null
+    }
+
+    //! Scrolls the nearest ancestor Flickable of target so that target sits
+    //! at the top of the visible area. False when target has not been given
+    //! real layout geometry yet (a page that was just switched into the
+    //! stack can still be mid-layout for a frame or two), so the caller can
+    //! retry rather than silently scrolling to a stale zero-height page.
+    function scrollIntoView(target) {
+        var walker = target
+        for (var i = 0; i < 12 && Boolean(walker.parent); ++i) {
+            walker = walker.parent
+            if (walker.contentY !== undefined && walker.contentHeight !== undefined) {
+                if (walker.contentHeight <= 0 || walker.height <= 0) {
+                    return false
+                }
+                var pos = target.mapToItem(walker.contentItem, 0, 0)
+                walker.contentY = Math.max(0, Math.min(pos.y, walker.contentHeight - walker.height))
+                return true
+            }
+        }
+        return false
+    }
+
+    // A page freshly switched into the StackLayout can still be mid-layout
+    // for the first frame or two, so the Flickable holding the target
+    // section briefly reports zero height and zero content height. Retry on
+    // a short timer instead of scrolling against a page that has not
+    // settled yet.
+    Timer {
+        id: highlightSectionRetryTimer
+
+        interval: 60
+        repeat: true
+        property int attemptsLeft: 20
+
+        onTriggered: {
+            var target = root.findByObjectName(stack, root.highlightObjectName, 0)
+            if (target !== null && root.scrollIntoView(target)) {
+                stop()
+                return
+            }
+            highlightSectionRetryTimer.attemptsLeft -= 1
+            if (highlightSectionRetryTimer.attemptsLeft <= 0) {
+                stop()
+            }
+        }
+    }
+
+    onHighlightObjectNameChanged: {
+        if (root.highlightObjectName !== "") {
+            highlightSectionRetryTimer.attemptsLeft = 20
+            highlightSectionRetryTimer.restart()
+        }
+    }
 
     QtObject {
         id: prv

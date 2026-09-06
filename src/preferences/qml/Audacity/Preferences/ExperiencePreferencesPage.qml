@@ -11,7 +11,13 @@ import Audacity.M3
 PreferencesPage {
     id: root
 
-    height: mainColumn.height
+    // No explicit height override here: PreferencesPage's own default of
+    // "height: parent.height" is what lets its internal Flickable actually
+    // clip to the dialog and scroll. Overriding it to the content's own
+    // height (as this page used to) makes the Flickable's height equal its
+    // contentHeight, so nothing above the visible fold can ever be reached
+    // by scrolling, keyboard focus-into-view, or a command palette
+    // teleport landing on one of this page's later sections.
 
     ExperienceSettingsModel {
         id: settingsModel

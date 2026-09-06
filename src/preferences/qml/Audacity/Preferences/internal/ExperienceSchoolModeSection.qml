@@ -12,6 +12,8 @@ import Audacity.M3
 BaseSection {
     id: root
 
+    objectName: "ExperienceSchoolModeSection"
+
     property var settingsModel: null
 
     property string credentialText: ""

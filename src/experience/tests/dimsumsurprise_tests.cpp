@@ -58,3 +58,32 @@ TEST(DimSumDrawTests, NeverDrawsTwiceInOneLaunch)
     EXPECT_FALSE(draw.drawWithSample(0.0));
     EXPECT_FALSE(draw.draw());
 }
+
+TEST(DimSumSurpriseServiceTests, AllowsTheExactRedirectHostsAGenuineDownloadUses)
+{
+    EXPECT_TRUE(DimSumSurpriseService::isAllowedRedirectTarget(
+                    QUrl("https://objects.githubusercontent.com/some/signed/path?sig=abc")));
+    EXPECT_TRUE(DimSumSurpriseService::isAllowedRedirectTarget(
+                    QUrl("https://release-assets.githubusercontent.com/github-production-release-asset/1?sig=abc")));
+    EXPECT_TRUE(DimSumSurpriseService::isAllowedRedirectTarget(QUrl("https://github.com/owner/repo/releases")));
+    EXPECT_TRUE(DimSumSurpriseService::isAllowedRedirectTarget(
+                    QUrl("https://raw.githubusercontent.com/owner/repo/main/file.json")));
+}
+
+TEST(DimSumSurpriseServiceTests, RefusesAnUnlistedHost)
+{
+    EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(QUrl("https://evil.example.com/payload.png")));
+    EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(
+                    QUrl("https://github.com.evil.example.com/payload.png")));
+}
+
+TEST(DimSumSurpriseServiceTests, RefusesPlainHttpEvenOnAnAllowedHost)
+{
+    EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(QUrl("http://github.com/owner/repo/releases")));
+}
+
+TEST(DimSumSurpriseServiceTests, RefusesAnInvalidUrl)
+{
+    EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(QUrl()));
+    EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(QUrl("not a url")));
+}

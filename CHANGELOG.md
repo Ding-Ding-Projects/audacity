@@ -79,6 +79,25 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   (`docs/features/status-reporting.md`) explaining why this public
   repository reports status through its release workflow and changelog
   rather than a private status integration
+- A debug-only `AU_OPEN_PREFERENCES` environment hook that opens the
+  Preferences dialog on an exact page, and optionally scrolls an exact
+  section into view by name, so a capture no longer has to click through
+  the dialog by hand; documented in `docs/design/CAPTURES.md`
+
+### Fixed
+
+- The dim sum surprise's photo fetch now actually completes: it follows up
+  to two redirects onto an explicit allowed-host list (a GitHub release
+  asset download always redirects once to a signed object storage URL), it
+  honours the desktop's own proxy configuration, and the catalog response
+  size cap was raised from 2 MB to 16 MB to fit the real published catalog
+  (a little over 8 MB for 2,866 dishes), none of which the fetch could ever
+  have completed under before
+- The Experience preferences page's internal Flickable can scroll again;
+  the page had overridden its own height to match its full content height,
+  which made the Flickable's height equal its content height and left
+  nothing above the visible fold reachable by scrolling, keyboard
+  focus-into-view, or a command palette teleport
 
 ### Changed
 

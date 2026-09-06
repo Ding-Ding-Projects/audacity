@@ -20,7 +20,22 @@ Dish names and metadata come from the public catalog at
 Photos are fetched only from that project's published `catalog-v1*` release assets. This
 repository never bundles, vendors, or generates dim sum photos; the fetch and cache happen
 entirely on the native side, into the application data directory, with a bounded response
-size (2 MB), a 6 second timeout, and manual redirect handling (no redirects are followed).
+size (16 MB for the catalog document, which is a little over 8 MB for the full 2,866-dish
+catalog; 8 MB for a photo) and a 6 second timeout per request.
+
+A GitHub release asset download always answers with a redirect from `github.com` to a
+signed, time-limited URL on `objects.githubusercontent.com` or
+`release-assets.githubusercontent.com`. The fetch follows at most two such redirects, and
+only when the redirect target is `https` and its host is one of the exact hosts a genuine
+release download can redirect through (`github.com`, `objects.githubusercontent.com`,
+`release-assets.githubusercontent.com`, `raw.githubusercontent.com`); anything else is
+refused rather than followed. This is deliberately narrower than an ordinary HTTP client's
+redirect handling, and it is what makes a photo fetch actually able to complete at all.
+
+The fetch also honours the desktop's own proxy configuration (an `http_proxy` or
+`https_proxy` environment variable, or the platform's system proxy settings), the same way
+an ordinary desktop browser or download tool would, so a machine that only reaches the
+public internet through a configured proxy is not silently unable to fetch anything here.
 
 ## Offline behaviour
 
@@ -57,4 +72,14 @@ Covered by `DimSumCatalogTests` and `DimSumDrawTests` in
 `src/experience/tests/dimsumsurprise_tests.cpp`, which exercise catalog parsing (valid
 document, an entry missing either name, malformed JSON) and the draw itself (drawing true
 under the threshold, false at or above it, and never drawing a second time within one
-`DimSumDraw` instance).
+`DimSumDraw` instance). `DimSumSurpriseServiceTests` exercises the redirect allowlist
+(`DimSumSurpriseService::isAllowedRedirectTarget`) directly: the exact allowed hosts over
+`https`, an unlisted host, plain `http` even on an allowed host, and an invalid URL.
+
+The redirect-following fetch itself was verified live: `curl -sIL` against a real published
+`catalog-v1` release asset confirmed the exact one-hop redirect chain
+(`github.com` → `release-assets.githubusercontent.com`), and the built application, run
+under Xvfb with `AU_DIM_SUM_FORCE=1` and a fresh application data directory, was observed to
+fetch and cache a real photo through that same redirect chain (a valid 1254x1254 PNG,
+2.3 MB) and then display it in the card. The full flow is captured in
+`docs/design/captures/lane-k2/08-dimsum-card-real-photo.png`.

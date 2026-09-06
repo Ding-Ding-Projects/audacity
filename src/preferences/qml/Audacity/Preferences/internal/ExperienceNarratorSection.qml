@@ -12,6 +12,8 @@ import Audacity.M3
 BaseSection {
     id: root
 
+    objectName: "ExperienceNarratorSection"
+
     property var settingsModel: null
 
     title: qsTrc("preferences", "Narrator")

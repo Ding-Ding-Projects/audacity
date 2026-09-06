@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QUrl>
 
 #include "dimsumcatalog.h"
 
@@ -43,21 +44,37 @@ private:
 };
 
 //! Fetches the public dim sum catalog and caches it plus one selected photo
-//! in the application data directory. Bounded size and timeout, no
-//! redirects, no third party mirrors. Never vendors an image into this
-//! repository; this class only ever writes into the local cache directory.
+//! in the application data directory. Bounded size and timeout, at most two
+//! redirects and only onto an explicitly allowlisted https host, no third
+//! party mirrors. Never vendors an image into this repository; this class
+//! only ever writes into the local cache directory.
 class DimSumSurpriseService : public QObject
 {
     Q_OBJECT
 
 public:
-    static constexpr int MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
+    // The real published catalog (2,866 dishes, each with a paragraph of
+    // generation prompt text) is a little over 8 MB, well past a
+    // conservative 2 MB guess; this leaves headroom for the catalog to grow
+    // further while still refusing anything unbounded.
+    static constexpr int MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
     static constexpr int TIMEOUT_MS = 6000;
+    //! A release asset download always answers with one redirect from
+    //! github.com to a signed, time-limited object storage URL. Two hops
+    //! covers that plus one extra without opening the door to an open
+    //! redirect chain.
+    static constexpr int MAX_REDIRECTS = 2;
 
     static QString catalogUrl();
     //! Builds the direct asset URL for a published catalog-v1* release asset
     //! file name. The caller already knows the file name from the catalog.
     static QString releaseAssetUrl(const QString& assetFileName);
+
+    //! True only when a redirect target is safe to follow: an https URL
+    //! whose host is one of the exact hosts a genuine GitHub release
+    //! download can redirect through. Anything else, including plain http,
+    //! an unlisted host, or a malformed URL, is refused.
+    static bool isAllowedRedirectTarget(const QUrl& url);
 
     explicit DimSumSurpriseService(QObject* parent = nullptr);
 
@@ -91,7 +108,10 @@ signals:
 
 private:
     void handleCatalogReply(QNetworkReply* reply);
-    void handlePhotoReply(QNetworkReply* reply, const QString& dishId, const QString& destinationPath);
+    void startPhotoRequest(const QUrl& url, const QString& dishId, const QString& destinationPath,
+                            int redirectsRemaining);
+    void handlePhotoReply(QNetworkReply* reply, const QString& dishId, const QString& destinationPath,
+                           int redirectsRemaining);
 
     QNetworkAccessManager* m_network = nullptr;
     bool m_refreshInFlight = false;
