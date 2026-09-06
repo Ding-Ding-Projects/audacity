@@ -49,6 +49,29 @@ BaseSection {
         }
     }
 
+    M3Switch {
+        text: qsTrc("preferences", "Quiet mode")
+        accessibleName: qsTrc("preferences", "Quiet mode. Keeps the narrator completely silent")
+        checked: root.settingsModel ? root.settingsModel.narratorQuietMode : false
+
+        navigation.panel: root.navigation
+        navigation.name: "NarratorQuietMode"
+        navigation.row: 2
+
+        onToggled: function (checked) {
+            root.settingsModel.narratorQuietMode = checked
+        }
+    }
+
+    StyledTextLabel {
+        width: parent.width
+        horizontalAlignment: Text.AlignLeft
+        wrapMode: Text.WordWrap
+        color: M3.color.onSurfaceVariant
+        font: M3.typography.bodySmall
+        text: qsTrc("preferences", "Quiet mode keeps the narrator silent even while it is otherwise on. The narrator also ducks under an active screen reader on its own.")
+    }
+
     StyledTextLabel {
         width: parent.width
         horizontalAlignment: Text.AlignLeft

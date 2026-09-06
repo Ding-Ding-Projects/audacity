@@ -17,8 +17,6 @@ Item {
 
     property alias model: dimSumModel
 
-    signal offerRequested(bool isFirstRun)
-
     DimSumSurpriseModel {
         id: dimSumModel
 
@@ -28,8 +26,11 @@ Item {
         }
     }
 
-    function offer(isFirstRun) {
-        dimSumModel.offerIfDue(isFirstRun)
+    // The model itself reads the real first-run and School mode state; the
+    // caller only decides when it is safe to ask (window up, no dialog or
+    // background task active).
+    function offer() {
+        dimSumModel.offerIfDue()
     }
 
     M3Card {

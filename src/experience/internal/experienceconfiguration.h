@@ -69,6 +69,8 @@ public:
     void setNarratorRate(double value) override;
     double narratorPitch() const override;
     void setNarratorPitch(double value) override;
+    bool quietModeEnabled() const override;
+    void setQuietModeEnabled(bool value) override;
     muse::async::Notification narratorSettingsChanged() const override;
 
 private:

@@ -30,7 +30,7 @@ Item {
 
     Component.onCompleted: {
         ExperienceBridge.overlay = root
-        dimSumSurprise.offer(false)
+        dimSumSurprise.offer()
     }
 
     function confirmDestructive(actionName, dataSummary, recoveryNote, invoker, onConfirmed) {

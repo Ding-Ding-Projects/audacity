@@ -3,7 +3,6 @@
  */
 #include "dimsumsurprisemodel.h"
 
-#include <cstdlib>
 #include <random>
 
 #include <QFile>
@@ -15,7 +14,18 @@ DimSumSurpriseModel::DimSumSurpriseModel(QObject* parent)
 {
 }
 
-void DimSumSurpriseModel::offerIfDue(bool isFirstRun)
+bool DimSumSurpriseModel::isFirstRun() const
+{
+    if (!appShellConfiguration()) {
+        // The app shell configuration could not be reached at all. Fail
+        // safe: treat an uncertain state as a first run so the surprise
+        // never appears before we can honestly tell.
+        return true;
+    }
+    return !appShellConfiguration()->hasCompletedFirstLaunchSetup();
+}
+
+void DimSumSurpriseModel::offerIfDue()
 {
     // School mode suppresses the surprise entirely, as if it were not
     // installed: no draw happens.
@@ -29,7 +39,7 @@ void DimSumSurpriseModel::offerIfDue(bool isFirstRun)
         return;
     }
 
-    if (isFirstRun) {
+    if (isFirstRun()) {
         return;
     }
 
@@ -49,10 +59,18 @@ void DimSumSurpriseModel::offerIfDue(bool isFirstRun)
         return;
     }
 
-    static thread_local std::mt19937 engine(std::random_device {}());
+    static thread_local std::mt19937 engine(std::random_device{}());
     std::uniform_int_distribution<int> pick(0, dishes.size() - 1);
     m_dish = dishes.at(pick(engine));
-    m_photoPath = QString();
+    // Only claim a photo is available once a locally cached copy of it
+    // actually exists; the catalog naming a photo asset is not the same
+    // as this machine having fetched it yet.
+    m_photoPath = m_service.cachedPhotoPath(m_dish);
+    if (m_photoPath.isEmpty()) {
+        // Fetch it in the background so a future launch can show it; this
+        // launch still shows the honest offline placeholder.
+        m_service.refreshPhotoAsync(m_dish);
+    }
     m_visible = true;
     emit revealed();
 }

@@ -56,6 +56,9 @@ class ExperienceSettingsModel : public QObject, public muse::Contextable, public
         QString narratorCantoneseVoiceId READ narratorCantoneseVoiceId WRITE setNarratorCantoneseVoiceId NOTIFY narratorSettingsChanged FINAL)
     Q_PROPERTY(double narratorRate READ narratorRate WRITE setNarratorRate NOTIFY narratorSettingsChanged FINAL)
     Q_PROPERTY(double narratorPitch READ narratorPitch WRITE setNarratorPitch NOTIFY narratorSettingsChanged FINAL)
+    //! Reduced-sound setting: while on, the narrator stays completely
+    //! silent even when otherwise enabled.
+    Q_PROPERTY(bool narratorQuietMode READ narratorQuietMode WRITE setNarratorQuietMode NOTIFY narratorSettingsChanged FINAL)
     Q_PROPERTY(QString narratorEngineDescription READ narratorEngineDescription CONSTANT FINAL)
 
     Q_PROPERTY(bool schoolModeOn READ schoolModeOn NOTIFY schoolModeChanged FINAL)
@@ -129,6 +132,8 @@ public:
     void setNarratorRate(double value);
     double narratorPitch() const;
     void setNarratorPitch(double value);
+    bool narratorQuietMode() const;
+    void setNarratorQuietMode(bool value);
     QString narratorEngineDescription() const;
 
     bool schoolModeOn() const;

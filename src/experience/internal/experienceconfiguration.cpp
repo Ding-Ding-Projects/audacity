@@ -35,6 +35,7 @@ static const Settings::Key NARRATOR_ENGLISH_VOICE(moduleName, "experience/narrat
 static const Settings::Key NARRATOR_CANTONESE_VOICE(moduleName, "experience/narrator/cantoneseVoiceId");
 static const Settings::Key NARRATOR_RATE(moduleName, "experience/narrator/rate");
 static const Settings::Key NARRATOR_PITCH(moduleName, "experience/narrator/pitch");
+static const Settings::Key NARRATOR_QUIET_MODE(moduleName, "experience/narrator/quietMode");
 
 //! Kept in the local settings file only. Never included in export, sync, or
 //! local history, and never printed or logged; a scheduled row that needs
@@ -85,10 +86,11 @@ void ExperienceConfiguration::init()
     settings()->setDefaultValue(NARRATOR_CANTONESE_VOICE, Val(std::string()));
     settings()->setDefaultValue(NARRATOR_RATE, Val(0.0));
     settings()->setDefaultValue(NARRATOR_PITCH, Val(0.0));
+    settings()->setDefaultValue(NARRATOR_QUIET_MODE, Val(false));
 
     const std::vector<Settings::Key> narratorKeys {
         NARRATOR_ENABLED, NARRATOR_LANGUAGE, NARRATOR_ENGLISH_VOICE, NARRATOR_CANTONESE_VOICE, NARRATOR_RATE,
-        NARRATOR_PITCH
+        NARRATOR_PITCH, NARRATOR_QUIET_MODE
     };
     for (const Settings::Key& key : narratorKeys) {
         settings()->valueChanged(key).onReceive(this, [this](const Val&) { m_narratorSettingsChanged.notify(); });
@@ -340,6 +342,16 @@ double ExperienceConfiguration::narratorPitch() const
 void ExperienceConfiguration::setNarratorPitch(double value)
 {
     settings()->setSharedValue(NARRATOR_PITCH, Val(value));
+}
+
+bool ExperienceConfiguration::quietModeEnabled() const
+{
+    return settings()->value(NARRATOR_QUIET_MODE).toBool();
+}
+
+void ExperienceConfiguration::setQuietModeEnabled(bool value)
+{
+    settings()->setSharedValue(NARRATOR_QUIET_MODE, Val(value));
 }
 
 async::Notification ExperienceConfiguration::narratorSettingsChanged() const

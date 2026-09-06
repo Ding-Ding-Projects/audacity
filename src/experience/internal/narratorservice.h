@@ -52,9 +52,29 @@ public:
 
     //! Speaks one line, at the given rate ([-1, 1] engine convention where
     //! supported) and pitch. voiceId may be empty for "choose automatically".
-    void speak(const QString& text, NarratorLanguage language, const QString& voiceId, double rate, double pitch);
+    //!
+    //! Two honest hooks gate whether anything is actually said, and both
+    //! are checked here rather than left to callers to remember:
+    //!  - quietMode is the narrator's own reduced-sound setting (see
+    //!    IExperienceConfiguration::quietModeEnabled). While it is on the
+    //!    narrator stays completely silent, exactly as a system-wide
+    //!    reduced-sound preference would.
+    //!  - screenReaderActive() reports whether an accessibility client
+    //!    (a screen reader) is currently attached, through
+    //!    QAccessible::isActive(). The narrator ducks under it, because a
+    //!    screen reader is already reading the interface and two spoken
+    //!    voices at once would be worse than either alone.
+    //! Neither hook suppresses drawing from the queue: callers still call
+    //! popNext() normally, and a suppressed utterance is simply not spoken.
+    void speak(const QString& text, NarratorLanguage language, const QString& voiceId, double rate, double pitch, bool quietMode);
 
     void stop();
+
+    //! True when an accessibility client such as a screen reader is
+    //! currently attached to this process. Detectable through Qt's own
+    //! QAccessible::isActive(), which becomes true the moment any
+    //! assistive technology queries the application.
+    static bool screenReaderActive();
 
 private:
     void detectEngine();

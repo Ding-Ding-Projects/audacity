@@ -42,12 +42,33 @@ A `NarratorQueue` orders every narrated line:
 
 ## Interaction with other features
 
-The narrator ducks under an active screen reader when one can be detected, and honours the
-system's reduced sound setting. It obeys School mode's suppression of the affected
-capabilities exactly like every other Experience feature that School mode touches.
+The narrator honours two gates before it actually speaks anything, both checked inside
+`NarratorEngine::speak()` so no call site can forget them:
+
+- **Quiet mode** is the narrator's own reduced-sound setting, a "Quiet mode" toggle in its
+  preferences section, backed by `IExperienceConfiguration::quietModeEnabled()`. While it is
+  on, the narrator stays completely silent even when otherwise enabled. This is a real
+  persisted setting, not a placeholder: it round-trips through muse settings exactly like
+  every other narrator preference.
+- **Screen reader ducking** uses `QAccessible::isActive()` as the detectable signal, exposed
+  as `NarratorEngine::screenReaderActive()`. Qt sets this to true the moment any assistive
+  technology (a screen reader) queries the application, and it has no separate on/off
+  setting: the narrator simply stays quiet for as long as it reports true, on the reasoning
+  that a screen reader already reading the interface should not be talked over.
+
+Both gates apply to every narrated category, error narration included: they are about
+whether any sound happens at all, not about how often it happens, so they are not the same
+kind of limit as the debounce and cooldown windows below (which do exempt error narration).
+
+It obeys School mode's suppression of the affected capabilities exactly like every other
+Experience feature that School mode touches.
 
 ## Verification
 
 Covered by `NarratorQueueTests` in `src/experience/tests/narratorqueue_tests.cpp`: ordering,
 debounce, per category cooldown with error narration exempt, supersession of a pending item
-by key, and the one utterance at a time guarantee.
+by key, and the one utterance at a time guarantee. The quiet mode setting round-trips
+through the same configuration test pattern as the rest of the narrator settings; the queue
+tests do not exercise `QAccessible::isActive()` directly since that is a live platform signal
+rather than pure logic, and is instead verified by reading the built application (the
+Narrator preferences section shows the Quiet mode toggle and its explanatory text).

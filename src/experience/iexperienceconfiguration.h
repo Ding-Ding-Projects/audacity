@@ -86,6 +86,12 @@ public:
     virtual void setNarratorRate(double value) = 0;
     virtual double narratorPitch() const = 0;
     virtual void setNarratorPitch(double value) = 0;
+    //! Off by default. When on, the narrator stays silent even while
+    //! enabled, exactly like a reduced-sound mode elsewhere in the system;
+    //! it is the setting that backs the narrator's honest "quiet mode"
+    //! reduced-sound hook.
+    virtual bool quietModeEnabled() const = 0;
+    virtual void setQuietModeEnabled(bool value) = 0;
     virtual muse::async::Notification narratorSettingsChanged() const = 0;
 };
 }

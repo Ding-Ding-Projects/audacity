@@ -33,9 +33,7 @@ BaseSection {
         wrapMode: Text.WordWrap
         color: M3.color.onSurface
         font: M3.typography.bodyMedium
-        text: root.settingsModel && root.settingsModel.schoolModeOn
-              ? qsTrc("preferences", "%1 is on.").arg(root.settingsModel.schoolModeDisplayName)
-              : qsTrc("preferences", "%1 is off.").arg(root.settingsModel ? root.settingsModel.schoolModeDisplayName : qsTrc("preferences", "School mode"))
+        text: root.settingsModel && root.settingsModel.schoolModeOn ? qsTrc("preferences", "%1 is on.").arg(root.settingsModel.schoolModeDisplayName) : qsTrc("preferences", "%1 is off.").arg(root.settingsModel ? root.settingsModel.schoolModeDisplayName : qsTrc("preferences", "School mode"))
     }
 
     M3TextField {
@@ -57,9 +55,7 @@ BaseSection {
 
         width: Math.min(parent.width, 360)
         isPassword: true
-        label: root.settingsModel && root.settingsModel.schoolModeHasCredential
-               ? qsTrc("preferences", "Enter the unlock PIN or password")
-               : qsTrc("preferences", "Set an unlock PIN or password")
+        label: root.settingsModel && root.settingsModel.schoolModeHasCredential ? qsTrc("preferences", "Enter the unlock PIN or password") : qsTrc("preferences", "Set an unlock PIN or password")
         supportingText: qsTrc("preferences", "Needed to turn this back off. If you forget it, delete the shared record file to reset it.")
         currentText: root.credentialText
 
@@ -69,17 +65,13 @@ BaseSection {
     }
 
     M3Button {
-        text: root.settingsModel && root.settingsModel.schoolModeOn
-              ? qsTrc("preferences", "Turn off")
-              : qsTrc("preferences", "Turn on")
+        text: root.settingsModel && root.settingsModel.schoolModeOn ? qsTrc("preferences", "Turn off") : qsTrc("preferences", "Turn on")
 
         onClicked: {
             if (!root.settingsModel) {
                 return
             }
-            const ok = root.settingsModel.schoolModeOn
-                ? root.settingsModel.turnSchoolModeOff(root.credentialText)
-                : root.settingsModel.turnSchoolModeOn(root.credentialText)
+            const ok = root.settingsModel.schoolModeOn ? root.settingsModel.turnSchoolModeOff(root.credentialText) : root.settingsModel.turnSchoolModeOn(root.credentialText)
             if (ok) {
                 root.credentialText = ""
                 credentialField.currentText = ""

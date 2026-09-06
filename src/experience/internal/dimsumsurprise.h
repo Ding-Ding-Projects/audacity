@@ -71,13 +71,30 @@ public:
     //! repeatedly; a refresh already in flight is not duplicated.
     void refreshCatalogAsync();
 
+    //! The local file a dish's photo would be cached at, whether or not it
+    //! has actually been fetched yet.
+    QString photoCachePath(const DimSumDish& dish) const;
+
+    //! Returns that path only when the file genuinely exists on disk, empty
+    //! otherwise. Never claims a photo is available on the strength of
+    //! catalog metadata alone.
+    QString cachedPhotoPath(const DimSumDish& dish) const;
+
+    //! Starts a bounded background fetch of one dish's photo from its
+    //! published catalog-v1* release asset. Safe to call repeatedly for the
+    //! same dish; a fetch already in flight for it is not duplicated.
+    void refreshPhotoAsync(const DimSumDish& dish);
+
 signals:
     void catalogRefreshed(bool ok);
+    void photoRefreshed(QString dishId, bool ok);
 
 private:
     void handleCatalogReply(QNetworkReply* reply);
+    void handlePhotoReply(QNetworkReply* reply, const QString& dishId, const QString& destinationPath);
 
     QNetworkAccessManager* m_network = nullptr;
     bool m_refreshInFlight = false;
+    QVector<QString> m_photoFetchesInFlight;
 };
 }

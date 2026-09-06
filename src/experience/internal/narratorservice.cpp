@@ -3,6 +3,7 @@
  */
 #include "narratorservice.h"
 
+#include <QAccessible>
 #include <QProcess>
 #include <QStandardPaths>
 
@@ -60,13 +61,25 @@ QVector<NarratorVoice> NarratorEngine::voicesFor(NarratorLanguage language) cons
     return {};
 }
 
+bool NarratorEngine::screenReaderActive()
+{
+    return QAccessible::isActive();
+}
+
 void NarratorEngine::speak(const QString& text, NarratorLanguage language, const QString& voiceId, double rate,
-                           double pitch)
+                           double pitch, bool quietMode)
 {
     Q_UNUSED(language);
     Q_UNUSED(voiceId);
     Q_UNUSED(rate);
     Q_UNUSED(pitch);
+
+    if (quietMode || screenReaderActive()) {
+        // Quiet mode is the narrator's own reduced-sound setting: honour it
+        // by staying silent. A screen reader already reading the interface
+        // gets ducked under rather than talked over.
+        return;
+    }
 
     if (m_engineKind != NarratorEngineKind::ProcessBackend || text.isEmpty()) {
         return;

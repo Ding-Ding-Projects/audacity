@@ -298,6 +298,16 @@ void ExperienceSettingsModel::setNarratorPitch(double value)
     configuration()->setNarratorPitch(value);
 }
 
+bool ExperienceSettingsModel::narratorQuietMode() const
+{
+    return configuration()->quietModeEnabled();
+}
+
+void ExperienceSettingsModel::setNarratorQuietMode(bool value)
+{
+    configuration()->setQuietModeEnabled(value);
+}
+
 QString ExperienceSettingsModel::narratorEngineDescription() const
 {
     return m_narratorEngine ? m_narratorEngine->engineDescription() : QString();

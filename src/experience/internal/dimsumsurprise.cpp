@@ -133,3 +133,84 @@ void DimSumSurpriseService::handleCatalogReply(QNetworkReply* reply)
 
     emit catalogRefreshed(true);
 }
+
+QString DimSumSurpriseService::photoCachePath(const DimSumDish& dish) const
+{
+    if (dish.id.isEmpty()) {
+        return QString();
+    }
+    const QString photosDir = cacheDirectory() + QStringLiteral("/photos");
+    QDir().mkpath(photosDir);
+
+    // The dish id is the project's own stable, filesystem-safe identifier
+    // (for example "hk-dish-0001"); the extension follows the asset the
+    // catalog actually named, defaulting to png.
+    QString extension = QFileInfo(dish.photoAsset).suffix();
+    if (extension.isEmpty()) {
+        extension = QStringLiteral("png");
+    }
+    return photosDir + QStringLiteral("/") + dish.id + QStringLiteral(".") + extension;
+}
+
+QString DimSumSurpriseService::cachedPhotoPath(const DimSumDish& dish) const
+{
+    const QString path = photoCachePath(dish);
+    if (path.isEmpty() || !QFile::exists(path)) {
+        return QString();
+    }
+    return QStringLiteral("file://") + path;
+}
+
+void DimSumSurpriseService::refreshPhotoAsync(const DimSumDish& dish)
+{
+    if (dish.photoAsset.isEmpty() || m_photoFetchesInFlight.contains(dish.id)) {
+        return;
+    }
+    m_photoFetchesInFlight.push_back(dish.id);
+
+    QNetworkRequest request { QUrl(releaseAssetUrl(dish.photoAsset)) };
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+    request.setMaximumRedirectsAllowed(0);
+
+    QNetworkReply* reply = m_network->get(request);
+
+    QTimer* timeoutTimer = new QTimer(reply);
+    timeoutTimer->setSingleShot(true);
+    QObject::connect(timeoutTimer, &QTimer::timeout, reply, &QNetworkReply::abort);
+    timeoutTimer->start(TIMEOUT_MS);
+
+    const QString destinationPath = photoCachePath(dish);
+    const QString dishId = dish.id;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, dishId, destinationPath]() {
+        handlePhotoReply(reply, dishId, destinationPath);
+    });
+}
+
+void DimSumSurpriseService::handlePhotoReply(QNetworkReply* reply, const QString& dishId,
+                                             const QString& destinationPath)
+{
+    m_photoFetchesInFlight.removeAll(dishId);
+    reply->deleteLater();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        emit photoRefreshed(dishId, false);
+        return;
+    }
+
+    // A photo is a larger asset than the catalog document itself; bound it
+    // generously but still refuse an unbounded response.
+    static constexpr int MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+    const QByteArray body = reply->read(MAX_PHOTO_BYTES + 1);
+    if (body.isEmpty() || body.size() > MAX_PHOTO_BYTES) {
+        emit photoRefreshed(dishId, false);
+        return;
+    }
+
+    QFile file(destinationPath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate) || file.write(body) != body.size()) {
+        emit photoRefreshed(dishId, false);
+        return;
+    }
+
+    emit photoRefreshed(dishId, true);
+}
