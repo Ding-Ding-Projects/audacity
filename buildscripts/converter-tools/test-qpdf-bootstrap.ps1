@@ -1,6 +1,29 @@
 [CmdletBinding()]
 param([Parameter(Mandatory=$true)][string]$ProofRoot)
 $ErrorActionPreference = 'Stop'
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+public static class QpdfTestDirectoryIdentity {
+    [StructLayout(LayoutKind.Sequential)] struct Info {
+        public uint Attributes;
+        public System.Runtime.InteropServices.ComTypes.FILETIME Creation, Access, Write;
+        public uint Volume, SizeHigh, SizeLow, Links, IndexHigh, IndexLow;
+    }
+    [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
+    static extern SafeFileHandle CreateFileW(string path, uint access, uint share, IntPtr security, uint creation, uint flags, IntPtr template);
+    [DllImport("kernel32.dll", SetLastError=true)]
+    static extern bool GetFileInformationByHandle(SafeFileHandle handle, out Info info);
+    public static string Read(string path) {
+        using (var handle=CreateFileW(path,0,7,IntPtr.Zero,3,0x02200000,IntPtr.Zero)) {
+            Info value;
+            if(handle.IsInvalid || !GetFileInformationByHandle(handle,out value)) throw new InvalidOperationException("Directory identity unavailable");
+            return String.Format("{0:X8}:{1:X8}{2:X8}",value.Volume,value.IndexHigh,value.IndexLow);
+        }
+    }
+}
+'@
 Import-Module (Join-Path $PSScriptRoot 'qpdfbootstrap.psm1') -Force
 $root = [IO.Path]::GetFullPath($ProofRoot)
 if (Test-Path -LiteralPath $root) { throw 'Use a fresh proof directory.' }
@@ -30,12 +53,13 @@ function Require([bool]$Condition,[string]$Message) { if(!$Condition){throw $Mes
 function Fresh([string]$Name) {
     $destination=Join-Path $root $Name
     Invoke-QpdfBootstrap -DestinationRoot $destination -CacheRoot $cache | Out-Null
-    [IO.File]::WriteAllText((Join-Path $destination 'converter-tools/qpdf/prior-marker.txt'),'prior verified bundle')
+    # Keep the native directory identity outside the exact runtime inventory.
+    [IO.File]::WriteAllText((Join-Path $destination 'prior-directory-id.txt'),[QpdfTestDirectoryIdentity]::Read((Join-Path $destination 'converter-tools/qpdf')))
     return $destination
 }
 function Preserved([string]$Destination) {
     Require (Test-QpdfBundle (Join-Path $Destination 'converter-tools/qpdf')) 'All original components remain verified'
-    Require ((Get-Content -Raw -LiteralPath (Join-Path $Destination 'converter-tools/qpdf/prior-marker.txt')) -ceq 'prior verified bundle') 'The actual prior bundle was retained/restored'
+    Require ([QpdfTestDirectoryIdentity]::Read((Join-Path $Destination 'converter-tools/qpdf')) -ceq [IO.File]::ReadAllText((Join-Path $Destination 'prior-directory-id.txt'))) 'The actual prior directory was retained/restored'
 }
 function Child([string]$Destination,[string]$Mode,[string]$Barrier=$root) {
     $id=[guid]::NewGuid().ToString('N')
@@ -100,7 +124,7 @@ $tests=[ordered]@{
         Invoke-QpdfBootstrap -DestinationRoot $destination -CacheRoot $cache | Out-Null
         $backups=@(Get-ChildItem -LiteralPath (Join-Path $destination 'converter-tools') -Directory -Force -Filter '.qpdf-backup-*')
         Require ($backups.Count -eq 1 -and (Test-QpdfBundle $backups[0].FullName)) 'Previous complete bundle remains recoverable'
-        Require ((Get-Content -Raw -LiteralPath (Join-Path $backups[0].FullName 'prior-marker.txt')) -ceq 'prior verified bundle') 'Backup is the actual prior installation'
+        Require ([QpdfTestDirectoryIdentity]::Read($backups[0].FullName) -ceq [IO.File]::ReadAllText((Join-Path $destination 'prior-directory-id.txt'))) 'Backup is the actual prior installation'
     }
     'tampered activated component restores independent prior pins'={
         $destination=Fresh 'tampered'
@@ -147,6 +171,31 @@ $tests=[ordered]@{
         catch { $refused=$_.Exception.Message -like '*Invalid qpdf activation journal fields*' }
         Require $refused 'Malformed journal failed closed'
         Preserved $destination
+    }
+    'extra DLL executable and text entries fail exact inventory'={
+        foreach($name in @('unexpected.dll','unexpected.exe','unexpected.txt')) {
+            $destination=Fresh ('extra-'+$name)
+            [IO.File]::WriteAllText((Join-Path $destination ('converter-tools/qpdf/'+$name)),'not a trusted component')
+            Require (!(Test-QpdfBundle (Join-Path $destination 'converter-tools/qpdf'))) ('Unexpected entry was rejected: '+$name)
+            Invoke-QpdfBootstrap -DestinationRoot $destination -CacheRoot $cache | Out-Null
+            Require (Test-QpdfBundle (Join-Path $destination 'converter-tools/qpdf')) 'Repair activated exactly the trusted components'
+            Require (@(Get-ChildItem -LiteralPath (Join-Path $destination 'converter-tools') -Directory -Force -Filter '.qpdf-backup-*').Count -eq 1) 'Unexpected content was preserved in the prior directory'
+        }
+    }
+    'extra directory fails exact inventory'={
+        $destination=Fresh 'extra-directory'
+        [IO.Directory]::CreateDirectory((Join-Path $destination 'converter-tools/qpdf/unexpected'))|Out-Null
+        Require (!(Test-QpdfBundle (Join-Path $destination 'converter-tools/qpdf'))) 'Unexpected directory was rejected'
+    }
+    'reparse directory fails without following its target'={
+        $destination=Fresh 'reparse-directory'
+        $outside=Join-Path $destination 'outside';[IO.Directory]::CreateDirectory($outside)|Out-Null
+        [IO.File]::WriteAllText((Join-Path $outside 'retained.txt'),'unrelated bytes remain')
+        $link=Join-Path $destination 'converter-tools/qpdf/redirect'
+        & cmd /d /c ('mklink /J "'+$link+'" "'+$outside+'"') | Out-Null
+        Require ($LASTEXITCODE -eq 0) 'Real directory junction fixture was created'
+        Require (!(Test-QpdfBundle (Join-Path $destination 'converter-tools/qpdf'))) 'Reparse directory was rejected'
+        Require ((Get-Content -LiteralPath (Join-Path $outside 'retained.txt') -Raw) -ceq 'unrelated bytes remain') 'Reparse target was preserved'
     }
 }
 $failed=0

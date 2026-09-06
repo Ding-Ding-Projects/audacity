@@ -199,6 +199,12 @@ struct PinnedFile {
 QString pinBundle(std::vector<std::unique_ptr<PinnedFile>>& files, QString* toolPath = nullptr)
 {
     const QDir folder(QFileInfo(PdfProcessor::bundledToolPath()).absolutePath());
+    const auto entries = folder.entryInfoList(QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
+    if (entries.size() != detail::QpdfFiles.size()) return QStringLiteral("The qpdf bundle contains missing or unexpected entries.");
+    for (const auto& entry : entries) {
+        if (!entry.isFile() || entry.isSymLink() || !detail::QpdfFiles.contains(entry.fileName()))
+            return QStringLiteral("The qpdf bundle contains an unexpected or redirected entry.");
+    }
     for (auto it = detail::QpdfFiles.cbegin(); it != detail::QpdfFiles.cend(); ++it) {
         auto pin = std::make_unique<PinnedFile>();
         if (!pin->open(folder.filePath(it.key()), PdfProcessor::MaxInputBytes) || hashDevice(*pin->file) != it.value())

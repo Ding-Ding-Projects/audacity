@@ -18,7 +18,10 @@ and all nine required DLLs match the independent SHA-256 inventory in
 `buildscripts/converter-tools/qpdf.lock.json`. The runtime inventory is mirrored
 in `src/converter/qpdfbundle.h`, with an exact equality regression. The bootstrap
 checks every component on warm installations and after extraction of the pinned
-official qpdf 12.3.2 archive. It
+official qpdf 12.3.2 archive. Both bootstrap and runtime require exactly those ten
+regular files. Extra DLLs, executables, text files, directories, and reparse
+entries invalidate the bundle; no unpinned notices or helper files are allowed
+inside this runtime directory. It
 never searches `PATH` or accepts a developer tool. The adapter runs fixed qpdf
 arguments only, has a shared 60-second operation deadline, caps source and output files,
 rejects all encrypted inputs without accepting credentials, streams into a private temporary file,
@@ -50,6 +53,30 @@ directory. A missing archive is fetched from the pinned official URL and hashed
 before extraction. Cache hits are independently hashed again, not trusted through
 a receipt alone. Hashing uses framework cryptography directly, without relying
 on child PowerShell command auto-loading. Both entry points fail if qpdf provisioning fails.
+
+The release workflow uses `buildscripts/ci/windows/ci_build.cmake` and
+`buildscripts/ci/windows/package.cmake`, not the root batch build. Both now include
+`buildscripts/converter-tools/provision-qpdf.cmake`: the first after the actual CI
+install completes, the second immediately before packaging consumes the install
+tree. The shared include provisions the same `bin/converter-tools/qpdf` location
+and fails before packaging if verification or provisioning fails. `INSTALL_DIR`
+in the packaging entry point accepts an explicit existing copied install tree,
+so packaging verification can preserve an immutable original.
+All supported Windows delivery modes (development, nightly, testing, and stable)
+now select Squirrel.Windows. Archive-only package overrides are rejected, and the
+old 7z branch that renamed the install tree is absent from the production entry point.
+
+`verify-qpdf-package.ps1` reads a real full package as a ZIP stream and verifies
+exactly ten component paths and their independent hashes under
+`lib/net45/bin/converter-tools/qpdf/` (an explicit alternate prefix supports flat
+payloads). It rejects extra/duplicate/reparse entries and refuses packages carrying
+bootstrap administrative siblings such as `.qpdf-backup-*` or activation journals.
+Those records belong to source-side recovery and must be omitted from the owned
+package staging copy, never deleted from the source install tree. The packaging
+callers must invoke the verifier on the exact current full package, not historical
+packages copied in for delta generation. `test-qpdf-package.ps1` supplies seven
+synthetic ZIP validation fixtures; those prove the checker and are not themselves
+an installer or full-application packaging result.
 
 `bootstrap-qpdf.ps1` calls the shared `qpdfbootstrap.psm1` implementation. An
 exclusive destination lock serializes every warm check, recovery, staging, and

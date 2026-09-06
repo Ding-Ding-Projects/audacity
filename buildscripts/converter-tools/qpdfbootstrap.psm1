@@ -38,6 +38,12 @@ function Assert-QpdfDirectory([string]$Path) {
 function Test-QpdfBundle([string]$Root, $Lock = (Get-QpdfLock)) {
     if (!(Test-Path -LiteralPath $Root -PathType Container)) { return $false }
     if ((Get-Item -LiteralPath $Root -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { return $false }
+    $children = @(Get-ChildItem -LiteralPath $Root -Force)
+    $names = @($Lock.files.psobject.Properties.Name)
+    if ($children.Count -ne $names.Count) { return $false }
+    foreach ($child in $children) {
+        if ($child.PSIsContainer -or ($child.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $names -cnotcontains $child.Name) { return $false }
+    }
     foreach ($entry in $Lock.files.psobject.Properties) {
         $path = Join-Path $Root $entry.Name
         if (!(Test-Path -LiteralPath $path -PathType Leaf)) { return $false }
