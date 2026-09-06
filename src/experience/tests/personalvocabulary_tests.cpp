@@ -9,7 +9,7 @@ using namespace au::experience;
 
 TEST(PersonalVocabularyTests, ReadsAValidFile)
 {
-    const QByteArray data = R"({"version":1,"entries":[{"from":"track","to":"lane"},{"from":"clip","to":"take"}]})";
+    const QByteArray data = R"({"schemaVersion":1,"entries":{"track":"lane","clip":"take"}})";
     const PersonalVocabulary::ParseResult result = PersonalVocabulary::parse(data);
 
     ASSERT_TRUE(result.ok) << result.error.toStdString();
@@ -26,45 +26,73 @@ TEST(PersonalVocabularyTests, RejectsBrokenJson)
     EXPECT_FALSE(PersonalVocabulary::parse(QByteArray("{ not json")).ok);
 }
 
-TEST(PersonalVocabularyTests, RejectsAnUnknownVersion)
+TEST(PersonalVocabularyTests, RejectsLegacyShapeForImports)
 {
-    const QByteArray data = R"({"version":2,"entries":[{"from":"a","to":"b"}]})";
+    const QByteArray data = R"({"version":1,"entries":[{"from":"a","to":"b"}]})";
     EXPECT_FALSE(PersonalVocabulary::parse(data).ok);
 }
 
-TEST(PersonalVocabularyTests, RejectsAMissingEntriesArray)
+TEST(PersonalVocabularyTests, MigratesAValidatedLegacyCache)
 {
-    EXPECT_FALSE(PersonalVocabulary::parse(QByteArray(R"({"version":1})")).ok);
+    const QByteArray data = R"({"version":1,"entries":[{"from":"track","to":"lane"},{"from":"clip","to":"take"}]})";
+    const PersonalVocabulary::ParseResult result = PersonalVocabulary::parseStoredCache(data);
+
+    ASSERT_TRUE(result.ok) << result.error.toStdString();
+    EXPECT_TRUE(result.migratedLegacy);
+    EXPECT_EQ(result.entries.size(), 2);
 }
 
-TEST(PersonalVocabularyTests, RejectsAnEntryWithoutStrings)
+TEST(PersonalVocabularyTests, RejectsInvalidLegacyCacheEntries)
 {
     const QByteArray data = R"({"version":1,"entries":[{"from":"a","to":4}]})";
-    EXPECT_FALSE(PersonalVocabulary::parse(data).ok);
+    EXPECT_FALSE(PersonalVocabulary::parseStoredCache(data).ok);
 }
 
-TEST(PersonalVocabularyTests, RejectsAnEmptyFrom)
-{
-    const QByteArray data = R"({"version":1,"entries":[{"from":"","to":"b"}]})";
-    EXPECT_FALSE(PersonalVocabulary::parse(data).ok);
-}
-
-TEST(PersonalVocabularyTests, RejectsARepeatedFrom)
+TEST(PersonalVocabularyTests, RejectsARepeatedLegacySource)
 {
     const QByteArray data = R"({"version":1,"entries":[{"from":"a","to":"b"},{"from":"a","to":"c"}]})";
+    EXPECT_FALSE(PersonalVocabulary::parseStoredCache(data).ok);
+}
+
+TEST(PersonalVocabularyTests, RejectsDuplicateDecodedCanonicalKeys)
+{
+    const QByteArray data = R"({"schemaVersion":1,"entries":{"a":"b","\u0061":"c"}})";
     EXPECT_FALSE(PersonalVocabulary::parse(data).ok);
+}
+
+TEST(PersonalVocabularyTests, RejectsUnsafeAndControlEntryKeys)
+{
+    EXPECT_FALSE(PersonalVocabulary::parse(QByteArray(R"({"schemaVersion":1,"entries":{"__proto__":"value"}})")).ok);
+    EXPECT_FALSE(PersonalVocabulary::parse(QByteArray(R"({"schemaVersion":1,"entries":{"a\u0001":"value"}})")).ok);
+}
+
+TEST(PersonalVocabularyTests, RejectsExcessiveJsonDepth)
+{
+    QByteArray value = R"("value")";
+    for (int i = 0; i < 8; ++i) {
+        value = QByteArray("[") + value + QByteArray("]");
+    }
+    const QByteArray data = QByteArray(R"({"schemaVersion":1,"entries":{"term":)") + value + QByteArray("}}");
+    EXPECT_FALSE(PersonalVocabulary::parse(data).ok);
+}
+
+TEST(PersonalVocabularyTests, AcceptsAnEmptyCanonicalTable)
+{
+    const PersonalVocabulary::ParseResult result = PersonalVocabulary::parse(QByteArray(R"({"schemaVersion":1,"entries":{}})"));
+    ASSERT_TRUE(result.ok) << result.error.toStdString();
+    EXPECT_TRUE(result.entries.isEmpty());
 }
 
 TEST(PersonalVocabularyTests, AcceptsExactlyTheEntryLimit)
 {
-    QByteArray data = R"({"version":1,"entries":[)";
+    QByteArray data = R"({"schemaVersion":1,"entries":{)";
     for (int i = 0; i < PersonalVocabulary::MAX_ENTRIES; ++i) {
         if (i > 0) {
             data += ",";
         }
-        data += QStringLiteral(R"({"from":"term%1","to":"word%1"})").arg(i).toUtf8();
+        data += QStringLiteral(R"("term%1":"word%1")").arg(i).toUtf8();
     }
-    data += "]}";
+    data += "}}";
 
     const PersonalVocabulary::ParseResult result = PersonalVocabulary::parse(data);
     ASSERT_TRUE(result.ok) << result.error.toStdString();
@@ -73,14 +101,14 @@ TEST(PersonalVocabularyTests, AcceptsExactlyTheEntryLimit)
 
 TEST(PersonalVocabularyTests, RejectsOneEntryTooMany)
 {
-    QByteArray data = R"({"version":1,"entries":[)";
+    QByteArray data = R"({"schemaVersion":1,"entries":{)";
     for (int i = 0; i <= PersonalVocabulary::MAX_ENTRIES; ++i) {
         if (i > 0) {
             data += ",";
         }
-        data += QStringLiteral(R"({"from":"term%1","to":"word%1"})").arg(i).toUtf8();
+        data += QStringLiteral(R"("term%1":"word%1")").arg(i).toUtf8();
     }
-    data += "]}";
+    data += "}}";
 
     EXPECT_FALSE(PersonalVocabulary::parse(data).ok);
 }
@@ -103,7 +131,7 @@ TEST(PersonalVocabularyTests, SubstitutesWholeWordsOnly)
 
 TEST(PersonalVocabularyTests, LongerTermsWinOverShorterOnes)
 {
-    const QByteArray data = R"({"version":1,"entries":[{"from":"audio","to":"sound"},{"from":"audio track","to":"sound lane"}]})";
+    const QByteArray data = R"({"schemaVersion":1,"entries":{"audio":"sound","audio track":"sound lane"}})";
     const PersonalVocabulary::ParseResult result = PersonalVocabulary::parse(data);
     ASSERT_TRUE(result.ok);
 
@@ -112,7 +140,7 @@ TEST(PersonalVocabularyTests, LongerTermsWinOverShorterOnes)
 
 TEST(PersonalVocabularyTests, SerialisesBackToTheSameTable)
 {
-    const QByteArray data = R"({"version":1,"entries":[{"from":"track","to":"lane"}]})";
+    const QByteArray data = R"({"schemaVersion":1,"entries":{"track":"lane"}})";
     const PersonalVocabulary::ParseResult first = PersonalVocabulary::parse(data);
     ASSERT_TRUE(first.ok);
 

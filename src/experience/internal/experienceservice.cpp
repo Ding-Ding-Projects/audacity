@@ -180,9 +180,16 @@ void ExperienceService::loadStoredVocabulary()
     const QByteArray data = file.readAll();
     file.close();
 
-    const PersonalVocabulary::ParseResult parsed = PersonalVocabulary::parse(data);
+    const PersonalVocabulary::ParseResult parsed = PersonalVocabulary::parseStoredCache(data);
     if (parsed.ok && m_translator) {
         m_translator->setVocabulary(parsed.entries);
+    }
+
+    if (parsed.ok && parsed.migratedLegacy) {
+        QFile storage(configuration()->vocabularyStoragePath());
+        if (storage.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            storage.write(PersonalVocabulary::serialize(parsed.entries));
+        }
     }
 }
 
