@@ -500,10 +500,17 @@ if (-not $hasPrevious) {
 
 # Squirrel.exe is a Windows GUI subsystem executable. Invoking it with the call
 # operator returns immediately, before any output exists, so the process must be
-# awaited explicitly. Its diagnostics land in SquirrelSetup.log next to the tool.
+# awaited explicitly. Start-Process joins ArgumentList items into one command
+# line, therefore quote every item before passing a path that contains spaces.
+# Its diagnostics land in SquirrelSetup.log next to the tool.
+function ConvertTo-CommandLineArgument([string] $Value) {
+    return '"' + ($Value -replace '(\\*)"', '$1$1\\"' -replace '(\\+)$', '$1$1') + '"'
+}
+
 $squirrelLog = Join-Path (Split-Path -Parent $squirrelExe) "SquirrelSetup.log"
 if (Test-Path -LiteralPath $squirrelLog) { Remove-Item -LiteralPath $squirrelLog -Force }
-$releasifyProcess = Start-Process -FilePath $squirrelExe -ArgumentList $releasifyArgs -Wait -PassThru -NoNewWindow
+$releasifyCommandLine = ($releasifyArgs | ForEach-Object { ConvertTo-CommandLineArgument $_ }) -join ' '
+$releasifyProcess = Start-Process -FilePath $squirrelExe -ArgumentList $releasifyCommandLine -Wait -PassThru -NoNewWindow
 if (Test-Path -LiteralPath $squirrelLog) {
     Write-Host "--- SquirrelSetup.log ---"
     Get-Content -LiteralPath $squirrelLog | Select-Object -Last 80 | ForEach-Object { Write-Host $_ }
