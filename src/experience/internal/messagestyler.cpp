@@ -120,14 +120,14 @@ QString emojiFor(MessageKind kind)
 {
     switch (kind) {
     case MessageKind::Success:
-        return QStringLiteral("\xF0\x9F\x8E\x89");
+        return QString::fromUtf8("\xF0\x9F\x8E\x89");
     case MessageKind::Warning:
-        return QStringLiteral("\xE2\x9A\xA0\xEF\xB8\x8F");
+        return QString::fromUtf8("\xE2\x9A\xA0\xEF\xB8\x8F");
     case MessageKind::Error:
-        return QStringLiteral("\xF0\x9F\x9B\x91");
+        return QString::fromUtf8("\xF0\x9F\x9B\x91");
     case MessageKind::Info:
     case MessageKind::Dialog:
-        return QStringLiteral("\xF0\x9F\x92\xAC");
+        return QString::fromUtf8("\xF0\x9F\x92\xAC");
     case MessageKind::Tooltip:
         break;
     }
