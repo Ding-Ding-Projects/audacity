@@ -27,12 +27,32 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.M3
+import Audacity.Companion
 
 FocusScope {
     id: root
 
     property var model: []
     property int currentIndex: -1
+
+    // Items left after the popup's own filter field is applied. Plain text
+    // is the default match; the field's own regular expression builder is
+    // reached from the same field.
+    property string filterText: ""
+
+    readonly property var filteredModel: {
+        if (root.filterText === "") {
+            return root.model
+        }
+        var needle = root.filterText.toLowerCase()
+        var result = []
+        for (var i = 0; i < root.model.length; ++i) {
+            if (root.textOf(root.model[i]).toLowerCase().indexOf(needle) !== -1) {
+                result.push(root.model[i])
+            }
+        }
+        return result
+    }
 
     property string textRole: "text"
     property string valueRole: "value"
@@ -236,31 +256,100 @@ FocusScope {
         verticalMargins: 8
 
         contentWidth: root.width
-        contentHeight: Math.min(300, list.contentHeight)
+        contentHeight: dropdownColumn.implicitHeight
 
-        ListView {
-            id: list
+        onOpened: {
+            root.filterText = ""
+            dropdownSearch.searchText = ""
+        }
+
+        onClosed: dropdownRegexBuilder.close()
+
+        Column {
+            id: dropdownColumn
 
             width: popup.contentWidth
-            height: popup.contentHeight
-            clip: true
-            model: root.model
 
-            delegate: M3ListItem {
-                required property int index
-                required property var modelData
+            M3SearchBar {
+                id: dropdownSearch
+                objectName: "M3DropdownSearch"
 
-                width: list.width
-                headline: root.textOf(modelData)
-                selected: index === root.currentIndex
-                leadingIcon: index === root.currentIndex ? IconCode.TICK_RIGHT_ANGLE : IconCode.NONE
+                width: parent.width - 16
+                anchors.horizontalCenter: parent.horizontalCenter
+                showRegexBuilder: true
+                placeholder: qsTrc("uicomponents", "Filter")
 
-                onClicked: {
-                    root.currentIndex = index
-                    root.activated(index, root.valueOf(modelData))
-                    popup.close()
+                Keys.onEscapePressed: function (event) {
+                    if (dropdownSearch.searchText !== "") {
+                        dropdownSearch.clear()
+                        root.filterText = ""
+                        event.accepted = true
+                    } else {
+                        popup.close()
+                        event.accepted = true
+                    }
+                }
+
+                onSearchTextChanged: root.filterText = dropdownSearch.searchText
+                onRegexBuilderRequested: {
+                    dropdownRegexBuilder.pattern = dropdownSearch.searchText
+                    dropdownRegexBuilder.open()
                 }
             }
+
+            StyledTextLabel {
+                width: parent.width - 16
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: root.filterText !== "" && root.filteredModel.length === 0
+                horizontalAlignment: Text.AlignHCenter
+
+                //: Shown in a dropdown's filter field when nothing matches the typed text.
+                text: qsTrc("uicomponents", "No matching items")
+            }
+
+            ListView {
+                id: list
+
+                width: dropdownColumn.width
+                height: Math.min(300, list.contentHeight)
+                clip: true
+                model: root.filteredModel
+
+                delegate: M3ListItem {
+                    required property int index
+                    required property var modelData
+
+                    width: list.width
+                    headline: root.textOf(modelData)
+                    selected: root.model[root.currentIndex] === modelData
+                    leadingIcon: root.model[root.currentIndex] === modelData ? IconCode.TICK_RIGHT_ANGLE : IconCode.NONE
+
+                    onClicked: {
+                        var realIndex = root.model.indexOf(modelData)
+                        root.currentIndex = realIndex
+                        root.activated(realIndex, root.valueOf(modelData))
+                        popup.close()
+                    }
+                }
+            }
+        }
+
+        RegexBuilderSheet {
+            id: dropdownRegexBuilder
+
+            z: 10
+            width: popup.contentWidth
+            height: popup.contentHeight
+
+            storeName: root.objectName !== "" ? root.objectName : "M3Dropdown"
+            fieldLabel: qsTrc("uicomponents", "Filter")
+
+            onPatternAccepted: function (pattern) {
+                dropdownSearch.searchText = pattern
+                root.filterText = pattern
+            }
+
+            onClosed: dropdownSearch.forceActiveFocus()
         }
     }
 

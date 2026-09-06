@@ -21,6 +21,43 @@ popups and dialogs, which cannot host an anchored sheet without being clipped
 by their own window, raise `regexBuilderRequested` for the surface that opened
 them.
 
+## Every menu and every dropdown
+
+`M3Menu` and the flat list popup used by `M3Dropdown` carry the filter field
+and the builder by default, not as something a call site opts into. A menu of
+two items gets the same filter field as a menu of two hundred, because a short
+menu today is not a promise it stays short. Plain text matches the visible
+title of each item; the match never reorders items, never changes what an
+item does, and never touches a separator.
+
+Each of the two carries its own `RegexBuilderSheet`, so neither one needs an
+outside surface to answer a request for the builder: opening the builder from
+inside a menu that is itself a popup does not need a second popup floating
+somewhere else to catch the request. `M3Menu` still raises
+`regexBuilderRequested` afterwards for a host that keeps one shared builder
+across a whole page, such as a settings dialog with several fields, but
+nothing in the application currently listens for it, and the search inventory
+records that plainly rather than pretending a listener exists.
+
+Escape clears the filter first and closes the menu on a second press. The
+result count is announced to a screen reader on every change, whether or not
+it is shown visually, and an honest "No matching items" message replaces the
+item list rather than leaving it blank when nothing survives the filter.
+Every widget built from these two, including the browser style tab strip's
+right click menu, the workspace and snap toolbar dropdowns and every
+`DropdownWithTitle`, gets the filter field and the builder for free because
+they are built from `M3Menu` or `M3Dropdown` underneath.
+
+The muse framework's own native menu (used for the application menu bar and
+for context menus that have not yet moved to `M3Menu`) already carries a
+plain text filter field through its `isSearchable` property, but nothing in
+this application currently turns it on, and it has no builder button of its
+own. Wiring that native menu is deliberately out of this pass: the muse
+submodule working tree is shared with other work in flight at the same time,
+and editing a submodule that several changes are touching at once risks
+corrupting somebody else's patch. It is recorded here as the next step for the
+remaining native menus, rather than left as a silent gap.
+
 ## Layout
 
 The builder is a non-modal `M3SideSheet` on the trailing edge of the surface

@@ -10,6 +10,14 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- UI components module: every `M3Menu` and the flat list popup used by
+  `M3Dropdown` now show a keyboard focusable filter field by default, not
+  only for long menus, plain text matching first with the field's own
+  anchored regular expression builder one click away, an announced result
+  count for screen readers, an honest "No matching items" state, and Escape
+  clearing the filter before closing the menu; every menu and dropdown built
+  on top of these two, including the tab strip's right click menu and the
+  workspace and snap toolbar dropdowns, gets this for free
 - Experience module: a focused unit test for the notification centre
   covering id assignment, active versus dismissed state, history ordering
   and its size limit, and the action request channel

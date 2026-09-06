@@ -11,6 +11,12 @@
 *
 * Replaces: Muse.UiComponents StyledMenu.
 *
+* Every menu, short or long, shows the filter field: plain text search is
+* the default, and its own regular expression builder is one click away.
+* A host may listen for regexBuilderRequested to open a shared builder of
+* its own, but nothing has to: this menu answers the request itself with a
+* built in RegexBuilderSheet, so a menu never needs an external host.
+*
 * API:
 *     model (list of { id, title, shortcut, icon, checkable, checked,
 *            separator, subitems }), searchable, filterText,
@@ -28,15 +34,23 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.M3
+import Audacity.Companion
 
 StyledPopupView {
     id: root
 
     property var model: []
 
-    // Shows a search field at the top of the menu.
-    property bool searchable: false
+    // Shows a search field at the top of the menu. Every menu is searchable
+    // by default, not only the long ones: a short menu that stops being
+    // short after a later change should not need this flag revisited.
+    property bool searchable: true
     property string filterText: ""
+
+    // A distinct identifier for this menu, used to keep its regular
+    // expression builder state (pattern, flags, saved cases) separate from
+    // every other menu and search field in the application.
+    property string menuName: "M3Menu"
 
     property NavigationPanel navigationPanel: null
 
@@ -98,6 +112,14 @@ StyledPopupView {
     contentWidth: Math.max(112, column.implicitWidth)
     contentHeight: column.implicitHeight
 
+    onOpened: {
+        if (root.searchable) {
+            search.searchText = ""
+        }
+    }
+
+    onClosed: menuRegexBuilder.close()
+
     Column {
         id: column
 
@@ -111,10 +133,49 @@ StyledPopupView {
             anchors.horizontalCenter: parent.horizontalCenter
             visible: root.searchable
             showRegexBuilder: true
-            placeholder: "Filter"
+            placeholder: qsTrc("uicomponents", "Filter")
+
+            Accessible.description: qsTrc("uicomponents", "Filters the menu items below. Plain text by default, or use the regular expression builder.")
+
+            Keys.onEscapePressed: function (event) {
+                if (search.searchText !== "") {
+                    search.clear()
+                    root.filterText = ""
+                    event.accepted = true
+                } else {
+                    root.close()
+                    event.accepted = true
+                }
+            }
 
             onSearchTextChanged: root.filterText = search.searchText
-            onRegexBuilderRequested: root.regexBuilderRequested()
+            onRegexBuilderRequested: {
+                menuRegexBuilder.pattern = search.searchText
+                menuRegexBuilder.open()
+                root.regexBuilderRequested()
+            }
+        }
+
+        // The screen reader result count. Visually hidden but always
+        // present, so a filtered menu never reports its count only to a
+        // sighted user.
+        Item {
+            width: 1
+            height: 1
+            visible: false
+
+            Accessible.role: Accessible.StaticText
+            Accessible.name: root.searchable && root.filterText !== "" ? qsTrc("uicomponents", "%n result(s)", "", root.visibleItems.length) : ""
+        }
+
+        StyledTextLabel {
+            width: parent.width - 16
+            anchors.horizontalCenter: parent.horizontalCenter
+            visible: root.searchable && root.filterText !== "" && root.visibleItems.length === 0
+            horizontalAlignment: Text.AlignHCenter
+
+            //: Shown in a menu's filter field when nothing matches the typed text.
+            text: qsTrc("uicomponents", "No matching items")
         }
 
         Repeater {
@@ -168,6 +229,30 @@ StyledPopupView {
                 }
             }
         }
+    }
+
+    /*
+     * The default builder host. A menu never needs an outside surface to
+     * answer regexBuilderRequested: this sheet opens right over the menu's
+     * own content, keyed by this menu's own name, and never bleeds its
+     * pattern, flags or saved cases into any other field's builder.
+     */
+    RegexBuilderSheet {
+        id: menuRegexBuilder
+
+        z: 10
+        width: root.contentWidth
+        height: root.contentHeight
+
+        storeName: root.menuName
+        fieldLabel: qsTrc("uicomponents", "Filter")
+
+        onPatternAccepted: function (pattern) {
+            search.searchText = pattern
+            root.filterText = pattern
+        }
+
+        onClosed: search.forceActiveFocus()
     }
 
     /*

@@ -34,7 +34,8 @@ that its file does not carry.
 | Projects page, recent projects | `src/project/qml/Audacity/Project/ProjectsPage.qml` | `ProjectsPageSearch` | yes | `projects-page` |
 | New project, template titles | `src/project/qml/Audacity/Project/internal/NewProject/TitleListView.qml` | `NewProjectTitleSearch` | yes | `new-project-titles` |
 | Developer tools, settings list | `src/appshell/qml/Audacity/AppShell/DevTools/Preferences/SettingsPage.qml` | `DevToolsSettingsSearch` | forwarded | `src/appshell/qml/Audacity/AppShell/DevTools/DevToolsPage.qml` |
-| `M3Menu` filter field | `src/uicomponents/qml/Audacity/M3/M3Menu.qml` | `M3MenuSearch` | forwarded | the menu's host, through `M3Menu.regexBuilderRequested` |
+| `M3Menu` filter field | `src/uicomponents/qml/Audacity/M3/M3Menu.qml` | `M3MenuSearch` | yes | `M3Menu.menuName`, set per menu; also forwards `regexBuilderRequested` for a host that wants a shared builder instead |
+| `M3Dropdown` filter field (flat list popup) | `src/uicomponents/qml/Audacity/M3/M3Dropdown.qml` | `M3DropdownSearch` | yes | the dropdown's own `objectName` |
 | Version history panel | `src/chronicle/qml/Audacity/Chronicle/VersionHistoryPanel.qml` | `VersionHistorySearch` | yes | `version-history` |
 | Changelog dialog | `src/chronicle/qml/Audacity/Chronicle/ChangelogDialog.qml` | `ChangelogSearch` | forwarded | the dialog's host, through `regexBuilderRequested` |
 | Close tabs popup, match query | `src/chronicle/qml/Audacity/Chronicle/CloseTabsPopup.qml` | `CloseTabsQuery` | forwarded | the tab strip that opened the popup |
@@ -64,9 +65,14 @@ Several fields are deliberately `forwarded` rather than anchored:
   place to maintain the wiring, so the demonstration bars raise the signal and
   nothing answers it.
 
-`M3Menu` is a component rather than a surface: it forwards
-`regexBuilderRequested` so that whichever surface opened the menu can anchor a
-builder for it. No menu in the application requests one today.
+`M3Menu` and `M3Dropdown`'s flat list popup are components rather than a
+single surface, so every menu and every plain list dropdown built from them
+carries its own filter field and its own anchored builder by default: no
+call site has to wire either one up, and none has to opt in for a short menu
+to gain a filter it did not have before. `M3Menu` still raises
+`regexBuilderRequested` afterwards, so a host that already keeps one shared
+builder for a whole page (the preferences dialog, for example) may anchor
+that instead of the menu's own; nothing in the application currently does.
 
 The **changelog dialog**, the **tab search and close tabs popups** and the
 **notification centre** are popups and sheets rather than anchored surfaces:

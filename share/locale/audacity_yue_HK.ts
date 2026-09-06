@@ -4200,6 +4200,81 @@ This action 唔會 刪除 any of your 專案.</translation>
         <source>An entry is longer than 200 characters.</source>
         <translation>有一項超過 200 個字。</translation>
     </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Toast corner</source>
+        <translation>彈出提示嘅角落</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Bottom right</source>
+        <translation>右下角</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Bottom left</source>
+        <translation>左下角</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Top right</source>
+        <translation>右上角</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Top left</source>
+        <translation>左上角</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Select all</source>
+        <translation>全部揀晒</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Select all notifications shown here, %1 currently selected</source>
+        <translation>將呢度所有通知都揀晒,而家揀咗 %1 個</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Select all notifications shown here</source>
+        <translation>將呢度所有通知都揀晒</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>%n notification(s) selected</source>
+        <translation>揀咗 %n 個通知</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Dismiss selected</source>
+        <translation>收起已揀嘅</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Delete selected</source>
+        <translation>刪除已揀嘅</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Delete %n notification(s)</source>
+        <translation>刪除 %n 個通知</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>The selected notifications are removed from the notification centre for good.</source>
+        <translation>揀咗嘅通知會喺通知中心度冇晒,永久噉冇。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>This cannot be undone.</source>
+        <translation>呢步做咗就冇得返轉頭。</translation>
+    </message>
+    <message>
+        <location filename="../../src/experience/qml/Audacity/Experience/NotificationCentre.qml" line="1" />
+        <source>Select %1</source>
+        <translation>揀 %1</translation>
+    </message>
 </context>
 <context>
     <name>appshell-menu-align</name>
@@ -5793,6 +5868,31 @@ This action 唔會 刪除 any of your 專案.</translation>
         <location filename="../../src/uicomponents/qml/Audacity/UiComponents/components/TimeSignature.qml" line="26" />
         <source>Time Signature: %1/%2</source>
         <translation>拍號:%1/%2</translation>
+    </message>
+    <message>
+        <location filename="../../src/uicomponents/qml/Audacity/M3/M3Menu.qml" line="136" />
+        <location filename="../../src/uicomponents/qml/Audacity/M3/M3Dropdown.qml" line="248" />
+        <source>Filter</source>
+        <translation>篩選</translation>
+    </message>
+    <message>
+        <location filename="../../src/uicomponents/qml/Audacity/M3/M3Menu.qml" line="138" />
+        <source>Filters the menu items below. Plain text by default, or use the regular expression builder.</source>
+        <translation>篩選下面呢啲選單項目。預設係普通文字,想玩正則表達式都得。</translation>
+    </message>
+    <message>
+        <location filename="../../src/uicomponents/qml/Audacity/M3/M3Menu.qml" line="169" />
+        <source>%n result(s)</source>
+        <translation>
+            <numerusform>搵到 %n 項</numerusform>
+            <numerusform>搵到 %n 項</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../src/uicomponents/qml/Audacity/M3/M3Menu.qml" line="180" />
+        <location filename="../../src/uicomponents/qml/Audacity/M3/M3Dropdown.qml" line="256" />
+        <source>No matching items</source>
+        <translation>乜都搵唔到</translation>
     </message>
 </context>
 <context>
