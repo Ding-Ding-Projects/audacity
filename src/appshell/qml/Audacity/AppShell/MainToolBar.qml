@@ -45,6 +45,13 @@ Item {
     width: tabStrip.implicitWidth > 0 ? tabStrip.implicitWidth : 640
     height: M3.density.apply(48)
 
+    // The dock toolbar host sizes this item from its implicit size, not its
+    // explicit width, so without these the strip is laid out at whatever
+    // narrow default the host picks and every tab overflows into the "more"
+    // button.
+    implicitWidth: root.width
+    implicitHeight: root.height
+
     property alias navigation: navPanel
 
     property string currentUri: "audacity://home"
