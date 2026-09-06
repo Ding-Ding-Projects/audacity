@@ -51,6 +51,11 @@ public:
     virtual bool restore(const QString& revisionId) = 0;
     virtual bool exportRevision(const QString& revisionId, const QString& destinationDir) = 0;
     virtual bool setLabel(const QString& revisionId, const QString& label) = 0;
+    //! Purely decorative: does not affect retention.
+    virtual bool setStarred(const QString& revisionId, bool starred) = 0;
+    //! A pinned revision is excluded from retention, exactly like the
+    //! newest revision itself.
+    virtual bool setPinned(const QString& revisionId, bool pinned) = 0;
 
     //! Applies the retention settings. Returns the number of revisions pruned.
     virtual int prune() = 0;

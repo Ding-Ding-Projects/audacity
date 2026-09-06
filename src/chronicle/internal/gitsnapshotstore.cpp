@@ -197,6 +197,8 @@ QList<Revision> GitSnapshotStore::revisions() const
 
     const QHash<QString, QString> labels = readLabels();
     const QStringList pruned = readPruned();
+    const QStringList starred = readIdSet(starredFilePath());
+    const QStringList pinned = readIdSet(pinnedFilePath());
 
     const QStringList records = output.split(QChar(0x1e), Qt::SkipEmptyParts);
     for (const QString& record : records) {
@@ -212,6 +214,8 @@ QList<Revision> GitSnapshotStore::revisions() const
         }
         revision.timestamp = QDateTime::fromString(fields.at(1).trimmed(), Qt::ISODate);
         revision.label = labels.value(revision.id, fields.at(2).trimmed());
+        revision.starred = starred.contains(revision.id);
+        revision.pinned = pinned.contains(revision.id);
 
         const QString body = fields.size() > 3 ? fields.at(3) : QString();
         for (const QString& line : body.split(QChar(u'\n'))) {
@@ -367,6 +371,59 @@ QString GitSnapshotStore::prunedFilePath() const
     return m_storePath + QStringLiteral("/chronicle-pruned.json");
 }
 
+QString GitSnapshotStore::starredFilePath() const
+{
+    return m_storePath + QStringLiteral("/chronicle-starred.json");
+}
+
+QString GitSnapshotStore::pinnedFilePath() const
+{
+    return m_storePath + QStringLiteral("/chronicle-pinned.json");
+}
+
+QStringList GitSnapshotStore::readIdSet(const QString& path) const
+{
+    QStringList ids;
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return ids;
+    }
+    const QJsonArray array = QJsonDocument::fromJson(file.readAll()).array();
+    for (const QJsonValue& value : array) {
+        ids.append(value.toString());
+    }
+    return ids;
+}
+
+void GitSnapshotStore::writeIdSet(const QString& path, const QStringList& ids) const
+{
+    QJsonArray array;
+    for (const QString& id : ids) {
+        array.append(id);
+    }
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        file.write(QJsonDocument(array).toJson(QJsonDocument::Indented));
+    }
+}
+
+bool GitSnapshotStore::setInIdSet(const QString& path, const QString& revisionId, bool value)
+{
+    if (!m_open || revisionId.isEmpty()) {
+        return false;
+    }
+    QStringList ids = readIdSet(path);
+    const bool alreadyIn = ids.contains(revisionId);
+    if (value && !alreadyIn) {
+        ids.append(revisionId);
+        writeIdSet(path, ids);
+    } else if (!value && alreadyIn) {
+        ids.removeAll(revisionId);
+        writeIdSet(path, ids);
+    }
+    return true;
+}
+
 QHash<QString, QString> GitSnapshotStore::readLabels() const
 {
     QHash<QString, QString> labels;
@@ -430,6 +487,16 @@ bool GitSnapshotStore::setLabel(const QString& revisionId, const QString& label)
     return true;
 }
 
+bool GitSnapshotStore::setStarred(const QString& revisionId, bool starred)
+{
+    return setInIdSet(starredFilePath(), revisionId, starred);
+}
+
+bool GitSnapshotStore::setPinned(const QString& revisionId, bool pinned)
+{
+    return setInIdSet(pinnedFilePath(), revisionId, pinned);
+}
+
 int GitSnapshotStore::prune(int keepCount, int keepDays)
 {
     if (!m_open) {
@@ -451,6 +518,9 @@ int GitSnapshotStore::prune(int keepCount, int keepDays)
             continue;
         }
         const Revision& revision = all.at(i);
+        if (revision.pinned) {
+            continue;
+        }
         const bool overCount = keepCount > 0 && i >= keepCount;
         const bool tooOld = cutoff.isValid() && revision.timestamp.isValid() && revision.timestamp < cutoff;
         if (overCount || tooOld) {

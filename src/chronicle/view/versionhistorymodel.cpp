@@ -82,6 +82,8 @@ QVariantList VersionHistoryModel::revisions() const
         item.insert(QStringLiteral("actionFamily"), actionFamily(revision.action));
         item.insert(QStringLiteral("actionFamilyTitle"), actionFamilyTitle(actionFamily(revision.action)));
         item.insert(QStringLiteral("milestone"), isMilestoneAction(revision.action));
+        item.insert(QStringLiteral("starred"), revision.starred);
+        item.insert(QStringLiteral("pinned"), revision.pinned);
         item.insert(QStringLiteral("timestamp"),
                     revision.timestamp.toLocalTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
         item.insert(QStringLiteral("date"), revision.timestamp.toLocalTime().date().toString(Qt::ISODate));
@@ -213,6 +215,16 @@ bool VersionHistoryModel::restore(const QString& revisionId)
 bool VersionHistoryModel::setLabel(const QString& revisionId, const QString& label)
 {
     return service()->setLabel(revisionId, label);
+}
+
+bool VersionHistoryModel::setStarred(const QString& revisionId, bool starred)
+{
+    return service()->setStarred(revisionId, starred);
+}
+
+bool VersionHistoryModel::setPinned(const QString& revisionId, bool pinned)
+{
+    return service()->setPinned(revisionId, pinned);
 }
 
 bool VersionHistoryModel::exportRevision(const QString& revisionId, const QString& destinationUrl)

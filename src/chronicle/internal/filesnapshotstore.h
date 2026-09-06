@@ -33,6 +33,8 @@ public:
     bool checkout(const QString& revisionId, const QString& workTree) override;
     bool exportTo(const QString& revisionId, const QString& destinationDir) override;
     bool setLabel(const QString& revisionId, const QString& label) override;
+    bool setStarred(const QString& revisionId, bool starred) override;
+    bool setPinned(const QString& revisionId, bool pinned) override;
     int prune(int keepCount, int keepDays) override;
 
     QByteArray packHistory() const override;
@@ -46,6 +48,7 @@ private:
     QString objectPath(const QString& hash) const;
     QString storeObject(const QByteArray& content) const;
     QJsonObject revisionObject(const QString& revisionId, int* indexOut = nullptr) const;
+    bool setBoolField(const QString& revisionId, const QString& field, bool value);
     void collectGarbage(const QJsonArray& manifest) const;
 
     QString m_storePath;

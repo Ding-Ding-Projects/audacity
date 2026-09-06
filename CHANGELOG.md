@@ -10,6 +10,11 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Local history: a revision can now be starred (purely decorative) and
+  pinned (excluded from retention, exactly like the newest revision itself)
+  independently of what produced it. A revision is now also marked as a
+  milestone when it is an export or a render, alongside the existing save
+  and restore milestones.
 - Local history: the whole local history is now packed and embedded into the
   project's own `.aup4` save file after every save (controlled by the new
   `chronicle/embedHistoryInSaveFile` setting, on by default), so a project's

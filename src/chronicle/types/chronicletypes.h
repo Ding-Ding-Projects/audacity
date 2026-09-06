@@ -29,6 +29,13 @@ struct Revision {
     //! chips and for the label derivation.
     QString action;
 
+    //! Marked by the user rather than by what produced the revision. Purely
+    //! decorative: it does not change retention.
+    bool starred = false;
+    //! Marked by the user. A pinned revision is never pruned by retention,
+    //! exactly like the newest revision itself.
+    bool pinned = false;
+
     bool isValid() const { return !id.isEmpty(); }
 };
 
@@ -60,5 +67,10 @@ QString actionFamilyTitle(const QString& family);
 //! Whether a revision produced by this action should be marked as a milestone
 //! in the panel (a save, an export or a restore), independent of any label or
 //! star the user later adds.
+//! Save, export and render are milestones because they are the moments a
+//! project genuinely leaves the editing session in some form: written to
+//! disk, exported to another format, or rendered to audio. A restore is a
+//! milestone for the same reason a save is: it is the moment the working
+//! state changed on purpose, deliberately, to something the user chose.
 bool isMilestoneAction(const QString& action);
 }

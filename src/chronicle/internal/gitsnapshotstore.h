@@ -46,6 +46,8 @@ public:
     bool checkout(const QString& revisionId, const QString& workTree) override;
     bool exportTo(const QString& revisionId, const QString& destinationDir) override;
     bool setLabel(const QString& revisionId, const QString& label) override;
+    bool setStarred(const QString& revisionId, bool starred) override;
+    bool setPinned(const QString& revisionId, bool pinned) override;
     int prune(int keepCount, int keepDays) override;
 
     QByteArray packHistory() const override;
@@ -57,10 +59,15 @@ private:
 
     QString labelsFilePath() const;
     QString prunedFilePath() const;
+    QString starredFilePath() const;
+    QString pinnedFilePath() const;
     QHash<QString, QString> readLabels() const;
     void writeLabels(const QHash<QString, QString>& labels) const;
     QStringList readPruned() const;
     void writePruned(const QStringList& ids) const;
+    QStringList readIdSet(const QString& path) const;
+    void writeIdSet(const QString& path, const QStringList& ids) const;
+    bool setInIdSet(const QString& path, const QString& revisionId, bool value);
 
     QString m_storePath;
     bool m_open = false;
