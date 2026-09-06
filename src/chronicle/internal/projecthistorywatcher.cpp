@@ -5,6 +5,8 @@
 
 #include <QCryptographicHash>
 
+#include "au3wrap/au3projectmetadata.h"
+
 using namespace au::chronicle;
 
 void ProjectHistoryWatcher::init()
@@ -30,12 +32,17 @@ void ProjectHistoryWatcher::onCurrentProjectChanged()
 
     const QString path = QString::fromStdString(project->path().toStdString());
 
-    // The identifier is derived from the path rather than from the name, so
-    // two projects with the same name keep separate histories, and it is
-    // hashed so that no part of the user's folder layout ends up in a
-    // directory name.
-    const QString id = QString::fromLatin1(
-        QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Sha1).toHex()).left(16);
+    // The identifier lives in the project's own aup4 database, so a project's
+    // history follows it across a rename or a move rather than starting over.
+    // It is only unavailable when the project's database itself cannot be
+    // reached, which is rare enough that falling back to a hash of the path
+    // is a reasonable second choice: a project without a stable id yet still
+    // gets a history, just not one that survives being renamed.
+    QString id = au::au3::chronicleStableProjectId(project->au3ProjectPtr());
+    if (id.isEmpty()) {
+        id = QString::fromLatin1(
+            QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Sha1).toHex()).left(16);
+    }
 
     versionHistory()->setCurrentProject(id, path);
 

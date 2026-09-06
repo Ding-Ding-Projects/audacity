@@ -10,6 +10,12 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Local history: the identifier a project's history is filed under is now a
+  stable id stored in the project's own `.aup4` database, created the first
+  time it is needed, rather than a hash of the file's path. A project's
+  history now follows it across a rename or a move instead of starting over.
+  A project that cannot reach its own database falls back to the previous
+  path based identifier.
 - Local history: every undoable edit (cut, paste, moving a clip, applying an
   effect, adding or deleting a track, editing a label or an envelope point,
   and so on) is now recorded as its own revision, named after the edit
