@@ -5,14 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Tags are deliberately not triggers. A release creates its own unique tag, and
-# that write must never enqueue another release workflow.
-concurrency:
-  group: material-audacity-windows-delivery-${{ github.ref }}
-  cancel-in-progress: false
-
 permissions:
   contents: read
+  actions: read
 
 env:
   CI_DIR: buildscripts/ci
@@ -150,7 +145,7 @@ jobs:
   release:
     name: Publish Windows release
     needs: windows_x64
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
     permissions:
       contents: write
     steps:
@@ -165,45 +160,96 @@ jobs:
           name: material-audacity-windows-x64-${{ github.run_id }}
           path: downloaded-output
 
-      - name: Collect exact Squirrel release assets
-        shell: bash
+      - name: Bootstrap required release tools
+        shell: pwsh
         run: |
-          mkdir -p release-assets
-          find downloaded-output -type f \( -name Setup.exe -o -name RELEASES -o -name '*-full.nupkg' -o -name '*-delta.nupkg' \) -exec cp {} release-assets/ \;
-          test -f release-assets/Setup.exe
-          test -f release-assets/RELEASES
-          test "$(find release-assets -maxdepth 1 -name '*-full.nupkg' -type f | wc -l)" -eq 1
+          $ErrorActionPreference = 'Stop'
+          foreach ($tool in @('python', 'gh')) {
+            if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+              choco install -y $tool
+            }
+            if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+              throw "Required release tool is unavailable after bootstrap: $tool"
+            }
+          }
+          python --version
+          gh --version
+
+      - name: Collect exact Squirrel release assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-assets,release-metadata | Out-Null
+          $allowed = @('Setup.exe', 'RELEASES')
+          $assets = Get-ChildItem downloaded-output -Recurse -File | Where-Object {
+            $_.Name -in $allowed -or $_.Name -like '*-full.nupkg' -or $_.Name -like '*-delta.nupkg'
+          }
+          foreach ($asset in $assets) {
+            Copy-Item -LiteralPath $asset.FullName -Destination (Join-Path release-assets $asset.Name) -Force
+          }
+          foreach ($required in @('Setup.exe', 'RELEASES')) {
+            if (-not (Test-Path -LiteralPath (Join-Path release-assets $required))) {
+              throw "Missing required Squirrel asset: $required"
+            }
+          }
+          if (@(Get-ChildItem release-assets -Filter '*-full.nupkg' -File).Count -ne 1) {
+            throw 'Expected exactly one Squirrel full package.'
+          }
 
       - name: Resolve dim sum photo
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          python3 buildscripts/ci/tools/dim_sum_release.py --repo "${GITHUB_REPOSITORY}" \
-            --assets-dir release-assets --output-json dim-sum.json
+          python buildscripts/ci/tools/dim_sum_release.py --repo "$env:GITHUB_REPOSITORY" `
+            --assets-dir release-assets --output-json release-metadata/dim-sum.json
 
-      - name: Generate checksums and factual release notes
-        shell: bash
+      - name: Generate deterministic release metadata
+        shell: pwsh
         run: |
-          (cd release-assets && sha256sum * | sort > SHA256SUMS)
-          PKG_VERSION=$(python3 -c "import re,sys; t=sys.argv[1]; m=re.match(r'^v?(\\d+\\.\\d+\\.\\d+)-m3\\.(\\d+)$', t); print('{0}-m3{1:03d}'.format(m.group(1), int(m.group(2))) if m else t.lstrip('v'))" "${{ needs.windows_x64.outputs.release_tag }}")
-          python3 buildscripts/ci/tools/release_notes.py \
-            --tag "${{ needs.windows_x64.outputs.release_tag }}" \
-            --version "$PKG_VERSION" \
-            --start-time "${{ needs.windows_x64.outputs.start_time }}" \
-            --end-time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --repo "${GITHUB_REPOSITORY}" --run-id "${GITHUB_RUN_ID}" \
-            --commit "${GITHUB_SHA}" --assets-dir release-assets \
-            --dim-sum-json dim-sum.json --output RELEASE_NOTES.md
+          $ErrorActionPreference = 'Stop'
+          python buildscripts/ci/tools/count_lines.py --root . | Set-Content -LiteralPath release-metadata/line-counts.md -Encoding utf8
+          if (-not (Get-Content -Raw release-metadata/line-counts.md).Trim()) { throw 'Line count report is empty.' }
+          $checksumInputs = @(Get-ChildItem release-assets -File | Where-Object { $_.Name -ne 'SHA256SUMS' } | Sort-Object Name)
+          if ($checksumInputs.Count -eq 0) { throw 'No release assets available for checksums.' }
+          $checksumLines = foreach ($asset in $checksumInputs) {
+            '{0}  {1}' -f (Get-FileHash -LiteralPath $asset.FullName -Algorithm SHA256).Hash.ToLower(), $asset.Name
+          }
+          $checksumTemp = 'release-assets/SHA256SUMS.tmp'
+          $checksumLines | Set-Content -LiteralPath $checksumTemp -Encoding ascii
+          Move-Item -LiteralPath $checksumTemp -Destination 'release-assets/SHA256SUMS' -Force
+          $tag = '${{ needs.windows_x64.outputs.release_tag }}'
+          $packageVersion = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          python buildscripts/ci/tools/release_notes.py `
+            --tag $tag --version $packageVersion `
+            --start-time '${{ needs.windows_x64.outputs.start_time }}' `
+            --end-time (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') `
+            --completion-boundary 'Release upload has not started; this draft is replaced after asset upload completes.' `
+            --repo "$env:GITHUB_REPOSITORY" --run-id "$env:GITHUB_RUN_ID" `
+            --commit '${{ github.sha }}' --assets-dir release-assets `
+            --line-count-file release-metadata/line-counts.md `
+            --dim-sum-json release-metadata/dim-sum.json --output release-metadata/RELEASE_NOTES.md
 
       - name: Publish unique non-draft release
-        shell: bash
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          TAG="${{ needs.windows_x64.outputs.release_tag }}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Refusing to overwrite existing release $TAG" >&2
-            exit 1
-          fi
-          gh release create "$TAG" release-assets/* --target "${GITHUB_SHA}" \
-            --title "Material Audacity $TAG" --notes-file RELEASE_NOTES.md --prerelease
+          $ErrorActionPreference = 'Stop'
+          $tag = '${{ needs.windows_x64.outputs.release_tag }}'
+          if (gh release view $tag 2>$null) { throw "Refusing to overwrite existing release $tag" }
+          $uploadAssets = @(Get-ChildItem release-assets -File | Where-Object { $_.Name -notlike 'RELEASE_NOTES*' } | Sort-Object Name | ForEach-Object FullName)
+          gh release create $tag $uploadAssets --target '${{ github.sha }}' `
+            --title "Material Audacity $tag" --notes-file release-metadata/RELEASE_NOTES.md --prerelease
+          if ($LASTEXITCODE -ne 0) { throw "Release upload failed with exit code $LASTEXITCODE" }
+          $completed = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+          $packageVersion = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          python buildscripts/ci/tools/release_notes.py `
+            --tag $tag --version $packageVersion `
+            --start-time '${{ needs.windows_x64.outputs.start_time }}' --end-time $completed `
+            --completion-boundary 'Release asset upload completed; this timestamp is recorded after gh release create returned success.' `
+            --repo "$env:GITHUB_REPOSITORY" --run-id "$env:GITHUB_RUN_ID" `
+            --commit '${{ github.sha }}' --assets-dir release-assets `
+            --line-count-file release-metadata/line-counts.md `
+            --dim-sum-json release-metadata/dim-sum.json --output release-metadata/RELEASE_NOTES_FINAL.md
+          gh release edit $tag --notes-file release-metadata/RELEASE_NOTES_FINAL.md
