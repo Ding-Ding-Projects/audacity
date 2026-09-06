@@ -11,14 +11,17 @@ built, packaged, verified and published. Anything that contradicts it is a bug.
 | Windows installer format | `Setup.exe` plus `RELEASES`, a full `.nupkg` and a delta `.nupkg` |
 | Code signing | Permanently prohibited |
 | Linux artifact | AppImage, produced by the existing `buildscripts/ci/linux` scripts |
-| Releases | Created for tags matching `v4.0.0-m3.*` only |
-| Non tag pushes to `master` | Build and upload workflow artifacts, no release |
+| Releases | One per push to `master`, per manual dispatch and per tag push, always non-draft |
+| Tag on a plain push | `v<version.cmake>-m3.<run number>`, unique and monotonic; an existing tag is never recycled |
+| Dim sum code name | Next unused dish from the public catalog, photo attached, resolved by `buildscripts/ci/tools/dim_sum_release.py` |
 | Documentation site | `docs/` deployed to GitHub Pages |
 | Secrets used | `GITHUB_TOKEN` only |
 
 ## Artifacts
 
-A tagged release publishes the following assets.
+Every release publishes the following assets, plus one dim sum photo named
+`dim-sum-<dish id>-<slug>.png` when the public catalog could be reached (the
+notes say so when it could not).
 
 | Asset | Produced by | Purpose |
 | --- | --- | --- |
@@ -117,8 +120,11 @@ coreutils available the whole file can be checked at once with
    - Artifacts are uploaded with `if: always()` and `if-no-files-found: warn`.
 2. `linux_x64` on `ubuntu-22.04`, reusing `buildscripts/ci/linux/setup.sh`,
    `ci_build.cmake` and `package.cmake` to produce the AppImage.
-3. `release`, which runs only for tags. It downloads both artifact sets,
-   collects the release assets, writes `SHA256SUMS`, generates the notes with
+3. `release`, which runs after every successful build. It resolves the tag
+   (the pushed tag, or `v<version>-m3.<run number>` for a plain push, refusing
+   to reuse an existing tag), downloads both artifact sets, collects the
+   release assets, fetches the dim sum code name and photo, writes
+   `SHA256SUMS`, generates the notes with
    `buildscripts/ci/tools/release_notes.py` and publishes with
    `softprops/action-gh-release@v2` using `GITHUB_TOKEN`.
 

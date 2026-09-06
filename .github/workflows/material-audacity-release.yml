@@ -27,6 +27,7 @@ jobs:
     outputs:
       start_time: ${{ steps.start.outputs.utc }}
       build_version: ${{ steps.configure.outputs.build_version }}
+      release_tag: ${{ steps.configure.outputs.release_tag }}
     steps:
       # This is the very first step of the very first job. Its output is the
       # authoritative workflow start time used in the release notes.
@@ -49,9 +50,18 @@ jobs:
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             BUILD_MODE=stable_build
+            RELEASE_TAG="${GITHUB_REF_NAME}"
           else
             BUILD_MODE=devel_build
+            # Every push publishes a release under a unique, monotonic tag
+            # derived from version.cmake and the run number.
+            MAJOR=$(sed -n 's/.*MUSE_APP_VERSION_MAJOR "\([0-9]*\)".*/\1/p' version.cmake)
+            MINOR=$(sed -n 's/.*MUSE_APP_VERSION_MINOR "\([0-9]*\)".*/\1/p' version.cmake)
+            PATCH=$(sed -n 's/.*MUSE_APP_VERSION_PATCH "\([0-9]*\)".*/\1/p' version.cmake)
+            RELEASE_TAG="v${MAJOR}.${MINOR}.${PATCH}-m3.${GITHUB_RUN_NUMBER}"
           fi
+          echo "Release tag: ${RELEASE_TAG}"
+          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
 
           cmake -DEVENT=${{ github.event_name }} \
                 -DBUILD_MODE=${BUILD_MODE} \
@@ -126,7 +136,7 @@ jobs:
         run: |
           cmake -DPACK_TYPE_OVERRIDE=squirrel \
                 -DPACKARCH=x86_64 \
-                -DRELEASE_TAG="${GITHUB_REF_NAME}" \
+                -DRELEASE_TAG="${{ steps.configure.outputs.release_tag }}" \
                 -DRUN_NUMBER="${GITHUB_RUN_NUMBER}" \
                 -DPREVIOUS_RELEASES_DIR="previous-release" \
                 -DSQUIRREL_OUT_DIR="build.artifacts/squirrel" \
@@ -241,7 +251,8 @@ jobs:
     needs:
       - windows_x64
       - linux_x64
-    if: startsWith(github.ref, 'refs/tags/')
+    # Every push to master and every manual dispatch publishes a real,
+    # uniquely tagged, non-draft release; a tag push reuses its own tag.
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -255,6 +266,21 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+
+      - name: Resolve the release tag
+        id: tag
+        shell: bash
+        run: |
+          TAG="${{ needs.windows_x64.outputs.release_tag }}"
+          if [ -z "$TAG" ]; then
+            echo "No release tag was resolved by the Windows job" >&2
+            exit 1
+          fi
+          if [[ "${GITHUB_REF}" != refs/tags/* ]] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists; a release is never recycled" >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v6
@@ -275,6 +301,15 @@ jobs:
             exit 1
           fi
 
+      - name: Resolve the dim sum code name and photo
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 buildscripts/ci/tools/dim_sum_release.py \
+            --repo "${GITHUB_REPOSITORY}" \
+            --assets-dir release-assets \
+            --output-json dim-sum.json
+
       - name: Generate SHA256SUMS
         working-directory: release-assets
         run: |
@@ -286,10 +321,10 @@ jobs:
         shell: bash
         run: |
           # v4.0.0-m3.7 becomes the SemVer 1 package version 4.0.0-m3007.
-          PKG_VERSION=$(python3 -c "import re,sys; t=sys.argv[1]; m=re.match(r'^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', t); print('{0}-m3{1:03d}'.format(m.group(1), int(m.group(2))) if m else t.lstrip('v'))" "${GITHUB_REF_NAME}")
+          PKG_VERSION=$(python3 -c "import re,sys; t=sys.argv[1]; m=re.match(r'^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', t); print('{0}-m3{1:03d}'.format(m.group(1), int(m.group(2))) if m else t.lstrip('v'))" "${{ steps.tag.outputs.tag }}")
           echo "Package version: ${PKG_VERSION}"
           python3 buildscripts/ci/tools/release_notes.py \
-            --tag "${GITHUB_REF_NAME}" \
+            --tag "${{ steps.tag.outputs.tag }}" \
             --version "${PKG_VERSION}" \
             --start-time "${{ needs.windows_x64.outputs.start_time }}" \
             --end-time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
@@ -297,6 +332,7 @@ jobs:
             --run-id "${GITHUB_RUN_ID}" \
             --commit "${GITHUB_SHA}" \
             --assets-dir release-assets \
+            --dim-sum-json dim-sum.json \
             --output RELEASE_NOTES.md
           cat RELEASE_NOTES.md
 
@@ -305,8 +341,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Material Audacity ${{ github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: Material Audacity ${{ steps.tag.outputs.tag }}
           body_path: RELEASE_NOTES.md
           prerelease: true
           fail_on_unmatched_files: true

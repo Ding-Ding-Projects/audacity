@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import json
 import os
 import subprocess
 import sys
@@ -162,7 +163,35 @@ def build_notes(args: argparse.Namespace) -> str:
     sections.append("")
     sections.append(line_count_table())
     sections.append("")
+    sections.append("## Dim sum code name")
+    sections.append("")
+    sections.append(dim_sum_section(args.dim_sum_json))
+    sections.append("")
     return "\n".join(sections)
+
+
+def dim_sum_section(path: str) -> str:
+    """Names the release's dim sum dish from the public catalog, or says why not."""
+    if not path or not os.path.isfile(path):
+        return "_No dim sum code name was resolved for this release._"
+    try:
+        with open(path, encoding="utf-8") as handle:
+            info = json.load(handle)
+    except (OSError, ValueError) as exc:
+        return "_The dim sum result could not be read: {0}_".format(exc)
+    if not info.get("resolved"):
+        return "_No dim sum code name was resolved: {0}._".format(info.get("reason", "unknown reason"))
+    lines = [
+        "Code name: **{0}**".format(info["code_name"]),
+        "",
+        "Dish `{0}` from the public catalog at".format(info["id"]),
+        "https://github.com/Ding-Ding-Projects/dim-sum-photos, photo attached as",
+        "`{0}` ({1}x{2} PNG, {3:,} bytes, source {4}).".format(
+            info["asset"], info["width"], info["height"], info["bytes"], info["source_url"]),
+        "",
+        "<!-- dim-sum-id: {0} -->".format(info["id"]),
+    ]
+    return "\n".join(lines)
 
 
 def main(argv: list[str]) -> int:
@@ -175,6 +204,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--run-id", default=os.environ.get("GITHUB_RUN_ID", ""))
     parser.add_argument("--commit", default=os.environ.get("GITHUB_SHA", ""))
     parser.add_argument("--assets-dir", default="")
+    parser.add_argument("--dim-sum-json", default="", help="Result file written by dim_sum_release.py")
     parser.add_argument("--output", default="", help="Write to this file instead of stdout")
     args = parser.parse_args(argv)
 
