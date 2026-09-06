@@ -154,7 +154,13 @@ $lock = Get-Content -LiteralPath (Join-Path $squirrelInputs "squirrel.lock.json"
 
 New-Item -ItemType Directory -Force -Path $ToolsDir | Out-Null
 
-function Get-PinnedFile([string] $Url, [string] $Sha256, [string] $Destination) {
+function Get-PinnedFile(
+    [string] $Url,
+    [string] $Sha256,
+    [string] $Destination,
+    [string] $FallbackPackageUrl = "",
+    [string] $FallbackPackageEntry = ""
+) {
     if (Test-Path -LiteralPath $Destination) {
         $existing = (Get-FileHash -LiteralPath $Destination -Algorithm SHA256).Hash
         if ($existing -ieq $Sha256) {
@@ -165,7 +171,46 @@ function Get-PinnedFile([string] $Url, [string] $Sha256, [string] $Destination) 
     }
     Write-Host "Downloading $Url"
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri $Url -OutFile $Destination -UseBasicParsing
+    try {
+        Invoke-WebRequest -Uri $Url -OutFile $Destination -UseBasicParsing
+    }
+    catch {
+        Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
+        if ([string]::IsNullOrWhiteSpace($FallbackPackageUrl) -or
+            [string]::IsNullOrWhiteSpace($FallbackPackageEntry)) {
+            throw
+        }
+
+        # dist.nuget.org occasionally refuses a direct command-line executable
+        # download on constrained Windows networks. The official NuGet package
+        # carries the same NuGet.exe bytes, so use it only as a bounded fallback
+        # and accept the extracted executable only after the lock digest matches.
+        $fallbackPackage = "$Destination.fallback.nupkg"
+        $fallbackDirectory = "$Destination.fallback"
+        Remove-Item -LiteralPath $fallbackPackage -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $fallbackDirectory -Recurse -Force -ErrorAction SilentlyContinue
+        try {
+            Write-Warning "Direct download failed: $($_.Exception.Message)"
+            Write-Host "Downloading official NuGet package fallback $FallbackPackageUrl"
+            & curl.exe --fail --location --silent --show-error --output $fallbackPackage $FallbackPackageUrl
+            if ($LASTEXITCODE -ne 0) {
+                throw "curl.exe failed to download official fallback package with exit code $LASTEXITCODE"
+            }
+            Copy-Item -LiteralPath $fallbackPackage -Destination "$fallbackPackage.zip" -Force
+            Expand-Archive -LiteralPath "$fallbackPackage.zip" -DestinationPath $fallbackDirectory -Force
+            Remove-Item -LiteralPath "$fallbackPackage.zip" -Force
+            $fallbackBinary = Join-Path $fallbackDirectory $FallbackPackageEntry
+            if (-not (Test-Path -LiteralPath $fallbackBinary)) {
+                throw "Official fallback package lacks expected entry $FallbackPackageEntry"
+            }
+            Copy-Item -LiteralPath $fallbackBinary -Destination $Destination -Force
+        }
+        finally {
+            Remove-Item -LiteralPath $fallbackPackage -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath "$fallbackPackage.zip" -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $fallbackDirectory -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
     $actual = (Get-FileHash -LiteralPath $Destination -Algorithm SHA256).Hash
     if ($actual -ine $Sha256) {
         throw "SHA256 mismatch for $Url. Expected $Sha256, got $actual."
@@ -174,7 +219,9 @@ function Get-PinnedFile([string] $Url, [string] $Sha256, [string] $Destination) 
 }
 
 $nugetExe = Join-Path $ToolsDir "nuget.exe"
-Get-PinnedFile -Url $lock.nuget.url -Sha256 $lock.nuget.sha256 -Destination $nugetExe
+Get-PinnedFile -Url $lock.nuget.url -Sha256 $lock.nuget.sha256 -Destination $nugetExe `
+    -FallbackPackageUrl "https://www.nuget.org/api/v2/package/NuGet.CommandLine/$($lock.nuget.version)" `
+    -FallbackPackageEntry "tools\\NuGet.exe"
 
 $squirrelNupkg = Join-Path $ToolsDir "squirrel.windows.$($lock.squirrel.version).nupkg"
 Get-PinnedFile -Url $lock.squirrel.url -Sha256 $lock.squirrel.sha256 -Destination $squirrelNupkg
@@ -453,10 +500,17 @@ if (-not $hasPrevious) {
 
 # Squirrel.exe is a Windows GUI subsystem executable. Invoking it with the call
 # operator returns immediately, before any output exists, so the process must be
-# awaited explicitly. Its diagnostics land in SquirrelSetup.log next to the tool.
+# awaited explicitly. Start-Process joins ArgumentList items into one command
+# line, therefore quote every item before passing a path that contains spaces.
+# Its diagnostics land in SquirrelSetup.log next to the tool.
+function ConvertTo-CommandLineArgument([string] $Value) {
+    return '"' + ($Value -replace '(\\*)"', '$1$1\\"' -replace '(\\+)$', '$1$1') + '"'
+}
+
 $squirrelLog = Join-Path (Split-Path -Parent $squirrelExe) "SquirrelSetup.log"
 if (Test-Path -LiteralPath $squirrelLog) { Remove-Item -LiteralPath $squirrelLog -Force }
-$releasifyProcess = Start-Process -FilePath $squirrelExe -ArgumentList $releasifyArgs -Wait -PassThru -NoNewWindow
+$releasifyCommandLine = ($releasifyArgs | ForEach-Object { ConvertTo-CommandLineArgument $_ }) -join ' '
+$releasifyProcess = Start-Process -FilePath $squirrelExe -ArgumentList $releasifyCommandLine -Wait -PassThru -NoNewWindow
 if (Test-Path -LiteralPath $squirrelLog) {
     Write-Host "--- SquirrelSetup.log ---"
     Get-Content -LiteralPath $squirrelLog | Select-Object -Last 80 | ForEach-Object { Write-Host $_ }

@@ -22,9 +22,13 @@ if /I "%~1"=="/s" set "SILENT=1"
 
 echo === Material Audacity installer
 
-if not exist "%INSTALL_DIR%" (
-  echo ERROR: %INSTALL_DIR% not found. Run build.bat first.
-  exit /b 1
+if not exist "%INSTALL_DIR%\bin\Audacity4.exe" (
+  echo === Build tree is absent, building before packaging
+  call "%ROOT%build.bat" /s
+  if errorlevel 1 (
+    echo ERROR: build bootstrap failed; installer packaging did not start.
+    exit /b 1
+  )
 )
 if not exist "%SCRIPT%" (
   echo ERROR: %SCRIPT% not found.

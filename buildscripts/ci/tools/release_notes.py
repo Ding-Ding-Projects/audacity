@@ -66,18 +66,14 @@ def format_duration(delta: dt.timedelta) -> str:
     return " ".join(parts) + " ({0} seconds)".format(total)
 
 
-def line_count_table() -> str:
-    script = os.path.join(HERE, "count_lines.py")
-    try:
-        result = subprocess.run(
-            [sys.executable, script, "--root", REPO_ROOT],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except (OSError, subprocess.CalledProcessError) as exc:
-        return "Line count unavailable: {0}".format(exc)
-    return result.stdout.strip()
+def line_count_table(path: str) -> str:
+    if not path or not os.path.isfile(path):
+        raise ValueError("required line-count output is unavailable")
+    with open(path, encoding="utf-8") as handle:
+        result = handle.read().strip()
+    if not result:
+        raise ValueError("required line-count output is empty")
+    return result
 
 
 def asset_table(assets_dir: str | None) -> str:
@@ -157,11 +153,12 @@ def build_notes(args: argparse.Namespace) -> str:
         sections.append("| Workflow run | {0} |".format(run_url))
     sections.append("| Workflow start (UTC) | {0} |".format(format_utc(start)))
     sections.append("| Workflow completion (UTC) | {0} |".format(format_utc(end)))
+    sections.append("| Completion boundary | {0} |".format(args.completion_boundary))
     sections.append("| End to end duration | {0} |".format(format_duration(duration)))
     sections.append("")
     sections.append("## Source line counts")
     sections.append("")
-    sections.append(line_count_table())
+    sections.append(line_count_table(args.line_count_file))
     sections.append("")
     sections.append("## Dim sum code name")
     sections.append("")
@@ -189,6 +186,8 @@ def dim_sum_section(path: str) -> str:
         "`{0}` ({1}x{2} PNG, {3:,} bytes, source {4}).".format(
             info["asset"], info["width"], info["height"], info["bytes"], info["source_url"]),
         "",
+        "Origin disclosure: **{0}**".format(info["origin_disclosure"]),
+        "",
         "<!-- dim-sum-id: {0} -->".format(info["id"]),
     ]
     return "\n".join(lines)
@@ -204,6 +203,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--run-id", default=os.environ.get("GITHUB_RUN_ID", ""))
     parser.add_argument("--commit", default=os.environ.get("GITHUB_SHA", ""))
     parser.add_argument("--assets-dir", default="")
+    parser.add_argument("--line-count-file", required=True, help="Exact output from count_lines.py for this release.")
+    parser.add_argument("--completion-boundary", required=True, help="What the completion timestamp actually includes.")
     parser.add_argument("--dim-sum-json", default="", help="Result file written by dim_sum_release.py")
     parser.add_argument("--output", default="", help="Write to this file instead of stdout")
     args = parser.parse_args(argv)

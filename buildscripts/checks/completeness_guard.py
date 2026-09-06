@@ -1,269 +1,210 @@
 #!/usr/bin/env python3
-"""Fail closed guard over docs/inventory/completeness-inventory.md.
+"""Validate handwritten feature and per-surface completeness inventories.
 
-This script never invents evidence. It parses the hand written inventory
-table, checks that every canonical feature named below has exactly one row,
-and for every row whose status is "implemented" or "partial" verifies that
-every path the row claims (implementation files, the documentation article,
-the test file, and the capture path) actually exists on disk, and that any
-claimed localized copy context actually appears in the Cantonese
-translation file. A row whose status is "missing" or "not applicable" is
-reported but does not fail the guard, as long as it carries a reason in the
-Notes column; the guard's job is to keep the inventory honest today, not to
-pretend every canonical feature is already built.
-
-Usage:
-    python3 completeness_guard.py [--repo-root PATH] [--strict]
-
-Exit code is non zero, naming the exact failing row and field, whenever:
-  - a canonical feature has no row at all, or more than one row;
-  - an implemented or partial row references a file, doc, test or capture
-    path that does not exist relative to the repository root;
-  - an implemented or partial row claims a localized context that the
-    Cantonese translation file does not carry;
-  - a missing or not-applicable row has an empty Notes column.
-
---strict is accepted for the CMake AU_COMPLETENESS_STRICT switch; without it
-the script still prints every finding but always exits 0, matching the
-"warning only unless strict" contract in buildscripts/cmake/CompletenessInventory.cmake.
+Default and ``--strict`` modes validate inventory integrity only, so ordinary
+configure, build, and release work can report an honest backlog. ``--completion``
+is the separate fail-closed delivery verdict. It requires full feature delivery
+and all per-surface evidence without inferring proof from source discovery.
 """
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
+from completion_evidence import validate as validate_completion_evidence
+from dataclasses import dataclass
 from pathlib import Path
 
-INVENTORY_RELATIVE_PATH = "docs/inventory/completeness-inventory.md"
-TRANSLATION_RELATIVE_PATH = "share/locale/audacity_yue_HK.ts"
-
-# The hand written list of every canonical feature this project must carry a
-# row for. This list is intentionally not derived from the inventory file
-# itself: if it were, a deleted row would simply vanish from both sides and
-# the guard would report nothing wrong, which is exactly the failure mode a
-# completeness guard exists to prevent.
-CANONICAL_FEATURES = [
-    "Language modes",
-    "Funny level, English",
-    "Funny level, Cantonese",
-    "Emoji switch",
-    "School mode",
-    "Narrator (TTS)",
-    "Scheduled settings",
-    "External settings sources (Home Assistant)",
-    "Dim sum surprise",
-    "Regex builder",
-    "Notifications",
-    "Material 3 appearance and per element editor",
-    "Tabs, groups and tab search",
-    "Landing page and offline docs",
-    "Command palette",
-    "Destructive action super confirmation",
-    "Local version history",
-    "Changelog viewer",
-    "External editor handoff",
-    "Universal export",
-    "Bulk actions",
-    "Accessibility (keyboard, focus, names, contrast)",
-    "Responsive sizing (narrow widths, 200% scale)",
-    "Personal vocabulary JSON upload",
-    "Toy locks",
-    "Support Tickets",
-    "Browser extension download capture dialogs",
-    "Unlock ladder",
-    "Shared link embed graphic",
-    "ADHD modes (attention support)",
-    "App logo customization",
-    "Universal file converter",
-    "Local model manager (Ollama suite)",
-    "Version and build time on the front screen",
-    "Automatic updates",
-    "Status Hub row",
-    "Docs browser bookmark export/bulk",
-    "Renaming the application",
-    "Built in authenticator (TOTP)",
+INVENTORY = "docs/inventory/completeness-inventory.md"
+SURFACES = "docs/inventory/per-surface-completeness.md"
+TRANSLATION = "share/locale/audacity_yue_HK.ts"
+MATRIX = "docs/inventory/product-surface-matrix.md"
+PRODUCT_SURFACES = ("Desktop application", "Documentation site")
+CANONICAL = [
+    "Language modes", "Funny level, English", "Funny level, Cantonese", "Emoji switch", "School mode", "Narrator (TTS)", "Scheduled settings", "External settings sources (Home Assistant)", "Dim sum surprise", "Regex builder", "Notifications", "Material 3 appearance and per element editor", "Tabs, groups and tab search", "Landing page and offline docs", "Command palette", "Destructive action super confirmation", "Local version history", "Changelog viewer", "External editor handoff", "Universal export", "Bulk actions", "Accessibility (keyboard, focus, names, contrast)", "Responsive sizing (narrow widths, 200% scale)", "Personal vocabulary JSON upload", "Toy locks", "Support Tickets", "Browser extension download capture dialogs", "Unlock ladder", "Shared link embed graphic", "ADHD modes (attention support)", "App logo customization", "Universal file converter", "Local model manager (Ollama suite)", "Version and build time on the front screen", "Automatic updates", "Status Hub row", "Docs browser bookmark export/bulk", "Renaming the application", "Built in authenticator (TOTP)",
 ]
-
-STATUS_IMPLEMENTED = "implemented"
-STATUS_PARTIAL = "partial"
-STATUS_MISSING = "missing"
-STATUS_NOT_APPLICABLE = "not applicable"
-VALID_STATUSES = {STATUS_IMPLEMENTED, STATUS_PARTIAL, STATUS_MISSING, STATUS_NOT_APPLICABLE}
+VALID = {"implemented", "partial", "missing", "not applicable"}
+UNVERIFIED = {"", "(none yet)", "(none)", "n/a", "unverified", "not captured", "not run"}
 
 
-class Row:
-    def __init__(self, cells: list[str], line_no: int):
-        # feature | implementation | documentation | localized copy |
-        # persistence | test | capture | status | notes
-        while len(cells) < 9:
-            cells.append("")
-        self.feature = cells[0].strip()
-        self.implementation = cells[1].strip()
-        self.documentation = cells[2].strip()
-        self.localized = cells[3].strip()
-        self.persistence = cells[4].strip()
-        self.test = cells[5].strip()
-        self.capture = cells[6].strip()
-        self.status = cells[7].strip().lower()
-        self.notes = cells[8].strip()
-        self.line_no = line_no
+@dataclass
+class FeatureRow:
+    feature: str; implementation: str; documentation: str; localized: str; persistence: str; test: str; capture: str; status: str; notes: str; line_no: int
 
 
-def parse_inventory(text: str) -> list[Row]:
-    rows: list[Row] = []
-    in_table = False
-    for line_no, raw_line in enumerate(text.splitlines(), start=1):
-        line = raw_line.strip()
+@dataclass
+class SurfaceRow:
+    surface: str; feature: str; implementation: str; documentation: str; localized: str; persistence: str; test: str; interaction: str; capture: str; provenance: str; status: str; notes: str; line_no: int
+
+
+@dataclass
+class MatrixRow:
+    product_surface: str; feature: str; status: str; notes: str; line_no: int
+
+
+def table(text: str, header: str) -> list[tuple[list[str], int]]:
+    """Read one exact table header, never a descendant or substring match."""
+    rows, active = [], False
+    for line_no, raw in enumerate(text.splitlines(), 1):
+        line = raw.strip()
         if not line.startswith("|"):
+            if active: break
             continue
-        if line.startswith("| Feature |"):
-            in_table = True
-            continue
-        if not in_table:
-            continue
-        # Skip the separator row, e.g. "| --- | --- | ... |"
-        if re.fullmatch(r"\|[\s:-]*\|[\s:|-]*", line):
-            continue
-        cells = [c.strip() for c in line.strip("|").split("|")]
-        rows.append(Row(cells, line_no))
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if cells and cells[0] == header:
+            active = True; continue
+        if not active: continue
+        if cells and all(re.fullmatch(r"[: -]+", cell or "") for cell in cells): continue
+        rows.append((cells, line_no))
     return rows
 
 
-def extract_paths(cell: str) -> list[str]:
-    """Pull backtick-quoted paths out of a cell. Ignores prose in parens."""
-    return re.findall(r"`([^`]+)`", cell)
+def feature_rows(text: str) -> list[FeatureRow]:
+    return [FeatureRow(*(cells + [""] * (9 - len(cells)))[:9], line_no) for cells, line_no in table(text, "Feature")]
 
 
-def looks_like_path(token: str) -> bool:
-    # A backtick span can also be a settings key, a context name, or a code
-    # symbol; only check tokens that look like a real repository path.
-    if token.startswith("<"):
-        return False
-    if "/" not in token and "." not in token:
-        return False
-    if token.startswith("experience/") and not token.endswith((".cpp", ".h", ".qml", ".md", ".png", ".log", ".json")):
-        # a settings key such as experience/language/mode, not a path
-        return False
-    return True
+def surface_rows(text: str) -> list[SurfaceRow]:
+    return [SurfaceRow(*(cells + [""] * (12 - len(cells)))[:12], line_no) for cells, line_no in table(text, "Surface")]
 
 
-def check_paths_exist(cell_value: str, repo_root: Path, field_name: str, row: Row, findings: list[str]) -> None:
-    for token in extract_paths(cell_value):
-        if not looks_like_path(token):
-            continue
-        candidate = repo_root / token
-        if not candidate.exists():
-            findings.append(
-                f"line {row.line_no}, feature '{row.feature}': {field_name} references "
-                f"'{token}' which does not exist at {candidate}"
-            )
+def matrix_rows(text: str) -> list[MatrixRow]:
+    return [MatrixRow(*(cells + [""] * (4 - len(cells)))[:4], line_no) for cells, line_no in table(text, "Product surface")]
 
 
-def check_localized_context(row: Row, translation_text: str, findings: list[str]) -> None:
-    if not row.localized:
-        return
-    match = re.search(r"context\s+`([^`]+)`", row.localized)
-    if not match:
-        return
-    context_name = match.group(1)
-    needle = f"<name>{context_name}</name>"
-    if needle not in translation_text:
-        findings.append(
-            f"line {row.line_no}, feature '{row.feature}': localized copy claims context "
-            f"'{context_name}' which does not appear in {TRANSLATION_RELATIVE_PATH}"
-        )
+def paths(value: str) -> list[str]: return re.findall(r"`([^`]+)`", value)
+def pathlike(value: str) -> bool: return "/" in value or ("." in value and not value.startswith("<"))
+def unverified(value: str) -> bool: return value.strip().lower() in UNVERIFIED
 
 
-def run(repo_root: Path) -> tuple[list[str], list[str]]:
-    """Returns (failures, notices)."""
-    failures: list[str] = []
-    notices: list[str] = []
+def check_paths(value: str, root: Path, field: str, label: str, line_no: int, failures: list[str]) -> None:
+    for name in paths(value):
+        if pathlike(name) and not (root / name).exists():
+            failures.append(f"line {line_no}, {label}: {field} references '{name}' which does not exist")
 
-    inventory_path = repo_root / INVENTORY_RELATIVE_PATH
-    if not inventory_path.exists():
-        failures.append(f"inventory file missing at {inventory_path}")
-        return failures, notices
 
-    text = inventory_path.read_text(encoding="utf-8")
-    rows = parse_inventory(text)
-
-    translation_path = repo_root / TRANSLATION_RELATIVE_PATH
-    translation_text = translation_path.read_text(encoding="utf-8") if translation_path.exists() else ""
-    if not translation_text:
-        failures.append(f"translation file missing or empty at {translation_path}")
-
-    seen_features: dict[str, int] = {}
+def exactly_once(rows: list, label: str, failures: list[str]) -> None:
+    counts: dict[str, int] = {}
     for row in rows:
-        if not row.feature:
-            continue
-        seen_features[row.feature] = seen_features.get(row.feature, 0) + 1
+        if row.feature: counts[row.feature] = counts.get(row.feature, 0) + 1
+    for feature in CANONICAL:
+        if counts.get(feature, 0) != 1:
+            failures.append(f"{label}: canonical feature '{feature}' has {counts.get(feature, 0)} rows, expected exactly one")
+    for feature, count in counts.items():
+        if feature not in CANONICAL: failures.append(f"{label}: non-canonical feature '{feature}' has {count} rows")
 
-    for feature in CANONICAL_FEATURES:
-        count = seen_features.get(feature, 0)
-        if count == 0:
-            failures.append(f"canonical feature '{feature}' has no row in {INVENTORY_RELATIVE_PATH}")
-        elif count > 1:
-            failures.append(f"canonical feature '{feature}' has {count} rows in {INVENTORY_RELATIVE_PATH}, expected exactly one")
 
+def matrix_exactly_once(rows: list[MatrixRow], failures: list[str]) -> None:
+    counts: dict[tuple[str, str], int] = {}
     for row in rows:
-        if not row.feature:
-            continue
-        if row.status not in VALID_STATUSES:
-            failures.append(f"line {row.line_no}, feature '{row.feature}': unrecognised status '{row.status}'")
-            continue
+        key = (row.product_surface, row.feature)
+        counts[key] = counts.get(key, 0) + 1
+        if row.product_surface not in PRODUCT_SURFACES:
+            failures.append(f"line {row.line_no}, matrix: unknown product surface '{row.product_surface}'")
+        if row.feature not in CANONICAL:
+            failures.append(f"line {row.line_no}, matrix: non-canonical feature '{row.feature}'")
+        if row.status not in VALID:
+            failures.append(f"line {row.line_no}, matrix: unrecognised status '{row.status}'")
+        if row.status in {"missing", "partial", "not applicable"} and not row.notes:
+            failures.append(f"line {row.line_no}, matrix: incomplete row requires Notes")
+    for product_surface in PRODUCT_SURFACES:
+        for feature in CANONICAL:
+            count = counts.get((product_surface, feature), 0)
+            if count != 1:
+                failures.append(f"product-surface matrix: '{product_surface}' / '{feature}' has {count} rows, expected exactly one")
 
-        if row.status in (STATUS_MISSING, STATUS_NOT_APPLICABLE):
-            if not row.notes:
-                failures.append(
-                    f"line {row.line_no}, feature '{row.feature}': status is "
-                    f"'{row.status}' but the Notes column gives no reason"
-                )
-            else:
-                notices.append(f"{row.feature}: {row.status} ({row.notes[:80]}...)" if len(row.notes) > 80 else f"{row.feature}: {row.status} ({row.notes})")
-            continue
 
-        # implemented or partial: every referenced path must be real.
-        check_paths_exist(row.implementation, repo_root, "implementation", row, failures)
-        check_paths_exist(row.documentation, repo_root, "documentation", row, failures)
-        check_paths_exist(row.test, repo_root, "test", row, failures)
-        check_paths_exist(row.capture, repo_root, "capture", row, failures)
-        check_localized_context(row, translation_text, failures)
+def context_check(value: str, translation: str, label: str, line_no: int, failures: list[str]) -> None:
+    match = re.search(r"context\s+`([^`]+)`", value)
+    if match and f"<name>{match.group(1)}</name>" not in translation:
+        failures.append(f"line {line_no}, {label}: localized context '{match.group(1)}' is absent")
 
-        notices.append(f"{row.feature}: {row.status}")
 
+
+def validate_features(rows: list[FeatureRow], root: Path, translation: str, failures: list[str]) -> None:
+    for row in rows:
+        label = f"feature '{row.feature}'"
+        if row.status not in VALID:
+            failures.append(f"line {row.line_no}, {label}: unrecognised status '{row.status}'"); continue
+        if row.status in {"missing", "not applicable"} and not row.notes:
+            failures.append(f"line {row.line_no}, {label}: {row.status} requires Notes")
+        if row.status in {"implemented", "partial"}:
+            for field, value in (("implementation", row.implementation), ("documentation", row.documentation), ("test", row.test), ("capture", row.capture)):
+                check_paths(value, root, field, label, row.line_no, failures)
+            context_check(row.localized, translation, label, row.line_no, failures)
+
+
+def validate_surfaces(rows: list[SurfaceRow], root: Path, translation: str, failures: list[str]) -> None:
+    for row in rows:
+        label = f"surface '{row.surface}', feature '{row.feature}'"
+        if not row.surface: failures.append(f"line {row.line_no}, per-surface inventory: Surface is empty")
+        if row.status not in VALID:
+            failures.append(f"line {row.line_no}, {label}: unrecognised status '{row.status}'"); continue
+        if row.status in {"missing", "not applicable"} and not row.notes:
+            failures.append(f"line {row.line_no}, {label}: {row.status} requires Notes")
+        for field, value in (("implementation", row.implementation), ("documentation", row.documentation), ("test", row.test), ("capture", row.capture), ("capture provenance", row.provenance)):
+            check_paths(value, root, field, label, row.line_no, failures)
+        context_check(row.localized, translation, label, row.line_no, failures)
+
+
+def completion_rows(features: list[FeatureRow], surfaces: list[SurfaceRow], matrix: list[MatrixRow]) -> list[str]:
+    failures = [f"feature '{row.feature}' is '{row.status}', so completion is not proven" for row in features if row.status != "implemented"]
+    failures.extend(f"product surface '{row.product_surface}', feature '{row.feature}' is '{row.status}', so completion is not proven" for row in matrix if row.status != "implemented")
+    for row in surfaces:
+        label = f"surface '{row.surface}', feature '{row.feature}'"
+        if row.status != "implemented":
+            failures.append(f"{label} is '{row.status}', so completion is not proven"); continue
+        for field, value in {"implementation": row.implementation, "documentation": row.documentation, "localized copy": row.localized, "persistence": row.persistence, "focused test": row.test, "real built-artifact interaction": row.interaction, "capture": row.capture, "capture provenance": row.provenance}.items():
+            if unverified(value): failures.append(f"{label}: {field} is unverified or absent")
+    return failures
+
+
+def run(root: Path, completion: bool, candidate: str | None = None) -> tuple[list[str], list[str]]:
+    failures, notices = [], []
+    feature_path, surface_path, matrix_path = root / INVENTORY, root / SURFACES, root / MATRIX
+    if not feature_path.exists(): return [f"feature inventory missing at {feature_path}"], notices
+    if not surface_path.exists(): return [f"per-surface inventory missing at {surface_path}"], notices
+    if not matrix_path.exists(): return [f"product-surface matrix missing at {matrix_path}"], notices
+    translation_path = root / TRANSLATION
+    translation = translation_path.read_text(encoding="utf-8") if translation_path.exists() else ""
+    if not translation: failures.append(f"translation file missing or empty at {translation_path}")
+    features, surfaces = feature_rows(feature_path.read_text(encoding="utf-8")), surface_rows(surface_path.read_text(encoding="utf-8"))
+    matrix = matrix_rows(matrix_path.read_text(encoding="utf-8"))
+    exactly_once(features, "feature inventory", failures)
+    # Legacy narrative rows can name several surfaces for the same capability.
+    # Concrete coverage is independently enforced by completion_evidence.py.
+    seen = set()
+    for row in surfaces:
+        key = (row.surface, row.feature)
+        if key in seen: failures.append(f"duplicate narrative surface/feature: {key}")
+        if row.feature not in CANONICAL: failures.append(f"unknown narrative feature: {row.feature}")
+        seen.add(key)
+    for feature in CANONICAL:
+        if not any(row.feature == feature for row in surfaces):
+            failures.append(f"narrative surface inventory: canonical feature '{feature}' is absent")
+    validate_features(features, root, translation, failures); validate_surfaces(surfaces, root, translation, failures)
+    matrix_exactly_once(matrix, failures)
+    notices = [f"{row.feature}: {row.status}" for row in features]
+    if completion:
+        failures.extend(completion_rows(features, surfaces, matrix))
+        failures.extend(validate_completion_evidence(root, CANONICAL, candidate))
     return failures, notices
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo-root", default=None, help="Repository root; defaults to three levels above this script.")
-    parser.add_argument("--strict", action="store_true", help="Exit non-zero on any failure. Without this, failures are printed but exit is always 0.")
-    args = parser.parse_args()
-
-    if args.repo_root:
-        repo_root = Path(args.repo_root).resolve()
-    else:
-        repo_root = Path(__file__).resolve().parents[2]
-
-    failures, notices = run(repo_root)
-
-    print(f"Completeness inventory guard: {repo_root / INVENTORY_RELATIVE_PATH}")
-    print(f"Checked {len(CANONICAL_FEATURES)} canonical features.")
-    for notice in notices:
-        print(f"  - {notice}")
-
+    parser.add_argument("--repo-root"); parser.add_argument("--strict", action="store_true"); parser.add_argument("--completion", action="store_true")
+    parser.add_argument("--candidate", help="Exact audited source commit for --completion")
+    args = parser.parse_args(); root = Path(args.repo_root).resolve() if args.repo_root else Path(__file__).resolve().parents[2]
+    failures, notices = run(root, args.completion, args.candidate); mode = "completion" if args.completion else "report-only"
+    print(f"Completeness inventory guard ({mode}): {root}"); print(f"Checked {len(CANONICAL)} canonical features in two independent inventories.")
+    for notice in notices: print(f"  - {notice}")
     if failures:
-        print("\nFAILURES:")
-        for failure in failures:
-            print(f"  ! {failure}")
-        if args.strict:
-            return 1
-        print("\n(not failing: run with --strict, or set AU_COMPLETENESS_STRICT=ON, to make this exit non-zero)")
+        print("\nFAILURES:"); [print(f"  ! {failure}") for failure in failures]
+        if args.strict or args.completion: return 1
+        print("\nReport-only mode never claims completion and exits zero. Use --strict for integrity or --completion for delivery proof.")
         return 0
-
-    print("\nNo failures.")
-    return 0
+    print("\nNo failures."); return 0
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == "__main__": sys.exit(main())
