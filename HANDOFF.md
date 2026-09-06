@@ -56,6 +56,12 @@ the GitHub CLI alone:
   Actions (or the `docs/site` folder on the default branch, whichever
   workflow this repository uses), so `docs/site/index.html` is reachable at
   `https://ding-ding-projects.github.io/audacity/`.
+- Set the repository homepage (Settings, General, Website) to
+  `https://ding-ding-projects.github.io/audacity/` and upload the root
+  `social-preview.png` under Settings, General, Social preview. An attempt to
+  set the homepage through the API on 2026-09-06 was refused with "Repository
+  settings writes are not permitted through this proxy", so both are owner
+  clicks.
 - Enable Issues and Discussions for this repository so the contribution and
   triage workflow described in the shared instructions can run here.
 - Consider renaming the repository from `audacity` to `material-audacity`
