@@ -14,6 +14,8 @@ set(MODULE_SRC
 
     ${CMAKE_CURRENT_LIST_DIR}/internal/appearanceoverrides.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/appearanceoverrides.h
+    ${CMAKE_CURRENT_LIST_DIR}/internal/appearancelayers.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/internal/appearancelayers.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/displaynamesettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/displaynamesettings.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/lockregistry.cpp
