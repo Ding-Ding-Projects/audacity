@@ -18,16 +18,88 @@ import shutil
 import struct
 import subprocess
 import sys
+import zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 INDEX_PATH = os.path.join(REPO_ROOT, "buildscripts", "packaging", "Windows", "Squirrel", "dim-sum-release-index.json")
 
 
-def png_dimensions(data: bytes):
-    if len(data) < 24 or data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
-        return None
-    return struct.unpack(">II", data[16:24])
+def decode_png(data: bytes):
+    """Fully decode the indexed PNG's scanlines using only the standard library.
+
+    The catalog contract requires 8-bit, non-interlaced RGB/RGBA/greyscale
+    images. Validating each chunk CRC, inflating all IDAT data, and unfiltering
+    every row catches truncation that a signature-and-IHDR-only check cannot.
+    """
+    if len(data) < 33 or data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("indexed photo is not a PNG")
+    cursor = 8
+    width = height = bit_depth = color_type = interlace = None
+    idat = []
+    saw_iend = False
+    while cursor < len(data):
+        if cursor + 12 > len(data):
+            raise ValueError("truncated PNG chunk")
+        length = struct.unpack(">I", data[cursor:cursor + 4])[0]
+        kind = data[cursor + 4:cursor + 8]
+        end = cursor + 12 + length
+        if end > len(data):
+            raise ValueError("truncated PNG chunk payload")
+        payload = data[cursor + 8:cursor + 8 + length]
+        expected_crc = struct.unpack(">I", data[cursor + 8 + length:end])[0]
+        if (zlib.crc32(kind + payload) & 0xffffffff) != expected_crc:
+            raise ValueError("PNG chunk CRC mismatch for {0}".format(kind.decode("ascii", "replace")))
+        cursor = end
+        if kind == b"IHDR":
+            if len(payload) != 13 or width is not None:
+                raise ValueError("invalid PNG IHDR")
+            width, height, bit_depth, color_type, compression, filter_method, interlace = struct.unpack(">IIBBBBB", payload)
+            if not width or not height or compression != 0 or filter_method != 0:
+                raise ValueError("unsupported PNG header")
+        elif kind == b"IDAT":
+            idat.append(payload)
+        elif kind == b"IEND":
+            if payload or cursor != len(data):
+                raise ValueError("invalid PNG trailer")
+            saw_iend = True
+            break
+    if width is None or not idat or not saw_iend:
+        raise ValueError("incomplete PNG")
+    channels = {0: 1, 2: 3, 4: 2, 6: 4}.get(color_type)
+    if bit_depth != 8 or channels is None or interlace != 0:
+        raise ValueError("unsupported PNG pixel format")
+    stride = width * channels
+    try:
+        scanlines = zlib.decompress(b"".join(idat))
+    except zlib.error as exc:
+        raise ValueError("PNG image data cannot be decompressed: {0}".format(exc))
+    if len(scanlines) != height * (stride + 1):
+        raise ValueError("PNG decoded data has an unexpected length")
+    previous = bytearray(stride)
+    offset = 0
+    for _ in range(height):
+        filter_type = scanlines[offset]
+        row = bytearray(scanlines[offset + 1:offset + 1 + stride])
+        offset += stride + 1
+        for index in range(stride):
+            left = row[index - channels] if index >= channels else 0
+            above = previous[index]
+            upper_left = previous[index - channels] if index >= channels else 0
+            if filter_type == 1:
+                row[index] = (row[index] + left) & 0xff
+            elif filter_type == 2:
+                row[index] = (row[index] + above) & 0xff
+            elif filter_type == 3:
+                row[index] = (row[index] + ((left + above) >> 1)) & 0xff
+            elif filter_type == 4:
+                predictor = left + above - upper_left
+                distances = (abs(predictor - left), abs(predictor - above), abs(predictor - upper_left))
+                row[index] = (row[index] + (left, above, upper_left)[distances.index(min(distances))]) & 0xff
+            elif filter_type != 0:
+                raise ValueError("unsupported PNG filter type {0}".format(filter_type))
+        previous = row
+    return width, height
 
 
 def tracked_path(relative_path: str) -> str:
@@ -62,15 +134,20 @@ def main() -> int:
         for field in ("id", "code_name", "path", "sha256", "origin", "origin_disclosure"):
             if not isinstance(entry.get(field), str) or not entry[field]:
                 raise ValueError("indexed photo lacks {0}".format(field))
+        for field in ("width", "height", "bytes"):
+            if not isinstance(entry.get(field), int) or entry[field] <= 0:
+                raise ValueError("indexed photo lacks positive {0}".format(field))
         source = tracked_path(entry["path"])
         with open(source, "rb") as handle:
             data = handle.read()
         digest = hashlib.sha256(data).hexdigest()
         if digest.lower() != entry["sha256"].lower():
             raise ValueError("SHA-256 mismatch for indexed photo {0}".format(entry["path"]))
-        dimensions = png_dimensions(data)
-        if not dimensions:
-            raise ValueError("indexed photo is not a PNG: {0}".format(entry["path"]))
+        dimensions = decode_png(data)
+        if dimensions != (entry["width"], entry["height"]):
+            raise ValueError("PNG dimensions do not match indexed metadata")
+        if len(data) != entry["bytes"]:
+            raise ValueError("PNG byte length does not match indexed metadata")
         os.makedirs(args.assets_dir, exist_ok=True)
         asset = "dim-sum-" + os.path.basename(source)
         target = os.path.join(args.assets_dir, asset)
