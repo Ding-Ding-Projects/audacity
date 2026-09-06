@@ -69,6 +69,22 @@ const UiActionList ApplicationUiActions::m_actions = {
              //: Action title: shown as a menu item or a button label; keep it short
              TranslatableString("action", "&About Audacity…")
              ),
+    UiAction("welcome-dialog",
+             au::context::UiCtxAny,
+             au::context::CTX_ANY,
+             //: Action title: shown as a menu item or a button label; keep it short
+             TranslatableString("action", "&Welcome tour"),
+             //: Action description: shown as a tooltip; can be a full sentence
+             TranslatableString("action_description", "Open the welcome tour")
+             ),
+    UiAction("first-launch-setup",
+             au::context::UiCtxAny,
+             au::context::CTX_ANY,
+             //: Action title: shown as a menu item or a button label; keep it short
+             TranslatableString("action", "&Set up Material Audacity…"),
+             //: Action description: shown as a tooltip; can be a full sentence
+             TranslatableString("action_description", "Open the setup pages for language, theme and appearance")
+             ),
     UiAction("about-qt",
              au::context::UiCtxAny,
              au::context::CTX_DISABLED,

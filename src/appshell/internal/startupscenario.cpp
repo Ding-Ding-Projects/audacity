@@ -253,35 +253,31 @@ void StartupScenario::showStartupDialogsIfNeed(StartupModeType)
         return;
     }
 
+    // The welcome dialog and the first launch setup wizard never open on
+    // their own. Both are reached from Help when the user asks for them.
+    // See docs/features/no-nagging.md for the full inventory of what changed
+    // and why. Sensible defaults apply automatically on a fresh profile, so
+    // skipping the wizard costs the user nothing: English, funny level 5,
+    // follow the system theme, seed purple.
     const auto showWelcomeDialogIfNeed = [this]() {
-        const auto showWelcomePage = [this]() {
-            const std::string welcomeDialogLastShownVersion(configuration()->welcomeDialogLastShownVersion());
-            const std::string currentAudacityVersion(configuration()->audacityVersion());
-
-            if (welcomeDialogLastShownVersion < currentAudacityVersion) {
-                configuration()->setWelcomeDialogShowOnStartup(true); // override user preference
-                configuration()->setWelcomeDialogLastShownIndex(-1); // reset
-            }
-
-            if (!configuration()->welcomeDialogShowOnStartup()) {
-                return;
-            }
-
-            muse::UriQuery query(WELCOME_DIALOG_URI);
-            query.set("modal", false);
-            query.set("floating", true);
-            interactive()->open(query);
-
-            configuration()->setWelcomeDialogLastShownVersion(configuration()->audacityVersion());
-        };
-
         if (!configuration()->hasCompletedFirstLaunchSetup()) {
-            interactive()->open(FIRST_LAUNCH_SETUP_URI).then(this, [showWelcomePage](const muse::Val&, auto resolve) {
-                return resolve();
-            });
-        } else {
-            showWelcomePage();
+            // Never block startup on the wizard. Mark it done with the
+            // shipped defaults already in effect; the user can still open
+            // "Set up Material Audacity" from Preferences or Help whenever
+            // they like.
+            configuration()->setHasCompletedFirstLaunchSetup(true);
         }
+
+        if (!configuration()->welcomeDialogShowOnStartup()) {
+            return;
+        }
+
+        muse::UriQuery query(WELCOME_DIALOG_URI);
+        query.set("modal", false);
+        query.set("floating", true);
+        interactive()->open(query);
+
+        configuration()->setWelcomeDialogLastShownVersion(configuration()->audacityVersion());
     };
 
     if (!appUpdateScenario() || !appUpdateScenario()->hasUpdate()) {

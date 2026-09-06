@@ -108,6 +108,8 @@ private:
 
     void toggleFullScreen();
     void openAboutDialog();
+    void openWelcomeDialog();
+    void openFirstLaunchSetup();
     void openAboutQtDialog();
 
     void openOnlineHandbookPage();

@@ -75,6 +75,8 @@ void ApplicationActionController::init()
     dispatcher()->reg(this, "fullscreen", this, &ApplicationActionController::toggleFullScreen);
 
     dispatcher()->reg(this, "about-audacity", this, &ApplicationActionController::openAboutDialog);
+    dispatcher()->reg(this, "welcome-dialog", this, &ApplicationActionController::openWelcomeDialog);
+    dispatcher()->reg(this, "first-launch-setup", this, &ApplicationActionController::openFirstLaunchSetup);
     dispatcher()->reg(this, "about-qt", this, &ApplicationActionController::openAboutQtDialog);
     dispatcher()->reg(this, "online-handbook", this, &ApplicationActionController::openOnlineHandbookPage);
     dispatcher()->reg(this, "ask-help", this, &ApplicationActionController::openAskForHelpPage);
@@ -365,6 +367,23 @@ void ApplicationActionController::toggleFullScreen()
 void ApplicationActionController::openAboutDialog()
 {
     interactive()->open("audacity://about/audacity");
+}
+
+void ApplicationActionController::openWelcomeDialog()
+{
+    // Opt-in only. Never opened automatically at startup.
+    // See docs/features/no-nagging.md.
+    muse::UriQuery query("audacity://welcomedialog");
+    query.set("modal", false);
+    query.set("floating", true);
+    interactive()->open(query);
+}
+
+void ApplicationActionController::openFirstLaunchSetup()
+{
+    // Opt-in only. Never opened automatically at startup.
+    // See docs/features/no-nagging.md.
+    interactive()->open("audacity://firstLaunchSetup?floating=true");
 }
 
 void ApplicationActionController::openAboutQtDialog()

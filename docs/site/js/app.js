@@ -328,6 +328,7 @@
     { id: 'external-editor', title: 'External editor integration', file: 'docs/external-editor.md' },
     { id: 'docs-browser', title: 'In-app documentation browser', file: 'docs/docs-browser.md' },
     { id: 'automatic-updates', title: 'Automatic updates', file: 'docs/automatic-updates.md' },
+    { id: 'no-nagging', title: 'No unsolicited interruptions', file: 'docs/no-nagging.md' },
     { id: 'appearance-editor', title: 'Per element appearance editor', file: 'docs/appearance-editor.md' },
     { id: 'app-rename', title: 'Renaming the application', file: 'docs/app-rename.md' },
     { id: 'toy-locks', title: 'Toy locks', file: 'docs/toy-locks.md' },

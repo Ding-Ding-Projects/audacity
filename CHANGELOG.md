@@ -89,6 +89,11 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 - Gave the muse StyledTableView, PageIndicator and AccountAvatar Material
   Design 3 colour roles instead of raw theme colours, through a new patch in
   the muse overlay
+- Stopped the Welcome dialog and the First Launch Setup wizard from opening
+  on their own. The welcome dialog no longer re-arms itself after a version
+  change, and the wizard no longer blocks startup; both are reachable at any
+  time from Help and from the command palette, and sensible defaults apply
+  immediately on a fresh profile (see docs/features/no-nagging.md)
 
 ## 4.0.0-material.1 - 2026-09-05
 
