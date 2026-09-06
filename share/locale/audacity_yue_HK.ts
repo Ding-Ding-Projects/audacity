@@ -24715,4 +24715,363 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <translation>%1 嘅相，離線嗰陣攞唔到</translation>
     </message>
 </context>
+<context>
+    <name>chronicle</name>
+    <message>
+        <source>%1 B</source>
+        <translation>%1 B</translation>
+    </message>
+    <message>
+        <source>%1 MB</source>
+        <translation>%1 MB</translation>
+    </message>
+    <message>
+        <source>%1 kB</source>
+        <translation>%1 kB</translation>
+    </message>
+    <message>
+        <source>%1 tabs</source>
+        <translation>%1 個分頁</translation>
+    </message>
+    <message>
+        <source>A pinned revision is never removed by retention</source>
+        <translation>釘住咗嘅版本，清理幾多次都唔會被剷走</translation>
+    </message>
+    <message>
+        <source>Add to a new group</source>
+        <translation>加入新組</translation>
+    </message>
+    <message>
+        <source>All strips</source>
+        <translation>全部分頁列</translation>
+    </message>
+    <message>
+        <source>All tabs</source>
+        <translation>全部分頁</translation>
+    </message>
+    <message>
+        <source>All tabs and tab actions</source>
+        <translation>全部分頁同分頁動作</translation>
+    </message>
+    <message>
+        <source>All time</source>
+        <translation>由開天闢地到而家</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>套用</translation>
+    </message>
+    <message>
+        <source>Apply retention</source>
+        <translation>執行清理規則</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>清空</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>閂</translation>
+    </message>
+    <message>
+        <source>Close %1</source>
+        <translation>閂咗 %1</translation>
+    </message>
+    <message>
+        <source>Close tabs</source>
+        <translation>閂分頁</translation>
+    </message>
+    <message>
+        <source>Close tabs containing text</source>
+        <translation>閂埋有呢段文字嘅分頁</translation>
+    </message>
+    <message>
+        <source>Close tabs containing text…</source>
+        <translation>閂埋有呢段文字嘅分頁…</translation>
+    </message>
+    <message>
+        <source>Close tabs not containing text</source>
+        <translation>閂埋冇呢段文字嘅分頁</translation>
+    </message>
+    <message>
+        <source>Close tabs not containing text…</source>
+        <translation>閂埋冇呢段文字嘅分頁…</translation>
+    </message>
+    <message>
+        <source>Dock the strip to the bottom</source>
+        <translation>分頁列泊去下面</translation>
+    </message>
+    <message>
+        <source>Dock the strip to the left</source>
+        <translation>分頁列泊去左邊</translation>
+    </message>
+    <message>
+        <source>Dock the strip to the right</source>
+        <translation>分頁列泊去右邊</translation>
+    </message>
+    <message>
+        <source>Dock the strip to the top</source>
+        <translation>分頁列泊去上面</translation>
+    </message>
+    <message>
+        <source>Edit group appearance…</source>
+        <translation>改吓組嘅樣…</translation>
+    </message>
+    <message>
+        <source>Edit label</source>
+        <translation>改標籤</translation>
+    </message>
+    <message>
+        <source>Every change in this and earlier releases, with a link to the commit it came from.</source>
+        <translation>呢個版本同之前版本嘅每一項改動，仲有條連結直達佢出身嘅 commit。</translation>
+    </message>
+    <message>
+        <source>Export HTML</source>
+        <translation>匯出 HTML</translation>
+    </message>
+    <message>
+        <source>Export JSON</source>
+        <translation>匯出 JSON</translation>
+    </message>
+    <message>
+        <source>Export Markdown</source>
+        <translation>匯出 Markdown</translation>
+    </message>
+    <message>
+        <source>Export the changelog</source>
+        <translation>匯出更新日誌</translation>
+    </message>
+    <message>
+        <source>Export the revision to a folder</source>
+        <translation>將呢個版本匯出去一個資料夾</translation>
+    </message>
+    <message>
+        <source>Export…</source>
+        <translation>匯出…</translation>
+    </message>
+    <message>
+        <source>Files in this revision</source>
+        <translation>呢個版本入面嘅檔案</translation>
+    </message>
+    <message>
+        <source>From (YYYY-MM-DD)</source>
+        <translation>由（YYYY-MM-DD）</translation>
+    </message>
+    <message>
+        <source>Git was not found, so the history is kept in the built in content addressed store.</source>
+        <translation>搵唔到 Git，所以歷史暫時擺喺內置嘅內容定址倉，一樣安全。</translation>
+    </message>
+    <message>
+        <source>Group appearance</source>
+        <translation>組嘅外觀</translation>
+    </message>
+    <message>
+        <source>Group name</source>
+        <translation>組名</translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation>分組</translation>
+    </message>
+    <message>
+        <source>In group</source>
+        <translation>喺組入面</translation>
+    </message>
+    <message>
+        <source>Include pinned tabs</source>
+        <translation>連釘住嘅分頁都計埋</translation>
+    </message>
+    <message>
+        <source>Keep at most</source>
+        <translation>最多保留</translation>
+    </message>
+    <message>
+        <source>Keep for</source>
+        <translation>保留</translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation>標籤</translation>
+    </message>
+    <message>
+        <source>Last 30 days</source>
+        <translation>最近 30 日</translation>
+    </message>
+    <message>
+        <source>Last 7 days</source>
+        <translation>最近 7 日</translation>
+    </message>
+    <message>
+        <source>New group</source>
+        <translation>新組</translation>
+    </message>
+    <message>
+        <source>No revision matches these filters yet. The history records a revision when the project is saved, when a setting changes and when a preset is saved or deleted.</source>
+        <translation>暫時冇版本符合呢啲篩選。工程儲存、設定改動、預設組合儲存或者刪除嗰陣，歷史都會記低一個版本。</translation>
+    </message>
+    <message>
+        <source>Nothing in the changelog matches these filters.</source>
+        <translation>更新日誌入面冇嘢符合呢啲篩選。</translation>
+    </message>
+    <message>
+        <source>Nothing matches this search.</source>
+        <translation>搵極都冇。</translation>
+    </message>
+    <message>
+        <source>Open as new project</source>
+        <translation>另開一個新工程</translation>
+    </message>
+    <message>
+        <source>Open commit %1</source>
+        <translation>開 commit %1</translation>
+    </message>
+    <message>
+        <source>Opens this revision without touching the project you have open</source>
+        <translation>開呢個版本做新工程，你手頭開住嗰個一啲都唔會郁</translation>
+    </message>
+    <message>
+        <source>Pick the end of the range</source>
+        <translation>揀範圍嘅結尾</translation>
+    </message>
+    <message>
+        <source>Pick the start of the range</source>
+        <translation>揀範圍嘅開頭</translation>
+    </message>
+    <message>
+        <source>Pin</source>
+        <translation>釘住</translation>
+    </message>
+    <message>
+        <source>Pin tab</source>
+        <translation>釘住分頁</translation>
+    </message>
+    <message>
+        <source>Remove from group</source>
+        <translation>踢出組</translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation>還原</translation>
+    </message>
+    <message>
+        <source>Search every strip</source>
+        <translation>搜尋所有分頁列</translation>
+    </message>
+    <message>
+        <source>Search groups by name</source>
+        <translation>用組名搜尋</translation>
+    </message>
+    <message>
+        <source>Search tabs in this strip</source>
+        <translation>搜尋呢條分頁列嘅分頁</translation>
+    </message>
+    <message>
+        <source>Search tabs inside the group</source>
+        <translation>搜尋組入面嘅分頁</translation>
+    </message>
+    <message>
+        <source>Search the changelog</source>
+        <translation>搜尋更新日誌</translation>
+    </message>
+    <message>
+        <source>Search the version history</source>
+        <translation>搜尋版本歷史</translation>
+    </message>
+    <message>
+        <source>Show icons only</source>
+        <translation>淨係顯示圖示</translation>
+    </message>
+    <message>
+        <source>Show labels</source>
+        <translation>顯示標籤</translation>
+    </message>
+    <message>
+        <source>Star</source>
+        <translation>加星</translation>
+    </message>
+    <message>
+        <source>Strip %1</source>
+        <translation>分頁列 %1</translation>
+    </message>
+    <message>
+        <source>Tab list</source>
+        <translation>分頁清單</translation>
+    </message>
+    <message>
+        <source>Text to match</source>
+        <translation>要對嘅文字</translation>
+    </message>
+    <message>
+        <source>The history is kept in a local Git repository beside the application data.</source>
+        <translation>歷史擺喺應用程式資料隔籬嘅本機 Git 倉入面。</translation>
+    </message>
+    <message>
+        <source>This build does not carry a changelog.</source>
+        <translation>呢個 build 冇帶更新日誌出街。</translation>
+    </message>
+    <message>
+        <source>This is not a valid regular expression, so nothing will be closed.</source>
+        <translation>呢條唔係有效嘅正則表達式，所以乜都唔會閂。</translation>
+    </message>
+    <message>
+        <source>This strip</source>
+        <translation>呢條分頁列</translation>
+    </message>
+    <message>
+        <source>This would close %1 of %2 tabs.</source>
+        <translation>咁樣會閂咗 %2 個分頁入面嘅 %1 個。</translation>
+    </message>
+    <message>
+        <source>To (YYYY-MM-DD)</source>
+        <translation>到（YYYY-MM-DD）</translation>
+    </message>
+    <message>
+        <source>Today</source>
+        <translation>今日</translation>
+    </message>
+    <message>
+        <source>Treat the text as a regular expression</source>
+        <translation>當呢段文字係正則表達式</translation>
+    </message>
+    <message>
+        <source>Type some text to see what would be closed.</source>
+        <translation>打啲文字睇吓會閂咗啲乜。</translation>
+    </message>
+    <message>
+        <source>Unpin</source>
+        <translation>解釘</translation>
+    </message>
+    <message>
+        <source>Unpin tab</source>
+        <translation>解釘分頁</translation>
+    </message>
+    <message>
+        <source>Unstar</source>
+        <translation>除星</translation>
+    </message>
+    <message>
+        <source>Version history</source>
+        <translation>版本歷史</translation>
+    </message>
+    <message>
+        <source>What's new</source>
+        <translation>有咩新嘢</translation>
+    </message>
+    <message>
+        <source>days</source>
+        <translation>日</translation>
+    </message>
+    <message>
+        <source>pinned</source>
+        <translation>釘住咗</translation>
+    </message>
+    <message>
+        <source>revisions</source>
+        <translation>個版本</translation>
+    </message>
+</context>
 </TS>
