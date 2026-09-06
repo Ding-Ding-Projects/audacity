@@ -66,6 +66,8 @@ public:
 
     muse::async::Notification revisionsChanged() const override { return m_revisionsChanged; }
 
+    QString historyRootPath() const override { return historyRoot(); }
+
     //! Derives the label shown in the panel from the action and its detail.
     //! Public so that the behaviour can be asserted directly by the tests.
     static QString deriveLabel(const QString& action, const QString& detail);

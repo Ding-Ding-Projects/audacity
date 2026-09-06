@@ -386,6 +386,32 @@ Item {
                             variant: "text"
                             onClicked: exportDialog.open()
                         }
+
+                        M3Button {
+                            text: qsTrc("chronicle", "Open as new project")
+                            variant: "text"
+                            accessible.description: qsTrc("chronicle", "Opens this revision without touching the project you have open")
+                            onClicked: historyModel.openAsNewProject(revisionRow.modelData.revisionId)
+                        }
+
+                        M3Button {
+                            text: revisionRow.modelData.starred
+                                  ? qsTrc("chronicle", "Unstar")
+                                  : qsTrc("chronicle", "Star")
+                            variant: revisionRow.modelData.starred ? "filled" : "text"
+                            accessible.checked: revisionRow.modelData.starred
+                            onClicked: historyModel.setStarred(revisionRow.modelData.revisionId, !revisionRow.modelData.starred)
+                        }
+
+                        M3Button {
+                            text: revisionRow.modelData.pinned
+                                  ? qsTrc("chronicle", "Unpin")
+                                  : qsTrc("chronicle", "Pin")
+                            variant: revisionRow.modelData.pinned ? "filled" : "text"
+                            accessible.checked: revisionRow.modelData.pinned
+                            accessible.description: qsTrc("chronicle", "A pinned revision is never removed by retention")
+                            onClicked: historyModel.setPinned(revisionRow.modelData.revisionId, !revisionRow.modelData.pinned)
+                        }
                     }
                 }
             }

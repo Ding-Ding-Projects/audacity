@@ -73,4 +73,26 @@ QString actionFamilyTitle(const QString& family);
 //! milestone for the same reason a save is: it is the moment the working
 //! state changed on purpose, deliberately, to something the user chose.
 bool isMilestoneAction(const QString& action);
+
+//! The result of comparing the file lists of two revisions, for the
+//! panel's compare view. This compares by path and size only, which is what
+//! the file lists this history already records can support; it says nothing
+//! about track count, clip count, or sample rate, which this history does
+//! not capture per revision.
+struct RevisionFileComparison {
+    int filesAdded = 0;
+    int filesModified = 0;
+    int filesDeleted = 0;
+    int filesUnchanged = 0;
+    qint64 totalBytesA = 0;
+    qint64 totalBytesB = 0;
+};
+
+//! Compares the file list of an earlier revision (a) against a later one
+//! (b), by path and size. A path present in both with a different size is
+//! counted as modified; present only in b is added; present only in a is
+//! deleted; present in both with the same size is unchanged. This cannot
+//! tell a genuine content change from a same-size coincidence, which is the
+//! honest limit of comparing by size rather than by content hash.
+RevisionFileComparison compareRevisionFiles(const QList<RevisionFile>& a, const QList<RevisionFile>& b);
 }

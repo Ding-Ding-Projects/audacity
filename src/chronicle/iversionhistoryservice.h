@@ -93,5 +93,10 @@ public:
     virtual bool absorbEmbeddedHistory(const QByteArray& data) = 0;
 
     virtual muse::async::Notification revisionsChanged() const = 0;
+
+    //! The directory every project's history repository lives beside, for
+    //! the storage panel to measure disk usage from. Never inside a user's
+    //! own project folder.
+    virtual QString historyRootPath() const = 0;
 };
 }

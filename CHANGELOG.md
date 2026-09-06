@@ -10,6 +10,11 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Local history: the panel gained **Open as new project**, **Star** and
+  **Pin** buttons on every revision, backed by new model methods for a day
+  by day timeline grouping, a two revision file-level compare, and storage
+  usage, though the panel does not render the timeline, compare or storage
+  surfaces from them yet.
 - Local history: a revision can now be starred (purely decorative) and
   pinned (excluded from retention, exactly like the newest revision itself)
   independently of what produced it. A revision is now also marked as a

@@ -127,8 +127,10 @@ The panel sits beside the undo history, behind the "Versions" segment.
   that triggered the snapshot.
 - Opening a row shows the diff summary: every file in the revision, its status
   against the previous revision, and its size.
-- The row's actions are **Restore**, **Edit label** and **Export…**, which
-  writes the content of the revision into a folder you choose.
+- The row's actions are **Restore**, **Edit label**, **Export…** (writes the
+  content of the revision into a folder you choose), **Open as new project**
+  (exports the revision into a private temporary folder and opens it as its
+  own project, without touching the one you have open), **Star** and **Pin**.
 
 ### Filters
 
@@ -279,16 +281,46 @@ left in place untouched.
   removed the pinned revision and assert it survives while an unpinned,
   unstarred revision in the same age bracket is removed, then unpin it and
   assert the flag actually clears.
+- `CompareRevisionFilesClassifiesEveryChangeKind` and
+  `CompareRevisionFilesHandlesTwoEmptyLists` cover the pure comparison
+  function behind the compare view: every change kind classified correctly
+  from a mixed input, and two empty lists producing all zeros rather than
+  a crash.
 
 ## What this feature does not do yet
 
 Stated plainly rather than left as a silent gap:
 
-- The panel does not yet show a waveform thumbnail of the affected region, a
-  day by day timeline chip rail, a two revision compare view, or a repository
-  size and per track sample data storage panel. It does not yet let a version
-  be starred or pinned against retention, or opened as a separate project
-  without touching the one that is open.
-- These are the parts of the local history contract still open. The action
-  recording, the family grouping and the append only storage described above
-  are real and tested; the richer panel surfaces are not built.
+- **Starring, pinning, opening a revision as a new project, exporting, and
+  restoring** are real, tested (starring and pinning) or already existing
+  (export and restore) at the store and model layer, and are now reachable
+  from the panel through the **Star**, **Pin** and **Open as new project**
+  buttons added to each revision's action row alongside the existing
+  **Restore**, **Edit label** and **Export…**.
+- **The day by day timeline grouping** (`VersionHistoryModel::dayGroups()`)
+  and **the storage panel's numbers** (`VersionHistoryModel::storageInfo()`,
+  repository size on disk, backend name, revision count) exist as callable
+  model methods, but no QML surface in the panel renders them yet as a
+  timeline rail or a storage panel. `storageInfo()` also does not include the
+  size of what is actually embedded in the currently open project's own save
+  file, since the model has no reference to the open project; only
+  `ProjectHistoryWatcher`, which writes and reads that bundle, knows it.
+- **Comparing two revisions** (`VersionHistoryModel::compareRevisions()`,
+  backed by the tested pure function `compareRevisionFiles()`) compares by
+  file path and size: files added, modified, deleted and unchanged between
+  two revisions, and each revision's total recorded size. It does not compare
+  track count, clip count, or sample rate, because this history does not
+  capture any of those per revision yet, and it cannot distinguish a genuine
+  content change from a same-size coincidence, since it compares by size
+  rather than by content hash. No QML surface calls it yet either.
+- **Per revision track and clip names, the selection range, and a waveform
+  peak thumbnail of the affected region** are not implemented at all. Capturing
+  which tracks and clips an edit touched, and a project time selection range,
+  would need this history to be told that by the undo stack or by trackedit
+  at commit time, which nothing here currently does; a peak thumbnail would
+  need sample data access into a project's WaveTrack content that this module
+  does not have. Both are real gaps, not stubs pretending to work.
+- The action recording, the family grouping, the append only storage, the
+  embedded save-file bundle, and starring and pinning are all real and
+  tested. The richer panel surfaces (timeline rail, compare view, storage
+  panel) and the two deeper capture gaps above are what remain open.
