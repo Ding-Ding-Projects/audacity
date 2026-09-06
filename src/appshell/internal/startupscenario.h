@@ -38,12 +38,14 @@
 #include "appshell/iappshellconfiguration.h"
 #include "appshell/internal/isessionsmanager.h"
 #include "effects/effects_base/ieffectsproviderinitializer.h"
+#include "experience/inotificationcenter.h"
 
 namespace au::appshell {
 class StartupScenario : public au::appshell::IStartupScenario, public muse::async::Asyncable, public muse::Contextable
 {
     muse::GlobalInject<IAppShellConfiguration> configuration;
     muse::GlobalInject<muse::mi::IMultiWindowsProvider> multiwindowsProvider;
+    muse::GlobalInject<au::experience::INotificationCenter> notificationCenter;
 
     muse::ContextInject<muse::IInteractive> interactive { this };
     muse::ContextInject<muse::actions::IActionsDispatcher> dispatcher { this };

@@ -11,7 +11,7 @@ interrupt startup or work on its own, and states what each one became.
 | Where it fired | What it did before | What it is now |
 | --- | --- | --- |
 | Startup, `StartupScenario::showStartupDialogsIfNeed` | Opened the Welcome dialog automatically on every launch until the "Don't show welcome dialog on startup" checkbox was cleared, and silently re-armed itself ("override user preference") whenever the installed version changed, even after the user had turned it off. | Never opens on its own. The setting that controlled it now defaults to off. The dialog is reachable at any time from Help, "Welcome tour", or from the `welcome-dialog` action (command palette / shortcuts). |
-| Startup, `StartupScenario::showStartupDialogsIfNeed` | Blocked startup on the First Launch Setup wizard (language, theme, workspace layout, sign-in, usage info) until the user clicked through every page. | Never blocks startup. Sensible defaults apply immediately: English, funny level 5, follow the system theme, seed purple. The wizard is reachable at any time from Help, "Set up Material Audacity...", or from the `first-launch-setup` action (command palette / shortcuts), and is also linked from Preferences. |
+| Startup, `StartupScenario::showStartupDialogsIfNeed` | Blocked startup on the First Launch Setup wizard (language, theme, workspace layout, sign-in, usage info) until the user clicked through every page. | Never blocks startup. Sensible defaults apply immediately: English, funny level 5, follow the system theme, seed purple. A single non-blocking notification appears once, bottom right ("Set up Material Audacity", with a "Set up" action and a "Dismiss" action), records that it was shown so it never repeats on that profile, and auto-dismisses on its own after a few seconds like any other informational notification. The wizard itself stays reachable at any time from Help, "Set up Material Audacity...", or from the `first-launch-setup` action (command palette / shortcuts). |
 | `src/usageinfo/internal/usageinfoservice.cpp` | Anonymous usage reporting. | Already off by default with no consent dialog; a Preferences toggle with plain disclosure controls it. No change was needed here; listed for completeness. |
 | `src/au3cloud/internal/au3cloudactionscontroller.cpp` | Cloud/audio.com sign-in and tour pages. | Already action-triggered only (menu items, explicit buttons); nothing opens these on its own. No change was needed here; listed for completeness. |
 | `src/squirrelupdate` | Update banner. | Already shows only `Checking` during a real background check and `Ready` when an update is genuinely staged; it never asks the user to "check now" as an interruption. No change was needed here; listed for completeness. |
@@ -37,12 +37,8 @@ exactly how it decides.
 completely fresh profile 28 seconds after launch: the project window is open with no dialog,
 banner, or wizard on top of it.
 
-## Known gap
-
-The "Set up Material Audacity" toast that should appear as a one-time non-blocking notification
-on first run (instead of silently marking the wizard complete) is not wired yet: doing so cleanly
-needs the appshell module to depend on the experience module's notification centre
-(`INotificationCenter::push`), which is a larger cross-module change than this pass could safely
-make under the shared build lock. Today, first run simply applies the defaults with no toast and
-no wizard; the wizard stays reachable from Help and the command palette. Wiring the toast is
-tracked as follow-up work.
+On the very first run, a single non-blocking notification appears once, bottom right, offering
+"Set up" (which opens the first launch setup pages) or "Dismiss". It auto-dismisses on its own
+after a few seconds like any other informational notification, is recorded so it is never shown
+again on that profile, and never blocks or delays anything. `docs/design/captures/lane-s/first-run-toast.png`
+is a real capture of it.

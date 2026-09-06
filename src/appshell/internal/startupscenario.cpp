@@ -26,6 +26,7 @@
 
 #include "framework/global/log.h"
 #include "framework/global/settings.h"
+#include "framework/global/translation.h"
 #include "framework/global/types/uri.h"
 
 #include "appshell/appshelltypes.h"
@@ -264,8 +265,21 @@ void StartupScenario::showStartupDialogsIfNeed(StartupModeType)
             // Never block startup on the wizard. Mark it done with the
             // shipped defaults already in effect; the user can still open
             // "Set up Material Audacity" from Preferences or Help whenever
-            // they like.
+            // they like. hasCompletedFirstLaunchSetup flips to true right
+            // here, so this branch, and the one-time notification below,
+            // can never run again on this profile.
             configuration()->setHasCompletedFirstLaunchSetup(true);
+
+            notificationCenter()->actionRequested().onReceive(this, [this](const QString& actionCode) {
+                dispatcher()->dispatch(actionCode.toStdString());
+            }, muse::async::Asyncable::Mode::SetReplace);
+
+            notificationCenter()->push(
+                au::experience::NotificationType::Info,
+                muse::qtrc("appshell", "Set up Material Audacity"),
+                muse::qtrc("appshell", "Choose your language, theme and appearance whenever you like."),
+                muse::qtrc("appshell", "Set up"),
+                QString::fromStdString("first-launch-setup"));
         }
 
         if (!configuration()->welcomeDialogShowOnStartup()) {
