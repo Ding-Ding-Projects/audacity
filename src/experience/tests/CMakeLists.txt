@@ -12,6 +12,7 @@ set(MODULE_TEST_SRC
     ${CMAKE_CURRENT_LIST_DIR}/dimsumsurprise_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/schoolmode_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/narratorqueue_tests.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/notificationcenter_tests.cpp
     )
 
 set(MODULE_TEST_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/..)

@@ -10,6 +10,9 @@ The format follows Keep a Changelog and the project uses semantic versioning.
 
 ### Added
 
+- Experience module: a focused unit test for the notification centre
+  covering id assignment, active versus dismissed state, history ordering
+  and its size limit, and the action request channel
 - Experience module: a dim sum surprise card that draws once per launch with
   a fresh 10% chance and names a random dish bilingually with a photo cached
   from the public catalog and never vendored in this repository, a universal
