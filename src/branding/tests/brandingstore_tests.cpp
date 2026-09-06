@@ -2,6 +2,7 @@
 #include <QBuffer>
 #include <QFile>
 #include <QTemporaryDir>
+#include <QTranslator>
 
 #include "brandingstore.h"
 #include "brandingmodel.h"
@@ -32,6 +33,7 @@ private slots:
     void acceptsSafeSvgAndIcoWhenQtCodecsAreAvailable();
     void modelLoadsAndResetsTheSameLocalCache();
     void realShippedResourceOpensAndDecodes();
+    void statusCodesRemainStableAcrossLanguageChanges();
 };
 
 void BrandingStoreTests::initTestCase()
@@ -152,7 +154,7 @@ void BrandingStoreTests::modelLoadsAndResetsTheSameLocalCache()
     au::personalize::BrandingModel model(directory.filePath("profile"), QByteArray("shipped"));
     model.setCrop(true);
     QVERIFY(!model.crop());
-    QCOMPARE(model.status(), QString("The selected logo could not be applied"));
+    QCOMPARE(model.statusCode(), QString("unsupported-or-invalid"));
     QVERIFY(model.loadFile(sourcePath));
     QVERIFY(model.hasCustomLogo());
     QVERIFY(!model.previewPath().isEmpty());
@@ -170,6 +172,7 @@ void BrandingStoreTests::modelLoadsAndResetsTheSameLocalCache()
     const QString successfulUrl = model.logo32Path();
     QVERIFY(!model.loadFile("missing-file.png"));
     QCOMPARE(model.logo32Path(), successfulUrl);
+    QCOMPARE(model.statusCode(), QString("unreadable"));
     model.setCrop(true);
     QVERIFY(model.crop());
     model.reset();
@@ -184,6 +187,21 @@ void BrandingStoreTests::realShippedResourceOpensAndDecodes()
     QImage image;
     QVERIFY(image.loadFromData(resource.readAll()));
     QVERIFY(!image.isNull());
+}
+
+void BrandingStoreTests::statusCodesRemainStableAcrossLanguageChanges()
+{
+    class Translator final : public QTranslator {
+    public:
+        QString translate(const char*, const char*, const char*, int) const override { return "translated"; }
+    } translator;
+    QTemporaryDir directory;
+    au::personalize::BrandingModel model(directory.path(), QByteArray("shipped"));
+    model.setBackground("not-a-colour");
+    QCOMPARE(model.statusCode(), QString("invalid-background"));
+    QCoreApplication::installTranslator(&translator);
+    QCOMPARE(model.statusCode(), QString("invalid-background"));
+    QCoreApplication::removeTranslator(&translator);
 }
 
 QTEST_MAIN(BrandingStoreTests)

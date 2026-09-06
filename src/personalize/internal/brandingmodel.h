@@ -17,7 +17,7 @@ class BrandingModel final : public QObject
     Q_PROPERTY(QString logo64Path READ logo64Path NOTIFY changed)
     Q_PROPERTY(bool crop READ crop WRITE setCrop NOTIFY changed)
     Q_PROPERTY(QString background READ background WRITE setBackground NOTIFY changed)
-    Q_PROPERTY(QString status READ status NOTIFY changed)
+    Q_PROPERTY(QString statusCode READ statusCode NOTIFY changed)
 public:
     explicit BrandingModel(const QString& profileRoot, const QByteArray& shippedMark, QObject* parent = nullptr);
     bool hasCustomLogo() const;
@@ -28,7 +28,7 @@ public:
     QString logo64Path() const;
     bool crop() const;
     QString background() const;
-    QString status() const;
+    QString statusCode() const;
     Q_INVOKABLE bool loadFile(const QString& filePath);
     Q_INVOKABLE void reset();
     Q_INVOKABLE QString logoPath(int size) const;
@@ -38,11 +38,11 @@ signals:
     void changed();
 private:
     QString pathForSize(int size) const;
-    QString translatedStatus(const au::branding::LogoResult& result) const;
+    QString statusCodeFor(const au::branding::LogoResult& result) const;
     void refresh(const au::branding::LogoResult& result = { true, {} });
     au::branding::BrandingStore m_store;
     QByteArray m_shippedMark;
-    QString m_status;
+    QString m_statusCode;
     quint64 m_revision { 0 };
 };
 }

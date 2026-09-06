@@ -2,7 +2,6 @@
 #include "brandingmodel.h"
 
 #include <QFile>
-#include <QCoreApplication>
 #include <QUrl>
 
 using namespace au::personalize;
@@ -32,28 +31,46 @@ QString BrandingModel::pathForSize(int size) const
 }
 bool BrandingModel::crop() const { return m_store.options().fitMode == au::branding::LogoFitMode::Crop; }
 QString BrandingModel::background() const { return m_store.options().background.name(QColor::HexArgb); }
-QString BrandingModel::status() const { return m_status; }
+QString BrandingModel::statusCode() const { return m_statusCode; }
 void BrandingModel::refresh(const au::branding::LogoResult& result)
 {
     if (result.ok) {
         ++m_revision;
     }
-    m_status = translatedStatus(result);
+    m_statusCode = statusCodeFor(result);
     emit changed();
 }
-QString BrandingModel::translatedStatus(const au::branding::LogoResult& result) const
+QString BrandingModel::statusCodeFor(const au::branding::LogoResult& result) const
 {
     if (result.ok) {
-        return QCoreApplication::translate("personalize/branding", m_store.hasCustomLogo() ? "Custom logo saved locally" : "Using the shipped logo");
+        return m_store.hasCustomLogo() ? "custom-saved" : "shipped";
     }
-    return QCoreApplication::translate("personalize/branding", "The selected logo could not be applied");
+    if (result.error == "unreadable") {
+        return "unreadable";
+    }
+    if (result.error.contains("byte limit")) {
+        return "too-large";
+    }
+    if (result.error.contains("cancelled")) {
+        return "cancelled";
+    }
+    if (result.error.contains("write") || result.error.contains("cache") || result.error.contains("activate") || result.error.contains("prepare")) {
+        return "cache-write";
+    }
+    if (result.error == "invalid background") {
+        return "invalid-background";
+    }
+    return "unsupported-or-invalid";
 }
 bool BrandingModel::loadFile(const QString& filePath)
 {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) { refresh({ false, "unreadable" }); return false; }
     au::branding::LogoOptions options = m_store.options();
-    const auto result = m_store.loadCustom(file.read(au::branding::BrandingStore::MaxSourceBytes + 1), options);
+    const QByteArray bytes = file.read(au::branding::BrandingStore::MaxSourceBytes + 1);
+    const auto result = bytes.size() > au::branding::BrandingStore::MaxSourceBytes
+                            ? au::branding::LogoResult { false, "byte limit" }
+                            : m_store.loadCustom(bytes, options);
     refresh(result);
     return result.ok;
 }

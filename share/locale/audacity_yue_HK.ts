@@ -25171,5 +25171,11 @@ Template for clip name generation on inserting new empty clip</extracomment>
     <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="33" /><source>Custom logo saved locally</source><translation>自訂標誌已經喺本機儲好</translation></message>
     <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="33" /><source>Using the shipped logo</source><translation>而家用緊原裝標誌</translation></message>
     <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="35" /><source>The selected logo could not be applied</source><translation>揀咗嘅標誌用唔到</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="14" /><source>The selected file could not be read. Choose another local image.</source><translation>揀咗嘅檔案讀唔到。請揀另一張本機圖片。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="15" /><source>This image is too large. Choose a file up to 8 MiB.</source><translation>呢張圖片太大。請揀唔超過 8 MiB 嘅檔案。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="16" /><source>Use a valid background colour, then try again.</source><translation>請用有效嘅背景顏色，再試一次。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="17" /><source>The logo cache could not be updated. Your current logo is unchanged.</source><translation>標誌快取更新唔到。你而家嘅標誌冇變。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="18" /><source>The logo update was cancelled. Try again when ready.</source><translation>標誌更新取消咗。準備好就再試。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="19" /><source>This image is unsupported or invalid. Choose a PNG, JPEG, WebP, SVG or ICO image.</source><translation>呢張圖片唔支援或者無效。請揀 PNG、JPEG、WebP、SVG 或者 ICO 圖片。</translation></message>
 </context>
 </TS>
