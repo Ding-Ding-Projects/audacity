@@ -12,7 +12,7 @@ bool staticConsumerActive();
 QString staticConsumerRoot();
 static bool acquired(QProcess& p) {
     if (!p.waitForStarted(5000) || !p.waitForReadyRead(5000)) return false;
-    return p.readAllStandardOutput() == "acquired\n";
+    return p.readAllStandardOutput().trimmed() == "acquired";
 }
 int main(int argc, char** argv) {
     QCoreApplication::setOrganizationName("Audacity");
