@@ -74,7 +74,7 @@ TEST(DimSumSurpriseServiceTests, RefusesAnUnlistedHost)
 {
     EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(QUrl("https://evil.example.com/payload.png")));
     EXPECT_FALSE(DimSumSurpriseService::isAllowedRedirectTarget(
-                    QUrl("https://github.com.evil.example.com/payload.png")));
+                     QUrl("https://github.com.evil.example.com/payload.png")));
 }
 
 TEST(DimSumSurpriseServiceTests, RefusesPlainHttpEvenOnAnAllowedHost)

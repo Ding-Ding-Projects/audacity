@@ -108,10 +108,8 @@ signals:
 
 private:
     void handleCatalogReply(QNetworkReply* reply);
-    void startPhotoRequest(const QUrl& url, const QString& dishId, const QString& destinationPath,
-                            int redirectsRemaining);
-    void handlePhotoReply(QNetworkReply* reply, const QString& dishId, const QString& destinationPath,
-                           int redirectsRemaining);
+    void startPhotoRequest(const QUrl& url, const QString& dishId, const QString& destinationPath, int redirectsRemaining);
+    void handlePhotoReply(QNetworkReply* reply, const QString& dishId, const QString& destinationPath, int redirectsRemaining);
 
     QNetworkAccessManager* m_network = nullptr;
     bool m_refreshInFlight = false;
