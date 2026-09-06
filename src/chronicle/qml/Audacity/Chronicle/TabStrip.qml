@@ -71,9 +71,7 @@ FocusScope {
     // which kept the strip narrow forever, even once every tab, and the
     // room for their labels, was available.
     readonly property int tabCount: tabModel.tabs.length
-    implicitWidth: tabModel.vertical
-        ? (tabModel.collapsed ? M3.density.apply(64) : M3.density.apply(240))
-        : Math.max(M3.density.apply(160), root.tabCount * M3.density.apply(140) + M3.density.apply(56))
+    implicitWidth: tabModel.vertical ? (tabModel.collapsed ? M3.density.apply(64) : M3.density.apply(240)) : Math.max(M3.density.apply(160), root.tabCount * M3.density.apply(140) + M3.density.apply(56))
     implicitHeight: tabModel.vertical ? 0 : M3.density.apply(48)
 
     TabStripModel {
