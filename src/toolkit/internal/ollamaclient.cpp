@@ -11,6 +11,7 @@
 #include <QJsonArray>
 #include <QHostAddress>
 #include <QSettings>
+#include <QFile>
 
 using namespace au::toolkit;
 
@@ -101,6 +102,11 @@ bool OllamaClient::chatInFlight() const
 int OllamaClient::pullConcurrency() const
 {
     return m_pullConcurrency;
+}
+
+int OllamaClient::capabilityRevision() const
+{
+    return m_capabilityRevision;
 }
 
 void OllamaClient::setPullConcurrency(int value)
@@ -244,8 +250,19 @@ void OllamaClient::sendChatMessage(const QString& model, const QVariantList& mes
     body[QStringLiteral("stream")] = true;
 
     QJsonArray messagesJson;
-    for (const QVariant& m : messages) {
-        messagesJson.append(QJsonObject::fromVariantMap(m.toMap()));
+    for (int index = 0; index < messages.size(); ++index) {
+        QJsonObject message = QJsonObject::fromVariantMap(messages.at(index).toMap());
+        if (index == messages.size() - 1 && message.value(QStringLiteral("role")).toString() == QStringLiteral("user")) {
+            const QStringList images = m_pendingImages.take(model);
+            if (!images.isEmpty()) {
+                QJsonArray encodedImages;
+                for (const QString& image : images) {
+                    encodedImages.append(image);
+                }
+                message.insert(QStringLiteral("images"), encodedImages);
+            }
+        }
+        messagesJson.append(message);
     }
     body[QStringLiteral("messages")] = messagesJson;
 
@@ -287,6 +304,82 @@ void OllamaClient::sendChatMessage(const QString& model, const QVariantList& mes
         emit chatFinished(cancelled);
         reply->deleteLater();
     });
+}
+
+void OllamaClient::inspectModel(const QString& modelTag)
+{
+    const QString tag = modelTag.trimmed();
+    if (tag.isEmpty()) {
+        return;
+    }
+    QNetworkRequest request(endpoint(QStringLiteral("/api/show")));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
+    const QJsonObject body { { QStringLiteral("model"), tag } };
+    QNetworkReply* reply = m_network.post(request, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    connect(reply, &QNetworkReply::finished, this, [this, reply, tag]() {
+        bool supportsImages = false;
+        if (reply->error() == QNetworkReply::NoError) {
+            const QJsonArray capabilities = QJsonDocument::fromJson(reply->readAll()).object().value(QStringLiteral("capabilities")).toArray();
+            for (const QJsonValue& capability : capabilities) {
+                if (capability.toString() == QStringLiteral("vision")) {
+                    supportsImages = true;
+                    break;
+                }
+            }
+        } else {
+            emit requestFailed(QStringLiteral("inspect model capabilities"), reply->errorString());
+        }
+        m_imageCapabilities.insert(tag, supportsImages);
+        ++m_capabilityRevision;
+        emit capabilityRevisionChanged();
+        emit modelInspected(tag, supportsImages);
+        reply->deleteLater();
+    });
+}
+
+bool OllamaClient::supportsImageAttachments(const QString& modelTag) const
+{
+    return m_imageCapabilities.value(modelTag.trimmed(), false);
+}
+
+bool OllamaClient::attachImage(const QString& modelTag, const QUrl& fileUrl)
+{
+    const QString tag = modelTag.trimmed();
+    if (!supportsImageAttachments(tag)) {
+        emit attachmentRejected(QStringLiteral("The selected model has not reported image capability through /api/show."));
+        return false;
+    }
+    if (!fileUrl.isLocalFile()) {
+        emit attachmentRejected(QStringLiteral("Only a local image file may be attached."));
+        return false;
+    }
+    QFile file(fileUrl.toLocalFile());
+    constexpr qint64 maximumImageBytes = 5LL * 1024 * 1024;
+    if (!file.open(QIODevice::ReadOnly) || file.size() <= 0 || file.size() > maximumImageBytes) {
+        emit attachmentRejected(QStringLiteral("The image must be a readable local file of at most 5 MiB."));
+        return false;
+    }
+    const QByteArray bytes = file.readAll();
+    const bool png = bytes.startsWith("\x89PNG\r\n\x1a\n");
+    const bool jpeg = bytes.startsWith("\xff\xd8\xff");
+    const bool webp = bytes.startsWith("RIFF") && bytes.mid(8, 4) == "WEBP";
+    if (!png && !jpeg && !webp) {
+        emit attachmentRejected(QStringLiteral("Only PNG, JPEG, and WebP image files are supported."));
+        return false;
+    }
+    QStringList images = m_pendingImages.value(tag);
+    if (images.size() >= 4) {
+        emit attachmentRejected(QStringLiteral("At most four image attachments may be sent with one message."));
+        return false;
+    }
+    images << QString::fromLatin1(bytes.toBase64());
+    m_pendingImages.insert(tag, images);
+    return true;
+}
+
+void OllamaClient::clearAttachments(const QString& modelTag)
+{
+    m_pendingImages.remove(modelTag.trimmed());
 }
 
 void OllamaClient::cancelChat()

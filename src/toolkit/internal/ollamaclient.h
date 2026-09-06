@@ -27,6 +27,7 @@ class OllamaClient : public QObject
     Q_PROPERTY(QVariantList installedModels READ installedModels NOTIFY installedModelsListChanged)
     Q_PROPERTY(bool chatInFlight READ chatInFlight NOTIFY chatInFlightChanged)
     Q_PROPERTY(int pullConcurrency READ pullConcurrency WRITE setPullConcurrency NOTIFY pullConcurrencyChanged)
+    Q_PROPERTY(int capabilityRevision READ capabilityRevision NOTIFY capabilityRevisionChanged)
 
 public:
     explicit OllamaClient(QObject* parent = nullptr);
@@ -38,6 +39,7 @@ public:
     QVariantList installedModels() const;
     bool chatInFlight() const;
     int pullConcurrency() const;
+    int capabilityRevision() const;
     void setPullConcurrency(int value);
 
     //! Returns true only when the host is loopback or a private network
@@ -51,6 +53,10 @@ public:
     Q_INVOKABLE void cancelPull(const QString& modelTag);
     Q_INVOKABLE void sendChatMessage(const QString& model, const QVariantList& messages, const QVariantMap& parameters);
     Q_INVOKABLE void cancelChat();
+    Q_INVOKABLE void inspectModel(const QString& modelTag);
+    Q_INVOKABLE bool supportsImageAttachments(const QString& modelTag) const;
+    Q_INVOKABLE bool attachImage(const QString& modelTag, const QUrl& fileUrl);
+    Q_INVOKABLE void clearAttachments(const QString& modelTag);
 
 signals:
     void hostChanged();
@@ -65,6 +71,9 @@ signals:
     void chatFinished(bool cancelled);
     void chatInFlightChanged();
     void pullConcurrencyChanged();
+    void capabilityRevisionChanged();
+    void modelInspected(const QString& modelTag, bool supportsImages);
+    void attachmentRejected(const QString& reason);
     void queuedPullsChanged(const QVariantList& pulls);
     void requestFailed(const QString& what, const QString& reason);
 
@@ -88,5 +97,8 @@ private:
     bool m_chatInFlight = false;
     bool m_chatCancelled = false;
     int m_pullConcurrency = 2;
+    int m_capabilityRevision = 0;
+    QHash<QString, bool> m_imageCapabilities;
+    QHash<QString, QStringList> m_pendingImages;
 };
 }

@@ -17,6 +17,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Dialogs
 
 import Muse.Ui
 import Muse.UiComponents
@@ -35,6 +36,16 @@ Item {
     property string chatFailure: ""
     property string selectedModel: ""
     property string systemPrompt: "You are a helpful local assistant."
+    property bool imageAttachmentsSupported: false
+    property string attachmentStatus: ""
+
+    onSelectedModelChanged: {
+        root.imageAttachmentsSupported = false
+        root.attachmentStatus = qsTrc("toolkit", "Inspecting local model capabilities…")
+        if (root.selectedModel.length > 0) {
+            ollama.inspectModel(root.selectedModel)
+        }
+    }
 
     OllamaClient {
         id: ollama
@@ -68,6 +79,17 @@ Item {
                 }])
                 root.activeReply = ""
             }
+        }
+        onModelInspected: function (modelTag, supportsImages) {
+            if (modelTag === root.selectedModel) {
+                root.imageAttachmentsSupported = supportsImages
+                root.attachmentStatus = supportsImages
+                    ? qsTrc("toolkit", "This local model reported image capability.")
+                    : qsTrc("toolkit", "This local model did not report image capability.")
+            }
+        }
+        onAttachmentRejected: function (reason) {
+            root.attachmentStatus = reason
         }
         onPullProgress: function (modelTag, completedBytes, totalBytes, status) {
             var rows = root.pullRows
@@ -355,8 +377,20 @@ Item {
         StyledTextLabel {
             Layout.fillWidth: true
             visible: root.selectedModel.length > 0
-            text: qsTrc("toolkit", "Attachments are unavailable until this model's verified capability metadata is inspected by the local runtime.")
+            text: root.attachmentStatus.length > 0 ? root.attachmentStatus : qsTrc("toolkit", "Attachments are unavailable until this model's verified capability metadata is inspected by the local runtime.")
             color: M3.color.onSurfaceVariant
+        }
+
+        FileDialog {
+            id: imageDialog
+            title: qsTrc("toolkit", "Attach a local image")
+            nameFilters: [qsTrc("toolkit", "Images (*.png *.jpg *.jpeg *.webp)")]
+            fileMode: FileDialog.OpenFile
+            onAccepted: {
+                if (ollama.attachImage(root.selectedModel, selectedFile)) {
+                    root.attachmentStatus = qsTrc("toolkit", "Image attached locally for the next message.")
+                }
+            }
         }
 
         TextArea {
@@ -415,6 +449,12 @@ Item {
                     ollama.sendChatMessage(root.selectedModel, requestMessages, { temperature: 0.7 })
                     chatComposer.text = ""
                 }
+            }
+            M3Button {
+                text: qsTrc("toolkit", "Attach image")
+                variant: "outlined"
+                enabled: !ollama.chatInFlight && root.imageAttachmentsSupported
+                onClicked: imageDialog.open()
             }
             M3Button {
                 text: qsTrc("toolkit", "Stop")
