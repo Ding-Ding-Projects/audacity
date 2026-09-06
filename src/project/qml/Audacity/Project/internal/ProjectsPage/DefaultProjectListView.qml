@@ -269,7 +269,7 @@ Item {
                             }
 
                             anchors.margins: -radius
-                            radius: 2 + border.width
+                            radius: M3.shape.extraSmall - border.width
                         }
                     }
                 },
@@ -306,7 +306,7 @@ Item {
                             }
 
                             anchors.margins: -radius
-                            radius: 2 + border.width
+                            radius: M3.shape.extraSmall - border.width
                         }
                     }
                 },
@@ -352,7 +352,7 @@ Item {
                             Rectangle {
                                 anchors.fill: parent
                                 color: "transparent"
-                                radius: 3
+                                radius: M3.shape.extraSmall
                                 border.width: 1
                                 border.color: M3.color.outlineVariant
                             }

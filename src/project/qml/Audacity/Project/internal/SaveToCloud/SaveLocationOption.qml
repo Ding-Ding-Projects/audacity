@@ -40,7 +40,7 @@ ColumnLayout {
 
     signal buttonClicked
 
-    readonly property int radius: 6
+    readonly property real radius: M3.shape.small
 
     spacing: 0
 

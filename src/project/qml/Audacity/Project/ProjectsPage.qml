@@ -219,7 +219,7 @@ FocusScope {
 
                 property int navigationOrderStart: refreshButton.navigation.order + 1
 
-                implicitHeight: ui.theme.defaultButtonSize
+                implicitHeight: 48
 
                 model: [
                     {
@@ -235,8 +235,8 @@ FocusScope {
                 ]
 
                 delegate: FlatRadioButton {
-                    implicitWidth: ui.theme.defaultButtonSize
-                    implicitHeight: ui.theme.defaultButtonSize
+                    implicitWidth: 48
+                    implicitHeight: 48
 
                     checked: projectsPageModel.viewType === modelData.value
 

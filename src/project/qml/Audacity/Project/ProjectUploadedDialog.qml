@@ -140,7 +140,7 @@ StyledDialogView {
 
                         color: M3.color.secondaryContainer
                         opacity: 0.4
-                        radius: 3
+                        radius: M3.shape.extraSmall
                     }
 
                     ColumnLayout {

@@ -104,7 +104,7 @@ FocusScope {
                 opacity: 0.9
 
                 property int borderWidth: 0
-                readonly property int radius: 3
+                readonly property real radius: M3.shape.extraSmall
 
                 Loader {
                     id: loader
@@ -152,7 +152,7 @@ FocusScope {
 
                         PropertyChanges {
                             target: thumbnail
-                            borderWidth: ui.theme.borderWidth
+                            borderWidth: 1
                         }
                     },
                     State {

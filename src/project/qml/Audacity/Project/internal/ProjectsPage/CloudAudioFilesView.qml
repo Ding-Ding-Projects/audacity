@@ -301,7 +301,7 @@ ProjectsView {
                             }
 
                             anchors.margins: -radius
-                            radius: 2 + border.width
+                            radius: M3.shape.extraSmall - border.width
                         }
                     }
                 },
@@ -338,7 +338,7 @@ ProjectsView {
                             }
 
                             anchors.margins: -radius
-                            radius: 2 + border.width
+                            radius: M3.shape.extraSmall - border.width
                         }
                     }
                 },
@@ -375,7 +375,7 @@ ProjectsView {
                             }
 
                             anchors.margins: -radius
-                            radius: 2 + border.width
+                            radius: M3.shape.extraSmall - border.width
                         }
                     }
                 },
@@ -421,7 +421,7 @@ ProjectsView {
                             Rectangle {
                                 anchors.fill: parent
                                 color: "transparent"
-                                radius: 3
+                                radius: M3.shape.extraSmall
                                 border.width: 1
                                 border.color: M3.color.outlineVariant
                             }
