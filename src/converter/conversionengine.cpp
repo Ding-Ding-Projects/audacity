@@ -1,0 +1,170 @@
+/*
+* Audacity: A Digital Audio Editor
+*/
+
+#include "conversionengine.h"
+
+#include "convertercatalog.h"
+
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QImage>
+#include <QImageReader>
+#include <QImageWriter>
+#include <QTemporaryFile>
+
+using namespace au::converter;
+
+namespace {
+bool cancelled(const bool* requested)
+{
+    return requested != nullptr && *requested;
+}
+
+ConversionResult result(ConversionStatus status, const QString& sourceFormat, const QString& message)
+{
+    ConversionResult value;
+    value.status = status;
+    value.sourceFormat = sourceFormat;
+    value.message = message;
+    return value;
+}
+
+bool matches(const QByteArray& bytes, const char* signature, int offset = 0)
+{
+    const QByteArray wanted(signature);
+    return bytes.size() >= offset + wanted.size() && bytes.mid(offset, wanted.size()) == wanted;
+}
+
+QString lowerFormat(const QString& format)
+{
+    return format.trimmed().toLower();
+}
+}
+
+QString ConversionEngine::detectFormat(const QString& sourcePath, QString* error)
+{
+    QFile file(sourcePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        if (error) {
+            *error = QStringLiteral("The source file cannot be opened.");
+        }
+        return {};
+    }
+    const QByteArray bytes = file.read(32);
+    if (matches(bytes, "\x89PNG\r\n\x1a\n")) {
+        return QStringLiteral("PNG");
+    }
+    if (matches(bytes, "\xff\xd8\xff")) {
+        return QStringLiteral("JPEG");
+    }
+    if (matches(bytes, "BM")) {
+        return QStringLiteral("BMP");
+    }
+    if (matches(bytes, "%PDF-")) {
+        return QStringLiteral("PDF");
+    }
+    if (matches(bytes, "RIFF") && matches(bytes, "WAVE", 8)) {
+        return QStringLiteral("WAV");
+    }
+    if (matches(bytes, "PK\x03\x04")) {
+        return QStringLiteral("ZIP");
+    }
+    if (error) {
+        *error = QStringLiteral("The source bytes do not match a supported file signature.");
+    }
+    return {};
+}
+
+ConversionResult ConversionEngine::convert(const ConversionRequest& request, const bool* cancellationRequested) const
+{
+    if (cancelled(cancellationRequested)) {
+        return result(ConversionStatus::Cancelled, {}, QStringLiteral("Conversion was cancelled before reading the source."));
+    }
+
+    const QFileInfo sourceInfo(request.sourcePath);
+    if (!sourceInfo.isFile()) {
+        return result(ConversionStatus::Rejected, {}, QStringLiteral("The selected source is not a regular file."));
+    }
+    if (sourceInfo.size() <= 0 || sourceInfo.size() > MaxInputBytes) {
+        return result(ConversionStatus::Rejected, {}, QStringLiteral("The source exceeds the allowed input size."));
+    }
+    if (request.outputPath.isEmpty() || request.targetFormat.trimmed().isEmpty()) {
+        return result(ConversionStatus::Rejected, {}, QStringLiteral("A target format and destination are required."));
+    }
+
+    QString detectionError;
+    const QString sourceFormat = detectFormat(request.sourcePath, &detectionError);
+    if (sourceFormat.isEmpty()) {
+        return result(ConversionStatus::Rejected, {}, detectionError);
+    }
+
+    const AdapterDescriptor adapter = ConverterCatalog::find(sourceFormat, request.targetFormat);
+    if (!adapter.enabled || !adapter.bundled) {
+        return result(ConversionStatus::Rejected, sourceFormat, adapter.unavailableReason);
+    }
+
+    const QFileInfo outputInfo(request.outputPath);
+    if (outputInfo.exists()) {
+        if (!request.allowOverwrite) {
+            return result(ConversionStatus::Rejected, sourceFormat,
+                          QStringLiteral("The destination already exists. Explicit overwrite approval is required."));
+        }
+        // Replacing an existing file after reopen verification needs the
+        // application-owned atomic-replace service on Windows.  This core
+        // deliberately refuses it rather than delete first and risk data loss.
+        return result(ConversionStatus::Rejected, sourceFormat,
+                      QStringLiteral("Safe overwrite is not available in this standalone core. The existing file was preserved."));
+    }
+
+    QImageReader reader(request.sourcePath, sourceFormat.toLatin1());
+    reader.setAutoTransform(false);
+    const QSize size = reader.size();
+    if (!size.isValid() || size.width() <= 0 || size.height() <= 0
+        || static_cast<qint64>(size.width()) * size.height() > MaxDecodedPixels) {
+        return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The image dimensions are malformed or exceed the decode limit."));
+    }
+    if (cancelled(cancellationRequested)) {
+        return result(ConversionStatus::Cancelled, sourceFormat, QStringLiteral("Conversion was cancelled before decoding."));
+    }
+
+    const QImage image = reader.read();
+    if (image.isNull()) {
+        return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The image could not be decoded safely."));
+    }
+    if (cancelled(cancellationRequested)) {
+        return result(ConversionStatus::Cancelled, sourceFormat, QStringLiteral("Conversion was cancelled before writing output."));
+    }
+
+    QDir destinationDir = outputInfo.dir();
+    if (!destinationDir.exists() || !destinationDir.isReadable() || !destinationDir.isWritable()) {
+        return result(ConversionStatus::Rejected, sourceFormat, QStringLiteral("The destination directory is not writable."));
+    }
+    QTemporaryFile temporary(destinationDir.filePath(QStringLiteral(".audacity-convert-XXXXXX.tmp")));
+    temporary.setAutoRemove(true);
+    if (!temporary.open()) {
+        return result(ConversionStatus::Failed, sourceFormat, QStringLiteral("A private temporary output file could not be created."));
+    }
+    const QString temporaryPath = temporary.fileName();
+    temporary.close();
+
+    QImageWriter writer(temporaryPath, lowerFormat(request.targetFormat).toLatin1());
+    if (!writer.write(image)) {
+        return result(ConversionStatus::Failed, sourceFormat, QStringLiteral("The bundled image encoder did not produce output."));
+    }
+    if (cancelled(cancellationRequested)) {
+        return result(ConversionStatus::Cancelled, sourceFormat, QStringLiteral("Conversion was cancelled before publishing output."));
+    }
+
+    QImageReader verifier(temporaryPath, lowerFormat(request.targetFormat).toLatin1());
+    const QImage reopened = verifier.read();
+    if (reopened.isNull() || reopened.size() != image.size()) {
+        return result(ConversionStatus::Failed, sourceFormat, QStringLiteral("The temporary output failed reopen verification."));
+    }
+    if (!QFile::rename(temporaryPath, request.outputPath)) {
+        return result(ConversionStatus::Failed, sourceFormat, QStringLiteral("The verified temporary output could not be published atomically."));
+    }
+    temporary.setAutoRemove(false);
+    return result(ConversionStatus::Converted, sourceFormat, QStringLiteral("Converted with a verified atomic publish."));
+}
