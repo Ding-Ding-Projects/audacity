@@ -146,10 +146,15 @@ void BrandingStoreTests::modelLoadsAndResetsTheSameLocalCache()
     QVERIFY(model.loadFile(sourcePath));
     QVERIFY(model.hasCustomLogo());
     QVERIFY(!model.previewPath().isEmpty());
+    QVERIFY(model.logo16Path().endsWith("16.png"));
+    QVERIFY(model.logo32Path().endsWith("32.png"));
+    QVERIFY(model.logo48Path().endsWith("48.png"));
+    QVERIFY(model.logo64Path().endsWith("64.png"));
     model.setCrop(true);
     QVERIFY(model.crop());
     model.reset();
     QVERIFY(!model.hasCustomLogo());
+    QVERIFY(model.logo16Path().startsWith("data:image/png;base64,"));
 }
 
 QTEST_MAIN(BrandingStoreTests)

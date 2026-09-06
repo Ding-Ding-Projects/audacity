@@ -13,8 +13,17 @@ BrandingModel::BrandingModel(const QString& profileRoot, const QByteArray& shipp
 bool BrandingModel::hasCustomLogo() const { return m_store.hasCustomLogo(); }
 QString BrandingModel::previewPath() const
 {
+    return pathForSize(128);
+}
+QString BrandingModel::logo16Path() const { return pathForSize(16); }
+QString BrandingModel::logo32Path() const { return pathForSize(32); }
+QString BrandingModel::logo48Path() const { return pathForSize(48); }
+QString BrandingModel::logo64Path() const { return pathForSize(64); }
+QString BrandingModel::logoPath(int size) const { return pathForSize(size); }
+QString BrandingModel::pathForSize(int size) const
+{
     if (m_store.hasCustomLogo()) {
-        return m_store.derivative(128).isNull() ? QString() : m_store.derivativePaths().filter("128.png").value(0);
+        return m_store.derivative(size).isNull() ? QString() : m_store.derivativePaths().filter(QString::number(size) + ".png").value(0);
     }
     return m_shippedMark.isEmpty() ? QString() : "data:image/png;base64," + QString::fromLatin1(m_shippedMark.toBase64());
 }

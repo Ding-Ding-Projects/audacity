@@ -16,7 +16,7 @@ The caller selects `Fit` or `Crop` and a background colour. Derivatives are rend
 
 The Personalize preferences page supplies the shipped mark bytes, derives its profile root from the injected global configuration, calls `loadCustom`, exposes fit/crop and background controls through `update`, renders the generated preview, and resets the cache. The selected file path is read once and is never persisted. The status text reports saved, reset, and rejected states locally.
 
-The current integration intentionally changes only the Personalize preview. App-window chrome requires an explicit consumer in the app-shell icon/title-bar path to request the generated 16/32/48/64 variants. Installer, executable, updater, package, and release metadata must continue using the shipped identity.
+The shared Material title bar consumes the live 32 px variant and immediately returns to the shipped-mark fallback after reset. `BrandingModel` exposes 16, 32, 48, and 64 px properties for other existing presentation consumers. Installer, executable, updater, package, and release metadata continue using the shipped identity. A platform surface that has no rendered mark is intentionally left unchanged.
 
 ## Verification
 
