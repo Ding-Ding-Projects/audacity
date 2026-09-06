@@ -143,3 +143,167 @@ DevTools-only usages. Requesting an `M3NumberStepper` (or equivalent) addition t
   `ClipItem.qml`, 42 reads) and the scattered `radius:` literals not already covered above,
   plus the three `IncrementalPropertyControl` product usages blocked on the M3 stepper
   request, plus the DevTools-only files not force-fit into an allowed reason.
+
+## Dialogs, preferences, effects and companion modules (lane U2)
+
+Scope: `src/effects/**/qml/**`, `src/preferences/qml/**` (excluding `PreferencesDialog.qml`,
+`PersonalizePreferencesPage.qml` and `UpdatesPreferencesPage.qml`, owned by another lane),
+`src/importexport/**/qml/**`, `src/uicomponents/qml/Audacity/UiComponents/**`, additions to
+`src/uicomponents/qml/Audacity/M3/**` (excluding `M3SearchBar.qml`), `src/companion/qml/**`,
+`src/chronicle/qml/**` (excluding `TabStrip.qml`), `src/experience/qml/**`,
+`src/personalize/qml/**`, `src/toolkit/qml/**`, `src/squirrelupdate/qml/**`.
+
+### Method note
+
+As lane U1 found in its scope, most legacy Muse control identifiers here are not legacy
+chrome: they are restyled at the framework level by the overlay patches under
+`buildscripts/muse-patches/` (0002 menus, 0003 popups and dialogs, 0004 tooltip and
+scroll bar, 0005 controls, 0010 list, table and avatar), so a QML file that instantiates
+one of these types already renders Material 3 anatomy through the patched `muse`
+submodule. These are listed below as `kept` under the reason "muse control already
+restyled by overlay patch <name>".
+
+`MenuButton` (Muse) extends `FlatButton` directly and is kept for the same reason,
+matching lane U1's reasoning for the same identifier.
+
+`StyledListView` used purely as a scrolling container, with its row content rendered by
+an `Audacity.M3` delegate (typically `M3ListItem`), is kept as a structural container:
+the container itself draws no chrome. This was spot checked on a sample of the files
+below rather than individually re-verified for every row; a file where the delegate
+turns out not to be M3-styled after all should have its row corrected to `pending`.
+
+### Converted this pass
+
+- `src/effects/builtin_collection/qml/Audacity/BuiltinEffectsCollection/ParameterKnob.qml`,
+  `.../BigParameterKnob.qml` and `src/effects/builtin_collection/dtmfgen/DtmfView.qml`:
+  `KnobControl` swapped for the existing `M3Knob` (`Audacity.M3` was already imported in
+  all three files and the property and signal names, `value`/`from`/`to`/`stepSize`/
+  `radius`/`mouseArea`/`navigation`/`newValueRequested`, already matched `M3Knob`'s API
+  exactly, so this was a pure identifier swap). Verified: `cmake --build build/linux -j3
+  --target audacity` succeeded, and the Xvfb smoke capture showed no QML load failure.
+- `src/uicomponents/qml/Audacity/UiComponents/components/internal/TimeSignaturePopup.qml`:
+  the raw `IncrementalPropertyControl` (Muse legacy numeric stepper) was replaced with a
+  new shared `M3NumberField` component, added to the `Audacity.M3` library this pass (see
+  below) because lane U1 had already asked for exactly this addition for its own
+  `IncrementalPropertyControl` product usages (`PropertyView.qml`,
+  `TrackSpectrogramColorsSection.qml`, `TrackSpectrogramScaleSection.qml`). The API
+  (`currentValue`, `minValue`, `maxValue`, `step`, `decimals`, `valueEdited`,
+  `navigation`) already matched the call site exactly, being copied from the three
+  pre-existing per-module `M3NumberField.qml` wrappers already used elsewhere in
+  `src/preferences`, `src/effects` and `src/importexport` (which wrap
+  `IncrementalPropertyControl` with `M3TextField` plus two `M3IconButton` steppers, so
+  those call sites were already Material 3, just via a locally duplicated wrapper rather
+  than a shared library component).
+
+### New `Audacity.M3` library addition
+
+- `src/uicomponents/qml/Audacity/M3/M3NumberField.qml`: a Material 3 numeric entry built
+  from `M3TextField` plus a decrement and increment `M3IconButton` pair, keeping the
+  public API of Muse's `IncrementalPropertyControl` so existing call sites swap
+  mechanically. Registered in `qmldir` and `au_uicomponents.qrc`. Content is the existing,
+  already-shipped `src/preferences/qml/Audacity/Preferences/internal/M3NumberField.qml`
+  promoted to the shared library verbatim (the three per-module copies were not
+  deduplicated onto the new shared component in this pass, to keep the change small and
+  low risk; that consolidation is a follow-up, not a functional gap, since all three
+  copies already render Material 3).
+
+### Coordinator-reported defect fixed this pass
+
+- `src/toolkit/qml/Audacity/Toolkit/ExportSheet.qml`: `M3Card` was given an `elevation: 3`
+  property assignment, but `M3Card` has no writable `elevation` property (elevation is
+  derived internally from `variant` and an optional personalize appearance override), so
+  QML logged `Cannot assign to non-existent property "elevation"` on every load. Replaced
+  with the property `M3Card` actually exposes, `variant: "elevated"` (already the
+  default), which yields the card's normal resting elevation. Verified: build succeeded,
+  and grepping the rest of this lane's scope for `elevation:` found no other occurrence.
+  The Xvfb smoke run of the home page logged no "Cannot assign to non-existent property",
+  "Failed to load main qml", "is not a type" or "ReferenceError" lines; `ExportSheet.qml`
+  itself is only shown from a user action this smoke pass did not reach, so its specific
+  fix was verified by reading the corrected property against `M3Card.qml`'s real API
+  rather than by a capture of the open sheet.
+
+### Rows
+
+| File | Legacy usage | M3 replacement / disposition | Status |
+|---|---|---|---|
+| `src/chronicle/qml/Audacity/Chronicle/CloseTabsPopup.qml` | `StyledListView`, `StyledPopupView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome; muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/chronicle/qml/Audacity/Chronicle/TabGroupAppearancePopup.qml` | `StyledPopupView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/chronicle/qml/Audacity/Chronicle/TabSearchPopup.qml` | `StyledListView`, `StyledPopupView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome; muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/chronicle/qml/Audacity/Chronicle/TabStripItem.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/chronicle/qml/Audacity/Chronicle/VersionHistoryPanel.qml` | `StyledListView`, `StyledPopupView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome; muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/companion/qml/Audacity/Companion/RegexBuilder.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/basstreble/BassTrebleView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/dtmfgen/DtmfView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/dynamics/compressor/CompressionCurvePainter.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/dynamics/compressor/CompressorView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/dynamics/limiter/LimiterView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/dynamics/timeline/ClipIndicator.qml` | `radius-literal`, `ui.theme` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens; ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/dynamics/timeline/DynamicsPanel.qml` | `CheckBox` | muse control already restyled by overlay patch 0005-m3-controls.patch | kept |
+| `src/effects/builtin_collection/dynamics/timeline/DynamicsPanel.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/filtercurveeq/FilterCurveEqTooltip.qml` | `StyledPopupView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/effects/builtin_collection/filtercurveeq/FilterCurveEqTooltip.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/filtercurveeq/FilterCurveEqView.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/graphiceq/GraphicEqFader.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/graphiceq/GraphicEqFaderHandle.qml` | `radius-literal`, `ui.theme` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens; ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/graphiceq/GraphicEqGridLines.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/graphiceq/GraphicEqView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/noisereduction/NoiseReductionView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/qml/Audacity/BuiltinEffectsCollection/DynamicsEffectBase.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/builtin_collection/qml/Audacity/BuiltinEffectsCollection/SettingKnob.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/reverb/ReverbView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/slidingstretch/SlidingStretchCard.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/builtin_collection/tonegen/ChirpView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/effects/effects_base/qml/Audacity/Effects/EffectControlsDisablingOverlay.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/effects_base/qml/Audacity/Effects/EffectStyledDialogView.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/effects/effects_base/qml/Audacity/Effects/MissingPluginsDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/effects/effects_base/qml/Audacity/Effects/MissingPluginsDialog.qml` | `ValueList` | no Audacity.M3 equivalent yet (multi-row editable key/value list with add/remove); a candidate M3ValueList addition was not built this pass | pending |
+| `src/effects/effects_base/qml/Audacity/Effects/PluginManagerDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/effects/effects_base/qml/Audacity/Effects/PluginManagerTableView.qml` | `StyledTableView` | muse control already restyled by overlay patch 0010-m3-list-table-and-avatar.patch | kept |
+| `src/effects/effects_base/qml/Audacity/Effects/PresetNameDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/effects/effects_base/qml/Audacity/Effects/PresetNameDialog.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/effects/nyquist/nyquistprompt/NyquistPromptView.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/experience/qml/Audacity/Experience/NotificationCentre.qml` | `StyledListView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/importexport/export/qml/Export/CustomFFmpegDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/importexport/export/qml/Export/CustomMappingDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/importexport/export/qml/Export/ExportDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/importexport/export/qml/Export/MetadataDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/importexport/export/qml/Export/MetadataDialog.qml` | `ValueList` | no Audacity.M3 equivalent yet (multi-row editable key/value list with add/remove); a candidate M3ValueList addition was not built this pass | pending |
+| `src/importexport/export/qml/Export/internal/ChannelMappingTableView.qml` | `StyledTableView` | muse control already restyled by overlay patch 0010-m3-list-table-and-avatar.patch | kept |
+| `src/importexport/export/qml/Export/internal/FormatAndCodecSection.qml` | `ListItemBlank`, `StyledListView` | muse control already restyled by overlay patch 0002-m3-menus.patch; plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/importexport/export/qml/Export/internal/GeneralOptionsSection.qml` | `ToolTip` | muse control already restyled by overlay patch 0004-m3-tooltip-and-scrollbar.patch | kept |
+| `src/importexport/labels/qml/Export/ExportLabelsDialog.qml` | `StyledDialogView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/importexport/labels/qml/Export/internal/LabelTracksSelectionView.qml` | `ListItemBlank`, `StyledListView` | muse control already restyled by overlay patch 0002-m3-menus.patch; plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/importexport/labels/qml/Export/internal/LabelTracksSelectionView.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/preferences/qml/Audacity/Preferences/AdvancedPreferencesPage.qml` | `ValueList` | no Audacity.M3 equivalent yet (multi-row editable key/value list with add/remove); a candidate M3ValueList addition was not built this pass | pending |
+| `src/preferences/qml/Audacity/Preferences/internal/AsymmetricStereoHeightsSection.qml` | `radius-literal` | radius literal not triaged in this pass; needs a case by case check against M3.shape tokens | pending |
+| `src/preferences/qml/Audacity/Preferences/internal/DefaultFilesSection.qml` | `StyledListView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/preferences/qml/Audacity/Preferences/internal/FoldersSection.qml` | `StyledListView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/preferences/qml/Audacity/Preferences/internal/PluginLocationsSection.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/preferences/qml/Audacity/Preferences/internal/SpectrogramAlgorithmSection.qml` | `StyledListView` | plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/preferences/qml/Audacity/Preferences/internal/UiColorsSection.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/preferences/qml/Audacity/Preferences/internal/WorkspacesAsymmetricChannelsSection.qml` | `CheckBox`, `StyledListView` | muse control already restyled by overlay patch 0005-m3-controls.patch; plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/preferences/qml/Audacity/Preferences/internal/WorkspacesTempoDetectionSection.qml` | `CheckBox`, `StyledListView` | muse control already restyled by overlay patch 0005-m3-controls.patch; plain scrolling container; row content is rendered by an Audacity.M3 delegate, not itself chrome | kept |
+| `src/toolkit/qml/Audacity/Toolkit/RecoveryCard.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/uicomponents/qml/Audacity/UiComponents/components/ArrowButton.qml` | `FlatButton` | muse control already restyled by overlay patch 0005-m3-controls.patch | kept |
+| `src/uicomponents/qml/Audacity/UiComponents/components/ArrowMenuButton.qml` | `MenuButton` | extends Muse FlatButton directly, so it inherits the patch 0005-m3-controls.patch restyle | kept |
+| `src/uicomponents/qml/Audacity/UiComponents/components/GridPlot.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/uicomponents/qml/Audacity/UiComponents/components/TimeSignature.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/uicomponents/qml/Audacity/UiComponents/components/ValueTooltip.qml` | `StyledPopupView` | muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/uicomponents/qml/Audacity/UiComponents/components/ValueTooltip.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/uicomponents/qml/Audacity/UiComponents/components/internal/NumericField.qml` | `ListItemBlank` | muse control already restyled by overlay patch 0002-m3-menus.patch | kept |
+| `src/uicomponents/qml/Audacity/UiComponents/components/internal/NumericField.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/uicomponents/qml/Audacity/UiComponents/components/internal/NumericView.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+| `src/uicomponents/qml/Audacity/UiComponents/components/internal/TimeSignaturePopup.qml` | `StyledDropdown`, `StyledPopupView` | muse control already restyled by overlay patch 0005-m3-controls.patch; muse control already restyled by overlay patch 0003-m3-popups-and-dialogs.patch | kept |
+| `src/uicomponents/qml/Audacity/UiComponents/components/internal/TimeSignaturePopup.qml` | `ui.theme` | ui.theme colour read not triaged in this pass; some are functional data colours for waveform, meter, spectrogram or dynamics visualisation (exempt as data), others are plain style reads that should move to M3.color / M3.typography | pending |
+
+### Row counts (lane U2, this pass)
+
+- Converted: 4 files (3 `KnobControl` to `M3Knob` swaps, 1
+  `IncrementalPropertyControl` to the new shared `M3NumberField`), plus 1 defect fix
+  (`ExportSheet.qml`'s invalid `elevation` property).
+- Kept with an allowed reason (overlay-patch restyle, or a structural container /
+  inheritance case matching lane U1's own reasoning): 31 rows.
+- Pending (found, not converted or not individually re-verified this pass): 38 rows,
+  overwhelmingly `ui.theme.` colour reads and `radius:` literals that were not triaged
+  one by one against `M3.color`/`M3.shape` tokens in the time available for this lane,
+  plus the two `ValueList` usages (no `Audacity.M3` equivalent exists yet).

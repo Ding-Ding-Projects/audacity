@@ -55,7 +55,7 @@ Item {
         Row {
             spacing: 8
 
-            KnobControl {
+            M3Knob {
                 id: knob
 
                 navigation.accessible.name: root.parameter["title"]

@@ -28,6 +28,7 @@ M3Menu 1.0 M3Menu.qml
 M3MenuItem 1.0 M3MenuItem.qml
 M3NavigationDrawer 1.0 M3NavigationDrawer.qml
 M3NavigationRail 1.0 M3NavigationRail.qml
+M3NumberField 1.0 M3NumberField.qml
 M3RadioButton 1.0 M3RadioButton.qml
 M3RangeSlider 1.0 M3RangeSlider.qml
 M3Ripple 1.0 M3Ripple.qml

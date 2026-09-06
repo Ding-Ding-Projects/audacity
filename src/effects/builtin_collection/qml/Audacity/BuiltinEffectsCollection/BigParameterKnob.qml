@@ -97,7 +97,7 @@ Item {
             horizontalAlignment: Qt.AlignHCenter
         }
 
-        KnobControl {
+        M3Knob {
             id: knob
 
             navigation.accessible.name: root.parameter["title"]

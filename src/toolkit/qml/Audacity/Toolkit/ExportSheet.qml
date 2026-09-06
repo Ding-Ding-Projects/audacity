@@ -58,7 +58,7 @@ Item {
     M3Card {
         anchors.centerIn: parent
         width: Math.min(parent.width - 32, 520)
-        elevation: 3
+        variant: "elevated"
 
         ColumnLayout {
             width: parent.width

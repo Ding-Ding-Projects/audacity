@@ -115,6 +115,19 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   change, and the wizard no longer blocks startup; both are reachable at any
   time from Help and from the command palette, and sensible defaults apply
   immediately on a fresh profile (see docs/features/no-nagging.md)
+- Replaced the legacy KnobControl with the existing M3Knob in the DTMF, tone
+  and chirp generator parameter knobs, and the legacy IncrementalPropertyControl
+  with a new shared M3NumberField component in the time signature popup;
+  promoted M3NumberField itself into the Audacity.M3 library so every module
+  can use one shared component instead of a locally duplicated wrapper
+- Fixed the export sheet's card assigning a non-existent elevation property
+  on M3Card, which logged a QML property error on every load; it now sets
+  the variant property M3Card actually exposes
+- Added a Material Design 3 audit guard (docs/features/material-guard.md)
+  that scans every QML file for legacy Muse controls, hard-coded colour and
+  radius literals, and raw theme colour reads outside the Audacity.M3
+  library, checked against a hand-written inventory at
+  docs/inventory/material-audit.md
 
 ### Documentation
 

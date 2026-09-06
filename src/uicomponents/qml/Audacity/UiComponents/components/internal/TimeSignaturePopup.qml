@@ -7,6 +7,8 @@ import QtQuick.Layouts
 import Muse.Ui
 import Muse.UiComponents
 
+import Audacity.M3
+
 StyledPopupView {
     id: root
 
@@ -48,7 +50,7 @@ StyledPopupView {
         Row {
             spacing: 12
 
-            IncrementalPropertyControl {
+            M3NumberField {
                 id: control
 
                 implicitWidth: 80

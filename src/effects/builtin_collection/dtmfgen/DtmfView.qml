@@ -195,7 +195,7 @@ BuiltinEffectBase {
 
                     spacing: 8
 
-                    KnobControl {
+                    M3Knob {
 
                         from: 0
                         to: 100
