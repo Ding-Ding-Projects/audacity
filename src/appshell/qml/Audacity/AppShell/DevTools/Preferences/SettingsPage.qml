@@ -192,23 +192,21 @@ ColumnLayout {
 
     Component {
         id: colorComp
-        ColorPicker {
+        M3ColorPicker {
             property var val
             signal changed(var newVal)
 
             anchors.fill: parent
-            color: val
+            selection: val ? val.toString() : "#926BFF"
 
-            onNewColorSelected: function (newColor) {
-                changed(newColor)
-            }
+            onAccepted: changed(currentColor)
         }
     }
 
     Component {
         id: intComp
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: control
 
             property int val
@@ -230,7 +228,7 @@ ColumnLayout {
     Component {
         id: doubleComp
 
-        IncrementalPropertyControl {
+        M3NumberField {
             id: control
 
             property real val
