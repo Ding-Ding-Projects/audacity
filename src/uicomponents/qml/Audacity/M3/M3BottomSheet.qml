@@ -52,6 +52,13 @@ Item {
         name: "M3BottomSheet"
         enabled: root.opened
         type: NavigationSection.Exclusive
+        // A NavigationSection with no explicit order fails its own
+        // componentComplete assertion (order() > -1) and is never
+        // registered, which crashed the whole application later when the
+        // enclosing dialog that had already created this bottom sheet was
+        // torn down. Any positive value works; 1 matches the other
+        // dialog-level exclusive sections in this codebase.
+        order: 1
 
         onActiveChanged: {
             if (navSec.active) {
