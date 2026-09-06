@@ -40,6 +40,9 @@ public:
     struct ParseResult
     {
         bool ok = false;
+        //! True when a validated pre-version record was accepted as the
+        //! documented version-0 format. The next save serializes version 1.
+        bool migratedFromVersion0 = false;
         QString error;
         SchoolModeRecord record;
     };

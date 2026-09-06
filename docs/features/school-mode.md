@@ -66,3 +66,8 @@ running application retains its last known mode and surfaces an unavailable
 state with the read error. At startup without a usable record, the runtime uses
 the conservative English/plain presentation until the unavailable state is
 resolved; it never silently reports that the shared control is off.
+
+Records written by the earlier unversioned format are accepted only after the
+same display-name and credential validation as version 1. Their credential is
+preserved, and the next successful write stores the validated record as version
+1. An unversioned malformed record is unavailable, never an implicit upgrade.

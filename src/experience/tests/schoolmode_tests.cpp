@@ -48,10 +48,25 @@ TEST(SchoolModeStoreTests, RejectsAnEmptyDisplayName)
 
 TEST(SchoolModeStoreTests, RejectsRecordsWithMissingSchemaOrInvalidCredentialFields)
 {
-    EXPECT_FALSE(SchoolModeStore::parse(R"({"on":false,"displayName":"School mode","credentialHashHex":"","credentialSaltHex":""})").ok);
     EXPECT_FALSE(SchoolModeStore::parse(
                      R"({"version":1,"on":true,"displayName":"School mode","credentialHashHex":"bad","credentialSaltHex":"bad"})")
                      .ok);
+}
+
+TEST(SchoolModeStoreTests, MigratesAValidatedVersionZeroRecordWithoutChangingItsCredential)
+{
+    const QString salt = SchoolModeStore::newSaltHex();
+    const QString hash = SchoolModeStore::hashCredential(QStringLiteral("1234"), salt);
+    const QByteArray versionZero = QStringLiteral(
+        R"({"on":true,"displayName":"Focus time","credentialHashHex":"%1","credentialSaltHex":"%2"})")
+                                       .arg(hash, salt).toUtf8();
+
+    const SchoolModeStore::ParseResult result = SchoolModeStore::parse(versionZero);
+    ASSERT_TRUE(result.ok);
+    EXPECT_TRUE(result.migratedFromVersion0);
+    EXPECT_TRUE(SchoolModeStore::verifyCredential(QStringLiteral("1234"), result.record.credentialSaltHex,
+                                                  result.record.credentialHashHex));
+    EXPECT_TRUE(SchoolModeStore::serialize(result.record).contains("\"version\": 1"));
 }
 
 TEST(SchoolModeStoreTests, VerifiesTheRightCredential)

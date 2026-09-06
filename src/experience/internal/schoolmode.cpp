@@ -70,7 +70,8 @@ SchoolModeStore::ParseResult SchoolModeStore::parse(const QByteArray& json)
     const QJsonValue displayName = obj.value(QStringLiteral("displayName"));
     const QJsonValue credentialHash = obj.value(QStringLiteral("credentialHashHex"));
     const QJsonValue credentialSalt = obj.value(QStringLiteral("credentialSaltHex"));
-    if (!version.isDouble() || version.toDouble() != 1.0 || !on.isBool() || !displayName.isString()
+    const bool isVersion0 = version.isUndefined();
+    if ((!isVersion0 && (!version.isDouble() || version.toDouble() != 1.0)) || !on.isBool() || !displayName.isString()
         || !credentialHash.isString() || !credentialSalt.isString()) {
         result.error = QStringLiteral("The shared School mode record has an unsupported schema.");
         return result;
@@ -97,6 +98,7 @@ SchoolModeStore::ParseResult SchoolModeStore::parse(const QByteArray& json)
     }
 
     result.ok = true;
+    result.migratedFromVersion0 = isVersion0;
     result.record = record;
     return result;
 }
