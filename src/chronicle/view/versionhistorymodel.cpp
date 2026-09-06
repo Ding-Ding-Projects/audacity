@@ -3,9 +3,15 @@
 */
 #include "versionhistorymodel.h"
 
+#include <QDir>
+#include <QDirIterator>
+#include <QFileInfo>
 #include <QMap>
 #include <QRegularExpression>
 #include <QUrl>
+#include <QUuid>
+
+#include "actions/actiontypes.h"
 
 #include "log.h"
 
@@ -239,6 +245,83 @@ bool VersionHistoryModel::exportRevision(const QString& revisionId, const QStrin
 int VersionHistoryModel::prune()
 {
     return service()->prune();
+}
+
+bool VersionHistoryModel::openAsNewProject(const QString& revisionId)
+{
+    const QString tempDir = QDir::tempPath() + QStringLiteral("/chronicle-open-")
+                            + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    if (!service()->exportRevision(revisionId, tempDir)) {
+        return false;
+    }
+
+    // exportRevision writes the project file under a "project" subfolder of
+    // whatever destination it is given (see VersionHistoryService::stage),
+    // under its original file name, which this does not otherwise know.
+    const QDir projectDir(tempDir + QStringLiteral("/project"));
+    const QStringList files = projectDir.entryList(QDir::Files);
+    if (files.isEmpty()) {
+        return false;
+    }
+
+    const QUrl url = QUrl::fromLocalFile(projectDir.filePath(files.first()));
+    dispatcher()->dispatch("file-open", muse::actions::ActionData::make_arg1<QUrl>(url));
+    return true;
+}
+
+QVariantList VersionHistoryModel::dayGroups() const
+{
+    QMap<QString, int> counts;
+    for (const Revision& revision : service()->revisions()) {
+        counts[revision.timestamp.toLocalTime().date().toString(Qt::ISODate)] += 1;
+    }
+
+    QVariantList result;
+    for (auto it = counts.begin(); it != counts.end(); ++it) {
+        QVariantMap item;
+        item.insert(QStringLiteral("date"), it.key());
+        item.insert(QStringLiteral("count"), it.value());
+        result.append(item);
+    }
+    return result;
+}
+
+QVariantMap VersionHistoryModel::storageInfo() const
+{
+    QVariantMap result;
+    result.insert(QStringLiteral("backend"), service()->storeKind());
+
+    // Repository size on disk is measured directly rather than tracked
+    // incrementally, so it always reflects what is actually there, including
+    // anything left behind by a failure this model never saw.
+    qint64 totalBytes = 0;
+    const QString root = service()->historyRootPath();
+    QDirIterator iterator(root, QDir::Files, QDirIterator::Subdirectories);
+    while (iterator.hasNext()) {
+        iterator.next();
+        totalBytes += QFileInfo(iterator.filePath()).size();
+    }
+    result.insert(QStringLiteral("repositoryBytes"), static_cast<double>(totalBytes));
+
+    result.insert(QStringLiteral("revisionCount"), service()->revisions().size());
+    return result;
+}
+
+QVariantMap VersionHistoryModel::compareRevisions(const QString& revisionIdA, const QString& revisionIdB) const
+{
+    const RevisionFileComparison comparison = compareRevisionFiles(
+        service()->files(revisionIdA), service()->files(revisionIdB));
+
+    QVariantMap result;
+    result.insert(QStringLiteral("revisionIdA"), revisionIdA);
+    result.insert(QStringLiteral("revisionIdB"), revisionIdB);
+    result.insert(QStringLiteral("filesAdded"), comparison.filesAdded);
+    result.insert(QStringLiteral("filesModified"), comparison.filesModified);
+    result.insert(QStringLiteral("filesDeleted"), comparison.filesDeleted);
+    result.insert(QStringLiteral("filesUnchanged"), comparison.filesUnchanged);
+    result.insert(QStringLiteral("totalBytesA"), static_cast<double>(comparison.totalBytesA));
+    result.insert(QStringLiteral("totalBytesB"), static_cast<double>(comparison.totalBytesB));
+    return result;
 }
 
 QString VersionHistoryModel::recordSnapshot(const QString& action, const QString& detail)

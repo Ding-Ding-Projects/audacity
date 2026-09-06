@@ -321,6 +321,36 @@ TEST(ChronicleVersionHistory, OnlySaveAndRestoreAreMilestones)
     EXPECT_FALSE(isMilestoneAction("Cut"));
 }
 
+TEST(ChronicleVersionHistory, CompareRevisionFilesClassifiesEveryChangeKind)
+{
+    QList<RevisionFile> a;
+    a.append({ "unchanged.txt", 10, "unchanged" });
+    a.append({ "modified.txt", 20, "modified" });
+    a.append({ "deleted.txt", 30, "added" });
+
+    QList<RevisionFile> b;
+    b.append({ "unchanged.txt", 10, "unchanged" });
+    b.append({ "modified.txt", 25, "modified" });
+    b.append({ "added.txt", 40, "added" });
+
+    const RevisionFileComparison comparison = compareRevisionFiles(a, b);
+    EXPECT_EQ(comparison.filesAdded, 1);
+    EXPECT_EQ(comparison.filesModified, 1);
+    EXPECT_EQ(comparison.filesDeleted, 1);
+    EXPECT_EQ(comparison.filesUnchanged, 1);
+    EXPECT_EQ(comparison.totalBytesA, 60);
+    EXPECT_EQ(comparison.totalBytesB, 75);
+}
+
+TEST(ChronicleVersionHistory, CompareRevisionFilesHandlesTwoEmptyLists)
+{
+    const RevisionFileComparison comparison = compareRevisionFiles({}, {});
+    EXPECT_EQ(comparison.filesAdded, 0);
+    EXPECT_EQ(comparison.filesModified, 0);
+    EXPECT_EQ(comparison.filesDeleted, 0);
+    EXPECT_EQ(comparison.filesUnchanged, 0);
+}
+
 TEST(ChronicleVersionHistory, ExportAndRenderAreAlsoMilestones)
 {
     EXPECT_TRUE(isMilestoneAction("Export Audio"));

@@ -8,6 +8,7 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
+#include <QSet>
 
 #include "settings.h"
 
@@ -155,6 +156,39 @@ QString au::chronicle::actionFamilyTitle(const QString& family)
         return QStringLiteral("Restore");
     }
     return QStringLiteral("Edit");
+}
+
+au::chronicle::RevisionFileComparison au::chronicle::compareRevisionFiles(const QList<RevisionFile>& a,
+                                                                          const QList<RevisionFile>& b)
+{
+    RevisionFileComparison result;
+
+    QHash<QString, qint64> sizesA;
+    for (const RevisionFile& file : a) {
+        sizesA.insert(file.path, file.size);
+        result.totalBytesA += file.size;
+    }
+
+    QSet<QString> pathsInB;
+    for (const RevisionFile& file : b) {
+        pathsInB.insert(file.path);
+        result.totalBytesB += file.size;
+        if (!sizesA.contains(file.path)) {
+            ++result.filesAdded;
+        } else if (sizesA.value(file.path) != file.size) {
+            ++result.filesModified;
+        } else {
+            ++result.filesUnchanged;
+        }
+    }
+
+    for (auto it = sizesA.begin(); it != sizesA.end(); ++it) {
+        if (!pathsInB.contains(it.key())) {
+            ++result.filesDeleted;
+        }
+    }
+
+    return result;
 }
 
 bool au::chronicle::isMilestoneAction(const QString& action)
