@@ -111,7 +111,7 @@
   }
 
   // ---------- Routing ----------
-  const routes = ['home', 'features', 'downloads', 'changelog', 'docs', 'accessibility', 'privacy', 'settings'];
+  const routes = ['home', 'gallery', 'features', 'downloads', 'changelog', 'docs', 'accessibility', 'privacy', 'settings'];
   function currentRoute() {
     const h = location.hash.replace('#', '');
     return routes.includes(h) ? h : 'home';
@@ -171,6 +171,10 @@
     root.innerHTML =
       '<h1>Material Audacity</h1>' +
       '<p>A Material 3 rewrite of the Audacity 4 shell, keeping the audio engine and rebuilding the interface on real Material components.</p>' +
+      '<figure class="md-card" style="max-width:640px">' +
+      '<img src="screenshots/01-home-light.png" alt="Home page listing projects, light theme" style="max-width:100%;border-radius:8px">' +
+      '<figcaption><p>The home page, a real capture from the built application. See the <a href="#gallery">Gallery</a> for more.</p></figcaption>' +
+      '</figure>' +
       '<p id="release-line">Loading release information…</p>' +
       '<div role="tablist" aria-label="About Material Audacity" class="md-tablist" id="home-tabs"></div>' +
       '<div id="home-tabpanels"></div>';
@@ -183,7 +187,7 @@
     const tabs = [
       { id: 'about', label: 'About', body: '<p>Material Audacity brings Material 3 dynamic color, shape, motion, and components to the Audacity shell, plus a command palette, a regex builder everywhere search happens, personal vocabulary substitution, and local history.</p>' },
       { id: 'build', label: 'Build', body: '<p>Windows packages are built with Squirrel.Windows through a public builder that never sees this project\'s name. Code signing is permanently disabled.</p>' },
-      { id: 'features', label: 'Features', body: '<p>See the Features page for the full list: command palette, regex builder, tabs, languages and funny levels, personal vocabulary, local history, changelog, notifications, super confirmation, appearance editors, toy locks and authenticator, Ollama suite manager, ADHD modes, and platform installers.</p>' },
+      { id: 'features', label: 'Features', body: '<p>See the Features page for the full list: command palette, regex builder, tabs, languages and funny levels, personal vocabulary, local history, changelog, notifications, super confirmation, appearance editors, toy locks and authenticator, Ollama suite manager, ADHD modes, the dim sum surprise, School mode, the narrator, documentation browser bookmarks, no unsolicited nagging, and platform installers.</p>' },
       { id: 'downloads', label: 'Downloads', body: '<p>See the Downloads page for the latest assets and checksums.</p>' },
       { id: 'license', label: 'License', body: '<p>Material Audacity is distributed under the same license as Audacity (GPLv2 or later). See LICENSE.txt in the repository.</p>' },
     ];
@@ -212,6 +216,36 @@
     }
   };
 
+  renderers.gallery = function (root) {
+    root.innerHTML =
+      '<h1>Gallery</h1>' +
+      '<p>Real captures taken under Xvfb from the actual built Linux binary. Nothing here is a mockup.</p>' +
+      '<div class="filter-row"><div class="md-field"><label for="gallery-filter-input">Filter screenshots</label><input type="text" id="gallery-filter-input"></div></div>' +
+      '<div id="gallery-groups">Loading…</div>';
+    fetch('screenshots/gallery.json').then((r) => r.json()).then((shots) => {
+      const items = shots.map((s) => ({ text: s.group + ' ' + s.alt + ' ' + s.caption, shot: s }));
+      function list(filtered) {
+        const el = document.getElementById('gallery-groups');
+        if (!filtered.length) { el.innerHTML = '<p>No screenshots match.</p>'; return; }
+        const groups = {};
+        filtered.forEach((it) => {
+          const g = it.shot.group;
+          (groups[g] = groups[g] || []).push(it.shot);
+        });
+        el.innerHTML = Object.keys(groups).map((g) => {
+          const cards = groups[g].map((s) =>
+            '<figure class="md-card" style="margin-bottom:16px">' +
+            '<img src="screenshots/' + s.file + '" alt="' + s.alt + '" loading="lazy" style="max-width:100%;border-radius:8px">' +
+            '<figcaption><p>' + s.caption + '</p><p><small>Theme: ' + s.theme + ' &middot; Lane: ' + s.lane + '</small></p></figcaption>' +
+            '</figure>'
+          ).join('');
+          return '<section><h2>' + g + '</h2><div class="card-grid">' + cards + '</div></section>';
+        }).join('');
+      }
+      wireFilter(document.getElementById('gallery-filter-input'), items, list, 'gallery-filter');
+    }).catch(() => { document.getElementById('gallery-groups').textContent = 'Screenshot gallery is unavailable right now.'; });
+  };
+
   const FEATURES = [
     ['Material 3 rewrite', 'Dynamic color from a single seed, full type/shape/motion tokens, real Material components.'],
     ['Command palette', 'Ctrl+Shift+F opens a palette indexing every section, doc heading, and setting, with live inline controls.'],
@@ -227,6 +261,11 @@
     ['Toy locks and authenticator', 'Playful lock screens and an authenticator surface for the desktop app.'],
     ['Ollama suite manager', 'Manage local Ollama models from within the app.'],
     ['ADHD modes', 'Focus, Low stimulation, Time awareness, One thing at a time, and Momentum · all off by default, never presented as medical.'],
+    ['Dim sum surprise', 'A 10% chance at startup of a bilingual dish name and a real photo, non-blocking, cannot be turned off.'],
+    ['School mode', 'One shared speed bump across every app on the machine: everything reads plain English until a PIN or password turns it back off.'],
+    ['Narrator', 'An off by default spoken narrator for app events, in English, Cantonese, or Both, with its own Quiet mode.'],
+    ['No unsolicited interruptions', 'No unsolicited dialogs, banners, or nags asking for payment, ratings, or upgrades. See the No nagging article.'],
+    ['Documentation browser bookmarks', 'Bookmark any documentation article, search your bookmarks, and bulk-manage or export the list.'],
     ['Windows Squirrel installer', 'Unsigned Squirrel.Windows packaging with background update checks.'],
     ['Linux builds', 'Native Linux build targets alongside the Windows installer.'],
   ];

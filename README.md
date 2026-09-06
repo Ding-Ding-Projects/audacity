@@ -2,12 +2,15 @@
 
 [![Coverage](https://s3.us-east-1.amazonaws.com/extensions.musescore.org/test/code_coverage/au_coverage_badge.svg)](https://github.com/audacity/audacity/actions/workflows/au4_check_unit_tests.yml)
 
-Material Audacity is a Material Design 3 rebuild of the Audacity 4 shell: an
-easy to use, multi track audio editor and recorder for Windows and Linux,
-rebuilt with a full Material 3 token engine, component library, and a large
-set of accessibility, customization, and productivity features layered on
-top of the original editing engine. The upstream project is
+A Material Design 3 rebuild of the Audacity 4 shell: the same multi track
+audio editor and recorder, with the original editing engine, wrapped in a
+full Material 3 token engine, component library, and a large set of
+accessibility, customization, and productivity features. Upstream project:
 [Audacity](https://www.audacityteam.org).
+
+![Home page in the light theme](docs/design/captures/phase2/01-home-light.png)
+
+The home page, a real capture from the built application under Xvfb.
 
 Fresh Windows machine, one command:
 
@@ -19,12 +22,158 @@ Documentation site: [docs/site](docs/site/index.html) (published at
 `https://ding-ding-projects.github.io/audacity/` once GitHub Pages is
 enabled by the repository owner, see [HANDOFF.md](HANDOFF.md)).
 
-Contents: [Features](#features) · [Screenshots](#screenshots) ·
-[Screen recording](#screen-recording) · [Build and install](#build-and-install) ·
-[Automatic updates](#automatic-updates) · [Languages](#languages) ·
-[Accessibility](#accessibility) ·
+Contents: [Screenshots](#screenshots) · [Features](#features) ·
+[No unsolicited interruptions](#no-unsolicited-interruptions) ·
+[Build and install](#build-and-install) ·
+[Automatic updates](#automatic-updates) · [Languages and accessibility](#languages-and-accessibility) ·
 [Line count and estimated build time](#line-count-and-estimated-build-time) ·
+[Verification](#verification) · [Screen recording](#screen-recording) ·
 [Contributing and license](#contributing-and-license)
+
+## Screenshots
+
+Every image below is a real capture taken under Xvfb from the actual built
+Linux binary, not a mockup. The same set, grouped and filterable, is also on
+the [documentation site's Gallery page](docs/site/index.html#gallery).
+
+<details open>
+<summary><strong>Home</strong></summary>
+
+![Home page listing projects, light theme](docs/design/captures/phase2/01-home-light.png)
+
+Home page in the light theme: New project tile, New and recent tab, grid
+and list view toggles.
+
+![Home page listing projects, dark theme](docs/design/captures/phase2/01-home-dark.png)
+
+The same home page in the dark theme, showing the Material 3 dark color
+roles. Capture: `phase2`.
+
+</details>
+
+<details>
+<summary><strong>First run</strong></summary>
+
+![First launch setup wizard, language step](docs/design/captures/lane-b/01-first-launch-language.png)
+
+First launch setup, step 1 of 7: choosing English, Cantonese (Hong Kong),
+or Bilingual. Capture: `lane-b`.
+
+![About dialog with credits list](docs/design/captures/lane-b/09-about-dialog.png)
+
+The About dialog, with Audacity and Legal tabs and a scrolling credits
+list. Capture: `lane-b`.
+
+</details>
+
+<details>
+<summary><strong>Preferences</strong></summary>
+
+![Preferences dialog, General page](docs/design/captures/lane-d/01-preferences.png)
+
+Preferences dialog: Material 3 navigation rail, a settings search field,
+and the General page. Capture: `lane-d`.
+
+![Preferences dialog, Appearance page](docs/design/captures/lane-d/03-preferences-appearance.png)
+
+Appearance page: light and dark theme cards, a high contrast toggle, and a
+row of accent color swatches. Capture: `lane-d`.
+
+![Preferences dialog, School mode section](docs/design/captures/lane-k2/09-preferences-experience-school-mode.png)
+
+School mode section: a plain language explanation, a rename field, and a
+PIN or password to turn it back off. Capture: `lane-k2`.
+
+![Preferences dialog, Narrator section](docs/design/captures/lane-k2/10-preferences-experience-narrator.png)
+
+Narrator section: an off by default toggle, English or Cantonese or Both,
+and a Quiet mode switch. Capture: `lane-k2`.
+
+</details>
+
+<details>
+<summary><strong>Menus, tabs, and dialogs</strong></summary>
+
+![Effect menu open over a project, with the tab strip visible](docs/design/captures/lane-d/12-effect-menu.png)
+
+The Effect menu open over a project with a clip, and the browser style
+Home, Project, DevTools tab strip above it. Capture: `lane-d`.
+
+![Generate tone dialog](docs/design/captures/lane-d/08-generate-tone.png)
+
+The Generate Tone dialog: waveform choice, frequency, amplitude, duration,
+with Preview, Cancel, and Apply. Capture: `lane-d`.
+
+![Plugin manager table](docs/design/captures/lane-d/09-plugin-manager.png)
+
+The plugin manager: a filterable, searchable table of every built-in
+effect with per-row enable toggles. Capture: `lane-d`.
+
+![Export dialog](docs/design/captures/lane-d/14-export.png)
+
+The Export dialog: file name, destination folder with a browse button,
+format, channels, sample rate, and encoding. Capture: `lane-d`.
+
+</details>
+
+<details>
+<summary><strong>Project window and tracks</strong></summary>
+
+![Project with one track and the history panel open](docs/design/captures/lane-c/06-history-panel.png)
+
+A project with one track and a generated tone clip, with the History panel
+and its search field open on the right. Capture: `lane-c`.
+
+</details>
+
+<details>
+<summary><strong>Design system</strong></summary>
+
+![M3 component gallery with the color picker, dark theme](docs/design/captures/lane-a/03-gallery-colorpicker-dark.png)
+
+The internal Material 3 component gallery: hue wheel and saturation and
+value field color picker, hex value, contrast readout, and the animated
+rainbow option, dark theme. Capture: `lane-a`.
+
+</details>
+
+<details>
+<summary><strong>Wave two features (dim sum surprise, pinned tabs)</strong></summary>
+
+![Pinned tabs and a dim sum surprise card](docs/design/captures/lane-k2/08-dimsum-card-real-photo.png)
+
+Several pinned tabs open (Project, DevTools, Tracks, History, Effects)
+plus a dim sum surprise card naming a real dish with its photo. Capture:
+`lane-k2`.
+
+</details>
+
+<details>
+<summary><strong>Display scale</strong></summary>
+
+![Home page at 200 percent display scale](docs/design/captures/phase2/12-scale2x-home-light.png)
+
+Home page at 200 percent display scale: menu bar, tab labels, and cards
+all remain legible with no clipping. Capture: `phase2`.
+
+</details>
+
+<details>
+<summary><strong>No capture yet</strong></summary>
+
+These surfaces exist in the code but do not have a reviewed capture in
+this pass: the toy lock wizard and PIN keypad, the built in authenticator's
+QR pairing screen, the Support Tickets desk, the local model manager for
+Ollama, the universal export service's non-audio formats, the in app
+documentation browser and its bookmarks, the command palette itself, the
+notification centre and corner toast stack, the updater's "Restart to
+install" banner, and the attention support mode toggles. See
+[HANDOFF.md](HANDOFF.md) for the current gap list; more captures under
+[docs/design/captures/](docs/design/captures/) exist from earlier passes
+(lanes `lane-b`, `lane-d`, `lane-g2`, `lane-p`, `lane-s`, `phase1`) and may
+cover some of these once reviewed.
+
+</details>
 
 ## Features
 
@@ -55,8 +204,8 @@ inventory.
 
 </details>
 
-<details>
-<summary><strong>Companion features (every one documented separately)</strong></summary>
+<details open>
+<summary><strong>Every feature, one line each</strong></summary>
 
 | Feature | Article |
 | --- | --- |
@@ -80,10 +229,14 @@ inventory.
 | Universal export service (JSON, JSON Lines, YAML, TOML, XML, CSV, TSV, Markdown, HTML, SQL, store only ZIP) | [docs/features/exports.md](docs/features/exports.md) |
 | Reusable bulk selection control | [docs/features/bulk-actions.md](docs/features/bulk-actions.md) |
 | External code editor detection and handoff | [docs/features/external-editor.md](docs/features/external-editor.md) |
-| In app documentation browser | [docs/features/docs-browser.md](docs/features/docs-browser.md) |
+| In app documentation browser, with bookmarks, search, and export | [docs/features/docs-browser.md](docs/features/docs-browser.md) |
 | Tab navigation for the main page switcher | [docs/features/tab-navigation.md](docs/features/tab-navigation.md) |
 | Local version history, separate from your project undo stack | [docs/features/local-history.md](docs/features/local-history.md) |
 | Changelog and "what's new" viewer | [docs/features/changelog.md](docs/features/changelog.md) |
+| Dim sum surprise: a 10% chance at startup of a bilingual dish name and a real photo | [docs/features/dim-sum-surprise.md](docs/features/dim-sum-surprise.md) |
+| School mode: one shared speed bump across every app, off by default, locked by a PIN or password | [docs/features/school-mode.md](docs/features/school-mode.md) |
+| Narrator: an off by default spoken narrator for app events | [docs/features/narrator.md](docs/features/narrator.md) |
+| Status reporting for long running operations | [docs/features/status-reporting.md](docs/features/status-reporting.md) |
 
 See [docs/features/](docs/features/) for the full set of articles, and
 [docs/inventory/completeness-inventory.md](docs/inventory/completeness-inventory.md)
@@ -91,71 +244,12 @@ for the feature completeness tracking table.
 
 </details>
 
-## Screenshots
+## No unsolicited interruptions
 
-<details open>
-<summary><strong>Real captures from the built application</strong></summary>
-
-Every image below is a real capture taken under Xvfb from the actual built
-binary, not a mockup.
-
-![Home page in the light theme](docs/design/captures/phase2/home-light.png)
-
-Home page, light theme, Material 3 shell.
-
-![Home page and project list](docs/design/captures/lane-a/00-home-welcome.png)
-
-Home page welcome state.
-
-![Tab strip in the light theme](docs/design/captures/phase2/02-tabstrip-light.png)
-
-The browser style tab strip used for the main page switcher.
-
-![Preferences page](docs/design/captures/lane-d/01-preferences.png)
-
-Preferences shell with the Material 3 navigation rail.
-
-![Preferences, appearance page](docs/design/captures/lane-d/03-preferences-appearance.png)
-
-Appearance settings.
-
-![Effect menu](docs/design/captures/lane-d/12-effect-menu.png)
-
-Effect menu rebuilt with Material 3 menu components.
-
-![One track with a clip](docs/design/captures/lane-c/05-track-with-clip.png)
-
-Track view with a clip, Material 3 track header and ruler.
-
-![History panel](docs/design/captures/lane-c/06-history-panel.png)
-
-The undo history panel.
-
-![Color picker in the component gallery, dark theme](docs/design/captures/lane-a/03-gallery-colorpicker-dark.png)
-
-Material 3 color picker in the component gallery, dark theme.
-
-More captures, including the first launch flow, the About dialog, plugin
-manager, and export dialog, are under
-[docs/design/captures/](docs/design/captures/), organized by the lane that
-took them.
-
-Surfaces added in the current development cycle that do not yet have a
-capture: the toy lock wizard and PIN keypad, the built in authenticator's QR
-pairing screen, the Support Tickets desk, the local model manager for
-Ollama, the universal export dialog, the in app documentation browser, and
-the attention support mode toggles. These will be captured as part of the
-next verification pass; see [HANDOFF.md](HANDOFF.md) for the current gap
-list.
-
-</details>
-
-## Screen recording
-
-No screen recording exists yet for this project. A short recording of a
-real build reaching the home page and completing one editing task, taken
-through the project's own headless capture route, will be added here once
-that pass is done. See [HANDOFF.md](HANDOFF.md).
+Material Audacity never opens an unsolicited dialog, banner, or notification
+asking for payment, ratings, reviews, or an upgrade. Any account, purchase,
+or feedback flow the app offers is user initiated and non blocking. See
+[docs/features/no-nagging.md](docs/features/no-nagging.md).
 
 ## Build and install
 
@@ -224,7 +318,7 @@ unsigned by design and the app never claims signature verification, only
 hash verification against the published feed. See
 [docs/features/automatic-updates.md](docs/features/automatic-updates.md).
 
-## Languages
+## Languages and accessibility
 
 Material Audacity ships with English, playful Hong Kong Cantonese, and a
 bilingual mode, applied live to the interface translator where the platform
@@ -232,13 +326,12 @@ allows it, plus independent funny level sliders per language for message
 copy. See [docs/features/language-modes.md](docs/features/language-modes.md)
 and [docs/features/funny-levels.md](docs/features/funny-levels.md).
 
-## Accessibility
-
 Every control has an accessible name, keyboard focus, a visible focus ring,
 and at least a 48dp touch target. Motion respects the operating system's
 reduced motion preference through the shared `M3.reducedMotion` token, and
 the interface is checked for clipping at narrow widths and 200% display
-scale. If you find an accessibility problem, please open an issue.
+scale (see the [display scale capture](#screenshots) above). If you find an
+accessibility problem, please open an issue.
 
 ## Line count and estimated build time
 
@@ -249,32 +342,66 @@ trees are excluded because they are not this project's own code).
 
 | Language | Files | Lines | Non blank lines |
 | --- | ---: | ---: | ---: |
-| C++ | 674 | 140245 | 116946 |
-| QML | 446 | 70330 | 55600 |
-| C/C++ header | 848 | 48146 | 38211 |
-| CMake | 111 | 6761 | 5651 |
-| JavaScript | 8 | 2271 | 2090 |
-| Python | 11 | 2221 | 1833 |
+| C++ | 683 | 141617 | 118117 |
+| QML | 450 | 71317 | 56414 |
+| C/C++ header | 851 | 48505 | 38523 |
+| CMake | 112 | 6852 | 5733 |
+| Python | 13 | 2667 | 2209 |
+| JavaScript | 8 | 2316 | 2134 |
+| Markdown | 34 | 2187 | 1689 |
 | C | 4 | 1882 | 1559 |
-| Markdown | 29 | 1784 | 1368 |
-| JSON | 6 | 1542 | 1542 |
-| Shell | 16 | 1290 | 1093 |
-| HTML | 4 | 969 | 846 |
+| JSON | 7 | 1699 | 1699 |
+| Shell | 17 | 1354 | 1142 |
+| HTML | 4 | 971 | 848 |
 | PowerShell | 1 | 549 | 463 |
 | Qt resource | 24 | 455 | 452 |
 | Objective-C++ | 4 | 438 | 369 |
 | CSS | 3 | 302 | 275 |
 | Windows resource | 1 | 40 | 37 |
-| **Total** | **2190** | **279225** | **228335** |
+| **Total** | **2216** | **283151** | **231663** |
 
 **Estimated human build time: roughly 7 to 9 person years, as an estimate
-only.** Method: 228,335 non blank lines (from the table above) divided by an
+only.** Method: 231,663 non blank lines (from the table above) divided by an
 assumed sustained rate of 12 to 15 written and reviewed lines per hour for
 production quality, multi language desktop software (design, implementation,
 review, and fixing included), then divided by 2,080 working hours per year.
 This is not a measured figure, nobody actually built this project by hand,
 and it excludes the vendored `muse`, `au3`, `thirdparty`, and `muse_deps`
 trees exactly as the line count above does.
+
+## Verification
+
+What has been verified: the Linux build target links and runs (`./build.sh`
+followed by the runtime smoke recipe below); real Xvfb captures of the
+running application, reviewed by hand, are the screenshots above and under
+[docs/design/captures/](docs/design/captures/); the repository's own gtest
+suites exist and build under `MUSE_ENABLE_UNIT_TESTS=ON`, including
+`src/experience/tests` (dozens of test cases covering the dim sum surprise,
+School mode, narrator, and scheduled settings) and `src/toolkit/tests`
+(bookmarks, bulk selection, exports, hardware fit, and harness profiles).
+
+Runtime smoke recipe:
+
+```bash
+QT_QPA_PLATFORM=xcb AU_ALLOW_MULTIPLE_PROCESSES=1 xvfb-run -a -s "-screen 0 1600x1000x24" ./build/linux/src/app/audacity &
+sleep 25
+import -window root capture.png
+```
+
+What is **not** verified in this pass: a Windows build and runtime (no
+Windows machine was used to produce these captures); most preference pages
+beyond the ones captured above; a fresh CI run of the full test suite;
+the packaged Squirrel.Windows installer's unsigned status on a real Windows
+install. See [HANDOFF.md](HANDOFF.md) for the current state of each of
+these and [docs/design/RELEASE.md](docs/design/RELEASE.md) for the release
+verification procedure once a build is cut.
+
+## Screen recording
+
+No screen recording exists yet for this project. A short recording of a
+real build reaching the home page and completing one editing task, taken
+through the project's own headless capture route, will be added here once
+that pass is done. See [HANDOFF.md](HANDOFF.md).
 
 ## Contributing and license
 

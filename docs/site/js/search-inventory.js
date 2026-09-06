@@ -10,6 +10,7 @@
     { id: 'palette-search', label: 'Command palette search', selector: '#palette-input' },
     { id: 'docs-search', label: 'Documentation browser search', selector: '#docs-search-input' },
     { id: 'changelog-filter', label: 'Changelog filter', selector: '#changelog-filter-input' },
+    { id: 'gallery-filter', label: 'Gallery filter', selector: '#gallery-filter-input' },
     { id: 'features-filter', label: 'Features filter', selector: '#features-filter-input' },
     { id: 'downloads-filter', label: 'Downloads filter', selector: '#downloads-filter-input' },
     { id: 'settings-search', label: 'Settings search', selector: '#settings-search-input' },

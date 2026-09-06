@@ -1,0 +1,130 @@
+[
+  {
+    "file": "01-home-light.png",
+    "group": "Home",
+    "alt": "Home page listing projects, light theme",
+    "caption": "Home page in the light theme: New project tile, New and recent tab, grid and list view toggles.",
+    "theme": "light",
+    "lane": "phase2"
+  },
+  {
+    "file": "01-home-dark.png",
+    "group": "Home",
+    "alt": "Home page listing projects, dark theme",
+    "caption": "Same home page in the dark theme, showing the Material 3 dark color roles.",
+    "theme": "dark",
+    "lane": "phase2"
+  },
+  {
+    "file": "01-first-launch-language.png",
+    "group": "First run",
+    "alt": "First launch setup wizard, language step 1 of 7",
+    "caption": "First launch setup, step 1 of 7: choosing English, Cantonese (Hong Kong), or Bilingual.",
+    "theme": "light",
+    "lane": "lane-b"
+  },
+  {
+    "file": "09-about-dialog.png",
+    "group": "First run",
+    "alt": "About dialog with Audacity wordmark and credits list",
+    "caption": "The About dialog, with Audacity and Legal tabs and a scrolling credits list.",
+    "theme": "light",
+    "lane": "lane-b"
+  },
+  {
+    "file": "01-preferences.png",
+    "group": "Preferences",
+    "alt": "Preferences dialog, General page",
+    "caption": "Preferences dialog: Material 3 navigation rail, a settings search field, and the General page.",
+    "theme": "light",
+    "lane": "lane-d"
+  },
+  {
+    "file": "03-preferences-appearance.png",
+    "group": "Preferences",
+    "alt": "Preferences dialog, Appearance page with theme and accent color choices",
+    "caption": "Appearance page: light and dark theme cards, a high contrast toggle, and a row of accent color swatches.",
+    "theme": "light",
+    "lane": "lane-d"
+  },
+  {
+    "file": "09-preferences-experience-school-mode.png",
+    "group": "Preferences",
+    "alt": "Preferences dialog, School mode section",
+    "caption": "School mode section: a plain-language explanation, a rename field, and a PIN or password to turn it back off.",
+    "theme": "light",
+    "lane": "lane-k2"
+  },
+  {
+    "file": "10-preferences-experience-narrator.png",
+    "group": "Preferences",
+    "alt": "Preferences dialog, Narrator section with language choice",
+    "caption": "Narrator section: an off by default toggle, English or Cantonese or Both, and a Quiet mode switch.",
+    "theme": "light",
+    "lane": "lane-k2"
+  },
+  {
+    "file": "12-effect-menu.png",
+    "group": "Menus and tabs",
+    "alt": "Effect menu open, showing categorized effect groups, with the Home Project DevTools tab strip visible",
+    "caption": "The Effect menu open over a project with a clip, and the browser style Home, Project, DevTools tab strip above it.",
+    "theme": "light",
+    "lane": "lane-d"
+  },
+  {
+    "file": "08-generate-tone.png",
+    "group": "Dialogs",
+    "alt": "Generate tone dialog with waveform, frequency, amplitude, and duration fields",
+    "caption": "The Generate Tone dialog: waveform choice, frequency, amplitude, duration, with Preview, Cancel, and Apply.",
+    "theme": "light",
+    "lane": "lane-d"
+  },
+  {
+    "file": "09-plugin-manager.png",
+    "group": "Dialogs",
+    "alt": "Plugin manager table listing built-in effects with enabled toggles",
+    "caption": "The plugin manager: a filterable, searchable table of every built-in effect with per-row enable toggles.",
+    "theme": "light",
+    "lane": "lane-d"
+  },
+  {
+    "file": "14-export.png",
+    "group": "Dialogs",
+    "alt": "Export dialog with file name, folder, format, and audio option fields",
+    "caption": "The Export dialog: file name, destination folder with a browse button, format, channels, sample rate, and encoding.",
+    "theme": "light",
+    "lane": "lane-d"
+  },
+  {
+    "file": "06-history-panel.png",
+    "group": "Project and tracks",
+    "alt": "Project window with one track holding a tone clip and the history panel open",
+    "caption": "A project with one track and a generated tone clip, with the History panel and its search field open on the right.",
+    "theme": "light",
+    "lane": "lane-c"
+  },
+  {
+    "file": "03-gallery-colorpicker-dark.png",
+    "group": "Design system",
+    "alt": "Component gallery showing the M3 color picker with hue wheel and animated rainbow button, dark theme",
+    "caption": "The internal Material 3 component gallery: hue wheel and saturation and value field color picker, hex value, contrast readout, and the animated rainbow option, dark theme.",
+    "theme": "dark",
+    "lane": "lane-a"
+  },
+  {
+    "file": "08-dimsum-card-real-photo.png",
+    "group": "Wave two features",
+    "alt": "Home page with several pinned tabs open and a dim sum surprise card showing a real photo",
+    "caption": "Several pinned tabs open (Project, DevTools, Tracks, History, Effects) plus a dim sum surprise card naming a real dish with its photo.",
+    "theme": "light",
+    "lane": "lane-k2"
+  },
+  {
+    "file": "12-scale2x-home-light.png",
+    "group": "Display scale",
+    "alt": "Home page rendered at 200 percent display scale with no clipped text",
+    "caption": "Home page at 200 percent display scale: menu bar, tab labels, and cards all remain legible with no clipping.",
+    "theme": "light",
+    "lane": "phase2"
+  }
+]

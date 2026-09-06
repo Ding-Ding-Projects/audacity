@@ -116,6 +116,22 @@ The format follows Keep a Changelog and the project uses semantic versioning.
   time from Help and from the command palette, and sensible defaults apply
   immediately on a fresh profile (see docs/features/no-nagging.md)
 
+### Documentation
+
+- Rewrote README.md as a picture-first, tabbed document with a reviewed
+  Screenshots section grouped by surface (home, first run, preferences,
+  menus and tabs, dialogs, project and tracks, design system, wave two
+  features, display scale), an honest "no capture yet" list, refreshed line
+  counts, and a Verification section stating what has and has not been
+  checked in this pass
+- Added a filterable Gallery page to the documentation site
+  (docs/site/screenshots/gallery.json plus a new renderer in
+  docs/site/js/app.js), with the same reviewed captures grouped by surface
+  and a search field wired to the regex builder
+- Added the missing dim sum surprise, narrator, no unsolicited
+  interruptions, school mode, and status reporting articles to
+  docs/features/README.md's index
+
 ## 4.0.0-material.1 - 2026-09-05
 
 The first Material Design 3 preview of Audacity 4.
