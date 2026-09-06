@@ -201,8 +201,9 @@ to 512 MiB, kills the child on job closure, and refuses launch if these controls
 cannot be installed. Children are hidden and receive only a bundled-tool `PATH`
 and the actual `SystemRoot`, rather than inheriting the caller's environment; their
 working directory is the verified read-only scratch directory. The shared deadline
-includes all qpdf calls in one request, with bounded startup and termination
-waits of five seconds each. Cancellation reaches inspection and output validation
+includes staging and all qpdf calls in one request. Process creation is a
+synchronous Windows API call; the elapsed deadline is checked after creation
+and throughout output draining. Termination is waited for up to five seconds. Cancellation reaches inspection and output validation
 as well as transformation. Standard output streams to a bounded file handle;
 diagnostic/query output is capped at 1 MiB and parser diagnostic content is not
 reflected into user-visible messages. Sources are limited to 256 MiB, each output
