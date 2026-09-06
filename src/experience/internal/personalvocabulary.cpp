@@ -88,10 +88,10 @@ bool scanJsonString(const QByteArray& data, int& index, QString* decoded = nullp
         QJsonParseError error;
         const QByteArray quoted = data.mid(start, index - start);
         const QJsonDocument doc = QJsonDocument::fromJson(QByteArray("[") + quoted + QByteArray("]"), &error);
-        if (error.error != QJsonParseError::NoError || !doc.isArray() || doc.array().size() != 1 || !doc.array().front().isString()) {
+        if (error.error != QJsonParseError::NoError || !doc.isArray() || doc.array().size() != 1 || !doc.array().at(0).isString()) {
             return false;
         }
-        *decoded = doc.array().front().toString();
+        *decoded = doc.array().at(0).toString();
     }
     return true;
 }
