@@ -107,7 +107,7 @@
   let vocabularyLoadSequence = 0;
   const vocabularyTextState = new WeakMap();
   const vocabularyAttributeState = new WeakMap();
-  const vocabularyExcluded = 'script,style,code,pre,textarea,[contenteditable],#release-line,#assets-list,#docs-content,[data-vocabulary-exclude]';
+  const vocabularyExcluded = 'script,style,code,pre,textarea,[contenteditable],#release-line,#assets-list,#docs-content,#changelog-list,.release-channel,.release-notes,.unsigned-note,[data-vocabulary-exclude]';
   function applyVocabularyBoundary() {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
@@ -1018,6 +1018,7 @@
       });
     }
     function openPalette() {
+      if (!backdrop.hidden) { input.focus(); return; }
       returnFocus = document.activeElement;
       backdrop.hidden = false; input.value = ''; activeIdx = 0; renderResults(); input.focus();
       input.setAttribute('aria-expanded', 'true');

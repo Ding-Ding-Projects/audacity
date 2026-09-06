@@ -3,7 +3,7 @@ name: 'Material Audacity: Documentation site'
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Material Audacity: Build and release']
+    workflows: ['Material Audacity Windows delivery']
     types: [completed]
     branches: [main]
 
