@@ -279,7 +279,8 @@ if (Test-Path -LiteralPath $stageDir) {
 $payloadDir = Join-Path $stageDir "lib\net45"
 New-Item -ItemType Directory -Force -Path $payloadDir | Out-Null
 
-Copy-Item -Path (Join-Path $InstallDir "*") -Destination $payloadDir -Recurse -Force
+Copy-SquirrelPayload -InstallDirectory $InstallDir -PayloadDirectory $payloadDir `
+    -QpdfManifestPath (Join-Path $repoRoot 'buildscripts/converter-tools/qpdf.lock.json')
 
 if ($Layout -eq "Flat") {
     $binDir = Join-Path $payloadDir "bin"
@@ -501,6 +502,8 @@ if (-not [string]::IsNullOrWhiteSpace($PreviousReleasesDir) -and
     }
     $seedReleases = Join-Path $seedRoot "RELEASES"
     $seedEntries = Read-ReleaseEntries $seedReleases
+    $semanticVersionType = ([Reflection.Assembly]::LoadFrom($squirrelExe)).GetType('NuGet.SemanticVersion')
+    Assert-SquirrelSeed $seedEntries $PackageId $Version $semanticVersionType
     foreach ($entry in $seedEntries) {
         $seedPackage = Join-Path $seedRoot $entry.Name
         if (-not (Test-Path -LiteralPath $seedPackage)) {

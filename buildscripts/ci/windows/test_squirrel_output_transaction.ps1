@@ -1,10 +1,18 @@
 <# Behavioral tests of publication boundaries using small byte fixtures.
    These do not claim Squirrel package validity or installed-client behavior. #>
 [CmdletBinding()]
-param([string] $EvidenceRoot = '')
+param([string] $EvidenceRoot = '', [string] $SquirrelExecutable = '')
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'squirrel_output.ps1')
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
+if (-not $SquirrelExecutable) {
+    $found = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'build.tools') -Filter Squirrel.exe -File -Recurse |
+        Where-Object FullName -Match '[\\/]squirrel\.windows\.2\.0\.1[\\/]tools[\\/]Squirrel\.exe$' | Sort-Object FullName)
+    if (-not $found.Count) { throw 'Run pinned Squirrel tool provisioning first, or provide -SquirrelExecutable from a verified packaging run.' }
+    $SquirrelExecutable = $found[0].FullName
+}
+$semanticVersionType = ([Reflection.Assembly]::LoadFrom([IO.Path]::GetFullPath($SquirrelExecutable))).GetType('NuGet.SemanticVersion')
 if (-not $EvidenceRoot) {
     $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
     $EvidenceRoot = Join-Path $repoRoot ('build/squirrel-transaction-tests-' + [guid]::NewGuid().ToString('N'))
@@ -125,6 +133,66 @@ foreach ($kind in @('hash','size','traversal','rooted','subpath','backslash','dr
         Check ((Fingerprint $dir) -ceq $before) 'Rejected seed was modified.'
     }
 }
+$seedCases = @(
+    @{ name='foreign-id'; names=@('Other-4.0.0-ci000901-full.nupkg'); current='4.0.0-ci000902'; reject='foreign' },
+    @{ name='mixed-versions'; names=@('Audacity-4.0.0-ci000900-full.nupkg','Audacity-4.0.0-ci000901-full.nupkg'); current='4.0.0-ci000902'; reject='mixes' },
+    @{ name='delta-only'; names=@('Audacity-4.0.0-ci000901-delta.nupkg'); current='4.0.0-ci000902'; reject='exactly one full' },
+    @{ name='multiple-full'; names=@('Audacity-4.0.0-ci000901-full.nupkg','Audacity-4.0.0-ci000901-full.nupkg'); current='4.0.0-ci000902'; reject='duplicate' },
+    @{ name='mismatched-delta'; names=@('Audacity-4.0.0-ci000901-full.nupkg','Audacity-4.0.0-ci000900-delta.nupkg'); current='4.0.0-ci000902'; reject='mixes' },
+    @{ name='equal'; names=@('Audacity-4.0.0-ci000901-full.nupkg'); current='4.0.0-ci000901'; reject='strictly older' },
+    @{ name='newer-core'; names=@('Audacity-5.0.0-full.nupkg'); current='4.0.0'; reject='strictly older' },
+    @{ name='newer-prerelease'; names=@('Audacity-4.0.0-beta10-full.nupkg'); current='4.0.0-beta9'; reject='strictly older' },
+    @{ name='stable-after-prerelease'; names=@('Audacity-4.0.0-full.nupkg'); current='4.0.0-beta9'; reject='strictly older' },
+    @{ name='casefold-equal'; names=@('Audacity-4.0.0-BETA9-full.nupkg'); current='4.0.0-beta9'; reject='strictly older' },
+    @{ name='numeric-core-order'; names=@('Audacity-4.9.0-full.nupkg'); current='4.10.0'; reject='' },
+    @{ name='squirrel-prerelease-order'; names=@('Audacity-4.0.0-beta9-full.nupkg'); current='4.0.0-beta10'; reject='' },
+    @{ name='prerelease-before-stable'; names=@('Audacity-4.0.0-beta9-full.nupkg','Audacity-4.0.0-beta9-delta.nupkg'); current='4.0.0'; reject='' }
+)
+foreach ($seedCase in $seedCases) {
+    Case "seed identity and ordering $($seedCase.name)" {
+        $dir = Join-Path $EvidenceRoot ('identity-' + $seedCase.name)
+        [IO.Directory]::CreateDirectory($dir) | Out-Null
+        $lines = @(foreach ($name in $seedCase.names) {
+            $path = Join-Path $dir $name
+            [IO.File]::WriteAllText($path, 'seed fixture')
+            '{0} {1} {2}' -f (Get-FileHash -LiteralPath $path -Algorithm SHA1).Hash,$name,(Get-Item -LiteralPath $path).Length
+        })
+        $feed = Join-Path $dir 'RELEASES'
+        $lines | Set-Content -LiteralPath $feed
+        $action = { $entries = @(Read-ReleaseEntries $feed); Assert-SquirrelSeed $entries 'Audacity' $seedCase.current $semanticVersionType }
+        $before = Fingerprint $dir
+        if ($seedCase.reject) { Reject $action $seedCase.reject } else { & $action }
+        Check ((Fingerprint $dir) -ceq $before) 'Seed validation changed input bytes.'
+    }
+}
+Case 'payload copies ten qpdf components and omits administration without deleting input' {
+    $source = Join-Path $EvidenceRoot 'payload-source'
+    $tools = Join-Path $source 'bin/converter-tools'
+    $qpdf = Join-Path $tools 'qpdf'
+    [IO.Directory]::CreateDirectory($qpdf) | Out-Null
+    $files = [ordered]@{}
+    foreach ($name in @('qpdf.exe','qpdf30.dll','concrt140.dll','msvcp140.dll','msvcp140_1.dll','msvcp140_2.dll','msvcp140_atomic_wait.dll','msvcp140_codecvt_ids.dll','vcruntime140.dll','vcruntime140_1.dll')) {
+        $path = Join-Path $qpdf $name
+        [IO.File]::WriteAllText($path, "component fixture $name")
+        $files[$name] = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+    $lockPath = Join-Path $EvidenceRoot 'fixture-qpdf.lock.json'
+    @{name='qpdf'; version='12.3.2'; files=$files} | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $lockPath
+    $id = 'a' * 32
+    $admins = @('.qpdf-bootstrap.lock',".qpdf-stage-$id",".qpdf-backup-$id",".qpdf-invalid-$id",'qpdf.activation.json',"qpdf.activation.completed-$id.json","qpdf.activation.json.$id.tmp")
+    foreach ($name in $admins) { [IO.File]::WriteAllText((Join-Path $tools $name), 'retained administration fixture') }
+    [IO.File]::WriteAllText((Join-Path $qpdf 'not-a-component.txt'), 'retained extra fixture')
+    $beforeTools = Fingerprint $tools
+    $beforeQpdf = Fingerprint $qpdf
+    $dest = Join-Path $EvidenceRoot 'payload-stage'
+    Copy-SquirrelPayload $source $dest $lockPath
+    $stagedTools = Join-Path $dest 'bin/converter-tools'
+    Check (@(Get-ChildItem -LiteralPath $stagedTools -Force).Count -eq 1) 'Administration entries reached the payload.'
+    Check (@(Get-ChildItem -LiteralPath (Join-Path $stagedTools 'qpdf') -Force).Count -eq 10) 'Payload does not contain exactly ten components.'
+    Check ((Fingerprint $tools) -ceq $beforeTools -and (Fingerprint $qpdf) -ceq $beforeQpdf) 'Staging modified its source.'
+    Add-Content -LiteralPath (Join-Path $qpdf 'qpdf.exe') 'corrupt'
+    Reject { Copy-SquirrelPayload $source (Join-Path $EvidenceRoot 'corrupt-payload-stage') $lockPath } 'hash mismatch'
+}
 foreach ($kind in @('version','files','feed','checksums')) {
     Case "release collector rejects manifest $kind mismatch before copying" {
         $dir = New-Fixture "manifest-$kind"
@@ -217,6 +285,7 @@ Publish-SquirrelOutput $Candidate $Output {
     }
 }
 
-[ordered]@{ scope='Synthetic byte fixtures, not installed-client update verification'; passed=$results.Count; results=$results } |
+[ordered]@{ scope='Synthetic byte fixtures and pinned Squirrel version comparer, not installed-client update verification';
+    squirrelExecutableSha256=(Get-FileHash -LiteralPath $SquirrelExecutable -Algorithm SHA256).Hash; passed=$results.Count; results=$results } |
     ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $EvidenceRoot 'results.json')
 Write-Host "Passed $($results.Count) publication boundary tests. Evidence retained: $EvidenceRoot"

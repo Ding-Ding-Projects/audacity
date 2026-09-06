@@ -151,6 +151,10 @@ coreutils available the whole file can be checked at once with
 8. Writes `SHA256SUMS` and `package-output-manifest.json` for exactly the current
    version's setup, feed, full package and optional delta. Feed entries must use
    unique case-insensitive leaf names and match the package SHA1 and byte size.
+   A seed feed additionally identifies this package and one older baseline
+   version, with exactly one full package and at most its matching delta.
+   Ordering uses `NuGet.SemanticVersion` from the pinned Squirrel executable,
+   including its prerelease rules, rather than string or numeric-version guesses.
 9. Validates a same-volume candidate directory and activates it with directory
    renames under an exclusive output lock. A durable journal precedes the first
    rename. The previous generation remains in a uniquely named sibling directory;
@@ -183,7 +187,14 @@ pwsh -NoProfile -File buildscripts/ci/windows/test_package_squirrel_output.ps1 -
 
 The first uses small byte fixtures for ownership, seed validation, manifest
 mismatch, interruption recovery and cross-process activation contention. The
-second builds real full and delta packages from an existing immutable application
+version-order cases load the existing pinned Squirrel executable under
+`build.tools`, or the exact path supplied through `-SquirrelExecutable`.
+The payload cases verify that only the ten hash-pinned qpdf components enter
+staging. qpdf activation locks, journals, stages, quarantines and backups remain
+in the input tree and are omitted from the package; no recovery evidence is
+deleted. Additional files inside the qpdf input directory are not package
+components and are not copied. Unknown administration-name variants fail closed.
+The second builds real full and delta packages from an existing immutable application
 tree and validates release collection without rebuilding the application.
 Neither test proves installation, installed-client updates or UI behavior.
 

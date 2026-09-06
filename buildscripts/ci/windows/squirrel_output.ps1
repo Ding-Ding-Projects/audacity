@@ -49,6 +49,86 @@ function Read-ReleaseEntries([string] $Path) {
     return $entries
 }
 
+function Assert-SquirrelSeed($Entries, [string] $PackageId, [string] $CurrentVersion, [type] $SemanticVersionType) {
+    # Use the comparator embedded in the verified Squirrel executable itself.
+    # Its prerelease ordering is not lexical string ordering or System.Version.
+    if (-not $SemanticVersionType -or $SemanticVersionType.FullName -cne 'NuGet.SemanticVersion') {
+        throw 'Seed validation requires the pinned Squirrel semantic-version implementation.'
+    }
+    $parse = $SemanticVersionType.GetMethod('Parse', [type[]]@([string]))
+    $pattern = '^' + [regex]::Escape($PackageId) + '-(?<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z]{1,20})?)-(?<kind>full|delta)\.nupkg$'
+    $baselineVersion = $null
+    $fullCount = 0
+    $deltaCount = 0
+    foreach ($entry in $Entries) {
+        $match = [regex]::Match($entry.Name, $pattern, [Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if (-not $match.Success) { throw 'Seed feed contains a foreign package id or unsupported version.' }
+        $version = $match.Groups['version'].Value
+        if ($null -eq $baselineVersion) { $baselineVersion = $version }
+        elseif ($baselineVersion -cne $version) { throw 'Seed feed mixes baseline versions.' }
+        if ($match.Groups['kind'].Value -ieq 'full') { $fullCount++ } else { $deltaCount++ }
+    }
+    if ($fullCount -ne 1 -or $deltaCount -gt 1) { throw 'Seed feed requires exactly one full package and at most one matching delta.' }
+    $baseline = $parse.Invoke($null, @($baselineVersion))
+    $current = $parse.Invoke($null, @($CurrentVersion))
+    if ($baseline.CompareTo($current) -ge 0) { throw 'Seed baseline must be strictly older than the current Squirrel version.' }
+}
+
+function Copy-SquirrelPayload([string] $InstallDirectory, [string] $PayloadDirectory, [string] $QpdfManifestPath) {
+    # Preserve the input tree. Administration records never enter the staged
+    # payload, and a qpdf bundle is copied only from the committed hash inventory.
+    function Copy-QpdfComponents([string] $Source, [string] $Destination) {
+        Assert-SquirrelPlainPath $Source
+        $lock = Get-Content -LiteralPath $QpdfManifestPath -Raw | ConvertFrom-Json
+        $records = @($lock.files.PSObject.Properties)
+        if ($lock.name -cne 'qpdf' -or $records.Count -ne 10 -or $lock.version -cne '12.3.2') { throw 'Invalid pinned qpdf component inventory.' }
+        [IO.Directory]::CreateDirectory($Destination) | Out-Null
+        foreach ($record in $records) {
+            Assert-SquirrelLeafName $record.Name
+            $path = Join-Path $Source $record.Name
+            Assert-SquirrelPlainPath $path
+            if ($record.Value -notmatch '^[a-f0-9]{64}$' -or
+                (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ine $record.Value) {
+                throw "Pinned qpdf component hash mismatch: $($record.Name)"
+            }
+            $target = Join-Path $Destination $record.Name
+            Copy-Item -LiteralPath $path -Destination $target
+            if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ine $record.Value) {
+                throw "Staged qpdf component hash mismatch: $($record.Name)"
+            }
+        }
+    }
+    function Copy-ConverterTools([string] $Source, [string] $Destination) {
+        [IO.Directory]::CreateDirectory($Destination) | Out-Null
+        foreach ($item in Get-ChildItem -LiteralPath $Source -Force) {
+            if ($item.Name -ieq 'qpdf') {
+                Copy-QpdfComponents $item.FullName (Join-Path $Destination 'qpdf')
+            } elseif ($item.Name -ceq '.qpdf-bootstrap.lock' -or
+                $item.Name -cmatch '^\.qpdf-(stage|backup|invalid)-[a-f0-9]{32}$' -or
+                $item.Name -ceq 'qpdf.activation.json' -or
+                $item.Name -cmatch '^qpdf\.activation\.completed-[a-f0-9]{32}\.json$' -or
+                $item.Name -cmatch '^qpdf\.activation\.json\.[a-f0-9]{32}\.tmp$') {
+                Write-Host "Omitted qpdf administration entry from package staging: $($item.Name)"
+            } elseif ($item.Name -imatch '^(\.qpdf-|qpdf\.activation)') {
+                throw "Unknown qpdf administration entry; source retained: $($item.Name)"
+            } else { Copy-Item -LiteralPath $item.FullName -Destination $Destination -Recurse }
+        }
+    }
+    [IO.Directory]::CreateDirectory($PayloadDirectory) | Out-Null
+    if (@(Get-ChildItem -LiteralPath $PayloadDirectory -Force).Count) { throw 'Payload staging requires an empty directory.' }
+    foreach ($item in Get-ChildItem -LiteralPath $InstallDirectory -Force) {
+        if ($item.Name -ieq 'bin' -and $item.PSIsContainer) {
+            $bin = Join-Path $PayloadDirectory 'bin'
+            [IO.Directory]::CreateDirectory($bin) | Out-Null
+            foreach ($child in Get-ChildItem -LiteralPath $item.FullName -Force) {
+                if ($child.Name -ieq 'converter-tools' -and $child.PSIsContainer) {
+                    Copy-ConverterTools $child.FullName (Join-Path $bin 'converter-tools')
+                } else { Copy-Item -LiteralPath $child.FullName -Destination $bin -Recurse }
+            }
+        } else { Copy-Item -LiteralPath $item.FullName -Destination $PayloadDirectory -Recurse }
+    }
+}
+
 function Assert-SquirrelOutput([string] $Directory, [string] $ExpectedVersion = '', [string] $ExpectedPackageId = '',
     [ValidateSet('SHA256SUMS','PACKAGE-SHA256SUMS')][string] $ChecksumName = 'SHA256SUMS') {
     Assert-SquirrelPlainPath $Directory
