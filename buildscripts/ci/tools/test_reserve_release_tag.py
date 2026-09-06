@@ -113,7 +113,8 @@ class ReleaseReservationTests(unittest.TestCase):
     def test_generic_validation_or_server_error_is_not_collision(self):
         for status in (422, 500, None):
             api = FakeApi(failure=tags.ApiError(status, {"message": "Validation Failed"}))
-            with self.assertRaises(tags.ApiError):
+            expected = tags.ApiError if status == 422 else tags.UncertainReservation
+            with self.assertRaises(expected):
                 tags.reserve_tag(api, REPO, SHA, "4.0.0")
             self.assertEqual(len([call for call in api.calls if call[0] == "POST"]), 1)
 
@@ -159,7 +160,7 @@ class ReleaseReservationTests(unittest.TestCase):
                     raise tags.ApiError(403, {})
                 return super().request(method, endpoint, **kwargs)
         api = UnreadableApi()
-        with self.assertRaisesRegex(tags.ReservationError, "was reserved but target verification failed"):
+        with self.assertRaisesRegex(tags.UncertainReservation, "Uncertain reservation"):
             tags.reserve_tag(api, REPO, SHA, "4.0.0")
         self.assertEqual(len(api.records), 1)
         self.assertEqual(len([call for call in api.calls if call[0] == "POST"]), 1)
@@ -170,7 +171,7 @@ class ReleaseReservationTests(unittest.TestCase):
                 result = super().request(method, endpoint, **kwargs)
                 return {} if method == "POST" else result
         api = MalformedApi()
-        with self.assertRaisesRegex(tags.ReservationError, "was reserved but target verification failed"):
+        with self.assertRaisesRegex(tags.UncertainReservation, "Uncertain reservation"):
             tags.reserve_tag(api, REPO, SHA, "4.0.0")
         self.assertEqual(len(api.records), 1)
 
@@ -191,11 +192,110 @@ class ReleaseReservationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             api = FakeApi()
             errors = io.StringIO()
-            with patch.object(tags, "GhApi", return_value=api), patch.object(Path, "open", side_effect=PermissionError()), contextlib.redirect_stderr(errors):
+            with patch.object(tags, "GhApi", return_value=api), patch.object(tags.os, "link", side_effect=PermissionError()), contextlib.redirect_stderr(errors):
                 code = tags.main(["reserve", "--repo", REPO, "--sha", SHA, "--version", "4.0.0", "--output", str(Path(directory) / "receipt.json")])
             self.assertEqual(code, 1)
             self.assertIn("v4.0.0-m3.1 was reserved and verified", errors.getvalue())
             self.assertEqual(len(api.records), 1)
+
+    def test_main_preserves_timeout_and_malformed_post_identity_in_atomic_receipt(self):
+        real_api_type = tags.GhApi
+        for failure in ("timeout", "malformed"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                calls = []
+                def runner(args, **kwargs):
+                    method, endpoint = args[3:5]
+                    calls.append((method, endpoint))
+                    if method == "POST":
+                        if failure == "timeout":
+                            raise subprocess.TimeoutExpired(args, 60)
+                        return subprocess.CompletedProcess(args, 0, "{", "")
+                    body = {"sha": SHA} if "/git/commits/" in endpoint else [[record("v4.0.0-m3.13")]]
+                    return subprocess.CompletedProcess(args, 0, json.dumps(body), "")
+                api = real_api_type(runner)
+                output = Path(directory) / "uncertain.json"
+                errors = io.StringIO()
+                with patch.object(tags, "GhApi", return_value=api), contextlib.redirect_stderr(errors):
+                    code = tags.main(["reserve", "--repo", REPO, "--sha", SHA, "--version", "4.0.0", "--output", str(output)])
+                self.assertEqual(code, 1)
+                receipt = json.loads(output.read_text(encoding="utf-8"))
+                self.assertEqual(receipt["state"], "uncertain")
+                self.assertIsNone(receipt["reserved"])
+                self.assertFalse(receipt["verified"])
+                self.assertEqual(receipt["repository"], REPO)
+                self.assertEqual(receipt["tag"], "v4.0.0-m3.14")
+                self.assertEqual(receipt["ref"], "refs/tags/v4.0.0-m3.14")
+                self.assertEqual(receipt["sha"], SHA)
+                self.assertEqual(receipt["attempts"], 1)
+                for identity in (REPO, receipt["tag"], receipt["ref"], SHA, "attempt=1"):
+                    self.assertIn(identity, errors.getvalue())
+                self.assertEqual(len([call for call in calls if call[0] == "POST"]), 1)
+                self.assertEqual(len(calls), 3)
+                self.assertEqual(list(Path(directory).iterdir()), [output])
+
+    def test_main_uncertain_receipt_link_failure_keeps_identity_and_staged_record(self):
+        class TimeoutApi(FakeApi):
+            def request(self, method, endpoint, **kwargs):
+                if method == "POST":
+                    self.calls.append((method, endpoint, kwargs.get("data"), False))
+                    raise tags.ReservationError("Transport timeout")
+                return super().request(method, endpoint, **kwargs)
+        with tempfile.TemporaryDirectory() as directory:
+            api = TimeoutApi([record("v4.0.0-m3.13")])
+            output = Path(directory) / "uncertain.json"
+            errors = io.StringIO()
+            with patch.object(tags, "GhApi", return_value=api), patch.object(tags.os, "link", side_effect=PermissionError()), contextlib.redirect_stderr(errors):
+                code = tags.main(["reserve", "--repo", REPO, "--sha", SHA, "--version", "4.0.0", "--output", str(output)])
+            self.assertEqual(code, 1)
+            self.assertFalse(output.exists())
+            staged = list(Path(directory).glob(".uncertain.json.*.tmp"))
+            self.assertEqual(len(staged), 1)
+            receipt = json.loads(staged[0].read_text(encoding="utf-8"))
+            self.assertEqual(receipt["state"], "uncertain")
+            for identity in (REPO, "v4.0.0-m3.14", "refs/tags/v4.0.0-m3.14", SHA, "attempt=1"):
+                self.assertIn(identity, errors.getvalue())
+            self.assertIn(str(staged[0]), errors.getvalue())
+            self.assertEqual(len([call for call in api.calls if call[0] == "POST"]), 1)
+
+    def test_atomic_receipt_never_overwrites_existing_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "existing.json"
+            output.write_text("preserve original", encoding="utf-8")
+            with self.assertRaises(OSError):
+                tags.write_receipt_atomic(output, {"state": "uncertain"})
+            self.assertEqual(output.read_text(encoding="utf-8"), "preserve original")
+
+    def test_main_success_writes_matching_verified_receipt_and_stdout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            api = FakeApi([record("v4.0.0-m3.13")])
+            output = Path(directory) / "verified.json"
+            stdout = io.StringIO()
+            with patch.object(tags, "GhApi", return_value=api), contextlib.redirect_stdout(stdout):
+                code = tags.main(["reserve", "--repo", REPO, "--sha", SHA, "--version", "4.0.0", "--output", str(output)])
+            self.assertEqual(code, 0)
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(receipt, json.loads(stdout.getvalue()))
+            self.assertEqual(receipt["state"], "verified")
+            self.assertTrue(receipt["verified"])
+            self.assertEqual(receipt["ref"], "refs/tags/v4.0.0-m3.14")
+
+    def test_main_immediate_readback_absence_remains_uncertain(self):
+        class MissingReadbackApi(FakeApi):
+            def request(self, method, endpoint, **kwargs):
+                if "/git/ref/tags/" in endpoint:
+                    raise tags.ApiError(404, {"message": "Not Found"})
+                return super().request(method, endpoint, **kwargs)
+        with tempfile.TemporaryDirectory() as directory:
+            api = MissingReadbackApi()
+            output = Path(directory) / "uncertain.json"
+            with patch.object(tags, "GhApi", return_value=api), contextlib.redirect_stderr(io.StringIO()):
+                code = tags.main(["reserve", "--repo", REPO, "--sha", SHA, "--version", "4.0.0", "--output", str(output)])
+            self.assertEqual(code, 1)
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(receipt["state"], "uncertain")
+            self.assertIsNone(receipt["reserved"])
+            self.assertEqual(receipt["reason"], "post-target-verification-unconfirmed")
+            self.assertEqual(len([call for call in api.calls if call[0] == "POST"]), 1)
 
     def test_gh_transport_posts_json_on_stdin_and_uses_paginated_slurp(self):
         calls = []

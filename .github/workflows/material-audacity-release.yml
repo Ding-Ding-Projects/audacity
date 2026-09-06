@@ -25,6 +25,38 @@ jobs:
       start_time: ${{ steps.start.outputs.utc }}
       release_tag: ${{ steps.configure.outputs.release_tag }}
     steps:
+      - name: Provision reservation Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Check and bootstrap GitHub CLI before first API use
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          function Test-ReleaseCli {
+            if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { return $false }
+            $apiHelp = gh api --help | Out-String
+            if ($LASTEXITCODE -ne 0) { return $false }
+            $releaseHelp = gh release create --help | Out-String
+            return $LASTEXITCODE -eq 0 -and $apiHelp.Contains('--slurp') -and
+              $apiHelp.Contains('--paginate') -and $releaseHelp.Contains('--verify-tag')
+          }
+          if (-not (Test-ReleaseCli)) {
+            if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+              throw 'GitHub CLI lacks required capabilities, and Chocolatey is unavailable for bootstrap.'
+            }
+            choco upgrade gh -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'GitHub CLI bootstrap failed.' }
+            $ghDirectory = Join-Path $env:ProgramFiles 'GitHub CLI'
+            $env:PATH = "$ghDirectory;$env:PATH"
+            $ghDirectory | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+          if (-not (Test-ReleaseCli)) { throw 'GitHub CLI still lacks pagination, slurp or verify-tag support after bootstrap.' }
+          python -c "import sys; assert sys.version_info >= (3, 12), 'Python 3.12 or newer is required'"
+          if ($LASTEXITCODE -ne 0) { throw 'Reservation Python verification failed.' }
+          gh --version
+
       - name: Record workflow start time
         id: start
         shell: bash

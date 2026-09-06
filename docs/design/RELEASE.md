@@ -81,6 +81,21 @@ SHAs, malformed refs, authentication errors and uncertain network outcomes
 stop immediately. An uncertain POST may already have created its tag and must
 be investigated before retrying publication.
 
+`--output` is mandatory for reservation. A timed-out POST, malformed successful
+response, unconfirmed server error or failed target readback preserves an
+`uncertain` receipt containing the exact repository, tag, full ref, candidate
+SHA and attempt number. The CLI repeats that identity in stderr and exits
+nonzero without retrying the POST. An immediate missing-ref response would not
+prove that the original request cannot still complete; the coordinator must
+settle that uncertainty before proceeding. The helper does not automatically
+retry or treat absence as permission to reuse the name.
+
+Both verified and uncertain receipts are written beside their destination,
+flushed, and atomically linked into a previously absent output path. Existing
+receipts are never overwritten. A persistence failure retains any staged record
+for inspection and reports its path plus the complete attempted identity in
+stderr. It does not roll back or retry a possibly completed tag creation.
+
 Immediately before publishing, both routes use:
 
 ```powershell
@@ -94,6 +109,20 @@ Then the explicitly coordinated publisher calls `gh release create` with
 The workflow grants its reservation job `contents: write` and uses
 `secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN` through
 `GH_TOKEN`; the helper never reads or prints credentials itself.
+
+The reservation job provisions Python before its first command, then checks
+the CLI before the workflow timing request or Configure step uses it:
+
+| Tool | Provisioning and compatibility boundary |
+| --- | --- |
+| Python | `actions/setup-python@v6` supplies Python 3.12; the job confirms `sys.version_info >= (3, 12)` before configuration. |
+| GitHub CLI | The job checks `gh api --paginate --slurp` and `gh release create --verify-tag` support through CLI help. If absent or incompatible, it uses Chocolatey's `gh` package and refreshes the current and subsequent-step PATH, then repeats the capability check. |
+| Chocolatey | Needed only for GitHub CLI repair on the Windows delivery worker. Its absence is reported explicitly and stops the job before any reservation attempt. |
+
+These checks no longer infer command availability from the worker image name.
+The offline reservation fixtures do not install tools or prove a hosted worker's
+network bootstrap; the workflow's actual provisioning result remains separate
+evidence.
 
 Reservation is **not a build or publisher lock**. It does not serialize final
 publication, stop an older candidate finishing after a newer candidate, or

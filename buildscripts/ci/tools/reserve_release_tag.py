@@ -8,10 +8,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 from typing import Any
 
 MAX_SEQUENCE = 2_147_483_647  # Matches the packaging script's Int32 conversion.
@@ -21,6 +23,43 @@ VERSION_PATTERN = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][
 
 class ReservationError(RuntimeError):
     pass
+
+
+def attempted_identity(receipt: dict) -> str:
+    return (f"repository={receipt['repository']} tag={receipt['tag']} ref={receipt['ref']} "
+            f"sha={receipt['sha']} attempt={receipt['attempts']}")
+
+
+class UncertainReservation(ReservationError):
+    def __init__(self, receipt: dict, reason: str):
+        self.receipt = dict(receipt, state="uncertain", reserved=None, verified=False, reason=reason)
+        super().__init__(f"Uncertain reservation: {attempted_identity(self.receipt)}. "
+                         "Do not retry the POST, delete or reuse the tag. An absent immediate read does not settle its outcome.")
+
+
+def write_receipt_atomic(path: Path, receipt: dict) -> None:
+    # Stage beside the destination, flush, then link it into place exclusively.
+    # A hard link publishes the complete file atomically without overwriting an
+    # existing receipt on Windows or POSIX. Retain staging on a write/link error.
+    staging = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=f".{path.name}.", suffix=".tmp", delete=False) as stream:
+            staging = Path(stream.name)
+            json.dump(receipt, stream, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(staging, path)
+    except OSError as error:
+        retained = f" Staging retained for inspection: {staging}." if staging else ""
+        raise OSError("Atomic receipt persistence failed." + retained) from error
+    # The destination already contains complete flushed bytes if staging removal
+    # cannot finish. Do not turn a saved receipt into an apparent write failure.
+    try:
+        staging.unlink()
+    except OSError:
+        pass
 
 
 class ApiError(ReservationError):
@@ -166,6 +205,10 @@ def reserve_tag(api, repo: str, sha: str, version: str, minimum: int = 1) -> dic
         pages = api.request("GET", f"repos/{repo}/git/matching-refs/tags/v{version}-m3.?per_page=100", paginate=True)
         tag = choose_tag(pages, version, minimum)
         ref = f"refs/tags/{tag}"
+        sequence = int(tag.rsplit(".", 1)[1])
+        receipt = {"schemaVersion": 1, "repository": repo, "tag": tag, "ref": ref, "sha": sha,
+                   "productVersion": version, "sequence": sequence,
+                   "packageVersion": f"{version}-m3{sequence:03d}", "attempts": attempt}
         try:
             created = api.request("POST", f"repos/{repo}/git/refs", data={"ref": ref, "sha": sha})
         except ApiError as error:
@@ -173,7 +216,13 @@ def reserve_tag(api, repo: str, sha: str, version: str, minimum: int = 1) -> dic
                 continue  # Re-read the complete inventory before the next create-only attempt.
             if error.is_reference_collision():
                 raise ReservationError("Tag reservation collided three times; stop and coordinate the publishers.") from error
+            if error.status is None or error.status >= 500:
+                raise UncertainReservation(receipt, "post-http-outcome-unconfirmed") from error
             raise
+        except ReservationError as error:
+            # GhApi can raise before it has decoded the POST response. Attach
+            # identity here, where the exact attempted reference is still known.
+            raise UncertainReservation(receipt, "post-response-unconfirmed") from error
         # POST is create-only. No PATCH, update, force, reuse or deletion path exists.
         try:
             if (validate_ref(created) != ref or created["object"]["type"] != "commit"
@@ -181,12 +230,8 @@ def reserve_tag(api, repo: str, sha: str, version: str, minimum: int = 1) -> dic
                 raise ReservationError("Reservation response is inconsistent.")
             verify_tag(api, repo, sha, tag)
         except ReservationError as error:
-            raise ReservationError(f"Tag {tag} was reserved but target verification failed; retain it and investigate.") from error
-        sequence = int(tag.rsplit(".", 1)[1])
-        return {"schemaVersion": 1, "repository": repo, "tag": tag, "sha": sha,
-                "productVersion": version, "sequence": sequence,
-                "packageVersion": f"{version}-m3{sequence:03d}",
-                "attempts": attempt, "reserved": True, "verified": True}
+            raise UncertainReservation(receipt, "post-target-verification-unconfirmed") from error
+        return dict(receipt, state="verified", reserved=True, verified=True)
     raise AssertionError("Unreachable reservation boundary")
 
 
@@ -200,7 +245,7 @@ def main(argv=None) -> int:
         command.add_argument("--sha", required=True)
     reserve.add_argument("--version", required=True)
     reserve.add_argument("--minimum", type=int, default=1)
-    reserve.add_argument("--output", type=Path, help="New receipt file; existing files are never overwritten")
+    reserve.add_argument("--output", required=True, type=Path, help="New atomic receipt file, including uncertain outcomes; existing files are never overwritten")
     verify.add_argument("--tag", required=True)
     args = parser.parse_args(argv)
     try:
@@ -215,15 +260,24 @@ def main(argv=None) -> int:
             if args.output:
                 # Output failure never rolls back the already-created immutable tag.
                 try:
-                    with args.output.open("x", encoding="utf-8") as stream:
-                        json.dump(result, stream, indent=2)
-                        stream.write("\n")
+                    write_receipt_atomic(args.output, result)
                 except OSError as error:
-                    raise ReservationError(f"Tag {result['tag']} was reserved and verified, but its receipt could not be saved; retain the tag and investigate.") from error
+                    raise ReservationError(f"Tag {result['tag']} was reserved and verified, but its receipt could not be saved; "
+                                           f"{attempted_identity(result)}. {error} Retain the tag and investigate.") from error
         else:
             result = verify_tag(api, args.repo, args.sha, args.tag)
         print(json.dumps(result, sort_keys=True))
         return 0
+    except UncertainReservation as error:
+        # Always report exact identity even if receipt persistence itself fails.
+        print(f"Release reservation stopped: {error}", file=sys.stderr)
+        try:
+            write_receipt_atomic(args.output, error.receipt)
+            print(f"Uncertain receipt saved: {args.output}", file=sys.stderr)
+        except OSError as persistence_error:
+            print(f"Receipt persistence failed for {attempted_identity(error.receipt)}. {persistence_error}", file=sys.stderr)
+            print(json.dumps(error.receipt, sort_keys=True), file=sys.stderr)
+        return 1
     except (ReservationError, OSError) as error:
         print(f"Release reservation stopped: {error}", file=sys.stderr)
         return 1
