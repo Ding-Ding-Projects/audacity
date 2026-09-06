@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "photos": [
+    {
+      "id": "hk-dish-0001",
+      "code_name": "Classic Har Gow (蝦餃)",
+      "path": "docs/site/assets/dim-sum/hk-dish-0001-classic-har-gow.png",
+      "sha256": "c6ff2d32938f1e4c4ea685442f69227b8cd387f302ab8f8a62e8dd96c62b5ac0",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2406444,
+      "origin": "generated illustration",
+      "origin_disclosure": "Existing AI-generated catalog illustration, not a camera-origin photograph."
+    }
+  ]
+}

@@ -20,8 +20,13 @@ if (!/^[a-f0-9]{40}$/.test(commit) || !Number.isFinite(Date.parse(sourceUpdatedA
 }
 const repository = 'Ding-Ding-Projects/audacity';
 const releases = JSON.parse(execFileSync('gh', ['api', `repos/${repository}/releases`, '--paginate', '--slurp'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 })).flat();
+const releaseNumbers = tag => /^v(\d+)\.(\d+)\.(\d+)-m3\.(\d+)$/.exec(tag).slice(1).map(BigInt);
 const candidates = releases.filter(r => !r.draft && /^v\d+\.\d+\.\d+-m3\.\d+$/.test(r.tag_name))
-  .sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
+  .sort((a, b) => {
+    const left = releaseNumbers(a.tag_name); const right = releaseNumbers(b.tag_name);
+    for (let i = 0; i < left.length; i++) { if (left[i] !== right[i]) return left[i] > right[i] ? -1 : 1; }
+    return 0;
+  });
 let release;
 let releaseCommit;
 for (const candidate of candidates) {

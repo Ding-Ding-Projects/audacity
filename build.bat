@@ -8,7 +8,16 @@ rem   build.bat        Configure and build, printing full output.
 rem   build.bat /s     Silent mode: only warnings, errors and the summary.
 rem ---------------------------------------------------------------------------
 
-set "ROOT=%~dp0"
+set "SOURCE_ROOT=%~dp0"
+set "ROOT=%SOURCE_ROOT%"
+if defined AUDACITY_BUILD_ROOT (
+  if not exist "%AUDACITY_BUILD_ROOT%\build.bat" (
+    echo ERROR: AUDACITY_BUILD_ROOT does not name an Audacity checkout: %AUDACITY_BUILD_ROOT%
+    exit /b 1
+  )
+  set "ROOT=%AUDACITY_BUILD_ROOT%\"
+)
+for %%I in ("%~dp0.") do set "ROOT_ARG=%%~sI"
 set "BUILD_DIR=%ROOT%build\windows"
 set "INSTALL_DIR=%ROOT%build.install"
 set "QT_DIR=%ROOT%build.tools\Qt\6.10.1\msvc2022_64"
@@ -18,15 +27,23 @@ if /I "%~1"=="/s" set "SILENT=1"
 
 echo === Material Audacity build
 
+rem A build must be usable from a fresh checkout. Keep the dependency fetcher
+rem as the single bootstrap path instead of requiring a preparatory command.
+call "%ROOT%download-dependencies.bat" /s /build
+if errorlevel 1 (
+  echo ERROR: dependency bootstrap failed. See the phase above for the exact missing tool or download error.
+  exit /b 1
+)
+
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
-  echo ERROR: Visual Studio 2022 build tools were not found. Run download-dependencies.bat first.
+  echo ERROR: Visual Studio 2022 build tools were not found after bootstrap.
   exit /b 1
 )
 set "VS_INSTALL_DIR="
 for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VS_INSTALL_DIR=%%i"
 if not defined VS_INSTALL_DIR (
-  echo ERROR: the MSVC x64 toolset was not found. Run download-dependencies.bat first.
+  echo ERROR: the MSVC x64 toolset was not found after bootstrap.
   exit /b 1
 )
 call "%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat" >nul
@@ -48,7 +65,7 @@ if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 echo.
 echo === Configure
 if "%SILENT%"=="1" (
-  cmake -S "%ROOT%" -B "%BUILD_DIR%" -G Ninja ^
+  cmake -S "%ROOT_ARG%" -B "%BUILD_DIR%" -G Ninja ^
         -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
         -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
         -DMUSE_ENABLE_UNIT_TESTS=OFF > "%BUILD_DIR%\configure.log" 2>&1
@@ -57,7 +74,7 @@ if "%SILENT%"=="1" (
     exit /b 1
   )
 ) else (
-  cmake -S "%ROOT%" -B "%BUILD_DIR%" -G Ninja ^
+  cmake -S "%ROOT_ARG%" -B "%BUILD_DIR%" -G Ninja ^
         -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
         -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
         -DMUSE_ENABLE_UNIT_TESTS=OFF
