@@ -51,14 +51,19 @@ Item {
         id: aboutModel
     }
 
-    readonly property string buildVersionLine: qsTrc("appshell", "Material Audacity %1").arg(aboutModel.buildVersion())
+    // The running version comes from the application, rather than a separate
+    // display-only build definition. It therefore includes the build suffix
+    // users need when reporting a problem.
+    readonly property string runningVersionLine: qsTrc("appshell", "Version %1").arg(aboutModel.appVersion())
 
-    readonly property string buildUpdatedLine: {
+    // AboutModel reads AU_BUILD_TIMESTAMP_UTC, fixed when CMake configured
+    // this artifact. It deliberately has no launch-time or file-time fallback.
+    readonly property string buildProvenanceLine: {
         var local = aboutModel.buildUpdatedAtLocal()
         if (local === "") {
-            return qsTrc("appshell", "Build time unavailable")
+            return qsTrc("appshell", "Build provenance unavailable")
         }
-        return qsTrc("appshell", "Updated %1").arg(local)
+        return qsTrc("appshell", "Build updated at %1").arg(local)
     }
 
     readonly property var destinations: {
@@ -121,6 +126,7 @@ Item {
 
         anchors.fill: parent
         anchors.topMargin: 12
+        anchors.bottomMargin: root.narrowProvenanceHeight + 20
 
         visible: root.iconsOnly
 
@@ -134,6 +140,8 @@ Item {
             root.selected(root.destinations[index].name)
         }
     }
+
+    readonly property int narrowProvenanceHeight: 148
 
     ColumnLayout {
         anchors.fill: parent
@@ -174,8 +182,8 @@ Item {
             Layout.fillWidth: true
         }
 
-        // The version and the build time, on the front screen rather than
-        // hidden away in the about dialog.
+        // Version and provenance belong on the first visible screen. Keep the
+        // full lines wrapped instead of eliding a factual value.
         Column {
             Layout.fillWidth: true
             Layout.bottomMargin: 12
@@ -185,8 +193,9 @@ Item {
             StyledTextLabel {
                 width: parent.width
                 horizontalAlignment: Text.AlignLeft
-                elide: Text.ElideRight
-                text: root.buildVersionLine
+                wrapMode: Text.WordWrap
+                accessible.name: root.runningVersionLine
+                text: root.runningVersionLine
                 font: M3.typography.labelLarge
                 color: M3.color.onSurface
             }
@@ -195,26 +204,46 @@ Item {
                 width: parent.width
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.WordWrap
-                text: root.buildUpdatedLine
+                accessible.name: root.buildProvenanceLine
+                text: root.buildProvenanceLine
                 font: M3.typography.bodySmall
                 color: M3.color.onSurfaceVariant
             }
         }
     }
 
-    // Just the version when the rail is collapsed to icons and there is no
-    // room for the full two lines.
-    StyledTextLabel {
+    // A narrow window still presents the complete values before navigation.
+    // Word wrapping is intentional: factual build provenance must not be
+    // shortened to fit the collapsed rail.
+    Column {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 8
 
         visible: root.iconsOnly
-        horizontalAlignment: Text.AlignHCenter
-        elide: Text.ElideRight
-        text: aboutModel.buildVersion()
-        font: M3.typography.labelSmall
-        color: M3.color.onSurfaceVariant
+
+        height: root.narrowProvenanceHeight
+        spacing: 2
+
+        StyledTextLabel {
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WrapAnywhere
+            accessible.name: root.runningVersionLine
+            text: root.runningVersionLine
+            font: M3.typography.labelSmall
+            color: M3.color.onSurfaceVariant
+        }
+
+        StyledTextLabel {
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WrapAnywhere
+            accessible.name: root.buildProvenanceLine
+            text: root.buildProvenanceLine
+            font: M3.typography.labelSmall
+            color: M3.color.onSurfaceVariant
+        }
     }
 }

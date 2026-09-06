@@ -9,6 +9,7 @@
 #include <QUrl>
 #include <QVariantList>
 
+#include "appshellbuildprovenance.h"
 #include "framework/global/translation.h"
 
 using namespace muse;
@@ -288,13 +289,12 @@ QString AboutModel::buildVersion() const
 
 static QDateTime buildDateTimeUtc()
 {
-#ifdef AU_BUILD_TIMESTAMP_UTC
-    QDateTime dateTime = QDateTime::fromString(QStringLiteral(AU_BUILD_TIMESTAMP_UTC), Qt::ISODate);
-    dateTime.setTimeSpec(Qt::UTC);
-    return dateTime;
-#else
-    return QDateTime();
-#endif
+    const QString sourceRevision = QStringLiteral(AU_BUILD_SOURCE_REVISION);
+    if (sourceRevision.size() != 40) {
+        return QDateTime();
+    }
+
+    return QDateTime::fromString(QStringLiteral(AU_BUILD_TIMESTAMP_UTC), Qt::ISODate);
 }
 
 QString AboutModel::buildUpdatedAtUtc() const

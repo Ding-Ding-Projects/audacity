@@ -161,13 +161,32 @@ target_include_directories(appshell_qml PRIVATE
     PublishPage
 )
 
-# Build provenance for the about dialog. Both values are fixed when the build
-# is configured, so the dialog never reports the time the application started.
-string(TIMESTAMP AU_BUILD_TIMESTAMP_UTC "%Y-%m-%dT%H:%M:%SZ" UTC)
-
-target_compile_definitions(appshell_qml PRIVATE
-    AU_BUILD_TIMESTAMP_UTC="${AU_BUILD_TIMESTAMP_UTC}"
+# Generate provenance when this candidate is built, not when CMake happened to
+# configure it. The generation script checks that HEAD still matches this
+# configured candidate and fails instead of attributing a later tree to it.
+execute_process(
+    COMMAND git -C "${CMAKE_SOURCE_DIR}" rev-parse --verify HEAD
+    OUTPUT_VARIABLE AU_CONFIGURED_SOURCE_REVISION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE AU_CONFIGURED_SOURCE_REVISION_RESULT
 )
+if (NOT AU_CONFIGURED_SOURCE_REVISION_RESULT EQUAL 0)
+    message(FATAL_ERROR "Build provenance requires a Git candidate revision")
+endif()
+
+set(AU_BUILD_PROVENANCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(AU_BUILD_PROVENANCE_HEADER "${AU_BUILD_PROVENANCE_DIR}/appshellbuildprovenance.h")
+add_custom_target(appshell_build_provenance ALL
+    COMMAND "${CMAKE_COMMAND}"
+        "-DAU_SOURCE_DIR=${CMAKE_SOURCE_DIR}"
+        "-DAU_EXPECTED_SOURCE_REVISION=${AU_CONFIGURED_SOURCE_REVISION}"
+        "-DAU_OUTPUT_HEADER=${AU_BUILD_PROVENANCE_HEADER}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/GenerateBuildProvenance.cmake"
+    BYPRODUCTS "${AU_BUILD_PROVENANCE_HEADER}"
+    VERBATIM
+)
+add_dependencies(appshell_qml appshell_build_provenance)
+target_include_directories(appshell_qml PRIVATE "${AU_BUILD_PROVENANCE_DIR}")
 
 if (DEFINED MUSE_APP_VERSION)
     target_compile_definitions(appshell_qml PRIVATE

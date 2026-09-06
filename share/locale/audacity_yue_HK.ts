@@ -3682,6 +3682,16 @@
         <translation>Home 選單</translation>
     </message>
     <message>
+        <location filename="../../src/appshell/qml/Audacity/AppShell/HomePage/HomeMenu.qml" line="62" />
+        <source>Build provenance unavailable</source>
+        <translation>建置來源資料攞唔到</translation>
+    </message>
+    <message>
+        <location filename="../../src/appshell/qml/Audacity/AppShell/HomePage/HomeMenu.qml" line="64" />
+        <source>Build updated at %1</source>
+        <translation>建置更新時間：%1</translation>
+    </message>
+    <message>
         <location filename="../../src/appshell/qml/Audacity/AppShell/HomePage/HomeMenu.qml" line="94" />
         <location filename="../../src/appshell/qml/Audacity/AppShell/maintoolbarmodel.cpp" line="95" />
         <source>Project</source>
