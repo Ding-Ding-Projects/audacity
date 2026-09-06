@@ -20,20 +20,29 @@
     reducedMotionOverride: 'auto',
     adhd: { focus: false, lowStimulation: false, timeAwareness: false, oneThing: false, momentum: false },
     docsDock: 'left',
+    narrator: window.MaterialAudacityNarrator.defaults,
   };
 
   function loadSettings() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS.settings) || 'null');
-      return Object.assign({}, DEFAULT_SETTINGS, raw || {}, { adhd: Object.assign({}, DEFAULT_SETTINGS.adhd, (raw && raw.adhd) || {}) });
+      return Object.assign({}, DEFAULT_SETTINGS, raw || {}, { adhd: Object.assign({}, DEFAULT_SETTINGS.adhd, (raw && raw.adhd) || {}), narrator: window.MaterialAudacityNarrator.normalize(raw && raw.narrator) });
     } catch (e) { return Object.assign({}, DEFAULT_SETTINGS); }
   }
   let settings = loadSettings();
+  let settingsPersisted = true;
+  let refreshNarratorSettings = () => {};
+  const narrator = new window.MaterialAudacityNarrator.Narrator(window, () => refreshNarratorSettings());
+  narrator.configure(settings.narrator);
+  window.addEventListener('pagehide', () => narrator.dispose());
+  window.addEventListener('pageshow', event => { if (event.persisted) narrator.resume(); });
   function saveSettings(next, actionLabel) {
     settings = next;
-    try { localStorage.setItem(LS.settings, JSON.stringify(settings)); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(LS.settings, JSON.stringify(settings)); settingsPersisted = true; } catch (e) { settingsPersisted = false; }
     appendHistory(actionLabel || 'Settings changed');
     applyTheme();
+    narrator.configure(settings.narrator);
+    refreshNarratorSettings();
   }
 
   // ---------- History (append-only) ----------
@@ -52,6 +61,10 @@
     notifications.unshift({ at: new Date().toISOString(), message, kind: kind || 'info' });
     renderNotifCentre();
     showSnackbar(message);
+    const english = window.MaterialAudacityPresentation.text(message, Object.assign({}, settings, { language: 'en' }));
+    const parts = window.MaterialAudacityPresentation.parts(message, Object.assign({}, settings, { language: 'yue' }));
+    const cantonese = parts.some(part => part.language === 'yue') ? parts.map(part => part.text).join('') : '';
+    narrator.enqueue(kind || 'info', english, cantonese, kind === 'error');
   }
   function showSnackbar(message) {
     const stack = document.getElementById('snackbar-stack');
@@ -219,6 +232,10 @@
     outlet.innerHTML = '';
     const renderer = renderers[route] || renderers.home;
     renderer(outlet);
+    if (pendingSettingFocus && route === 'settings') {
+      const target = document.getElementById('setting-' + pendingSettingFocus);
+      if (target) { target.scrollIntoView({ block: 'center' }); target.focus(); pendingSettingFocus = null; }
+    }
     appendHistory('Viewed ' + route);
   }
 
@@ -687,6 +704,7 @@
     function row(id, label, desc, control) {
       const div = document.createElement('div');
       div.className = 'settings-row'; div.dataset.searchText = (label + ' ' + desc).toLowerCase();
+      div.id = 'setting-' + id; div.tabIndex = -1;
       div.innerHTML = '<div><div>' + label + '</div><div class="desc">' + desc + '</div></div>';
       div.appendChild(control);
       return div;
@@ -744,6 +762,57 @@
     // Language
     body.appendChild(row('language', 'Language', 'English, playful Hong Kong-style Cantonese, or bilingual.',
       makeSelect([['en', 'English'], ['yue', 'Cantonese (playful)'], ['bilingual', 'Bilingual']], settings.language, (v) => saveSettings(Object.assign({}, settings, { language: v }), 'Changed language to ' + v), 'Language')));
+
+    const narratorHeading = document.createElement('h2'); narratorHeading.textContent = 'Narrator'; body.appendChild(narratorHeading);
+    const narratorChange = (key, value) => saveSettings(Object.assign({}, settings, { narrator: Object.assign({}, settings.narrator, { [key]: value }) }), 'Narrator settings changed');
+    body.appendChild(row('narrator-enabled', 'Enable narrator', 'Speak interface events. Off by default.', makeSwitch(settings.narrator.enabled, v => narratorChange('enabled', v), 'Enable narrator')));
+    body.appendChild(row('narrator-language', 'Narrated language', 'Both speaks English, then Cantonese.', makeSelect([['en', 'English'], ['yue', 'Cantonese'], ['both', 'Both']], settings.narrator.language, v => narratorChange('language', v), 'Narrated language')));
+    const voiceControls = [];
+    for (const [language, key, label] of [['en', 'englishVoice', 'English voice'], ['yue', 'cantoneseVoice', 'Cantonese voice']]) {
+      const select = makeSelect([], '', v => narratorChange(key, v), label);
+      const status = document.createElement('p'); status.id = 'narrator-' + language + '-status'; status.setAttribute('role', 'status');
+      select.setAttribute('aria-describedby', status.id);
+      const container = document.createElement('div'); container.append(select, status);
+      body.appendChild(row('narrator-' + language, label, 'Voice identity is saved locally. Network voices require connectivity.', container));
+      voiceControls.push({ language, key, select, status });
+    }
+    body.appendChild(row('narrator-rate', 'Speech rate', 'Normal delivery is 1. Range: 0.1 to 10.', makeRange(0.1, 10, 0.1, settings.narrator.rate, v => narratorChange('rate', v), 'Speech rate')));
+    body.appendChild(row('narrator-pitch', 'Speech pitch', 'Normal delivery is 1. Range: 0 to 2.', makeRange(0, 2, 0.1, settings.narrator.pitch, v => narratorChange('pitch', v), 'Speech pitch')));
+    body.appendChild(row('narrator-quiet', 'Quiet narration', 'Silence narration while keeping your choices.', makeSwitch(settings.narrator.quiet, v => narratorChange('quiet', v), 'Quiet narration')));
+    body.appendChild(row('narrator-assistive', 'Yield to assistive technology', 'Browsers do not expose screen-reader activity. Enable this option to keep narration silent alongside your screen reader.', makeSwitch(settings.narrator.yieldToAssistiveTechnology, v => narratorChange('yieldToAssistiveTechnology', v), 'Yield to assistive technology')));
+    const narrationState = document.createElement('p'); narrationState.setAttribute('role', 'status'); body.appendChild(narrationState);
+    const preview = document.createElement('button'); preview.type = 'button'; preview.className = 'md-text-button'; preview.textContent = 'Preview narration';
+    preview.addEventListener('click', () => { narrator.enqueue('preview', 'Narrator preview.', '旁白試聽。', true); refreshNarratorSettings(); }); body.appendChild(preview);
+    refreshNarratorSettings = () => {
+      if (!body.isConnected) return;
+      voiceControls.forEach(({ language, key, select, status }) => {
+        const current = narrator.voiceStatus(language);
+        select.replaceChildren();
+        const automatic = document.createElement('option'); automatic.value = ''; automatic.textContent = 'Choose automatically'; select.appendChild(automatic);
+        if (current.missingSelection) {
+          const missing = document.createElement('option'); missing.value = current.requested; missing.textContent = 'Saved voice is not installed'; select.appendChild(missing);
+        }
+        current.choices.forEach(voice => {
+          const option = document.createElement('option'); option.value = voice.voiceURI; option.textContent = voice.name + ' (' + voice.lang + ')';
+          option.dataset.vocabularyExclude = ''; select.appendChild(option);
+        });
+        select.value = settings.narrator[key];
+        const messages = [];
+        if (!current.available) messages.push('Speech synthesis is unavailable in this browser.');
+        else if (!current.effective) messages.push('No voice is available for this language.');
+        else {
+          if (current.missingSelection) messages.push('Saved voice is not installed; an available voice will be used.');
+          messages.push('Effective voice: ' + current.effective.name);
+          if (current.networkBacked) messages.push('This voice uses a network service and is silent offline.');
+          if (current.offline) messages.push('Offline: selected voice cannot speak.');
+        }
+        status.replaceChildren(); messages.forEach(message => { const line = document.createElement('span'); line.textContent = message; line.style.display = 'block'; status.appendChild(line); });
+      });
+      const stateLabels = { off: 'Narration is off.', stopped: 'Narration stopped.', speaking: 'Speaking.', spoken: 'Speech completed.', 'spoken-english-fallback': 'Spoken in English because Cantonese wording is unavailable.', 'queue-full': 'Narration queue is full. Read the notification instead.', offline: 'Offline: selected voice cannot speak.', 'voice-unavailable': 'No voice is available for this language.', 'speech-timeout': 'Speech timed out. Try preview again.', 'speech-unavailable': 'Speech could not play. Check voice availability and try preview.' };
+      narrationState.textContent = settingsPersisted ? stateLabels[narrator.lastResult] || stateLabels['speech-unavailable'] : 'Settings are active for this page but could not be saved. Check browser storage permissions.';
+      preview.disabled = !narrator.available() || !settings.narrator.enabled || settings.narrator.quiet || settings.narrator.yieldToAssistiveTechnology;
+    };
+    refreshNarratorSettings();
 
     const yueSample = document.createElement('p');
     yueSample.lang = 'yue';
@@ -1035,12 +1104,17 @@
   }
 
   // ---------- Command palette ----------
+  let pendingSettingFocus = null;
   function buildPaletteIndex() {
     const items = [];
     routes.forEach((r) => items.push({ kind: 'Section', label: r.charAt(0).toUpperCase() + r.slice(1), go: () => navigate(r) }));
     DOC_PAGES.forEach((p) => items.push({ kind: 'Doc', label: p.title, go: () => { navigate('docs'); } }));
     const settingLabels = ['Theme', 'Seed color', 'Density', 'Font scale', 'Language', 'English funny level', 'Cantonese funny level', 'Emoji in dialogs', 'Reduced motion override', 'ADHD modes', 'Personal vocabulary'];
     settingLabels.forEach((s) => items.push({ kind: 'Setting', label: s, go: () => navigate('settings') }));
+    [['Enable narrator', 'narrator-enabled'], ['Narrated language', 'narrator-language'], ['English voice', 'narrator-en'], ['Cantonese voice', 'narrator-yue'], ['Speech rate', 'narrator-rate'], ['Speech pitch', 'narrator-pitch'], ['Quiet narration', 'narrator-quiet'], ['Yield to assistive technology', 'narrator-assistive']].forEach(([label, id]) => items.push({ kind: 'Setting', label, go: () => {
+      pendingSettingFocus = id;
+      if (currentRoute() === 'settings') render(); else navigate('settings');
+    } }));
     return items;
   }
   function initPalette() {
