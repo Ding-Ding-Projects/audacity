@@ -8,6 +8,9 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QRegularExpression>
@@ -135,7 +138,41 @@ PdfResult PdfProcessor::process(const PdfRequest& request, const std::atomic_boo
         if (!validPages(request.pageSpec)) return { false, false, 0, QStringLiteral("Split requires a bounded positive page selection.") };
         args << (QStringLiteral("--split-pages=") + request.pageSpec) << request.sourcePaths.first() << temp; break;
     case PdfOperation::SetMetadata:
-        return { false, false, 0, QStringLiteral("Metadata editing needs the bundled qpdf JSON profile and is not enabled until that profile is packaged and verified.") };
+    {
+        static const QMap<QString, QString> fields {
+            { QStringLiteral("Title"), QStringLiteral("/Title") }, { QStringLiteral("Author"), QStringLiteral("/Author") },
+            { QStringLiteral("Subject"), QStringLiteral("/Subject") }, { QStringLiteral("Keywords"), QStringLiteral("/Keywords") }
+        };
+        if (request.metadata.isEmpty()) return { false, false, 0, QStringLiteral("Metadata updates require at least one allowlisted field.") };
+        for (auto it = request.metadata.cbegin(); it != request.metadata.cend(); ++it)
+            if (!fields.contains(it.key()) || it.value().size() > 1024 || it.value().contains(QChar::Null))
+                return { false, false, 0, QStringLiteral("Only bounded Title, Author, Subject, and Keywords metadata is allowed.") };
+        const QString json = temp + QStringLiteral(".json");
+        const CommandResult jsonOutput = execute({ QStringLiteral("--json-output"), request.sourcePaths.first(), json }, cancellationRequested);
+        if (!jsonOutput.ok) return { false, jsonOutput.cancelled, 0, jsonOutput.message };
+        QFile jsonFile(json);
+        if (!jsonFile.open(QIODevice::ReadOnly) || jsonFile.size() > MaxInputBytes) { QFile::remove(json); return { false, false, 0, QStringLiteral("qpdf metadata JSON could not be read safely.") }; }
+        QJsonParseError error; QJsonDocument document = QJsonDocument::fromJson(jsonFile.readAll(), &error); jsonFile.close();
+        if (error.error != QJsonParseError::NoError || !document.isObject()) { QFile::remove(json); return { false, false, 0, QStringLiteral("qpdf metadata JSON was malformed.") }; }
+        QJsonObject root = document.object(); QJsonArray objects = root.value(QStringLiteral("qpdf")).toArray();
+        if (objects.size() < 2) { QFile::remove(json); return { false, false, 0, QStringLiteral("qpdf metadata JSON lacked its object table.") }; }
+        QJsonObject objectTable = objects[1].toObject(); QJsonObject trailer = objectTable.value(QStringLiteral("trailer")).toObject().value(QStringLiteral("value")).toObject();
+        const QString infoRef = trailer.value(QStringLiteral("/Info")).toString();
+        if (infoRef.isEmpty()) { QFile::remove(json); return { false, false, 0, QStringLiteral("PDF has no editable document information dictionary.") }; }
+        const QString objectKey = QStringLiteral("obj:") + infoRef;
+        QJsonObject infoObject = objectTable.value(objectKey).toObject(); QJsonObject values = infoObject.value(QStringLiteral("value")).toObject();
+        if (values.isEmpty()) { QFile::remove(json); return { false, false, 0, QStringLiteral("PDF document information dictionary was unavailable.") }; }
+        for (auto it = request.metadata.cbegin(); it != request.metadata.cend(); ++it) values.insert(fields.value(it.key()), QStringLiteral("u:") + it.value());
+        infoObject.insert(QStringLiteral("value"), values); objectTable.insert(objectKey, infoObject); objects[1] = objectTable; root.insert(QStringLiteral("qpdf"), objects);
+        if (!jsonFile.open(QIODevice::WriteOnly | QIODevice::Truncate) || jsonFile.write(QJsonDocument(root).toJson(QJsonDocument::Compact)) < 1) { QFile::remove(json); return { false, false, 0, QStringLiteral("Metadata update JSON could not be written safely.") }; }
+        jsonFile.close();
+        args << request.sourcePaths.first() << (QStringLiteral("--update-from-json=") + json) << temp;
+        const CommandResult transformed = execute(args, cancellationRequested); QFile::remove(json);
+        if (!transformed.ok) { QFile::remove(temp); return { false, transformed.cancelled, 0, transformed.message }; }
+        QString failure; const int pages = pageCount(temp, &failure);
+        if (!pages || !boundedPdf(temp, MaxOutputBytes) || !QFile::rename(temp, request.outputPath)) { QFile::remove(temp); return { false, false, 0, failure.isEmpty() ? QStringLiteral("Metadata PDF failed reopen verification or publish.") : failure }; }
+        return { true, false, pages, QStringLiteral("PDF metadata output was reopened and published."), { { request.outputPath, pages, true } } };
+    }
     default: return { false, false, 0, QStringLiteral("Unsupported PDF operation.") };
     }
     const CommandResult transformed = execute(args, cancellationRequested);

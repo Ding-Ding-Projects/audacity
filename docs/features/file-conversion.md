@@ -20,8 +20,8 @@ arguments only, has a 60-second process deadline, caps source and output files,
 rejects encrypted inputs that need credentials, writes a private temporary file,
 reopens it with `--check` and `--show-npages`, and never overwrites an existing
 destination. qpdf currently covers inspect, merge, extract, reorder, rotate,
-and split requests. Metadata editing is honestly disabled until a verified qpdf
-JSON profile is bundled, because a placeholder is not a document operation.
+and split requests. Metadata uses qpdf's official JSON update format and only
+permits bounded Title, Author, Subject, and Keywords values.
 
 The module does not search `PATH`, launch arbitrary command-line tools or scripts, or use
 network services. Runtime plugin presence is not packaged-application proof;
@@ -104,8 +104,7 @@ prove bundled Qt plugins, implement safe approved overwrite, and integrate
 process isolation, execution limits and durable crash recovery.
 
 The full converter still requires package installation of the verified qpdf
-distribution, metadata JSON profile support, output-order/rotation/metadata
-semantic assertions, and full application integration. It also requires audio/video and other
+distribution, output-order/rotation/metadata semantic assertions, and full application integration. It also requires audio/video and other
 category adapters, batch history/exports, accessibility, responsive behavior,
 notifications, command-palette routing, and real packaged-application
 interaction and capture evidence. These are not implemented by this backend.

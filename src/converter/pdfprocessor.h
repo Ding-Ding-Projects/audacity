@@ -5,6 +5,8 @@
 
 #include <QString>
 #include <QStringList>
+#include <QMap>
+#include <QVector>
 
 #include <atomic>
 
@@ -19,6 +21,7 @@ struct PdfRequest {
     QString pageSpec;
     int rotation = 0;
     QString title;
+    QMap<QString, QString> metadata; //!< Title, Author, Subject, Keywords
     bool allowOverwrite = false;
 };
 
@@ -27,6 +30,8 @@ struct PdfResult {
     bool cancelled = false;
     int pageCount = 0;
     QString message;
+    struct Output { QString path; int pageCount = 0; bool committed = false; };
+    QVector<Output> outputs;
 };
 
 //! qpdf is intentionally never located through PATH.  It is usable only when
