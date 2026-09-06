@@ -9,6 +9,7 @@ set(MODULE_TEST_SRC
     ${CMAKE_CURRENT_LIST_DIR}/packageverifier_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/squirrelinstalllayout_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/updatebannerstate_tests.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/restartcoordinator_tests.cpp
     )
 
 set(MODULE_TEST_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/..)

@@ -5,9 +5,11 @@
 
 #include "framework/global/translation.h"
 
+#include "internal/restartcoordinator.h"
+
 namespace au::squirrelupdate {
 SquirrelUpdateModel::SquirrelUpdateModel(QObject* parent)
-    : QObject(parent)
+    : QObject(parent), muse::Contextable(muse::iocCtxForQmlObject(this))
 {
 }
 
@@ -119,7 +121,24 @@ void SquirrelUpdateModel::checkForUpdate()
 
 void SquirrelUpdateModel::restartToUpdate()
 {
-    service()->restartToUpdate();
+    // The lambdas keep RestartCoordinator itself free of Qt and of the
+    // modularity container, so its actual decision is unit tested directly.
+    // closeOpenedProject(false) is the exact same call
+    // ApplicationActionController::quit and ::restart already make before
+    // doing anything irreversible: it saves, offers to discard, or lets the
+    // user cancel, and returns false only for a cancel.
+    auto closeOpenedProjects = [this]() {
+        auto pfc = projectFilesController();
+        return !pfc || pfc->closeOpenedProject(false);
+    };
+    auto applyUpdate = [this]() {
+        return service()->restartToUpdate();
+    };
+
+    const muse::Ret result = RestartCoordinator::attemptRestart(closeOpenedProjects, applyUpdate);
+    if (!result) {
+        emit restartBlocked(QString::fromStdString(result.toString()));
+    }
 }
 
 void SquirrelUpdateModel::dismiss()

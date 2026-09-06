@@ -326,6 +326,17 @@ Ret SquirrelUpdateService::restartToUpdate()
 
     // The shortcut launcher sits at the package root, which is what
     // --processStart expects to find.
+    //
+    // Known limitation: --processStart launches a brand new process with no
+    // knowledge of the process it replaces. Squirrel offers no way to hand a
+    // window position, size, docked panel layout or focused control across
+    // that boundary, so the new instance opens exactly as any other cold
+    // start would: at its persisted window geometry (muse already restores
+    // that from settings), on the startup page, with nothing focused yet.
+    // Anything short lived and specific to this exact session (an open
+    // dialog, an unsaved selection, keyboard focus) does not and cannot
+    // survive. The unsaved-work guard above is what protects the one thing
+    // that actually matters across the restart: the project itself.
     if (!QProcess::startDetached(updater, { "--processStart", "MaterialAudacity.exe" })) {
         return make_ret(Ret::Code::UnknownError, std::string("The updated application could not be started"));
     }

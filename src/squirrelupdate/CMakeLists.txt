@@ -25,6 +25,8 @@ target_sources(squirrelupdate PRIVATE
     internal/squirrelupdateservice.h
     internal/squirrelupdateuiactions.cpp
     internal/squirrelupdateuiactions.h
+    internal/restartcoordinator.cpp
+    internal/restartcoordinator.h
 )
 
 target_link_libraries(squirrelupdate PRIVATE muse::network muse::actions muse::ui)

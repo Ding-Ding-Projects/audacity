@@ -9,6 +9,7 @@
 
 #include "framework/global/async/asyncable.h"
 #include "framework/global/modularity/ioc.h"
+#include "project/iprojectfilescontroller.h"
 
 #include "isquirrelupdateconfiguration.h"
 #include "isquirrelupdateservice.h"
@@ -17,7 +18,7 @@
 namespace au::squirrelupdate {
 //! The model behind the Help > Check for updates action, the Updates
 //! preferences page and the ready to restart banner.
-class SquirrelUpdateModel : public QObject, public muse::async::Asyncable
+class SquirrelUpdateModel : public QObject, public muse::Contextable, public muse::async::Asyncable
 {
     Q_OBJECT
     QML_ELEMENT
@@ -38,6 +39,10 @@ class SquirrelUpdateModel : public QObject, public muse::async::Asyncable
 
     muse::GlobalInject<ISquirrelUpdateConfiguration> configuration;
     muse::GlobalInject<ISquirrelUpdateService> service;
+    //! Resolved per window, exactly like ApplicationActionController's quit
+    //! and restart actions. Its closeOpenedProject runs the application's
+    //! normal unsaved-work save/discard/cancel prompt.
+    muse::ContextInject<project::IProjectFilesController> projectFilesController { this };
 
 public:
     explicit SquirrelUpdateModel(QObject* parent = nullptr);
@@ -63,12 +68,22 @@ public:
     int checkIntervalHours() const;
 
     Q_INVOKABLE void checkForUpdate();
+
+    //! Runs the same unsaved-work save/discard/cancel prompt quit and
+    //! restart already use, and only then hands off to Update.exe. If the
+    //! user cancels that prompt, nothing else happens: the downloaded
+    //! package, the verified state and the visible banner are all left
+    //! exactly as they were, so restartBlocked is emitted instead of
+    //! stateChanged.
     Q_INVOKABLE void restartToUpdate();
     Q_INVOKABLE void dismiss();
 
 signals:
     void stateChanged();
     void settingsChanged();
+    //! Emitted when restartToUpdate could not proceed: reason is
+    //! human readable and safe to show in the banner or a notification.
+    void restartBlocked(QString reason);
 
 private:
     QDateTime m_lastCheckAt;
