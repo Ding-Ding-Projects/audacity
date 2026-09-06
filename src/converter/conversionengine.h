@@ -7,6 +7,9 @@
 #include <QString>
 
 #include <atomic>
+#ifdef AU_CONVERTER_TEST_HOOKS
+#include <functional>
+#endif
 
 namespace au::converter {
 
@@ -39,6 +42,13 @@ class ConversionEngine
 public:
     static constexpr qint64 MaxInputBytes = 256LL * 1024 * 1024;
     static constexpr qint64 MaxDecodedPixels = 100LL * 1000 * 1000;
+    static constexpr qint64 MaxOutputBytes = 512LL * 1024 * 1024;
+
+#ifdef AU_CONVERTER_TEST_HOOKS
+    enum class TestPhase { SourceOpened, TemporaryOpened, BeforePublish };
+    // Deterministic race barriers, absent from product builds.
+    static thread_local std::function<void(TestPhase)> testHook;
+#endif
 
     ConversionResult convert(const ConversionRequest& request, const std::atomic_bool* cancellationRequested = nullptr) const;
     static QString detectFormat(const QString& sourcePath, QString* error = nullptr);

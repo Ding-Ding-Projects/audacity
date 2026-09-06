@@ -40,8 +40,8 @@ int main(int argc, char** argv)
     ConversionEngine engine;
     const QString output = directory.filePath(QStringLiteral("output.jpg"));
     const ConversionResult converted = engine.convert({ source, output, QStringLiteral("jpeg") });
-    if (converted.status == ConversionStatus::Converted && !expect(!QImage(output).isNull(), "reopen published image")) return 1;
-    if (converted.status == ConversionStatus::Rejected && !expect(!converted.message.isEmpty(), "honest unavailable adapter")) return 1;
+    if (!expect(converted.status == ConversionStatus::Converted, qPrintable(converted.message))) return 1;
+    if (!expect(!QImage(output).isNull(), "reopen published image")) return 1;
     const std::atomic_bool cancelled = true;
     if (!expect(engine.convert({ source, directory.filePath(QStringLiteral("cancel.jpg")), QStringLiteral("jpeg") }, &cancelled).status == ConversionStatus::Cancelled, "atomic cancellation")) return 1;
     if (!expect(engine.convert({ source, source, QStringLiteral("jpeg") }).status == ConversionStatus::Rejected, "source destination collision")) return 1;

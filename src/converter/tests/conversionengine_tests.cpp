@@ -48,7 +48,7 @@ TEST(ConversionEngine, rejectsHeaderBombBeforeDecode)
     const QString source = directory.filePath(QStringLiteral("bomb.png"));
     QFile file(source);
     ASSERT_TRUE(file.open(QIODevice::WriteOnly));
-    file.write("\x89PNG\r\n\x1a\n\0\0\0\rIHDR\0\x01\0\0\0\x01", 29);
+    file.write(QByteArray::fromHex("89504e470d0a1a0a0000000d494844520001000000010000"));
     file.close();
     const ConversionResult result = ConversionEngine().convert({ source, directory.filePath(QStringLiteral("out.jpg")), QStringLiteral("jpeg") });
     EXPECT_EQ(result.status, ConversionStatus::Rejected);
