@@ -96,6 +96,15 @@ int main(int argc, char** argv)
     QCoreApplication application(argc, argv);
     const std::vector<std::pair<const char*, std::function<void()>>> tests = {
         {"verified conversion and cleanup", [] { Fixture f; f.converted(f.convert()); }},
+        {"large image scanline crosses bounded IO chunks", [] {
+            Fixture f; QImage wideImage(400000, 1, QImage::Format_RGB32); wideImage.fill(Qt::blue);
+            require(wideImage.save(f.source, "png"), "large scanline input");
+            const auto result = f.convert();
+            require(result.status == ConversionStatus::Converted, "whole scanline encoded through bounded chunks");
+            QImage output(f.output);
+            require(output.size() == wideImage.size() && output.pixelColor(399999, 0) == QColor(Qt::blue), "complete scanline round trip");
+            f.noTemporary();
+        }},
         {"byte signature despite wrong extension", [] {
             Fixture f; const auto renamed = f.directory.filePath(QStringLiteral("source.txt"));
             require(QFile::rename(f.source, renamed), "rename fixture"); f.source = renamed;

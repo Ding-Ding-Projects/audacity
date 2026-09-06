@@ -187,16 +187,30 @@ protected:
         if (interrupted() || pos() < 0 || pos() > m_limit) return -1;
         const qint64 remaining = std::min(m_limit - pos(), size() - pos());
         if (remaining <= 0) return 0;
-        DWORD read = 0;
-        const DWORD bounded = DWORD(std::min({ amount, remaining, qint64(1024 * 1024) }));
-        return ReadFile(m_handle.value, data, bounded, &read, nullptr) ? qint64(read) : qint64(-1);
+        const qint64 requested = std::min(amount, remaining);
+        qint64 total = 0;
+        while (total < requested) {
+            if (interrupted()) return -1;
+            DWORD read = 0;
+            const DWORD bounded = DWORD(std::min(requested - total, qint64(1024 * 1024)));
+            if (!ReadFile(m_handle.value, data + total, bounded, &read, nullptr)) return -1;
+            if (!read) break;
+            total += read;
+        }
+        return total;
     }
     qint64 writeData(const char* data, qint64 amount) override
     {
         if (interrupted() || amount < 0 || pos() < 0 || amount > m_limit - pos()) return -1;
-        DWORD written = 0;
-        const DWORD bounded = DWORD(std::min(amount, qint64(1024 * 1024)));
-        return WriteFile(m_handle.value, data, bounded, &written, nullptr) ? qint64(written) : qint64(-1);
+        qint64 total = 0;
+        while (total < amount) {
+            if (interrupted()) return -1;
+            DWORD written = 0;
+            const DWORD bounded = DWORD(std::min(amount - total, qint64(1024 * 1024)));
+            if (!WriteFile(m_handle.value, data + total, bounded, &written, nullptr) || !written) return -1;
+            total += written;
+        }
+        return total;
     }
 private:
     bool interrupted() const { return m_cancellation && m_cancellation->load(std::memory_order_acquire); }
