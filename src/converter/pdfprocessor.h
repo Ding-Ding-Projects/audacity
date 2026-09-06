@@ -49,7 +49,7 @@ public:
     static constexpr int TimeoutMilliseconds = 60000;
     static constexpr qint64 MaxProcessMemoryBytes = 512LL * 1024 * 1024;
 #ifdef AU_CONVERTER_TEST_HOOKS
-    enum class TestPhase { SourcesPinned, ProcessStarted, BeforePublish, OutputPublished };
+    enum class TestPhase { SourcesPinned, ProcessLimitsInstalled, ProcessStarted, BeforePublish, OutputPublished };
     static thread_local std::function<void(TestPhase, const QString&)> testHook;
     // Lower-only budgets exercise real process termination without slow fixtures.
     static thread_local int testTimeoutMilliseconds;

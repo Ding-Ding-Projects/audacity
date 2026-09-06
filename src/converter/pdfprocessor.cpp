@@ -73,6 +73,14 @@ public:
                                                    PdfProcessor::MaxProcessMemoryBytes));
 #endif
         if (!SetInformationJobObject(handle, JobObjectExtendedLimitInformation, &limit, sizeof(limit))) return false;
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION installed = {};
+        if (!QueryInformationJobObject(handle, JobObjectExtendedLimitInformation, &installed, sizeof(installed), nullptr)
+            || installed.ProcessMemoryLimit != limit.ProcessMemoryLimit
+            || installed.BasicLimitInformation.ActiveProcessLimit != 1
+            || (installed.BasicLimitInformation.LimitFlags & limit.BasicLimitInformation.LimitFlags) != limit.BasicLimitInformation.LimitFlags)
+            return false;
+        PDF_BARRIER(ProcessLimitsInstalled, QStringLiteral("memory=%1;processes=%2;killOnClose=1")
+            .arg(qulonglong(installed.ProcessMemoryLimit)).arg(installed.BasicLimitInformation.ActiveProcessLimit));
         SIZE_T bytes = 0;
         InitializeProcThreadAttributeList(nullptr, 1, 0, &bytes);
         if (!bytes) return false;

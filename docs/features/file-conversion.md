@@ -37,6 +37,50 @@ pages. Merge preserves both source-list and within-source order. Rotation adds
 90, 180, or 270 degrees to all pages. Inspect and all non-merge operations require
 exactly one source rather than silently ignoring additional inputs.
 
+## Reproducible qpdf provisioning
+
+`download-dependencies.bat` provisions qpdf before the other build dependencies.
+Its optional `/qpdf` mode runs only that same provisioning step, without changing
+the source, compiler, or Qt requirements of a complete application build. The
+verified archive cache is `build.tools/downloads`; the development bundle lives
+at `build.tools/converter-tools/qpdf`. `build.bat` invokes the same bootstrap after
+`cmake --install`, targeting `build.install/bin`. The installed executable therefore
+finds `build.install/bin/converter-tools/qpdf/qpdf.exe` through its application
+directory. A missing archive is fetched from the pinned official URL and hashed
+before extraction. Cache hits are independently hashed again, not trusted through
+a receipt alone. Both entry points fail if qpdf provisioning fails.
+
+`bootstrap-qpdf.ps1` calls the shared `qpdfbootstrap.psm1` implementation. An
+exclusive destination lock serializes every warm check, recovery, staging, and
+activation. The archive cache has its own lock, so different destinations cannot
+race one cache download. Lock acquisition is bounded to 30 seconds. All ten files
+are copied and verified in a sibling staging directory; live components are
+never overwritten one by one. A flushed, bounded activation journal records exact
+transaction-owned sibling names before the old directory is renamed aside and
+the staged directory is renamed into place. Each directory rename is atomic;
+the two-rename transition may briefly have no active directory, so this is not a
+zero-downtime update protocol. Runtime bundle validation fails closed during that
+interval. Native sharing violations receive at most ten 100 ms rename attempts.
+
+Ordinary activation errors immediately restore a prior bundle that still matches
+the independent current pins. Hard interruption leaves the same journal for the
+next invocation, which prefers the verified prior bundle over the staged candidate.
+For an interrupted first installation with no prior bundle, a verified completed
+stage can be activated. Malformed journals or absent verified recovery candidates
+fail closed. Invalid candidates are quarantined, previous bundles and completed
+journals are retained, and no provisioning path recursively deletes these records.
+Failed stages are also retained for diagnosis rather
+than mistaken for disposable user paths. Their later removal is an explicit build
+cache maintenance task. Recovery currently covers the pinned qpdf 12.3.2 inventory;
+a different-version migration needs that version's independently trusted inventory.
+
+The bootstrap test executable script, `test-qpdf-bootstrap.ps1`, uses fresh
+directories, the real official archive, three-component interruption, synchronous
+rollback, process termination at both rename boundaries, component corruption,
+bounded lock contention, and two simultaneous bootstrap processes. Test fault
+barriers are module API inputs used by that script; the production command-line
+wrapper does not accept or load them.
+
 The module does not search `PATH`, launch arbitrary command-line tools or scripts, or use
 network services. Runtime plugin presence is not packaged-application proof;
 the application integration must validate bundled plugin provenance before
@@ -152,7 +196,7 @@ progress/cancellation to bounded workers, provide storage-capacity preflight,
 prove bundled Qt plugins, implement safe approved overwrite, and integrate
 process isolation, execution limits and durable crash recovery.
 
-The full converter still requires package installation of the verified qpdf
+The full converter still requires packaged-artifact proof of the qpdf
 distribution and full application integration. It also requires audio/video and other
 category adapters, batch history/exports, accessibility, responsive behavior,
 notifications, command-palette routing, and real packaged-application

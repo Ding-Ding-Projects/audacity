@@ -88,6 +88,14 @@ if errorlevel 1 (
 )
 
 echo.
+echo === Installing the verified PDF tool bundle beside Audacity4.exe
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%buildscripts\converter-tools\bootstrap-qpdf.ps1" -DestinationRoot "%INSTALL_DIR%\bin" -CacheRoot "%ROOT%build.tools\downloads"
+if errorlevel 1 (
+  echo ERROR: the installed PDF tool bundle failed verification.
+  exit /b 1
+)
+
+echo.
 echo === Build finished
 echo Build tree:   %BUILD_DIR%
 echo Install tree: %INSTALL_DIR%

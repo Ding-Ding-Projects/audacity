@@ -7,7 +7,7 @@ rem Installs Qt 6.10.1 with aqtinstall, checks that the Visual Studio 2022 C++
 rem build tools are present, and fetches ninja, nuget and the pinned
 rem squirrel.windows package used by the installer.
 rem
-rem Usage: download-dependencies.bat
+rem Usage: download-dependencies.bat [/qpdf]
 rem ---------------------------------------------------------------------------
 
 set "ROOT=%~dp0"
@@ -21,6 +21,16 @@ echo === Material Audacity dependency setup
 echo Root: %ROOT%
 
 if not exist "%TOOLS%" mkdir "%TOOLS%"
+
+echo.
+echo === Provisioning the verified PDF tool bundle
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%buildscripts\converter-tools\bootstrap-qpdf.ps1" -DestinationRoot "%TOOLS%" -CacheRoot "%TOOLS%\downloads"
+if errorlevel 1 (
+  echo ERROR: the verified PDF tool bundle could not be provisioned.
+  exit /b 1
+)
+rem This focused mode provisions the same dependency used by the full build.
+if /I "%~1"=="/qpdf" exit /b 0
 
 echo.
 echo === Checking Python
