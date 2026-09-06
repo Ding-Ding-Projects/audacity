@@ -1151,7 +1151,7 @@
         div.setAttribute('role', 'option');
         div.setAttribute('aria-selected', String(i === activeIdx));
         div.innerHTML = '<span>' + it.label + '</span><span class="kind">' + it.kind + '</span>';
-        div.addEventListener('click', () => { it.go(); closePalette(); });
+        div.addEventListener('click', () => { closePalette(); it.go(); });
         results.appendChild(div);
       });
     }
@@ -1173,7 +1173,7 @@
       else if (e.target === input && ['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
         e.preventDefault();
         if (!shownItems.length) return;
-        if (e.key === 'Enter') { shownItems[activeIdx].go(); closePalette(); return; }
+        if (e.key === 'Enter') { const selected = shownItems[activeIdx]; closePalette(); selected.go(); return; }
         activeIdx = (activeIdx + (e.key === 'ArrowDown' ? 1 : -1) + shownItems.length) % shownItems.length;
         renderResults();
         document.getElementById('palette-option-' + activeIdx).scrollIntoView({ block: 'nearest' });
