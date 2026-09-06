@@ -93,9 +93,7 @@ Item {
             return [
                 {
                     "label": qsTrc("chronicle", "Backend"),
-                    "value": info.backend === "git"
-                             ? qsTrc("chronicle", "Git repository")
-                             : qsTrc("chronicle", "Content addressed store")
+                    "value": info.backend === "git" ? qsTrc("chronicle", "Git repository") : qsTrc("chronicle", "Content addressed store")
                 },
                 {
                     "label": qsTrc("chronicle", "Repository size"),
@@ -736,18 +734,14 @@ Item {
                     }
 
                     M3Button {
-                        text: prv.compareRevisionIdA === compareRow.modelData.revisionId
-                              ? qsTrc("chronicle", "Is A")
-                              : qsTrc("chronicle", "Set as A")
+                        text: prv.compareRevisionIdA === compareRow.modelData.revisionId ? qsTrc("chronicle", "Is A") : qsTrc("chronicle", "Set as A")
                         variant: prv.compareRevisionIdA === compareRow.modelData.revisionId ? "filled" : "outlined"
                         accessible.checked: prv.compareRevisionIdA === compareRow.modelData.revisionId
                         onClicked: prv.compareRevisionIdA = compareRow.modelData.revisionId
                     }
 
                     M3Button {
-                        text: prv.compareRevisionIdB === compareRow.modelData.revisionId
-                              ? qsTrc("chronicle", "Is B")
-                              : qsTrc("chronicle", "Set as B")
+                        text: prv.compareRevisionIdB === compareRow.modelData.revisionId ? qsTrc("chronicle", "Is B") : qsTrc("chronicle", "Set as B")
                         variant: prv.compareRevisionIdB === compareRow.modelData.revisionId ? "filled" : "outlined"
                         accessible.checked: prv.compareRevisionIdB === compareRow.modelData.revisionId
                         onClicked: prv.compareRevisionIdB = compareRow.modelData.revisionId
@@ -765,18 +759,12 @@ Item {
                     width: parent.width
                     spacing: 4
 
-                    property var comparison: (prv.compareRevisionIdA.length > 0 && prv.compareRevisionIdB.length > 0)
-                                              ? historyModel.compareRevisions(prv.compareRevisionIdA, prv.compareRevisionIdB)
-                                              : ({})
+                    property var comparison: (prv.compareRevisionIdA.length > 0 && prv.compareRevisionIdB.length > 0) ? historyModel.compareRevisions(prv.compareRevisionIdA, prv.compareRevisionIdB) : ({})
 
                     StyledTextLabel {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignLeft
-                        text: qsTrc("chronicle", "%1 file(s) added, %2 modified, %3 deleted, %4 unchanged")
-                              .arg(parent.comparison.filesAdded || 0)
-                              .arg(parent.comparison.filesModified || 0)
-                              .arg(parent.comparison.filesDeleted || 0)
-                              .arg(parent.comparison.filesUnchanged || 0)
+                        text: qsTrc("chronicle", "%1 file(s) added, %2 modified, %3 deleted, %4 unchanged").arg(parent.comparison.filesAdded || 0).arg(parent.comparison.filesModified || 0).arg(parent.comparison.filesDeleted || 0).arg(parent.comparison.filesUnchanged || 0)
                         font: M3.typography.bodyMedium
                         color: M3.color.onSurface
                         wrapMode: Text.WordWrap
@@ -785,9 +773,7 @@ Item {
                     StyledTextLabel {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignLeft
-                        text: qsTrc("chronicle", "Recorded size: %1 then %2")
-                              .arg(prv.formatSize(parent.comparison.totalBytesA || 0))
-                              .arg(prv.formatSize(parent.comparison.totalBytesB || 0))
+                        text: qsTrc("chronicle", "Recorded size: %1 then %2").arg(prv.formatSize(parent.comparison.totalBytesA || 0)).arg(prv.formatSize(parent.comparison.totalBytesB || 0))
                         font: M3.typography.bodySmall
                         color: M3.color.onSurfaceVariant
                     }
