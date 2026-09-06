@@ -159,7 +159,17 @@ QString au::chronicle::actionFamilyTitle(const QString& family)
 
 bool au::chronicle::isMilestoneAction(const QString& action)
 {
-    return action == actions::ProjectSave || action == actions::Restore;
+    if (action == actions::ProjectSave || action == actions::Restore) {
+        return true;
+    }
+
+    // Export and render have no fixed identifier of their own here: they
+    // reach this history, if at all, as the free form name the undo stack or
+    // a future caller gives them, exactly like the action-family keywords
+    // above. Matched by keyword rather than assuming a name that has not
+    // been wired up anywhere yet.
+    const QString lower = action.toLower();
+    return lower.contains(QStringLiteral("export")) || lower.contains(QStringLiteral("render"));
 }
 
 VersionHistoryService::VersionHistoryService()
@@ -425,6 +435,24 @@ bool VersionHistoryService::exportRevision(const QString& revisionId, const QStr
 bool VersionHistoryService::setLabel(const QString& revisionId, const QString& label)
 {
     if (!m_store || !m_store->setLabel(revisionId, label)) {
+        return false;
+    }
+    m_revisionsChanged.notify();
+    return true;
+}
+
+bool VersionHistoryService::setStarred(const QString& revisionId, bool starred)
+{
+    if (!m_store || !m_store->setStarred(revisionId, starred)) {
+        return false;
+    }
+    m_revisionsChanged.notify();
+    return true;
+}
+
+bool VersionHistoryService::setPinned(const QString& revisionId, bool pinned)
+{
+    if (!m_store || !m_store->setPinned(revisionId, pinned)) {
         return false;
     }
     m_revisionsChanged.notify();

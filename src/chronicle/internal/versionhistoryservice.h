@@ -44,6 +44,8 @@ public:
     bool restore(const QString& revisionId) override;
     bool exportRevision(const QString& revisionId, const QString& destinationDir) override;
     bool setLabel(const QString& revisionId, const QString& label) override;
+    bool setStarred(const QString& revisionId, bool starred) override;
+    bool setPinned(const QString& revisionId, bool pinned) override;
 
     int prune() override;
 

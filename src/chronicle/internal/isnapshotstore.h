@@ -57,6 +57,14 @@ public:
     //! rather than inside it, so editing one never rewrites a revision.
     virtual bool setLabel(const QString& revisionId, const QString& label) = 0;
 
+    //! Marks or unmarks a revision as starred. Purely decorative: it plays
+    //! no part in retention.
+    virtual bool setStarred(const QString& revisionId, bool starred) = 0;
+
+    //! Marks or unmarks a revision as pinned. A pinned revision is excluded
+    //! from retention exactly like the newest revision itself.
+    virtual bool setPinned(const QString& revisionId, bool pinned) = 0;
+
     //! Marks revisions outside the retention window as pruned and removes
     //! their payload. Returns the number of revisions pruned. Never prunes
     //! the newest revision.

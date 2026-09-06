@@ -320,3 +320,99 @@ TEST(ChronicleVersionHistory, OnlySaveAndRestoreAreMilestones)
     EXPECT_FALSE(isMilestoneAction(actions::DiscardUnsaved));
     EXPECT_FALSE(isMilestoneAction("Cut"));
 }
+
+TEST(ChronicleVersionHistory, ExportAndRenderAreAlsoMilestones)
+{
+    EXPECT_TRUE(isMilestoneAction("Export Audio"));
+    EXPECT_TRUE(isMilestoneAction("Export as WAV"));
+    EXPECT_TRUE(isMilestoneAction("Render to New Track"));
+    EXPECT_FALSE(isMilestoneAction("Cut"));
+    EXPECT_FALSE(isMilestoneAction("Move clip"));
+}
+
+namespace {
+void checkStarAndPin(ISnapshotStore& store, const QString& storePath, const QString& workTree)
+{
+    ASSERT_TRUE(store.open(storePath));
+
+    writeFile(workTree + "/song.aup4", "one");
+    const QString first = store.commit(workTree, "First", actions::Manual, QDateTime::currentDateTimeUtc());
+    writeFile(workTree + "/song.aup4", "two");
+    const QString second = store.commit(workTree, "Second", actions::Manual, QDateTime::currentDateTimeUtc());
+    writeFile(workTree + "/song.aup4", "three");
+    const QString third = store.commit(workTree, "Third", actions::Manual, QDateTime::currentDateTimeUtc());
+    ASSERT_FALSE(first.isEmpty());
+    ASSERT_FALSE(second.isEmpty());
+    ASSERT_FALSE(third.isEmpty());
+
+    QList<Revision> revisions = store.revisions();
+    for (const Revision& revision : revisions) {
+        EXPECT_FALSE(revision.starred);
+        EXPECT_FALSE(revision.pinned);
+    }
+
+    ASSERT_TRUE(store.setStarred(second, true));
+    ASSERT_TRUE(store.setPinned(first, true));
+
+    revisions = store.revisions();
+    for (const Revision& revision : revisions) {
+        if (revision.id == second) {
+            EXPECT_TRUE(revision.starred);
+            EXPECT_FALSE(revision.pinned);
+        } else if (revision.id == first) {
+            EXPECT_FALSE(revision.starred);
+            EXPECT_TRUE(revision.pinned);
+        } else {
+            EXPECT_FALSE(revision.starred);
+            EXPECT_FALSE(revision.pinned);
+        }
+    }
+
+    // Pruning to keep only the newest revision would normally drop the
+    // other two, but the oldest one is pinned, so it survives alongside the
+    // newest even though retention would otherwise have removed it.
+    const int pruned = store.prune(1, 0);
+    EXPECT_EQ(pruned, 1);
+    revisions = store.revisions();
+    QStringList remainingIds;
+    for (const Revision& revision : revisions) {
+        remainingIds.append(revision.id);
+    }
+    EXPECT_TRUE(remainingIds.contains(third));
+    EXPECT_TRUE(remainingIds.contains(first));
+    EXPECT_FALSE(remainingIds.contains(second));
+
+    // Unmarking works the same way.
+    ASSERT_TRUE(store.setPinned(first, false));
+    bool foundFirst = false;
+    for (const Revision& revision : store.revisions()) {
+        if (revision.id == first) {
+            foundFirst = true;
+            EXPECT_FALSE(revision.pinned);
+        }
+    }
+    EXPECT_TRUE(foundFirst);
+}
+}
+
+TEST(ChronicleSnapshotStore, FallbackStoreStarringAndPinningSurviveRetention)
+{
+    QTemporaryDir temporary;
+    ASSERT_TRUE(temporary.isValid());
+
+    FileSnapshotStore store;
+    checkStarAndPin(store, temporary.path() + "/history.store", temporary.path() + "/stage");
+}
+
+TEST(ChronicleSnapshotStore, GitBackedStoreStarringAndPinningSurviveRetention)
+{
+    if (!GitSnapshotStore::isGitAvailable()) {
+        GTEST_SKIP() << "git is not on PATH, the fallback store carries this contract instead";
+    }
+
+    QTemporaryDir temporary;
+    ASSERT_TRUE(temporary.isValid());
+
+    GitSnapshotStore store;
+    checkStarAndPin(store, temporary.path() + "/history.git", temporary.path() + "/stage");
+}

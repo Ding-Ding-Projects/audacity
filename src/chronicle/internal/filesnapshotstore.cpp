@@ -157,6 +157,8 @@ QList<Revision> FileSnapshotStore::revisions() const
         if (revision.action.isEmpty()) {
             revision.action = actions::Manual;
         }
+        revision.starred = object.value(QStringLiteral("starred")).toBool();
+        revision.pinned = object.value(QStringLiteral("pinned")).toBool();
         result.append(revision);
     }
     return result;
@@ -352,6 +354,36 @@ bool FileSnapshotStore::setLabel(const QString& revisionId, const QString& label
     return false;
 }
 
+bool FileSnapshotStore::setStarred(const QString& revisionId, bool starred)
+{
+    return setBoolField(revisionId, QStringLiteral("starred"), starred);
+}
+
+bool FileSnapshotStore::setPinned(const QString& revisionId, bool pinned)
+{
+    return setBoolField(revisionId, QStringLiteral("pinned"), pinned);
+}
+
+bool FileSnapshotStore::setBoolField(const QString& revisionId, const QString& field, bool value)
+{
+    if (!m_open) {
+        return false;
+    }
+
+    QJsonArray manifest = readManifest();
+    for (int i = 0; i < manifest.size(); ++i) {
+        QJsonObject object = manifest.at(i).toObject();
+        if (object.value(QStringLiteral("id")).toString() != revisionId) {
+            continue;
+        }
+        object.insert(field, value);
+        manifest.replace(i, object);
+        writeManifest(manifest);
+        return true;
+    }
+    return false;
+}
+
 void FileSnapshotStore::collectGarbage(const QJsonArray& manifest) const
 {
     QSet<QString> referenced;
@@ -402,7 +434,8 @@ int FileSnapshotStore::prune(int keepCount, int keepDays)
                                                           Qt::ISODate);
         const bool overCount = keepCount > 0 && rank >= keepCount;
         const bool tooOld = cutoff.isValid() && timestamp.isValid() && timestamp < cutoff;
-        if (rank > 0 && (overCount || tooOld)) {
+        const bool pinned = object.value(QStringLiteral("pinned")).toBool();
+        if (rank > 0 && !pinned && (overCount || tooOld)) {
             ++pruned;
             continue;
         }

@@ -69,6 +69,8 @@ public:
 
     Q_INVOKABLE bool restore(const QString& revisionId);
     Q_INVOKABLE bool setLabel(const QString& revisionId, const QString& label);
+    Q_INVOKABLE bool setStarred(const QString& revisionId, bool starred);
+    Q_INVOKABLE bool setPinned(const QString& revisionId, bool pinned);
     Q_INVOKABLE bool exportRevision(const QString& revisionId, const QString& destinationUrl);
     Q_INVOKABLE int prune();
 

@@ -153,6 +153,33 @@ Two settings control pruning:
 The newest revision is never pruned. Retention is applied at start up and from
 the **Apply retention** button in the panel.
 
+### Starring and pinning
+
+A revision can be starred, pinned, or both, independently of what produced
+it:
+
+- **Starred** is purely decorative. It marks a revision the user wants to
+  find again and plays no part in what retention keeps.
+- **Pinned** excludes a revision from retention, exactly like the newest
+  revision itself. A pinned revision that retention would otherwise have
+  removed survives; unpinning it makes it eligible again from the next
+  retention pass onward, it is not retroactively pruned the moment it is
+  unpinned.
+
+Both are stored beside the history rather than inside it (a small JSON
+sidecar file for the git store, a field on the revision's own manifest entry
+for the content addressed store), so marking or unmarking one never rewrites
+a revision.
+
+### Milestones
+
+A revision is marked as a milestone when it is a save, a restore, an export,
+or a render: the moments a project genuinely leaves the editing session in
+some form, as opposed to an ordinary edit. `isMilestoneAction()` decides this
+from the action name; export and render are matched by keyword, the same way
+the action family mapping above is, since this history has no fixed
+identifier of its own yet for either one.
+
 ## The history travels inside the save file
 
 Turning `chronicle/embedHistoryInSaveFile` on (the default) packs the whole
@@ -244,6 +271,14 @@ left in place untouched.
   came across along with a genuinely restorable file (exported and read back
   byte for byte), then re-apply the same bundle and assert nothing was lost
   or duplicated by doing so again.
+- `ExportAndRenderAreAlsoMilestones` covers the keyword-matched milestone
+  extension. `FallbackStoreStarringAndPinningSurviveRetention` and
+  `GitBackedStoreStarringAndPinningSurviveRetention` star one revision, pin
+  another, assert both flags read back correctly and every other revision
+  stays unmarked, run retention with a keep-count that would otherwise have
+  removed the pinned revision and assert it survives while an unpinned,
+  unstarred revision in the same age bracket is removed, then unpin it and
+  assert the flag actually clears.
 
 ## What this feature does not do yet
 
