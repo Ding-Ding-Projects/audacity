@@ -8,7 +8,15 @@ rem   build.bat        Configure and build, printing full output.
 rem   build.bat /s     Silent mode: only warnings, errors and the summary.
 rem ---------------------------------------------------------------------------
 
-set "ROOT=%~dp0"
+set "SOURCE_ROOT=%~dp0"
+set "ROOT=%SOURCE_ROOT%"
+if defined AUDACITY_BUILD_ROOT (
+  if not exist "%AUDACITY_BUILD_ROOT%\build.bat" (
+    echo ERROR: AUDACITY_BUILD_ROOT does not name an Audacity checkout: %AUDACITY_BUILD_ROOT%
+    exit /b 1
+  )
+  set "ROOT=%AUDACITY_BUILD_ROOT%\"
+)
 for %%I in ("%~dp0.") do set "ROOT_ARG=%%~sI"
 set "BUILD_DIR=%ROOT%build\windows"
 set "INSTALL_DIR=%ROOT%build.install"
