@@ -56,7 +56,24 @@ FocusScope {
     // so the host can attach the same builder to each of them.
     signal regexBuilderRequested(string context)
 
-    implicitWidth: tabModel.vertical ? (tabModel.collapsed ? M3.density.apply(64) : M3.density.apply(240)) : 0
+    // A horizontal strip's natural width has to come from its own tab count,
+    // never from the ListView inside it: that ListView fills whatever width
+    // it is handed, so reading its size back would be circular and a dock
+    // host that sizes this item from its implicit width got zero every time,
+    // which is why the strip used to render nothing but the overflow button.
+    //
+    // This always assumes labelled tabs, on purpose, even though the strip
+    // may end up narrower than that and fall back to icons: the implicit
+    // size is what the strip would like to be, not a guess that folds the
+    // icons-only collapse back into its own input. Basing it on the
+    // icons-only width instead created a self-fulfilling narrow strip: a
+    // small width made tooNarrow true, which made implicitWidth small,
+    // which kept the strip narrow forever, even once every tab, and the
+    // room for their labels, was available.
+    readonly property int tabCount: tabModel.tabs.length
+    implicitWidth: tabModel.vertical
+        ? (tabModel.collapsed ? M3.density.apply(64) : M3.density.apply(240))
+        : Math.max(M3.density.apply(160), root.tabCount * M3.density.apply(140) + M3.density.apply(56))
     implicitHeight: tabModel.vertical ? 0 : M3.density.apply(48)
 
     TabStripModel {
@@ -106,13 +123,32 @@ FocusScope {
         tabModel.endDeclare()
     }
 
-    onSourcesChanged: root.reload()
+    // root.sources is bound from the host's own tabSources computation,
+    // which can legitimately update its value more than once while the
+    // component tree is still being built, before Component.onCompleted
+    // has had a chance to run. Calling reload() that early declares tabs
+    // and, through declareTab()/endDeclare(), saves the model's state to
+    // disk while it is still holding its raw un-loaded default (dockSide
+    // "left"). That premature save then makes the real tabModel.load()
+    // call a few moments later see non-empty stored data and believe the
+    // side was already restored, so the host's chosen defaultDockSide
+    // ("top" for a horizontal toolbar strip) was silently never applied
+    // and every strip stayed vertical. Ignore source changes until the
+    // model has actually loaded once.
+    property bool modelReady: false
+
+    onSourcesChanged: {
+        if (root.modelReady) {
+            root.reload()
+        }
+    }
 
     Component.onCompleted: {
         tabModel.load()
         if (!tabModel.isRestored()) {
             tabModel.dockSide = root.defaultDockSide
         }
+        root.modelReady = true
         root.reload()
     }
 
