@@ -29,6 +29,7 @@ import Muse.Ui
 import Muse.UiComponents
 
 import Audacity.M3
+import Audacity.Companion
 import Audacity.Personalize
 
 M3SideSheet {
@@ -55,85 +56,106 @@ M3SideSheet {
     modal: false
     headline: qsTrc("personalize", "Edit appearance")
 
-    readonly property var states: ["normal", "hover", "focus", "pressed", "selected", "disabled",
-        "dragged", "error", "loading", "success", "warning"]
-    readonly property var tabs: ["typography", "layers", "fill", "stroke", "effects", "adjustments",
-        "transform", "preview"]
+    readonly property var states: ["normal", "hover", "focus", "pressed", "selected", "disabled", "dragged", "error", "loading", "success", "warning"]
+    readonly property var tabs: ["typography", "layers", "fill", "stroke", "effects", "adjustments", "transform", "preview"]
+
+    readonly property bool stateOwnsLayerStack: root.currentState === "normal" || AppearanceLayers.hasOwnState(root.elementId, root.currentState)
+
+    function matchesProperty(text) {
+        var query = propertySearch.searchText.trim();
+        if (query.length === 0) {
+            return true;
+        }
+        try {
+            return new RegExp(query, "i").test(text);
+        } catch (error) {
+            return text.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+        }
+    }
 
     function openAt(anchorItem, id) {
-        root.elementId = id
-        root.currentState = "normal"
-        root.currentTab = "typography"
-        root.selectedLayerId = ""
-        root.undoStack = []
-        root.redoStack = []
-        root.opened = true
-        open()
-        refresh()
+        root.elementId = id;
+        root.currentState = "normal";
+        root.currentTab = "typography";
+        root.selectedLayerId = "";
+        root.undoStack = [];
+        root.redoStack = [];
+        root.opened = true;
+        open();
+        refresh();
     }
 
     function refresh() {
-        fontField.currentText = AppearanceOverrides.getProperty(root.elementId, "fontFamily", root.currentState) || ""
-        sizeField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "fontSize", root.currentState) || "")
-        italicSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "italic", root.currentState)
-        underlineSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "underline", root.currentState)
-        strikethroughSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "strikethrough", root.currentState)
-        doubleStrikethroughSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "doubleStrikethrough", root.currentState)
-        overlineSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "overline", root.currentState)
-        capsSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "smallCaps", root.currentState)
-        superscriptSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "superscript", root.currentState)
-        subscriptSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "subscript", root.currentState)
-        radiusField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "radius", root.currentState) || "")
-        spacingField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "letterSpacing", root.currentState) || "")
-        wordSpacingField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "wordSpacing", root.currentState) || "")
-        lineHeightField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "lineHeight", root.currentState) || "")
-        baselineField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "baselineOffset", root.currentState) || "")
-        var storedColor = AppearanceOverrides.getProperty(root.elementId, "color", root.currentState)
-        colorPicker.selection = storedColor ? storedColor : "#926BFF"
-        propertySearch.searchText = ""
-        layerList.model = AppearanceLayers.layers(root.elementId, root.currentState)
+        fontField.currentText = AppearanceOverrides.getProperty(root.elementId, "fontFamily", root.currentState) || "";
+        sizeField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "fontSize", root.currentState) || "");
+        italicSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "italic", root.currentState);
+        underlineSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "underline", root.currentState);
+        strikethroughSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "strikethrough", root.currentState);
+        doubleStrikethroughSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "doubleStrikethrough", root.currentState);
+        overlineSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "overline", root.currentState);
+        capsSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "smallCaps", root.currentState);
+        superscriptSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "superscript", root.currentState);
+        subscriptSwitch.checked = !!AppearanceOverrides.getProperty(root.elementId, "subscript", root.currentState);
+        radiusField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "radius", root.currentState) || "");
+        spacingField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "letterSpacing", root.currentState) || "");
+        wordSpacingField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "wordSpacing", root.currentState) || "");
+        lineHeightField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "lineHeight", root.currentState) || "");
+        baselineField.currentText = String(AppearanceOverrides.getProperty(root.elementId, "baselineOffset", root.currentState) || "");
+        var storedColor = AppearanceOverrides.getProperty(root.elementId, "color", root.currentState);
+        colorPicker.selection = storedColor ? storedColor : "#926BFF";
+        propertySearch.searchText = "";
+        layerList.model = AppearanceLayers.layers(root.elementId, root.currentState);
         if (root.selectedLayerId === "" && layerList.model.length > 0) {
-            root.selectedLayerId = layerList.model[0].id
+            root.selectedLayerId = layerList.model[0].id;
         }
     }
 
     function selectedLayer() {
-        var stack = AppearanceLayers.layers(root.elementId, root.currentState)
+        var stack = AppearanceLayers.layers(root.elementId, root.currentState);
         for (var i = 0; i < stack.length; i++) {
             if (stack[i].id === root.selectedLayerId) {
-                return stack[i]
+                return stack[i];
             }
         }
-        return null
+        return null;
     }
 
     function pushUndo(label) {
-        var snapshot = AppearanceLayers.exportElement(root.elementId)
-        root.undoStack.push({ label: label, json: snapshot })
-        root.redoStack = []
-        MutationHistory.record("appearance-layer-edit", root.elementId + ": " + label)
+        var snapshot = AppearanceLayers.exportElement(root.elementId);
+        root.undoStack.push({
+            label: label,
+            json: snapshot
+        });
+        root.redoStack = [];
+        MutationHistory.record("appearance-layer-edit", root.elementId + ": " + label);
     }
 
     function undo() {
         if (root.undoStack.length === 0) {
-            return
+            return;
         }
-        var entry = root.undoStack.pop()
-        root.redoStack.push({ label: entry.label, json: AppearanceLayers.exportElement(root.elementId) })
-        AppearanceLayers.importElement(root.elementId, entry.json)
-        MutationHistory.record("appearance-layer-undo", root.elementId + ": " + entry.label)
-        root.refresh()
+        var entry = root.undoStack.pop();
+        root.redoStack.push({
+            label: entry.label,
+            json: AppearanceLayers.exportElement(root.elementId)
+        });
+        AppearanceLayers.importElement(root.elementId, entry.json);
+        MutationHistory.record("appearance-layer-undo", root.elementId + ": " + entry.label);
+        root.refresh();
     }
 
     function redo() {
         if (root.redoStack.length === 0) {
-            return
+            return;
         }
-        var entry = root.redoStack.pop()
-        root.undoStack.push({ label: entry.label, json: AppearanceLayers.exportElement(root.elementId) })
-        AppearanceLayers.importElement(root.elementId, entry.json)
-        MutationHistory.record("appearance-layer-redo", root.elementId + ": " + entry.label)
-        root.refresh()
+        var entry = root.redoStack.pop();
+        root.undoStack.push({
+            label: entry.label,
+            json: AppearanceLayers.exportElement(root.elementId)
+        });
+        AppearanceLayers.importElement(root.elementId, entry.json);
+        MutationHistory.record("appearance-layer-redo", root.elementId + ": " + entry.label);
+        root.refresh();
     }
 
     Flickable {
@@ -156,15 +178,16 @@ M3SideSheet {
                 width: parent.width
             }
 
-            // The property inspector search. Filtering itself is out of
-            // scope for this small editor; the field exists so a host regex
-            // builder can attach to it, per the search bar contract every
-            // settings surface carries.
             M3SearchBar {
                 id: propertySearch
                 width: parent.width
                 placeholder: qsTrc("personalize", "Find a property")
                 showRegexBuilder: true
+                accessibleName: qsTrc("personalize", "Find appearance properties")
+                onRegexBuilderRequested: {
+                    propertyRegexBuilder.pattern = propertySearch.searchText;
+                    propertyRegexBuilder.open();
+                }
             }
 
             Row {
@@ -194,12 +217,19 @@ M3SideSheet {
                         text: modelData
                         checked: root.currentState === modelData
                         onClicked: {
-                            root.currentState = modelData
-                            root.selectedLayerId = ""
-                            root.refresh()
+                            root.currentState = modelData;
+                            root.selectedLayerId = "";
+                            root.refresh();
                         }
                     }
                 }
+            }
+
+            StyledTextLabel {
+                width: parent.width
+                wrapMode: Text.WordWrap
+                text: root.stateOwnsLayerStack ? qsTrc("personalize", "This state owns a layer stack. Its layers are applied by M3 surfaces that use this element identifier.") : qsTrc("personalize", "This state inherits the normal layer stack. Editing a layer here creates a state-specific stack and applies it on M3 surfaces that use this element identifier.")
+                font: M3.typography.bodySmall
             }
 
             M3Tabs {
@@ -207,7 +237,7 @@ M3SideSheet {
                 model: root.tabs
                 currentIndex: root.tabs.indexOf(root.currentTab)
                 onActivated: function (index) {
-                    root.currentTab = root.tabs[index]
+                    root.currentTab = root.tabs[index];
                 }
             }
 
@@ -215,7 +245,7 @@ M3SideSheet {
             Column {
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "typography"
+                visible: root.currentTab === "typography" && root.matchesProperty("typography font family size letter word line baseline italic underline strikethrough overline caps superscript subscript colour color corner radius spacing")
 
                 M3TextField {
                     id: fontField
@@ -223,7 +253,7 @@ M3SideSheet {
                     label: qsTrc("personalize", "Font family")
                     supportingText: qsTrc("personalize", "Any installed or bundled font")
                     onTextEditingFinished: function (text) {
-                        AppearanceOverrides.setProperty(root.elementId, "fontFamily", text, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "fontFamily", text, root.currentState);
                     }
                 }
 
@@ -235,7 +265,7 @@ M3SideSheet {
                         width: (parent.width - 8) / 2
                         label: qsTrc("personalize", "Size")
                         onTextEditingFinished: function (text) {
-                            AppearanceOverrides.setProperty(root.elementId, "fontSize", parseFloat(text) || 14, root.currentState)
+                            AppearanceOverrides.setProperty(root.elementId, "fontSize", parseFloat(text) || 14, root.currentState);
                         }
                     }
                     M3TextField {
@@ -243,7 +273,7 @@ M3SideSheet {
                         width: (parent.width - 8) / 2
                         label: qsTrc("personalize", "Letter spacing")
                         onTextEditingFinished: function (text) {
-                            AppearanceOverrides.setProperty(root.elementId, "letterSpacing", parseFloat(text) || 0, root.currentState)
+                            AppearanceOverrides.setProperty(root.elementId, "letterSpacing", parseFloat(text) || 0, root.currentState);
                         }
                     }
                 }
@@ -256,7 +286,7 @@ M3SideSheet {
                         width: (parent.width - 8) / 2
                         label: qsTrc("personalize", "Word spacing")
                         onTextEditingFinished: function (text) {
-                            AppearanceOverrides.setProperty(root.elementId, "wordSpacing", parseFloat(text) || 0, root.currentState)
+                            AppearanceOverrides.setProperty(root.elementId, "wordSpacing", parseFloat(text) || 0, root.currentState);
                         }
                     }
                     M3TextField {
@@ -264,7 +294,7 @@ M3SideSheet {
                         width: (parent.width - 8) / 2
                         label: qsTrc("personalize", "Line height")
                         onTextEditingFinished: function (text) {
-                            AppearanceOverrides.setProperty(root.elementId, "lineHeight", parseFloat(text) || 0, root.currentState)
+                            AppearanceOverrides.setProperty(root.elementId, "lineHeight", parseFloat(text) || 0, root.currentState);
                         }
                     }
                 }
@@ -274,7 +304,7 @@ M3SideSheet {
                     width: parent.width
                     label: qsTrc("personalize", "Baseline offset")
                     onTextEditingFinished: function (text) {
-                        AppearanceOverrides.setProperty(root.elementId, "baselineOffset", parseFloat(text) || 0, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "baselineOffset", parseFloat(text) || 0, root.currentState);
                     }
                 }
 
@@ -282,52 +312,52 @@ M3SideSheet {
                     id: italicSwitch
                     text: qsTrc("personalize", "Italic")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "italic", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "italic", checked, root.currentState);
                     }
                 }
                 M3Switch {
                     id: underlineSwitch
                     text: qsTrc("personalize", "Underline")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "underline", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "underline", checked, root.currentState);
                     }
                 }
                 M3Switch {
                     id: strikethroughSwitch
                     text: qsTrc("personalize", "Strikethrough (single)")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "strikethrough", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "strikethrough", checked, root.currentState);
                     }
                 }
                 M3Switch {
                     id: doubleStrikethroughSwitch
                     text: qsTrc("personalize", "Strikethrough (double)")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "doubleStrikethrough", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "doubleStrikethrough", checked, root.currentState);
                     }
                 }
                 M3Switch {
                     id: overlineSwitch
                     text: qsTrc("personalize", "Overline")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "overline", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "overline", checked, root.currentState);
                     }
                 }
                 M3Switch {
                     id: capsSwitch
                     text: qsTrc("personalize", "Small caps")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "smallCaps", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "smallCaps", checked, root.currentState);
                     }
                 }
                 M3Switch {
                     id: superscriptSwitch
                     text: qsTrc("personalize", "Superscript")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "superscript", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "superscript", checked, root.currentState);
                         if (checked) {
-                            subscriptSwitch.checked = false
-                            AppearanceOverrides.setProperty(root.elementId, "subscript", false, root.currentState)
+                            subscriptSwitch.checked = false;
+                            AppearanceOverrides.setProperty(root.elementId, "subscript", false, root.currentState);
                         }
                     }
                 }
@@ -335,10 +365,10 @@ M3SideSheet {
                     id: subscriptSwitch
                     text: qsTrc("personalize", "Subscript")
                     onToggled: function (checked) {
-                        AppearanceOverrides.setProperty(root.elementId, "subscript", checked, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "subscript", checked, root.currentState);
                         if (checked) {
-                            superscriptSwitch.checked = false
-                            AppearanceOverrides.setProperty(root.elementId, "superscript", false, root.currentState)
+                            superscriptSwitch.checked = false;
+                            AppearanceOverrides.setProperty(root.elementId, "superscript", false, root.currentState);
                         }
                     }
                 }
@@ -354,7 +384,7 @@ M3SideSheet {
                     allowRainbow: true
                     rainbowSpeed: AppearanceOverrides.rainbowSpeedLevel
                     onAccepted: {
-                        AppearanceOverrides.setProperty(root.elementId, "color", colorPicker.selection, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "color", colorPicker.selection, root.currentState);
                     }
                 }
 
@@ -368,7 +398,7 @@ M3SideSheet {
                     width: parent.width
                     label: qsTrc("personalize", "Corner radius")
                     onTextEditingFinished: function (text) {
-                        AppearanceOverrides.setProperty(root.elementId, "radius", parseFloat(text) || 0, root.currentState)
+                        AppearanceOverrides.setProperty(root.elementId, "radius", parseFloat(text) || 0, root.currentState);
                     }
                 }
             }
@@ -377,7 +407,7 @@ M3SideSheet {
             Column {
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "layers"
+                visible: root.currentTab === "layers" && root.matchesProperty("layers layer visibility lock reorder duplicate remove blend opacity")
 
                 Row {
                     width: parent.width
@@ -393,11 +423,10 @@ M3SideSheet {
                         icon: IconCode.PLUS
                         accessibleName: qsTrc("personalize", "Add layer")
                         onClicked: {
-                            root.pushUndo(qsTrc("personalize", "Add layer"))
-                            var id = AppearanceLayers.addLayer(root.elementId, root.currentState,
-                                                                newLayerType.currentText || "fill")
-                            root.selectedLayerId = id
-                            root.refresh()
+                            root.pushUndo(qsTrc("personalize", "Add layer"));
+                            var id = AppearanceLayers.addLayer(root.elementId, root.currentState, newLayerType.currentText || "fill");
+                            root.selectedLayerId = id;
+                            root.refresh();
                         }
                     }
                 }
@@ -415,12 +444,10 @@ M3SideSheet {
                         headline: layerRow.modelData.name || layerRow.modelData.type
                         supportingText: layerRow.modelData.type
                         selected: layerRow.modelData.id === root.selectedLayerId
-                        accessibleName: (layerRow.modelData.name || layerRow.modelData.type)
-                                        + (layerRow.modelData.visible === false ? qsTrc("personalize", " (hidden)") : "")
-                                        + (layerRow.modelData.locked ? qsTrc("personalize", " (locked)") : "")
+                        accessibleName: (layerRow.modelData.name || layerRow.modelData.type) + (layerRow.modelData.visible === false ? qsTrc("personalize", " (hidden)") : "") + (layerRow.modelData.locked ? qsTrc("personalize", " (locked)") : "")
 
                         onClicked: {
-                            root.selectedLayerId = layerRow.modelData.id
+                            root.selectedLayerId = layerRow.modelData.id;
                         }
 
                         trailingContent: Row {
@@ -429,20 +456,18 @@ M3SideSheet {
                                 icon: layerRow.modelData.visible === false ? IconCode.VISIBILITY_OFF : IconCode.VISIBILITY_ON
                                 accessibleName: qsTrc("personalize", "Toggle layer visibility")
                                 onClicked: {
-                                    root.pushUndo(qsTrc("personalize", "Toggle layer visibility"))
-                                    AppearanceLayers.setLayerVisible(root.elementId, root.currentState,
-                                                                      layerRow.modelData.id, layerRow.modelData.visible === false)
-                                    root.refresh()
+                                    root.pushUndo(qsTrc("personalize", "Toggle layer visibility"));
+                                    AppearanceLayers.setLayerVisible(root.elementId, root.currentState, layerRow.modelData.id, layerRow.modelData.visible === false);
+                                    root.refresh();
                                 }
                             }
                             M3IconButton {
                                 icon: layerRow.modelData.locked ? IconCode.LOCK_CLOSED : IconCode.LOCK_OPEN
                                 accessibleName: qsTrc("personalize", "Toggle layer lock")
                                 onClicked: {
-                                    root.pushUndo(qsTrc("personalize", "Toggle layer lock"))
-                                    AppearanceLayers.setLayerLocked(root.elementId, root.currentState,
-                                                                     layerRow.modelData.id, !layerRow.modelData.locked)
-                                    root.refresh()
+                                    root.pushUndo(qsTrc("personalize", "Toggle layer lock"));
+                                    AppearanceLayers.setLayerLocked(root.elementId, root.currentState, layerRow.modelData.id, !layerRow.modelData.locked);
+                                    root.refresh();
                                 }
                             }
                             M3IconButton {
@@ -450,31 +475,30 @@ M3SideSheet {
                                 accessibleName: qsTrc("personalize", "Move layer up")
                                 enabled: layerRow.index > 0
                                 onClicked: {
-                                    root.pushUndo(qsTrc("personalize", "Reorder layer"))
-                                    AppearanceLayers.moveLayer(root.elementId, root.currentState,
-                                                               layerRow.modelData.id, layerRow.index - 1)
-                                    root.refresh()
+                                    root.pushUndo(qsTrc("personalize", "Reorder layer"));
+                                    AppearanceLayers.moveLayer(root.elementId, root.currentState, layerRow.modelData.id, layerRow.index - 1);
+                                    root.refresh();
                                 }
                             }
                             M3IconButton {
                                 icon: IconCode.COPY
                                 accessibleName: qsTrc("personalize", "Duplicate layer")
                                 onClicked: {
-                                    root.pushUndo(qsTrc("personalize", "Duplicate layer"))
-                                    AppearanceLayers.duplicateLayer(root.elementId, root.currentState, layerRow.modelData.id)
-                                    root.refresh()
+                                    root.pushUndo(qsTrc("personalize", "Duplicate layer"));
+                                    AppearanceLayers.duplicateLayer(root.elementId, root.currentState, layerRow.modelData.id);
+                                    root.refresh();
                                 }
                             }
                             M3IconButton {
                                 icon: IconCode.DELETE_OUTLINE
                                 accessibleName: qsTrc("personalize", "Remove layer")
                                 onClicked: {
-                                    root.pushUndo(qsTrc("personalize", "Remove layer"))
-                                    AppearanceLayers.removeLayer(root.elementId, root.currentState, layerRow.modelData.id)
+                                    root.pushUndo(qsTrc("personalize", "Remove layer"));
+                                    AppearanceLayers.removeLayer(root.elementId, root.currentState, layerRow.modelData.id);
                                     if (root.selectedLayerId === layerRow.modelData.id) {
-                                        root.selectedLayerId = ""
+                                        root.selectedLayerId = "";
                                     }
-                                    root.refresh()
+                                    root.refresh();
                                 }
                             }
                         }
@@ -502,12 +526,11 @@ M3SideSheet {
                             checked: blendChip.layer && blendChip.layer.blendMode === modelData
                             onClicked: {
                                 if (!root.selectedLayerId) {
-                                    return
+                                    return;
                                 }
-                                root.pushUndo(qsTrc("personalize", "Blend mode"))
-                                AppearanceLayers.setLayerBlendMode(root.elementId, root.currentState,
-                                                                    root.selectedLayerId, modelData)
-                                root.refresh()
+                                root.pushUndo(qsTrc("personalize", "Blend mode"));
+                                AppearanceLayers.setLayerBlendMode(root.elementId, root.currentState, root.selectedLayerId, modelData);
+                                root.refresh();
                             }
                         }
                     }
@@ -533,15 +556,15 @@ M3SideSheet {
                         from: 0
                         to: 1
                         value: {
-                            var l = root.selectedLayer()
-                            return l ? l.opacity : 1
+                            var l = root.selectedLayer();
+                            return l ? l.opacity : 1;
                         }
                         onMoved: {
                             if (!root.selectedLayerId) {
-                                return
+                                return;
                             }
-                            root.pushUndo(qsTrc("personalize", "Opacity"))
-                            AppearanceLayers.setLayerOpacity(root.elementId, root.currentState, root.selectedLayerId, value)
+                            root.pushUndo(qsTrc("personalize", "Opacity"));
+                            AppearanceLayers.setLayerOpacity(root.elementId, root.currentState, root.selectedLayerId, value);
                         }
                     }
                 }
@@ -552,7 +575,7 @@ M3SideSheet {
                 id: fillColumn
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "fill"
+                visible: root.currentTab === "fill" && root.matchesProperty("fill solid gradient image colour color")
                 readonly property var layer: root.selectedLayer()
                 readonly property bool isFill: fillColumn.layer && fillColumn.layer.type === "fill"
 
@@ -573,10 +596,9 @@ M3SideSheet {
                             text: modelData
                             checked: fillColumn.layer && (fillColumn.layer.properties.kind || "solid") === modelData
                             onClicked: {
-                                root.pushUndo(qsTrc("personalize", "Fill kind"))
-                                AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                                   root.selectedLayerId, "kind", modelData)
-                                root.refresh()
+                                root.pushUndo(qsTrc("personalize", "Fill kind"));
+                                AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "kind", modelData);
+                                root.refresh();
                             }
                         }
                     }
@@ -589,9 +611,8 @@ M3SideSheet {
                     allowRainbow: true
                     selection: fillColumn.layer ? (fillColumn.layer.properties.color || "#00000000") : "#00000000"
                     onAccepted: {
-                        root.pushUndo(qsTrc("personalize", "Fill colour"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "color", fillColorPicker.selection)
+                        root.pushUndo(qsTrc("personalize", "Fill colour"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "color", fillColorPicker.selection);
                     }
                 }
 
@@ -601,10 +622,9 @@ M3SideSheet {
                     dialogTitle: qsTrc("personalize", "Choose a fill image")
                     path: fillColumn.layer ? (fillColumn.layer.properties.imagePath || "") : ""
                     onPathEdited: function (newPath) {
-                        root.pushUndo(qsTrc("personalize", "Fill image"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "imagePath", newPath)
-                        root.refresh()
+                        root.pushUndo(qsTrc("personalize", "Fill image"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "imagePath", newPath);
+                        root.refresh();
                     }
                 }
             }
@@ -614,7 +634,7 @@ M3SideSheet {
                 id: strokeColumn
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "stroke"
+                visible: root.currentTab === "stroke" && root.matchesProperty("stroke colour color width")
                 readonly property var layer: root.selectedLayer()
                 readonly property bool isStroke: strokeColumn.layer && strokeColumn.layer.type === "stroke"
 
@@ -631,9 +651,8 @@ M3SideSheet {
                     visible: strokeColumn.isStroke
                     selection: strokeColumn.layer ? (strokeColumn.layer.properties.color || "#00000000") : "#00000000"
                     onAccepted: {
-                        root.pushUndo(qsTrc("personalize", "Stroke colour"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "color", strokeColorPicker.selection)
+                        root.pushUndo(qsTrc("personalize", "Stroke colour"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "color", strokeColorPicker.selection);
                     }
                 }
 
@@ -643,9 +662,8 @@ M3SideSheet {
                     label: qsTrc("personalize", "Width")
                     currentText: strokeColumn.layer ? String(strokeColumn.layer.properties.width || 1) : "1"
                     onTextEditingFinished: function (text) {
-                        root.pushUndo(qsTrc("personalize", "Stroke width"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "width", parseFloat(text) || 1)
+                        root.pushUndo(qsTrc("personalize", "Stroke width"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "width", parseFloat(text) || 1);
                     }
                 }
             }
@@ -655,10 +673,9 @@ M3SideSheet {
                 id: effectsColumn
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "effects"
+                visible: root.currentTab === "effects" && root.matchesProperty("effects shadow glow blur backdrop")
                 readonly property var layer: root.selectedLayer()
-                readonly property bool isShadowLike: effectsColumn.layer
-                                                      && (effectsColumn.layer.type === "shadow" || effectsColumn.layer.type === "glow")
+                readonly property bool isShadowLike: effectsColumn.layer && (effectsColumn.layer.type === "shadow" || effectsColumn.layer.type === "glow")
                 readonly property bool isBlur: effectsColumn.layer && effectsColumn.layer.type === "blur"
 
                 StyledTextLabel {
@@ -674,9 +691,8 @@ M3SideSheet {
                     visible: effectsColumn.isShadowLike
                     selection: effectsColumn.layer ? (effectsColumn.layer.properties.color || "#80000000") : "#80000000"
                     onAccepted: {
-                        root.pushUndo(qsTrc("personalize", "Shadow colour"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "color", effectColorPicker.selection)
+                        root.pushUndo(qsTrc("personalize", "Shadow colour"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "color", effectColorPicker.selection);
                     }
                 }
 
@@ -689,9 +705,8 @@ M3SideSheet {
                         label: qsTrc("personalize", "Offset X")
                         currentText: effectsColumn.layer ? String(effectsColumn.layer.properties.offsetX || 0) : "0"
                         onTextEditingFinished: function (text) {
-                            root.pushUndo(qsTrc("personalize", "Shadow offset"))
-                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                               root.selectedLayerId, "offsetX", parseFloat(text) || 0)
+                            root.pushUndo(qsTrc("personalize", "Shadow offset"));
+                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "offsetX", parseFloat(text) || 0);
                         }
                     }
                     M3TextField {
@@ -699,9 +714,8 @@ M3SideSheet {
                         label: qsTrc("personalize", "Offset Y")
                         currentText: effectsColumn.layer ? String(effectsColumn.layer.properties.offsetY || 0) : "0"
                         onTextEditingFinished: function (text) {
-                            root.pushUndo(qsTrc("personalize", "Shadow offset"))
-                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                               root.selectedLayerId, "offsetY", parseFloat(text) || 0)
+                            root.pushUndo(qsTrc("personalize", "Shadow offset"));
+                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "offsetY", parseFloat(text) || 0);
                         }
                     }
                     M3TextField {
@@ -709,9 +723,8 @@ M3SideSheet {
                         label: qsTrc("personalize", "Blur")
                         currentText: effectsColumn.layer ? String(effectsColumn.layer.properties.blurRadius || 8) : "8"
                         onTextEditingFinished: function (text) {
-                            root.pushUndo(qsTrc("personalize", "Shadow blur"))
-                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                               root.selectedLayerId, "blurRadius", parseFloat(text) || 8)
+                            root.pushUndo(qsTrc("personalize", "Shadow blur"));
+                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "blurRadius", parseFloat(text) || 8);
                         }
                     }
                 }
@@ -721,9 +734,8 @@ M3SideSheet {
                     text: qsTrc("personalize", "Inner (stored; not yet rendered)")
                     checked: effectsColumn.layer ? !!effectsColumn.layer.properties.inner : false
                     onToggled: function (checked) {
-                        root.pushUndo(qsTrc("personalize", "Shadow inner"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "inner", checked)
+                        root.pushUndo(qsTrc("personalize", "Shadow inner"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "inner", checked);
                     }
                 }
 
@@ -733,9 +745,8 @@ M3SideSheet {
                     label: qsTrc("personalize", "Blur radius")
                     currentText: effectsColumn.layer ? String(effectsColumn.layer.properties.radius || 8) : "8"
                     onTextEditingFinished: function (text) {
-                        root.pushUndo(qsTrc("personalize", "Blur radius"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "radius", parseFloat(text) || 8)
+                        root.pushUndo(qsTrc("personalize", "Blur radius"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "radius", parseFloat(text) || 8);
                     }
                 }
             }
@@ -745,7 +756,7 @@ M3SideSheet {
                 id: adjColumn
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "adjustments"
+                visible: root.currentTab === "adjustments" && root.matchesProperty("adjustments brightness contrast saturation hue colour color")
                 readonly property var layer: root.selectedLayer()
                 readonly property bool isAdjustment: adjColumn.layer && adjColumn.layer.type === "adjustment"
 
@@ -772,9 +783,8 @@ M3SideSheet {
                             to: 100
                             value: adjColumn.layer ? (adjColumn.layer.properties[modelData] || 0) : 0
                             onMoved: {
-                                root.pushUndo(modelData)
-                                AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                                   root.selectedLayerId, modelData, value)
+                                root.pushUndo(modelData);
+                                AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, modelData, value);
                             }
                         }
                     }
@@ -785,9 +795,8 @@ M3SideSheet {
                     visible: adjColumn.isAdjustment
                     selection: adjColumn.layer ? (adjColumn.layer.properties.colorizeColor || "#00000000") : "#00000000"
                     onAccepted: {
-                        root.pushUndo(qsTrc("personalize", "Colourise"))
-                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                           root.selectedLayerId, "colorizeColor", selection)
+                        root.pushUndo(qsTrc("personalize", "Colourise"));
+                        AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, "colorizeColor", selection);
                     }
                 }
 
@@ -805,7 +814,7 @@ M3SideSheet {
                 id: xformColumn
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "transform"
+                visible: root.currentTab === "transform" && root.matchesProperty("transform translate rotation scale skew origin")
                 readonly property var layer: root.selectedLayer()
                 readonly property bool isTransform: xformColumn.layer && xformColumn.layer.type === "transform"
 
@@ -817,21 +826,15 @@ M3SideSheet {
                 }
 
                 Repeater {
-                    model: xformColumn.isTransform
-                           ? ["translateX", "translateY", "rotation", "scaleX", "scaleY", "skewX", "originX", "originY"]
-                           : []
+                    model: xformColumn.isTransform ? ["translateX", "translateY", "rotation", "scaleX", "scaleY", "skewX", "originX", "originY"] : []
                     delegate: M3TextField {
                         required property string modelData
                         width: xformColumn.width
                         label: modelData
-                        currentText: xformColumn.layer ? String(xformColumn.layer.properties[modelData] !== undefined
-                                                            ? xformColumn.layer.properties[modelData]
-                                                            : (modelData === "scaleX" || modelData === "scaleY" ? 1
-                                                               : (modelData === "originX" || modelData === "originY" ? 0.5 : 0))) : "0"
+                        currentText: xformColumn.layer ? String(xformColumn.layer.properties[modelData] !== undefined ? xformColumn.layer.properties[modelData] : (modelData === "scaleX" || modelData === "scaleY" ? 1 : (modelData === "originX" || modelData === "originY" ? 0.5 : 0))) : "0"
                         onTextEditingFinished: function (text) {
-                            root.pushUndo(modelData)
-                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState,
-                                                               root.selectedLayerId, modelData, parseFloat(text) || 0)
+                            root.pushUndo(modelData);
+                            AppearanceLayers.setLayerProperty(root.elementId, root.currentState, root.selectedLayerId, modelData, parseFloat(text) || 0);
                         }
                     }
                 }
@@ -841,7 +844,7 @@ M3SideSheet {
             Column {
                 width: parent.width
                 spacing: 8
-                visible: root.currentTab === "preview"
+                visible: root.currentTab === "preview" && root.matchesProperty("preview zoom before original state")
 
                 Row {
                     width: parent.width
@@ -849,7 +852,9 @@ M3SideSheet {
                     M3Switch {
                         text: qsTrc("personalize", "Show original (before)")
                         checked: root.beforeAfter
-                        onToggled: function (checked) { root.beforeAfter = checked }
+                        onToggled: function (checked) {
+                            root.beforeAfter = checked;
+                        }
                     }
                 }
 
@@ -923,7 +928,7 @@ M3SideSheet {
                         M3AppearanceLayers {
                             anchors.fill: parent
                             elementId: root.elementId
-                            state: root.currentState
+                            appearanceState: root.currentState
                             radius: parent.radius
                         }
                     }
@@ -948,8 +953,7 @@ M3SideSheet {
                     spacing: 8
                     Repeater {
                         model: root.states.filter(function (s) {
-                            return s === "normal" || AppearanceLayers.hasOwnState(root.elementId, s)
-                                   || AppearanceOverrides.hasProperty(root.elementId, "color", s)
+                            return s === "normal" || AppearanceLayers.hasOwnState(root.elementId, s) || AppearanceOverrides.hasProperty(root.elementId, "color", s);
                         })
                         delegate: Column {
                             required property string modelData
@@ -967,7 +971,7 @@ M3SideSheet {
                                 M3AppearanceLayers {
                                     anchors.fill: parent
                                     elementId: root.elementId
-                                    state: modelData
+                                    appearanceState: modelData
                                     radius: parent.radius
                                 }
                             }
@@ -985,14 +989,39 @@ M3SideSheet {
                 Row {
                     width: parent.width
                     spacing: 4
-                    StyledTextLabel { text: "R" }
-                    Rectangle { width: 24; height: 16; color: "red" }
-                    StyledTextLabel { text: "G" }
-                    Rectangle { width: 24; height: 16; color: "green" }
-                    StyledTextLabel { text: "B" }
-                    Rectangle { width: 24; height: 16; color: "blue" }
-                    StyledTextLabel { text: "A" }
-                    Rectangle { width: 24; height: 16; color: "white"; border.width: 1 }
+                    StyledTextLabel {
+                        text: "R"
+                    }
+                    Rectangle {
+                        width: 24
+                        height: 16
+                        color: "red"
+                    }
+                    StyledTextLabel {
+                        text: "G"
+                    }
+                    Rectangle {
+                        width: 24
+                        height: 16
+                        color: "green"
+                    }
+                    StyledTextLabel {
+                        text: "B"
+                    }
+                    Rectangle {
+                        width: 24
+                        height: 16
+                        color: "blue"
+                    }
+                    StyledTextLabel {
+                        text: "A"
+                    }
+                    Rectangle {
+                        width: 24
+                        height: 16
+                        color: "white"
+                        border.width: 1
+                    }
                 }
             }
 
@@ -1016,47 +1045,60 @@ M3SideSheet {
                     variant: "outlined"
                     enabled: root.selectedLayerId !== "" || root.elementId !== ""
                     onClicked: {
-                        AppearanceLayers.exportElement(root.elementId)
-                        MutationHistory.record("appearance-layer-copy", root.elementId)
+                        AppearanceLayers.exportElement(root.elementId);
+                        MutationHistory.record("appearance-layer-copy", root.elementId);
                     }
                 }
                 M3Button {
                     text: qsTrc("personalize", "Reset this state")
                     variant: "outlined"
                     onClicked: {
-                        root.pushUndo(qsTrc("personalize", "Reset state"))
-                        AppearanceOverrides.resetProperty(root.elementId, "fontFamily", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "fontSize", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "italic", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "underline", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "strikethrough", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "doubleStrikethrough", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "overline", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "smallCaps", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "superscript", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "subscript", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "color", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "radius", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "letterSpacing", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "wordSpacing", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "lineHeight", root.currentState)
-                        AppearanceOverrides.resetProperty(root.elementId, "baselineOffset", root.currentState)
-                        AppearanceLayers.clearState(root.elementId, root.currentState)
-                        root.refresh()
+                        root.pushUndo(qsTrc("personalize", "Reset state"));
+                        AppearanceOverrides.resetProperty(root.elementId, "fontFamily", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "fontSize", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "italic", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "underline", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "strikethrough", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "doubleStrikethrough", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "overline", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "smallCaps", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "superscript", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "subscript", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "color", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "radius", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "letterSpacing", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "wordSpacing", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "lineHeight", root.currentState);
+                        AppearanceOverrides.resetProperty(root.elementId, "baselineOffset", root.currentState);
+                        AppearanceLayers.clearState(root.elementId, root.currentState);
+                        root.refresh();
                     }
                 }
                 M3Button {
                     text: qsTrc("personalize", "Reset element")
                     variant: "text"
                     onClicked: {
-                        root.pushUndo(qsTrc("personalize", "Reset element"))
-                        AppearanceOverrides.resetElement(root.elementId)
-                        AppearanceLayers.resetElement(root.elementId)
-                        root.selectedLayerId = ""
-                        root.refresh()
+                        root.pushUndo(qsTrc("personalize", "Reset element"));
+                        AppearanceOverrides.resetElement(root.elementId);
+                        AppearanceLayers.resetElement(root.elementId);
+                        root.selectedLayerId = "";
+                        root.refresh();
                     }
                 }
             }
+        }
+    }
+
+    // This is a sibling of the Flickable rather than one of its Column
+    // children. A positioner would otherwise lay the sheet out as content
+    // instead of opening it above the editor that owns the search field.
+    RegexBuilderSheet {
+        id: propertyRegexBuilder
+        anchors.fill: parent
+        storeName: "personalize-appearance-properties"
+        fieldLabel: qsTrc("personalize", "Appearance property search")
+        onPatternAccepted: function (pattern) {
+            propertySearch.searchText = pattern;
         }
     }
 }

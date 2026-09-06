@@ -17,7 +17,7 @@
 *     M3AppearanceLayers {
 *         anchors.fill: parent
 *         elementId: root.elementId
-*         state: root.visualState
+ *         appearanceState: root.visualState
 *         radius: root.radius
 *     }
 */
@@ -32,10 +32,19 @@ Item {
     id: root
 
     property string elementId: ""
-    property string state: ""
+    // Do not reuse Item.state for the appearance state. It is technically
+    // writable, but it is also a generic state-machine hook used by QML
+    // tooling and makes this renderer needlessly easy to break by embedding.
+    property string appearanceState: ""
     property real radius: 0
 
-    readonly property var stack: root.elementId.length > 0 ? AppearanceLayers.layers(root.elementId, root.state) : []
+    readonly property var stack: {
+        // The singleton signal is not a property-notify signal, so keep this
+        // explicit dependency. Without it the editor saved successfully but
+        // an already-open surface kept drawing the previous stack.
+        root.stackVersion;
+        return root.elementId.length > 0 ? AppearanceLayers.layers(root.elementId, root.appearanceState) : [];
+    }
     readonly property bool hasLayers: root.stack.length > 0
 
     visible: root.hasLayers
@@ -43,11 +52,11 @@ Item {
 
     Connections {
         target: AppearanceLayers
-        function onLayersChanged(id, state) {
+        function onLayersChanged(id, appearanceState) {
             if (id === root.elementId || id === "") {
                 // Re-read: QML bindings on stack already refresh from the
                 // property read above, this just forces it promptly.
-                root.stackVersion++
+                root.stackVersion++;
             }
         }
     }

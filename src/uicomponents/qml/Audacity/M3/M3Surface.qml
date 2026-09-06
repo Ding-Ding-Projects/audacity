@@ -52,7 +52,7 @@ Rectangle {
     M3AppearanceLayers {
         anchors.fill: parent
         elementId: root.elementId
-        state: root.visualState
+        appearanceState: root.visualState
         radius: root.radius
     }
 }

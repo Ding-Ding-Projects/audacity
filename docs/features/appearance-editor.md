@@ -62,6 +62,36 @@ its font. Setting one of those properties in the editor still stores it
 (nothing is lost); it simply is not rendered until a later change wires
 per-axis font resolution through the same store.
 
+## Layered appearance editor
+
+The appearance editor also stores a versioned local layer document in
+`personalize/appearance-layers.json`. Each element can keep an ordered stack
+of fills, strokes, shadows, glows, blur, tonal adjustments, transforms, and
+masks. A non-normal interaction state either owns a stack or inherits the
+normal stack. The editor states which case is active: an inherited stack is
+rendered until an edit creates that state's own persisted stack; a state-owned
+stack is rendered immediately by every `M3Surface` that receives the same
+`elementId` and its matching `visualState`.
+
+`M3Surface` is the safe shared rollout point. It has an empty `elementId` by
+default, so existing call sites remain unchanged, and renders no appearance
+layers unless their owner deliberately supplies a stable identifier. This
+lane does not yet wire element identifiers through every surface consumer.
+The current direct M3 surface call sites that need an owner-side identifier
+before layered output can appear are `M3BottomSheet`, `M3ColorPicker`,
+`M3DatePicker`, `M3NavigationDrawer`, `M3SideSheet`, `M3TimePicker`, the
+command palette, the regex builder sheet, and the component gallery delegate.
+
+The property finder filters the visible editor category using case-insensitive
+regular expressions and opens the existing shared regex builder. Invalid
+regular expressions fall back to a literal case-insensitive search, so a
+partially typed pattern never makes the editor unusable.
+
+The editor does not claim that every persisted property renders everywhere.
+Layer stacks are rendered only through opted-in `M3Surface` consumers. The
+existing typography-axis and flat opacity limitations remain as described
+above; they persist locally but are not yet resolved by every component.
+
 Set `AU_APPEARANCE_DEMO=1` before launching to seed one visible override
 (an orange, near-square container) on the Home page's "New" project button
 (`elementId: "home.newProject"` in `ProjectsPage.qml`), useful for capturing

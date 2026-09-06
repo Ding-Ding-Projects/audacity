@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <QColor>
 #include <QObject>
 #include <QVariantList>
 #include <QVariantMap>
