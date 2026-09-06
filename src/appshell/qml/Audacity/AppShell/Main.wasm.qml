@@ -27,6 +27,8 @@ import MuseScore.Playback 1.0
 import Muse.UiComponents
 import "DevTools/Audio"
 
+import Audacity.M3
+
 ApplicationWindow {
     id: window
     width: 640
@@ -43,7 +45,7 @@ ApplicationWindow {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            color: ui.theme.backgroundPrimaryColor
+            color: M3.color.surface
         }
 
         Label {

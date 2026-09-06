@@ -32,7 +32,7 @@ Rectangle {
             color: Utils.colorWithAlpha(border.color, 0.25)
             border.color: "red"
             border.width: 1
-            radius: 6
+            radius: M3.shape.small
 
             Row {
                 id: hintLabel
