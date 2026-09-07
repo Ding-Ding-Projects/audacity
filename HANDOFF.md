@@ -1,5 +1,27 @@
 # Handoff
 
+## Scoped preservation cleanup completed
+
+A fresh explicitly authorized cleanup pass created and read back a dated private
+archive covering all 17 then-existing working trees, initialized submodules and
+Git administrative data. The integrity test and exact entry/size comparison
+passed: 112,887 archived files, 962 Git administrative files and 4,777,557,853
+compressed bytes. Long-path enumeration confirmed 171,665 ignored files excluded.
+All 8,534 absent tracked paths were verified intentional sparse-checkout omissions,
+with their Git history and index retained. No unexpected missing files were found.
+The private archive path and digest remain in the local pass receipt.
+
+Only `codex/audacity-completeness` and its linked working tree were retired.
+Its source tip `9025c07df2856d10b9160b8af69c4ee37ce5b12b` was clean, inactive
+and proven an ancestor of pushed main `8491e0cd7aa71964db909f1f29f6ad9963bd603e`.
+The local path, local ref and remote ref were confirmed absent after removal.
+No stash existed, and tags and releases were not deleted.
+
+Other working trees remain because they contain unfinished work, expected build
+overlays, or referenced local proof and build material. Historical divergent refs
+also remain preserved. Main-only closeout and the full product objective remain
+incomplete; this scoped cleanup does not change those acceptance criteria.
+
 ## Preservation handoff: unfinished work retained
 
 Implementation stopped for account-allowance preservation. The overall task is

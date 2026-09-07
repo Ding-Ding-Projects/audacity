@@ -17,6 +17,7 @@ Previous completion ticks below are reopened: source presence and historical cap
 - [ ] Complete isolated built UI, installer/update and audio/project verification.
 - [ ] Publish and verify the final release, documentation, wiki and operational skill.
 - [ ] Complete preservation-proven cleanup without losing historical work.
+- [x] Verify the dated private all-working-tree archive and retire the clean, merged completeness lane only; other candidates remain retained.
 
 ---
 # Roadmap
