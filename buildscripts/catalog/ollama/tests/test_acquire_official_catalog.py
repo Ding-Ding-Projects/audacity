@@ -44,12 +44,17 @@ class OfficialCatalogParserTests(unittest.TestCase):
         finally:
             catalog.fetch = old_fetch
 
-    def test_lazy_tag_receipt_fails(self):
+    def test_lazy_tag_receipt_follows_terminal_page(self):
         old_fetch = catalog.fetch
         try:
-            catalog.fetch = lambda url: (url, b'<a href="/library/llama3.2:1b">tag</a><button hx-get="/library/llama3.2/tags?page=2">more</button>')
-            with self.assertRaises(ValueError):
-                catalog.detail_receipt("llama3.2")
+            def fetch(url):
+                if "page=2" in url:
+                    return url, b'<a href="/library/llama3.2:3b">tag</a>'
+                return url, b'<a href="/library/llama3.2:1b">tag</a><button hx-get="/library/llama3.2/tags?page=2">more</button>'
+            catalog.fetch = fetch
+            receipt = catalog.detail_receipt("llama3.2")
+            self.assertEqual(receipt["tags"], ["llama3.2:1b", "llama3.2:3b"])
+            self.assertEqual(len(receipt["tagPages"]), 2)
         finally:
             catalog.fetch = old_fetch
 

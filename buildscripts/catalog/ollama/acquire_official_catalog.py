@@ -54,17 +54,26 @@ def fetch(url: str) -> tuple[str, bytes]:
 
 
 def detail_receipt(model: str) -> dict:
-    url, payload = fetch(canonical(f"https://ollama.com/library/{model}/tags"))
-    if len(payload) > 2 * 1024 * 1024:
-        raise ValueError("official tag page exceeded the 2 MiB receipt limit")
-    links = Links()
-    links.feed(payload.decode("utf-8", errors="strict"))
+    current = canonical(f"https://ollama.com/library/{model}/tags")
+    seen, pages, tags = set(), [], set()
     prefix = f"/library/{model}:"
-    tags = sorted({urllib.parse.urlparse(href).path.rsplit("/", 1)[1]
-                   for href in _hrefs(payload) if urllib.parse.urlparse(href).path.startswith(prefix)})
-    if links.next_url or not tags:
-        raise ValueError(f"tag receipt for {model} is paginated or empty; bounded tool cannot prove completeness")
-    return {"name": model, "tags": tags, "tagPage": {"url": url, "sha256": hashlib.sha256(payload).hexdigest()}}
+    while True:
+        if current in seen or len(pages) >= 100:
+            raise ValueError(f"tag receipt pagination loop or limit for {model}")
+        seen.add(current)
+        url, payload = fetch(current)
+        if len(payload) > 2 * 1024 * 1024:
+            raise ValueError("official tag page exceeded the 2 MiB receipt limit")
+        links = Links(); links.feed(payload.decode("utf-8", errors="strict"))
+        tags.update(urllib.parse.urlparse(href).path.rsplit("/", 1)[1]
+                    for href in _hrefs(payload) if urllib.parse.urlparse(href).path.startswith(prefix))
+        pages.append({"url": url, "sha256": hashlib.sha256(payload).hexdigest()})
+        if not links.next_url:
+            break
+        current = canonical(urllib.parse.urljoin(url, links.next_url))
+    if not tags:
+        raise ValueError(f"tag receipt for {model} is empty")
+    return {"name": model, "tags": sorted(tags), "tagPages": pages}
 
 
 def _hrefs(payload: bytes) -> list[str]:
