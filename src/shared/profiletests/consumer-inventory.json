@@ -80,5 +80,19 @@
   },
   "pendingNetworkConsumers": [
     "src/toolkit/internal/ollamaclient.cpp"
-  ]
+  ],
+  "brandingRouteConsumers": {
+    "src/personalize/personalizemodule.cpp": [
+      "static muse::GlobalInject<muse::IGlobalConfiguration> configuration;",
+      "return new BrandingModel(configuration()->userAppDataPath().toQString() + \"/personalize\", shipped.readAll());",
+      "qmlRegisterSingletonType<BrandingModel>(\"Audacity.Personalize\", 1, 0, \"BrandingModel\", brandingCreator);"
+    ],
+    "src/personalize/internal/brandingmodel.cpp": [
+      ": QObject(parent), m_store(profileRoot), m_shippedMark(shippedMark)"
+    ],
+    "src/branding/brandingstore.cpp": [
+      "return QDir(root).filePath(\"branding-v1\");",
+      ": m_profileRoot(std::move(profileRoot))"
+    ]
+  }
 }
