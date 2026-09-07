@@ -27,7 +27,9 @@ The presentation suite also verifies that the browser catalog exactly matches
 the maintained JSON. Complete browser interaction, screen-reader, viewport,
 theme, and scale evidence is still missing. Documentation article translation,
 full dynamic-copy coverage, and other canonical website features remain open.
-This branch's current language work has not been deployed or accepted as complete.
+This language increment was integrated at `b2f6ae8840458ae44a2f36cd385b16b494dbf252`
+and deployed successfully in run `34071003745`. Eleven served files matched the
+staged candidate hashes. It is deployed, but complete browser acceptance remains open.
 
 
 

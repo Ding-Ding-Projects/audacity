@@ -404,7 +404,7 @@
     ['Toy locks and authenticator', 'Playful lock screens and an authenticator surface for the desktop app.'],
     ['Ollama suite manager', 'Manage local Ollama models from within the app.'],
     ['ADHD modes', 'Focus, Low stimulation, Time awareness, One thing at a time, and Momentum · all off by default, never presented as medical.'],
-    ['Dim sum surprise', 'A 10% chance at startup of a bilingual dish name and a real photo, non-blocking, cannot be turned off.'],
+    ['Dim sum surprise', 'A 10% chance at startup of a bilingual dish name and a catalog image. Existing catalog images are AI-generated illustrations, not camera photographs.'],
     ['School mode', 'One shared speed bump across every app on the machine: everything reads plain English until a PIN or password turns it back off.'],
     ['Narrator', 'An off by default spoken narrator for app events, in English, Cantonese, or Both, with its own Quiet mode.'],
     ['No unsolicited interruptions', 'No unsolicited dialogs, banners, or nags asking for payment, ratings, or upgrades. See the No nagging article.'],

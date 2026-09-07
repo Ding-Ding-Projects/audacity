@@ -4,7 +4,11 @@
 
 On roughly 10% of launches, a fresh random draw decides whether Audacity shows a small,
 non-blocking card naming one random dim sum dish in English and Traditional Chinese, for
-example "Shrimp dumpling · 蝦餃". The card carries the dish's photo when one is available.
+example "Shrimp dumpling · 蝦餃". The card carries the dish's catalog image when available.
+
+The existing bundled catalog uses AI-generated illustrations, not camera-origin
+photographs. The release reuses a tracked catalog image with that origin disclosed;
+the image illustrates the named dish and is not photographic evidence of a meal.
 
 The draw happens once per launch and is never repeated within that launch. It is never
 shown on the very first run, during an error path, or while a dialog or a background task
@@ -80,6 +84,9 @@ The redirect-following fetch itself was verified live: `curl -sIL` against a rea
 `catalog-v1` release asset confirmed the exact one-hop redirect chain
 (`github.com` → `release-assets.githubusercontent.com`), and the built application, run
 under Xvfb with `AU_DIM_SUM_FORCE=1` and a fresh application data directory, was observed to
-fetch and cache a real photo through that same redirect chain (a valid 1254x1254 PNG,
+fetch and cache a catalog image through that same redirect chain (a valid 1254x1254 PNG,
 2.3 MB) and then display it in the card. The full flow is captured in
 `docs/design/captures/lane-k2/08-dimsum-card-real-photo.png`.
+
+That filename and the Xvfb record are historical. They do not establish camera
+origin or current Windows runtime verification.
