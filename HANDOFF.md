@@ -1,5 +1,30 @@
 # Handoff
 
+## Published incremental release
+
+[`v4.0.0-m3.14`](https://github.com/Ding-Ding-Projects/audacity/releases/tag/v4.0.0-m3.14)
+was published as a non-draft prerelease at `2026-09-06T23:48:41Z`.
+Release ID: `383755479`. Its immutable tag points directly to the freshly built
+application source `e41471c2d1745acc6e1966576ecab3ce1abe0403`.
+
+- Fresh application: 95,618,048 bytes, SHA-256 `16d393e5fb4fdaee52504e8cd12bfe787c866f7c598a59f7a55e40d26782d320`, embedded version `4.0.0`, unsigned.
+- `Setup.exe`: 82,861,056 bytes, SHA-256 `329f0ff92019899040028801aa0c5236adb136c16508194a569eb732d079d84c`.
+- Full `4.0.0-m3014` package: 82,004,089 bytes, SHA-256 `97c1d9d79c3c11644deb2732771266c62a6365811464716b58f21504f550f6b8`.
+- Delta from the verified published `4.0.0-m3013` baseline: 8,206,341 bytes, SHA-256 `e995ca98ebbc4a1dfc27ec51f80f1ebaa925cf21fc7209565633f6c3841143a2`.
+- All eleven release assets were downloaded after publication and matched their byte counts and SHA-256 digests. The package's application matched the fresh executable exactly; all ten qpdf pins passed and no bootstrap administration records were packaged.
+- The release includes manifests, distinct package/release checksums, public-safe build provenance, the committed counter's line-count evidence, and the existing AI-generated catalog image with accurate origin disclosure.
+
+The canonical local build used an ordinary short-path checkout, not a junction.
+Its successful build took 506.369 seconds; packaging took 344.3209399 seconds.
+Both failed path attempts were preserved. Publication used the shared create-only
+tag reservation utility, whose UTF-8 transport and uncertain-receipt fixtures passed.
+
+This incremental release fulfills publication of a real installer. It is not the
+final product-completion milestone: installation/update execution, full audio and
+project regression, built UI matrices, remaining feature integration, a current
+successful hosted delivery, website deployment verification, and cleanup remain
+unfinished. Do not use this release as evidence that those criteria passed.
+
 ## Verified packaging integration
 
 The packaging candidate `30cda45b51fbccf2d01ca5af7ca27169478e5aab`
@@ -48,8 +73,14 @@ The delivery workflow targets `main` and Windows x64. It builds and packages an 
 
 GitHub Pages, Issues, Discussions and the wiki are enabled. The repository homepage was verified as https://ding-ding-projects.github.io/audacity/. Documentation publication stages `docs/site` at the root and reads real release metadata. It follows the exact `Material Audacity Windows delivery` workflow name.
 
-Tracking issue: https://github.com/Ding-Ding-Projects/audacity/issues/3
-Progress discussion: https://github.com/Ding-Ding-Projects/audacity/discussions/4
+Tracking issue: https://github.com/Ding-Ding-Projects/audacity/issues/6
+Progress discussion: https://github.com/Ding-Ding-Projects/audacity/discussions/7
+Release announcement: https://github.com/Ding-Ding-Projects/audacity/discussions/5
+
+The earlier issue #3 and Discussion #4 returned not-found responses during the
+publication handoff. Fresh records carry the current verified state; those earlier
+links are retained here only as historical identifiers. Discussion pinning was
+not exposed by the available GraphQL schema, so no pin was claimed.
 
 The complete product and release-verification goal remains unfinished. This integration does not claim complete feature coverage, current full-UI captures, installer execution, or a final release verdict.
 

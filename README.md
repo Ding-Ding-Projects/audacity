@@ -2,6 +2,12 @@
 
 [![Windows delivery](https://github.com/Ding-Ding-Projects/audacity/actions/workflows/material-audacity-release.yml/badge.svg?branch=main)](https://github.com/Ding-Ding-Projects/audacity/actions/workflows/material-audacity-release.yml)
 
+Verified incremental Windows prerelease: [v4.0.0-m3.14](https://github.com/Ding-Ding-Projects/audacity/releases/tag/v4.0.0-m3.14),
+with a freshly built [unsigned Setup.exe](https://github.com/Ding-Ding-Projects/audacity/releases/download/v4.0.0-m3.14/Setup.exe).
+All eleven published assets were downloaded and hash-verified. Full product and
+runtime acceptance remains in progress; see [HANDOFF.md](HANDOFF.md) for the exact
+verification boundaries.
+
 A Material Design 3 rebuild of the Audacity 4 shell: the same multi track
 audio editor and recorder, with the original editing engine, wrapped in a
 full Material 3 token engine, component library, and a large set of
