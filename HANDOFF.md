@@ -14,7 +14,7 @@ These owning branches were pushed and their exact remote tips verified:
 | `codex/audacity-experience` | `7657b96084ececcc7f771d12df6cb4c96acadf35` | Evict bilingual narration as logical groups; a 63-entry queue can currently orphan one language. Add that counterexample. |
 | `codex/audacity-ollama` | `e69147f111d3baad3db4f45047bcb6da9be98021` | Fix normalization/restart idempotency, then run the committed native target. Actual result: 83 of 84 cases passed. Repair official acquisition pagination and receipt handling separately. |
 | `codex/audacity-appearance` | `6318ab8c9d6911cb1aec0021f231a6f32a62988c` | Continue stable consumer registration and typography/opacity coverage beyond the two primitives. Rendered behavior is unverified. |
-| `codex/audacity-converter-ui` | `6e99ec6e2e3ae155ce745c14b903e635c9d3a3bf` | Finish logged module configuration, adapter tests, navigation, localization and batch results. Shared cancellation lifetime repair is preserved but unverified. |
+| `codex/audacity-converter-ui` | `6e99ec6e2e3ae155ce745c14b903e635c9d3a3bf` | Resumed configuration completed and generated build.ninja; module compilation, adapter tests, navigation, localization and batch results remain pending. Shared cancellation lifetime repair is preserved but unverified. |
 
 Native narration compiled SAPI and enumerated two local voices without speaking.
 Thirty-five orchestration assertions passed using the production engine and a
@@ -25,9 +25,10 @@ cover its known paired-edit finding and do not authorize integration.
 
 Run `34069712872` subsequently succeeded and published non-draft incremental
 `v4.0.0-m3.17` at `2026-09-07T01:06:42Z`. Its tag resolves to
-`9ef1afc960be2371edcc7db48f985219c6b4be97`. Only publication metadata and tag
-identity were checked during closeout; its downloads and installation have not
-received the independent verification previously performed for `.14` and `.15`.
+`9ef1afc960be2371edcc7db48f985219c6b4be97`. All eight attached assets were then
+downloaded and matched published byte counts and SHA-256 digests. `Setup.exe`
+is 74,777,600 bytes and reports `NotSigned`. Installation and full product
+interaction remain unverified; this is incremental delivery, not final acceptance.
 Other existing delivery runs may still be active. Re-read their actual state,
 never restart them solely because a local observation ended.
 
