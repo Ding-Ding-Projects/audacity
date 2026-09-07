@@ -130,6 +130,19 @@ GROUPS = [
             "framework/interactive/qml/Muse/Interactive/StandardDialogPanel.qml",
         ],
     ),
+    (
+        "0011-isolated-profile",
+        "Route verification profiles through the application-owned provider",
+        [
+            "framework/global/CMakeLists.txt",
+            "framework/global/internal/globalconfiguration.cpp",
+            "framework/global/io/internal/filesystem.cpp",
+            "framework/global/settings.cpp",
+            "framework/multiwindows/internal/multiprocess/ipc/ipcchannel.cpp",
+            "framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp",
+            "framework/network/internal/networkmanager.cpp",
+        ],
+    ),
 ]
 
 

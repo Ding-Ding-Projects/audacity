@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
  * Audacity: A Digital Audio Editor
  */
@@ -201,7 +202,7 @@ bool writeSilence(SNDFILE* sndFile, size_t frames, int channels)
 }
 
 LegacyAupImporter::LegacyAupImporter()
-    : m_tempDir(std::make_unique<QTemporaryDir>(QDir::tempPath() + "/audacity-legacy-aup-XXXXXX"))
+    : m_tempDir(std::make_unique<QTemporaryDir>(au::profile::Paths::temporaryPath() + "/audacity-legacy-aup-XXXXXX"))
 {
 }
 

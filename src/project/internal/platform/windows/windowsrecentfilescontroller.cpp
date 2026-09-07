@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
  * SPDX-License-Identifier: GPL-3.0-only
  * Audacity-CLA-applies
@@ -28,6 +29,7 @@ using namespace au::project;
 
 void WindowsRecentFilesController::prependPlatformRecentFile(const muse::io::path_t& path)
 {
+    if (au::profile::Paths::active()) return;
     std::wstring pathString = path.toStdWString();
     SHAddToRecentDocs(SHARD_PATHW, pathString.c_str());
 }

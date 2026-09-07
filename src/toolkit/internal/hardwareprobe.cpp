@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -41,7 +42,7 @@ qint64 HardwareProbe::measureTotalRamBytes()
 
 qint64 HardwareProbe::measureFreeDiskBytes(const QString& path)
 {
-    QStorageInfo info(path.isEmpty() ? QDir::homePath() : path);
+    QStorageInfo info(path.isEmpty() ? au::profile::Paths::writableLocation(QStandardPaths::HomeLocation) : path);
     if (!info.isValid()) {
         return 0;
     }
@@ -50,6 +51,7 @@ qint64 HardwareProbe::measureFreeDiskBytes(const QString& path)
 
 qint64 HardwareProbe::measureVramBytes()
 {
+    if (au::profile::Paths::active()) return -1;
     const QString nvidiaSmi = QStandardPaths::findExecutable(QStringLiteral("nvidia-smi"));
     if (nvidiaSmi.isEmpty()) {
         return -1;
@@ -80,6 +82,7 @@ qint64 HardwareProbe::measureVramBytes()
 
 HardwareEvidence HardwareProbe::measure(const QString& diskDestinationPath)
 {
+    if (au::profile::Paths::active()) return HardwareEvidence {};
     HardwareEvidence evidence;
     evidence.totalRamBytes = measureTotalRamBytes();
     evidence.freeDiskBytes = measureFreeDiskBytes(diskDestinationPath);

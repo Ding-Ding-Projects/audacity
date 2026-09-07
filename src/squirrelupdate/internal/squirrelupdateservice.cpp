@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -38,6 +39,10 @@ SquirrelUpdateService::~SquirrelUpdateService() = default;
 
 void SquirrelUpdateService::init()
 {
+    if (au::profile::Paths::active()) {
+        m_lastError = "Updates are unavailable in an isolated verification profile.";
+        return;
+    }
 #ifdef Q_OS_WIN
     if (!isSupported()) {
         LOGI() << "Not a Squirrel.Windows installation, the feed checker stays off";
@@ -78,6 +83,7 @@ void SquirrelUpdateService::restartTimer()
 
 bool SquirrelUpdateService::isSupported() const
 {
+    if (au::profile::Paths::active()) return false;
 #ifdef Q_OS_WIN
     return !installedVersion().isEmpty() && QFileInfo::exists(updaterPath());
 #else
@@ -103,12 +109,12 @@ QString SquirrelUpdateService::updaterPath() const
 QString SquirrelUpdateService::squirrelTempDir() const
 {
 #ifdef Q_OS_WIN
-    const QString localAppData = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    const QString localAppData = au::profile::Paths::writableLocation(QStandardPaths::GenericDataLocation);
     if (!localAppData.isEmpty()) {
         return localAppData + "/SquirrelTemp";
     }
 #endif
-    return QDir::tempPath() + "/SquirrelTemp";
+    return au::profile::Paths::temporaryPath() + "/SquirrelTemp";
 }
 
 bool SquirrelUpdateService::isChecking() const
@@ -284,6 +290,7 @@ void SquirrelUpdateService::finishWithError(const QString& error)
 
 Ret SquirrelUpdateService::restartToUpdate()
 {
+    if (au::profile::Paths::active()) return make_ret(Ret::Code::NotSupported, std::string("Updates are unavailable in an isolated verification profile."));
     if (!isSupported()) {
         return make_ret(Ret::Code::NotSupported, std::string("Squirrel.Windows updates are available on Windows only"));
     }

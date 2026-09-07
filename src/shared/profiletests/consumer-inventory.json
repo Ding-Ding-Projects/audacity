@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "writableConsumers": {
+    "src/experience/internal/schoolmode.cpp": 1,
+    "src/experience/internal/dimsumsurprise.cpp": 1,
+    "src/companion/regex/regexengine.cpp": 1,
+    "src/personalize/internal/appearanceoverrides.cpp": 1,
+    "src/personalize/internal/authenticatorstore.cpp": 2,
+    "src/personalize/internal/displaynamesettings.cpp": 1,
+    "src/personalize/internal/lockregistry.cpp": 2,
+    "src/personalize/internal/mutationhistory.cpp": 1,
+    "src/personalize/internal/supporttickets.cpp": 2,
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
+    "src/effects/nyquist/nyquistprompt/nyquistpromptviewmodel.cpp": 2,
+    "src/toolkit/internal/bookmarkmodel.cpp": 1,
+    "src/toolkit/internal/hardwarefitservice.cpp": 1,
+    "src/toolkit/internal/hardwareprobe.cpp": 1
+  },
+  "temporaryConsumers": {
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp": 1,
+    "src/chronicle/view/versionhistorymodel.cpp": 1,
+    "src/importexport/import/internal/legacyaupimporter.cpp": 1,
+    "src/chronicle/internal/gitsnapshotstore.cpp": 2
+  },
+  "pendingParentConsumers": [],
+  "sideEffectGuards": {
+    "src/squirrelupdate/internal/squirrelupdateservice.cpp": [
+      "SquirrelUpdateService::init",
+      "SquirrelUpdateService::isSupported",
+      "SquirrelUpdateService::restartToUpdate"
+    ],
+    "src/experience/internal/dimsumsurprise.cpp": [
+      "DimSumSurpriseService::refreshCatalogAsync",
+      "DimSumSurpriseService::startPhotoRequest"
+    ],
+    "src/project/internal/platform/windows/windowsrecentfilescontroller.cpp": [
+      "WindowsRecentFilesController::prependPlatformRecentFile"
+    ],
+    "src/au3cloud/internal/platform/win/customschemeregistrar.cpp": [
+      "registerCustomScheme"
+    ],
+    "src/au3cloud/internal/au3cloudservice.cpp": [
+      "Au3CloudService::init",
+      "Au3CloudService::registerWithPassword",
+      "Au3CloudService::signInWithPassword",
+      "Au3CloudService::signInWithSocial",
+      "Au3CloudService::signOut",
+      "Au3CloudService::syncUsageInfoPrefs",
+      "Au3CloudService::openBrowserSession"
+    ],
+    "src/au3cloud/internal/au3audiocomservice.cpp": [
+      "Au3AudioComService::enabled",
+      "Au3AudioComService::init",
+      "Au3AudioComService::deinit",
+      "Au3AudioComService::downloadProjectList",
+      "Au3AudioComService::downloadAudioList",
+      "Au3AudioComService::uploadProject",
+      "Au3AudioComService::updateAudioPreview",
+      "Au3AudioComService::resumeProjectSync",
+      "Au3AudioComService::downloadAudioFile",
+      "Au3AudioComService::openCloudProject",
+      "Au3AudioComService::shareAudio",
+      "Au3AudioComService::deleteCloudProject",
+      "Au3AudioComService::getCloudProjectPage",
+      "Au3AudioComService::getCloudAudioPage",
+      "Au3AudioComService::getCloudProfilePage",
+      "Au3AudioComService::getTourPage"
+    ],
+    "src/toolkit/internal/hardwareprobe.cpp": [
+      "HardwareProbe::measure",
+      "HardwareProbe::measureVramBytes"
+    ],
+    "src/toolkit/internal/externaleditorservice.cpp": [
+      "ExternalEditorService::openFile",
+      "ExternalEditorService::openFolder"
+    ],
+    "src/toolkit/internal/hardwarefitservice.cpp": [
+      "HardwareFitService::evidenceSummary"
+    ]
+  },
+  "pendingNetworkConsumers": [
+    "src/toolkit/internal/ollamaclient.cpp"
+  ]
+}

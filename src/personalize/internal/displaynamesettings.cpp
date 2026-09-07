@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -30,7 +31,7 @@ DisplayNameSettings::DisplayNameSettings(QObject* parent)
 
 QString DisplayNameSettings::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     return dir + "/display-name.txt";
 }

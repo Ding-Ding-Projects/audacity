@@ -48,6 +48,7 @@ QCommandLineOption internalCommandLineOption(Args&& ... args)
 
 void CommandLineParser::init()
 {
+    m_parser.addOption(QCommandLineOption("profile-dir", "Use an isolated verification profile (external side effects disabled)", "absolute-directory"));
     // Common
     m_parser.addHelpOption(); // -?, -h, --help
     m_parser.addVersionOption(); // -v, --version

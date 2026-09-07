@@ -52,3 +52,13 @@ Other subcommands:
 `regenerate` writes `git -C muse diff` split by the logical file groups declared in
 `buildscripts/tools/muse_patches.py`. To add a file to the overlay, add its path to the
 right group (or add a new group) and regenerate.
+
+## Isolated verification profiles
+
+`0011-isolated-profile.patch` compiles the application-owned
+`src/shared/profilepaths.cpp` once in `muse_global` and routes framework settings,
+storage, IPC, child process arguments, and network suppression through it.
+The public interface stays in `src/shared/profilepaths.h`.
+See `src/shared/profiletests/README.md` for focused checks and limitations.
+This overlay is registered in `buildscripts/tools/muse_patches.py` so regeneration
+retains its exact source paths.

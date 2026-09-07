@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -25,12 +26,12 @@ SupportTickets::SupportTickets(QObject* parent)
 
 QString SupportTickets::dataFolderPath() const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    return au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
 QString SupportTickets::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     return dir + "/support-tickets.json";
 }
