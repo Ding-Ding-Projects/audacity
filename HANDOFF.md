@@ -1,5 +1,43 @@
 # Handoff
 
+## Current integration and verification boundaries
+
+The canonical documentation environment now permits `main`, replacing its stale
+`master` restriction without removing other protections. Deployment run
+`34070563020` succeeded for `f9dc58a2564c62d02ecd1e2121e902a894a62782`;
+run `34071003745` deployed the subsequent language/narrator integration at
+`b2f6ae8840458ae44a2f36cd385b16b494dbf252`. Eleven served files matched each
+separately staged candidate. Run `34071289666` then published the corrected
+generated-image disclosure, which was confirmed in the served script.
+
+Logo customization is integrated at `f9dc58a2564c62d02ecd1e2121e902a894a62782`.
+Explicit profile paths are integrated at `2c2012dc576ad2862156d23024ffb239d3bf44e6`;
+combined branding/profile tests are integrated at
+`ce52a372a56b2e383e0d8f2d8d06cb12e60aaeff`. The integrated source inventory
+passed 28 consumer files and 122 omission/disabled-boundary regressions. Separate
+real model/store/provider tests passed 20 parent and 94 child assertions.
+Actual product GlobalConfiguration and QML singleton execution remain unverified.
+Direct Ollama networking remains a pending profile-isolation consumer.
+
+Seven audio/project regression targets compiled at
+`f9dc58a2564c62d02ecd1e2121e902a894a62782` in 237.467 seconds: `au3audio_tests`,
+`au_project_tests`, `au_au3wrap_tests`, `playback_tests`, `record_tests`,
+`trackedit_tests`, and `importer_tests`. None was executed. The build-only receipt
+does not establish any runtime regression verdict.
+
+Active repairs remain isolated: build-bound initial-screen provenance, native
+Windows narration and bilingual text, strict untrusted catalog import, appearance
+consumer coverage, and the converter presentation bridge. The converter scaffold
+at `542d97f05483c7f2c911d0d1778c333323d52dad` is preserved on its own branch,
+not integrated or verified. A full final build, installation/update execution,
+complete surface interactions and final release designation remain outstanding.
+
+The read-only cleanup snapshot at main
+`be0d69adaa6ae2d41714553c69b2bebd344c3bbe` recorded 18 local branches, 65 remote
+refs, 17 worktrees and zero stashes. Five local tips and 29 remote tips diverged.
+This is an inventory, not deletion proof. Active work and historical unique
+commits remain retained; no filesystem archive or cleanup completion is claimed.
+
 ## Website narrator source increment
 
 The website now has opt-in narration controls, independent runtime voice choices,
@@ -182,7 +220,7 @@ The evidence implementation passed 57 regression cases; after a final observed-t
 
 ## Feature lanes awaiting integration and full verification
 
-- Front-screen provenance now uses stable source-commit provenance, rejects changed tracked/staged/untracked candidates, preserves exact submodule pins, and has executable negative fixtures. Full built UI proof remains pending.
+- The earlier front-screen provenance candidate checks source identity but uses source-commit time and misses direct project startup routes. Build-bound metadata and an always-visible initial shell are under repair; the earlier candidate is not accepted as fulfilling the canonical provenance contract.
 - School mode now preserves last-known state, validates and atomically persists records, and migrates valid legacy records. Real standalone Qt service checks passed.
 - The canonical local vocabulary parser has a real standalone Qt test result. Browser parser tests cover 23 cases; browser upload and reset acceptance is pending.
 - The converter backend has 28 native transaction cases and two passing CTest targets. Its UI, approved overwrite, decoder isolation and broader adapter set remain incomplete.
