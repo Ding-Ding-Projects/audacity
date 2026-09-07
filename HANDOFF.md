@@ -1,5 +1,27 @@
 # Handoff
 
+## Post-release converter containment integration
+
+The reviewed containment work through `112e981e96d7def4374ff95e93113001e8a55e61`
+is integrated after the `v4.0.0-m3.14` application source. It is not part of that
+already-published binary. qpdf now uses a suspended LPAC process with exactly the
+required `registryRead` capability, no network capability, verified kernel identity,
+explicit inherited pipes, bounded copied input/runtime data and parent-owned output
+publication. Original input ACLs are unchanged.
+
+Local evidence at implementation `7da85374037def3bcc2a2ad43d74b3fa4c6add76`:
+34 PDF cases, 28 native transaction cases, 14 containment cases and core smoke
+passed. Three deliberate isolation mutations failed before worker execution.
+The final ownership/teardown repair passed five cleanup and 14 containment cases;
+independent source review refuted the remaining reported findings. Normal profile
+deletion is checked, failed deletion is observable and never silently retried, and
+pre-existing registrations cannot be adopted merely because storage is absent.
+
+The operating system's registry-read resource boundary and possible leftovers
+after a hard parent crash are documented. This is not a virtual-machine isolation
+claim. Capability probing must run away from the GUI thread. Full converter UI,
+packaged-product execution and remaining format integration are still pending.
+
 ## Published incremental release
 
 [`v4.0.0-m3.14`](https://github.com/Ding-Ding-Projects/audacity/releases/tag/v4.0.0-m3.14)

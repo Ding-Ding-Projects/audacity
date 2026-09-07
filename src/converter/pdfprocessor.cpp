@@ -4,14 +4,13 @@
 #include "pdfprocessor.h"
 #include "nativefiletransaction.h"
 #include "qpdfbundle.h"
+#include "processcontainment.h"
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QElapsedTimer>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QProcess>
-#include <QProcessEnvironment>
 #include <QRegularExpression>
 
 using namespace au::converter;
@@ -41,6 +40,9 @@ struct CommandResult { bool ok = false; bool cancelled = false; QByteArray outpu
 struct Budget {
     QElapsedTimer timer;
     QString toolPath;
+#ifdef Q_OS_WIN
+    detail::ProcessContainment containment;
+#endif
     int milliseconds = PdfProcessor::TimeoutMilliseconds;
     qint64 processBytes = 1024 * 1024;
     qint64 outputBytes = PdfProcessor::MaxOutputBytes;
@@ -53,124 +55,62 @@ struct Budget {
         timer.start();
     }
 };
-#ifdef Q_OS_WIN
-class ProcessJob final {
-public:
-    ProcessJob() : handle(CreateJobObjectW(nullptr, nullptr)) {}
-    ~ProcessJob() {
-        if (attributes) DeleteProcThreadAttributeList(attributes);
-        if (handle) CloseHandle(handle);
-    }
-    bool configure() {
-        if (!handle) return false;
-        JOBOBJECT_EXTENDED_LIMIT_INFORMATION limit = {};
-        limit.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-            | JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_PROCESS_MEMORY;
-        limit.BasicLimitInformation.ActiveProcessLimit = 1;
-        limit.ProcessMemoryLimit = PdfProcessor::MaxProcessMemoryBytes;
-#ifdef AU_CONVERTER_TEST_HOOKS
-        limit.ProcessMemoryLimit = SIZE_T(std::clamp(PdfProcessor::testProcessMemoryBytes, qint64(1),
-                                                   PdfProcessor::MaxProcessMemoryBytes));
-#endif
-        if (!SetInformationJobObject(handle, JobObjectExtendedLimitInformation, &limit, sizeof(limit))) return false;
-        JOBOBJECT_EXTENDED_LIMIT_INFORMATION installed = {};
-        if (!QueryInformationJobObject(handle, JobObjectExtendedLimitInformation, &installed, sizeof(installed), nullptr)
-            || installed.ProcessMemoryLimit != limit.ProcessMemoryLimit
-            || installed.BasicLimitInformation.ActiveProcessLimit != 1
-            || (installed.BasicLimitInformation.LimitFlags & limit.BasicLimitInformation.LimitFlags) != limit.BasicLimitInformation.LimitFlags)
-            return false;
-        PDF_BARRIER(ProcessLimitsInstalled, QStringLiteral("memory=%1;processes=%2;killOnClose=1")
-            .arg(qulonglong(installed.ProcessMemoryLimit)).arg(installed.BasicLimitInformation.ActiveProcessLimit));
-        SIZE_T bytes = 0;
-        InitializeProcThreadAttributeList(nullptr, 1, 0, &bytes);
-        if (!bytes) return false;
-        storage.resize(bytes);
-        auto* candidate = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(storage.data());
-        if (!InitializeProcThreadAttributeList(candidate, 1, 0, &bytes)) return false;
-        attributes = candidate;
-        return UpdateProcThreadAttribute(attributes, 0, PROC_THREAD_ATTRIBUTE_JOB_LIST, &handle,
-                                         sizeof(handle), nullptr, nullptr);
-    }
-    void apply(QProcess::CreateProcessArguments* arguments) {
-        startup.StartupInfo = *reinterpret_cast<STARTUPINFOW*>(arguments->startupInfo);
-        startup.StartupInfo.cb = sizeof(startup);
-        startup.lpAttributeList = attributes;
-        arguments->startupInfo = reinterpret_cast<Q_STARTUPINFO*>(&startup);
-        arguments->flags |= EXTENDED_STARTUPINFO_PRESENT | CREATE_NO_WINDOW;
-    }
-private:
-    HANDLE handle = nullptr;
-    std::vector<unsigned char> storage;
-    LPPROC_THREAD_ATTRIBUTE_LIST attributes = nullptr;
-    STARTUPINFOEXW startup = {};
-};
-#endif
 CommandResult execute(const QStringList& arguments, const std::atomic_bool* cancellation, Budget& budget, QIODevice* sink = nullptr)
 {
     if (cancelled(cancellation)) return {false, true, {}, QStringLiteral("PDF operation was cancelled.")};
-#ifdef Q_OS_WIN
-    ProcessJob job;
-    if (!job.configure()) return {false, false, {}, QStringLiteral("PDF process resource limits could not be installed.")};
-#endif
-    QProcess process;
-#ifdef Q_OS_WIN
-    process.setCreateProcessArgumentsModifier([&job](QProcess::CreateProcessArguments* arguments) { job.apply(arguments); });
-#endif
-    process.setProgram(budget.toolPath);
-    QStringList nativeArguments;
-    for (QString argument : arguments) {
-        // qpdf interprets '?' in extended paths as a wildcard. The device
-        // namespace spelling addresses the same pinned volume without a drive
-        // letter and without qpdf's wildcard expansion.
+#ifndef Q_OS_WIN
+    return {false, false, {}, QStringLiteral("PDF containment requires Windows.")};
+#else
+    const auto alive = [&] { return !cancelled(cancellation) && budget.timer.elapsed() < budget.milliseconds; };
+    struct Copies {
+        detail::ProcessContainment& container;
+        size_t marker;
+        ~Copies() { container.release(marker); }
+    } copies { budget.containment, budget.containment.mark() };
+    QStringList staged;
+    int sequence = 0;
+    for (const QString& argument : arguments) {
         const int prefix = argument.startsWith(QStringLiteral("--update-from-json=")) ? 19 : 0;
-        if (argument.mid(prefix).startsWith(QStringLiteral("\\\\?\\Volume{"))) argument[prefix + 2] = QLatin1Char('.');
-        nativeArguments << argument;
+        QString path = argument.mid(prefix);
+        if (path.startsWith(QStringLiteral("\\\\?\\Volume{")) || path.startsWith(QStringLiteral("\\\\.\\Volume{"))) {
+            path[2] = QLatin1Char('?');
+            detail::HandleDevice input(path, false, PdfProcessor::MaxOutputBytes, cancellation);
+            const QString copied = input.isOpen() ? budget.containment.copy(input,
+                QStringLiteral("input-%1.bin").arg(sequence++), PdfProcessor::MaxOutputBytes, {}, alive) : QString();
+            if (copied.isEmpty()) return {false, cancelled(cancellation), {}, QStringLiteral("PDF read-only staging exceeded its bound or could not be secured.")};
+            staged << argument.left(prefix) + copied;
+        } else staged << argument;
     }
-    process.setArguments(nativeArguments);
-    process.setProcessChannelMode(QProcess::SeparateChannels);
-    const QString toolDirectory = QFileInfo(budget.toolPath).absolutePath();
-    QProcessEnvironment environment;
-    // QProcess may restore the parent's PATH when it is omitted on Windows.
-    // Supply an explicit bundled-only PATH, plus the real operating-system root.
-    environment.insert(QStringLiteral("PATH"), toolDirectory);
-#ifdef Q_OS_WIN
-    wchar_t systemRoot[32768] = {};
-    const UINT length = GetWindowsDirectoryW(systemRoot, 32768);
-    if (!length || length >= 32768) return {false, false, {}, QStringLiteral("The operating-system directory is unavailable.")};
-    environment.insert(QStringLiteral("SystemRoot"), QString::fromWCharArray(systemRoot, int(length)));
+    qint64 memory = PdfProcessor::MaxProcessMemoryBytes;
+#ifdef AU_CONVERTER_TEST_HOOKS
+    memory = std::clamp(PdfProcessor::testProcessMemoryBytes, qint64(1), memory);
 #endif
-    process.setProcessEnvironment(environment);
-    // Avoid loading DLLs from a caller-controlled current directory.
-    process.setWorkingDirectory(toolDirectory);
-    process.start();
-    if (!process.waitForStarted(5000)) return {false, false, {}, QStringLiteral("The bundled qpdf process could not start.")};
+    detail::ContainedProcess process;
+    if (!process.start(budget.toolPath, staged, budget.containment, memory,
+                       std::max(1, budget.milliseconds - int(budget.timer.elapsed())), [&] {
+                           PDF_BARRIER(ProcessLimitsInstalled, QStringLiteral("memory=%1;processes=1;killOnClose=1").arg(memory));
+                       }))
+        return {false, false, {}, QStringLiteral("The required Windows LPAC worker could not start: ") + process.diagnostic()};
     PDF_BARRIER(ProcessStarted, arguments.join(QLatin1Char(' ')));
     QByteArray output;
     qint64 received = 0;
-    auto stop = [&](bool wasCancelled, const QString& message) {
-        process.kill();
-        process.waitForFinished(5000);
-        return CommandResult{false, wasCancelled, {}, message};
-    };
     for (;;) {
-        if (cancelled(cancellation)) return stop(true, QStringLiteral("PDF operation was cancelled."));
-        if (budget.timer.elapsed() >= budget.milliseconds) return stop(false, QStringLiteral("PDF operation exceeded its execution deadline."));
-        process.waitForReadyRead(20);
-        const QByteArray bytes = process.readAllStandardOutput();
-        const QByteArray diagnostics = process.readAllStandardError();
+        if (cancelled(cancellation)) return {false, true, {}, QStringLiteral("PDF operation was cancelled.")};
+        if (budget.timer.elapsed() >= budget.milliseconds) return {false, false, {}, QStringLiteral("PDF operation exceeded its execution deadline.")};
+        QByteArray bytes, diagnostics;
+        if (!process.read(bytes, diagnostics)) return {false, false, {}, QStringLiteral("PDF worker output could not be read.")};
         received += diagnostics.size() + (sink ? 0 : bytes.size());
-        if (received > budget.processBytes) return stop(false, QStringLiteral("PDF tool output exceeded its limit."));
+        if (received > budget.processBytes) return {false, false, {}, QStringLiteral("PDF tool output exceeded its limit.")};
         if (sink) {
             if (sink->size() > budget.outputBytes - bytes.size() || sink->write(bytes) != bytes.size())
-                return stop(cancelled(cancellation), QStringLiteral("PDF output exceeded its bound or could not be written."));
+                return {false, cancelled(cancellation), {}, QStringLiteral("PDF output exceeded its bound or could not be written.")};
         } else output += bytes;
-        // Do not reflect parser diagnostics containing source content or metadata.
-        if (process.state() == QProcess::NotRunning) break;
+        if (!process.running() && bytes.isEmpty() && diagnostics.isEmpty()) break;
+        if (bytes.isEmpty() && diagnostics.isEmpty()) process.wait(20);
     }
-    if (process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0) {
-        return {false, false, {}, QStringLiteral("qpdf rejected the PDF (exit %1).").arg(process.exitCode())};
-    }
+    if (process.exitCode() != 0) return {false, false, {}, QStringLiteral("qpdf rejected the PDF (exit %1).").arg(process.exitCode())};
     return {true, false, output, {}};
+#endif
 }
 CommandResult countPages(const QString& path, const std::atomic_bool* cancellation, Budget& budget, int& count)
 {
@@ -217,6 +157,22 @@ QString pinBundle(std::vector<std::unique_ptr<PinnedFile>>& files, QString* tool
     }
     return {};
 }
+QString prepareRuntime(Budget& budget, std::vector<std::unique_ptr<PinnedFile>>& bundle, const std::atomic_bool* cancellation)
+{
+    const QString reason = pinBundle(bundle);
+    if (!reason.isEmpty()) return reason;
+    if (!budget.containment.valid()) return QStringLiteral("Required Windows LPAC staging is unavailable.");
+    size_t component = 0;
+    for (auto it = detail::QpdfFiles.cbegin(); it != detail::QpdfFiles.cend(); ++it, ++component) {
+        const QString copied = budget.containment.copy(*bundle[component]->file, it.key(), PdfProcessor::MaxInputBytes, it.value(),
+            [&] { return !cancelled(cancellation) && budget.timer.elapsed() < budget.milliseconds; });
+        if (copied.isEmpty()) return budget.timer.elapsed() >= budget.milliseconds
+            ? QStringLiteral("PDF operation exceeded its execution deadline.")
+            : QStringLiteral("Verified PDF runtime could not be staged within its bound.");
+        if (it.key() == QStringLiteral("qpdf.exe")) budget.toolPath = copied;
+    }
+    return {};
+}
 #endif
 }
 QString PdfProcessor::bundledToolPath()
@@ -226,8 +182,12 @@ QString PdfProcessor::bundledToolPath()
 QString PdfProcessor::availabilityReason()
 {
 #ifdef Q_OS_WIN
+    Budget budget;
     std::vector<std::unique_ptr<PinnedFile>> files;
-    return pinBundle(files);
+    const QString reason = prepareRuntime(budget, files, nullptr);
+    if (!reason.isEmpty()) return reason;
+    const auto probe = execute({QStringLiteral("--version")}, nullptr, budget);
+    return probe.ok ? QString() : probe.message;
 #else
     return QStringLiteral("The bundled qpdf adapter is currently packaged only for Windows.");
 #endif
@@ -247,8 +207,8 @@ PdfResult PdfProcessor::process(const PdfRequest& request, const std::atomic_boo
 #else
     Budget budget;
     std::vector<std::unique_ptr<PinnedFile>> bundle;
-    const auto reason = pinBundle(bundle, &budget.toolPath);
-    if (!reason.isEmpty()) return fail(reason);
+    const auto reason = prepareRuntime(budget, bundle, cancellation);
+    if (!reason.isEmpty()) return fail(reason, cancelled(cancellation));
     if (request.sourcePaths.isEmpty() || request.sourcePaths.size() > 32
         || (request.operation != PdfOperation::Merge && request.sourcePaths.size() != 1))
         return fail(QStringLiteral("PDF operations require one source, or up to 32 sources for merge."));
