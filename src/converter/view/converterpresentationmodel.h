@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QFutureWatcher>
 #include <atomic>
+#include <memory>
 #include "conversionengine.h"
 namespace au::converter {
 class ConverterPresentationModel final : public QObject {
@@ -17,6 +18,6 @@ public:
 signals: void changed(); void finished(bool success, const QString& message);
 private:
     void start(const ConversionRequest& request, bool probeOnly);
-    std::atomic_bool m_cancel = false; bool m_busy = false; int m_progress = 0; QString m_status;
+    std::shared_ptr<std::atomic_bool> m_cancel = std::make_shared<std::atomic_bool>(false); bool m_busy = false; int m_progress = 0; QString m_status;
 };
 }
