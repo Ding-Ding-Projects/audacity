@@ -9,9 +9,10 @@ find_package(Qt6 6.10 REQUIRED COMPONENTS Core)
 
 add_executable(experience_standalone_tests
     main.cpp
+    ../../../shared/profilepaths.cpp
     ../../internal/schoolmode.cpp
     ../../internal/narratorqueue.cpp
 )
 
-target_include_directories(experience_standalone_tests PRIVATE ../..)
+target_include_directories(experience_standalone_tests PRIVATE ../.. ../../..)
 target_link_libraries(experience_standalone_tests PRIVATE Qt6::Core)

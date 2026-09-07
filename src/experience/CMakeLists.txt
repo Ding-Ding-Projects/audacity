@@ -26,6 +26,7 @@ target_sources(experience PRIVATE
     internal/dimsumsurprise.h
     internal/narratorqueue.cpp
     internal/narratorqueue.h
+    internal/narratorbackend.cpp
     internal/narratorservice.cpp
     internal/narratorservice.h
     internal/schoolmode.cpp
@@ -54,4 +55,8 @@ add_subdirectory(qml/Audacity/Experience)
 
 if (AU_BUILD_EXPERIENCE_TESTS)
     add_subdirectory(tests)
+endif()
+
+if(WIN32)
+    target_link_libraries(experience PRIVATE sapi ole32)
 endif()

@@ -1,80 +1,70 @@
 # Narrator
 
-## Behaviour
+## Language and voice behavior
 
-The narrator speaks a short line for selected application events (for example, a
-completed export, an error). It is off by default; a user must explicitly turn it on.
+Narration is disabled by default. The supported Windows build uses native SAPI,
+with no QtTextToSpeech package or command-line speech program required. The Windows
+SDK supplies `sapi.h`, `sapi.lib`, and `ole32.lib`; the existing MSVC/Windows SDK
+bootstrap supplies these development dependencies. Runtime synthesis uses locally
+registered SAPI voices. Modern voices not registered with SAPI are not advertised.
 
-The narrated language is a user choice: English, Cantonese, or Both. In Both mode, a
-narrated event queues its English line followed by its Cantonese line, strictly serialized,
-so the two never overlap and always speak in that order.
+The engine enumerates real token IDs and language attributes on every voice query.
+English locale IDs map to English. Hong Kong (`0x0c04`) and Macao (`0x1404`)
+Chinese locale IDs map to Cantonese; Mandarin is never treated as Cantonese.
+If the selected ID disappeared, an installed voice of the same language is selected
+and the engine records the fallback. If no matching voice exists, that line stays
+silent. Preferences report the installed English and Cantonese voice counts.
 
-Voice pickers for each language are populated at runtime from whichever speech engine is
-active, and default to "Choose automatically". A chosen voice is persisted by its stable
-engine-reported identifier, never by its display name (two installed voices can share a
-display name). Rate and pitch are user-adjustable.
+`pushLocalized()` accepts separate English and Cantonese narration strings. Both
+queues the actual English text followed by the actual Cantonese translation under
+one event-level cooldown decision. The example notification and vocabulary-loaded
+notification supply these separate strings. Existing `push()` callers carry no
+translation metadata and remain English-only; missing translations are never
+invented or spoken with a falsely labeled voice. Narration uses the explicit source
+strings, separate from the decorated display body.
 
-## Speech engine
+## Lifecycle and bounds
 
-The narrator uses Qt's QtTextToSpeech module when the Qt installation carries it. On a
-build where it is absent (as on the toolchain this module was developed against, which has
-no `libQt6TextToSpeech`), it falls back to whichever command line speech backend is found
-on the machine: `speech-dispatcher`'s `spd-say`, or `espeak-ng`. When neither is available,
-the narrator reports honestly that no speech engine was found and stays silent; it never
-pretends to speak.
+SAPI speech starts asynchronously. A 20 ms timer polls completion and a 10 second
+watchdog purges a stuck utterance. Startup failure, backend failure, normal finish,
+timeout, and stop share one generation-bound completion path. Completion is posted
+once through the event loop, after cancellation, and the engine rejects another
+start until that completion is delivered. Destruction stops timers, purges speech,
+releases COM references, and balances COM initialization owned by this instance.
 
-The active engine, and which one, is shown in the preferences section
-(`NarratorEngine::engineDescription()`), so a user can tell at a glance whether narration
-will actually be audible.
+The queue holds at most 64 pending lines and bounds each to 2048 UTF-16 code units.
+The engine bounds speech to 1000 code units without splitting a surrogate pair.
+Rate and pitch accept finite values between -1 and 1, mapped to SAPI's -10 through
+10 ranges. User text is XML-escaped before the pitch wrapper is applied.
 
-## Queue behaviour
+Quiet mode and Qt's active-accessibility-client signal suppress sound while still
+completing the line. Qt's signal is a conservative accessibility heuristic, not a
+claim to detect every running screen reader. Errors bypass category cooldowns;
+logical event supersession replaces both pending language lines together.
 
-A `NarratorQueue` orders every narrated line:
+## Reproducible local verification
 
-- at most one utterance is ever in flight;
-- a debounce window (400 ms by default) suppresses an identical line arriving twice in
-  quick succession;
-- a per category cooldown (4 seconds by default) suppresses further non-error narration in
-  the same category until it elapses;
-- error narration is never suppressed by either the debounce window or the cooldown;
-- queuing a new utterance carrying the same "supersede key" as one still waiting replaces
-  it in place, so a rapidly updating progress line never stacks duplicate announcements.
+From an MSVC x64 developer shell with the supported Qt 6.10 prefix:
 
-## Interaction with other features
+```powershell
+cmake -S src/experience/tests/narratorstandalone -B build.narrator -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR"
+cmake --build build.narrator
+$env:PATH = "$env:QT_ROOT_DIR/bin;$env:PATH"
+./build.narrator/narrator_engine_tests.exe
+```
 
-The narrator honours two gates before it actually speaks anything, both checked inside
-`NarratorEngine::speak()` so no call site can forget them:
+The executable uses QCoreApplication, compiles the actual SAPI backend, enumerates
+installed voices, and exercises the production NarratorEngine with a silent fake
+backend backed by real child processes. Cases include exit, crash, failed process
+startup, timeout, repeated cancellation, stale timer races, missing voices,
+re-enumeration, bounds, nonfinite settings, quiet mode, no engine, localized pair
+supersession, and exact distinct English/Cantonese text and voice order.
 
-- **Quiet mode** is the narrator's own reduced-sound setting, a "Quiet mode" toggle in its
-  preferences section, backed by `IExperienceConfiguration::quietModeEnabled()`. While it is
-  on, the narrator stays completely silent even when otherwise enabled. This is a real
-  persisted setting, not a placeholder: it round-trips through muse settings exactly like
-  every other narrator preference.
-- **Screen reader ducking** uses `QAccessible::isActive()` as the detectable signal, exposed
-  as `NarratorEngine::screenReaderActive()`. Qt sets this to true the moment any assistive
-  technology (a screen reader) queries the application, and it has no separate on/off
-  setting: the narrator simply stays quiet for as long as it reports true, on the reasoning
-  that a screen reader already reading the interface should not be talked over.
+No audible synthesis or GUI interaction is performed by this test. It proves engine
+orchestration and native compilation/enumeration, not acoustic output, preferences
+interaction, or complete application integration. Those require separate built
+application evidence. No tests are added to GitHub Actions.
 
-Both gates apply to every narrated category, error narration included: they are about
-whether any sound happens at all, not about how often it happens, so they are not the same
-kind of limit as the debounce and cooldown windows below (which do exempt error narration).
-
-It obeys School mode's suppression of the affected capabilities exactly like every other
-Experience feature that School mode touches.
-
-## Verification
-
-Covered by `NarratorQueueTests` in `src/experience/tests/narratorqueue_tests.cpp`: ordering,
-debounce, per category cooldown with error narration exempt, supersession of a pending item
-by key, and the one utterance at a time guarantee. The quiet mode setting round-trips
-through the same configuration test pattern as the rest of the narrator settings; the queue
-tests do not exercise `QAccessible::isActive()` directly since that is a live platform signal
-rather than pure logic, and is instead verified by reading the built application (the
-Narrator preferences section shows the Quiet mode toggle and its explanatory text).
-
-The notification centre is a real narrator event consumer. When narration is
-enabled, each application notification enters the serialized queue before the
-selected backend starts. The next notification waits for the active backend
-process to exit, or for an utterance to be truthfully suppressed by Quiet mode,
-a screen reader, or no available engine.
+SAPI pitch and asynchronous flags follow Microsoft's documentation:
+[XML TTS tutorial](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee431815(v=vs.85))
+and [SPEAKFLAGS](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms717252(v=vs.85)).

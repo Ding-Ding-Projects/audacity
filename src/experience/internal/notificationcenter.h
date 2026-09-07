@@ -29,6 +29,9 @@ public:
 
     int push(NotificationType type, const QString& title, const QString& body,
              const QString& actionText = QString(), const QString& actionCode = QString()) override;
+    int pushLocalized(NotificationType type, const QString& title, const QString& body,
+                      const LocalizedNarrationText& narration,
+                      const QString& actionText = QString(), const QString& actionCode = QString()) override;
 
     void dismiss(int id) override;
     void dismissAll() override;
@@ -45,7 +48,7 @@ public:
 
 private:
     MessageKind kindOf(NotificationType type) const;
-    void narrate(const Notification& notification);
+    void narrate(const Notification& notification, const LocalizedNarrationText& narration);
     void speakNext();
 
     std::deque<Notification> m_notifications;

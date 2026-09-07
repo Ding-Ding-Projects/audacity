@@ -51,12 +51,23 @@ class NarratorQueue
 {
 public:
     static constexpr int MAX_PENDING = 64;
+    static constexpr int MAX_TEXT_LENGTH = 2048;
     explicit NarratorQueue(qint64 debounceMs = 400, qint64 cooldownMs = 4000);
 
     //! Attempts to enqueue at the given monotonic time (milliseconds).
     //! Returns true if the utterance was queued (or replaced a pending
     //! one), false if it was suppressed by debounce or cooldown.
     bool enqueue(const NarratorUtterance& utterance, qint64 nowMs);
+
+    //! Enqueues one logical, localized event. The language setting is expanded
+    //! here so one cooldown decision covers the entire event. A bilingual
+    //! event always queues English before Cantonese, but Cantonese is never
+    //! fabricated from the English source when no translation was supplied.
+    //! Returns true only when at least one bounded, non-empty utterance was
+    //! admitted or a pending event with the same key was replaced.
+    bool enqueueLocalized(const QString& englishText, const QString& cantoneseText,
+                          NarratorLanguage requestedLanguage, NarratorCategory category,
+                          const QString& supersedeKey, qint64 nowMs);
 
     //! Removes and returns the next utterance to speak, or nullptr-like
     //! (empty text) if the queue is empty. Call popNext() only when the
@@ -77,9 +88,8 @@ private:
     qint64 m_debounceMs;
     qint64 m_cooldownMs;
     QVector<PendingItem> m_pending;
-    QString m_lastText;
-    NarratorLanguage m_lastLanguage = NarratorLanguage::English;
-    qint64 m_lastTextAtMs = -1000000;
+    QString m_lastEventFingerprint;
+    qint64 m_lastEventAtMs = -1000000;
     QVector<qint64> m_lastCategoryAtMs { 0, 0, 0, 0 };
 };
 }

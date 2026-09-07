@@ -49,6 +49,15 @@ MessageKind NotificationCenter::kindOf(NotificationType type) const
 int NotificationCenter::push(NotificationType type, const QString& title, const QString& body, const QString& actionText,
                              const QString& actionCode)
 {
+    LocalizedNarrationText narration;
+    narration.english = body.isEmpty() ? title : body;
+    return pushLocalized(type, title, body, narration, actionText, actionCode);
+}
+
+int NotificationCenter::pushLocalized(NotificationType type, const QString& title, const QString& body,
+                                      const LocalizedNarrationText& narration, const QString& actionText,
+                                      const QString& actionCode)
+{
     Notification notification;
     notification.id = m_nextId++;
     notification.type = type;
@@ -66,17 +75,16 @@ int NotificationCenter::push(NotificationType type, const QString& title, const 
     }
 
     m_changed.notify();
-    narrate(notification);
+    narrate(notification, narration);
     return notification.id;
 }
 
-void NotificationCenter::narrate(const Notification& notification)
+void NotificationCenter::narrate(const Notification& notification, const LocalizedNarrationText& narration)
 {
     if (!configuration() || !configuration()->narratorEnabled()) {
         return;
     }
 
-    const QString text = notification.body.isEmpty() ? notification.title : notification.body;
     const NarratorCategory category = narratorCategory(notification.type);
     const int configuredLanguage = configuration()->narratorLanguage();
     const NarratorLanguage language = configuredLanguage >= static_cast<int>(NarratorLanguage::English)
@@ -85,18 +93,7 @@ void NotificationCenter::narrate(const Notification& notification)
     const QString baseKey = notification.type == NotificationType::Info ? QStringLiteral("notification-info")
                                                                          : QStringLiteral("notification-state");
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
-    bool queued = false;
-    for (const NarratorLanguage spokenIn : language == NarratorLanguage::Both
-                                           ? QVector<NarratorLanguage> { NarratorLanguage::English, NarratorLanguage::Cantonese }
-                                           : QVector<NarratorLanguage> { language }) {
-        NarratorUtterance utterance;
-        utterance.text = text;
-        utterance.category = category;
-        utterance.spokenIn = spokenIn;
-        utterance.supersedeKey = baseKey + (spokenIn == NarratorLanguage::Cantonese ? QStringLiteral(":yue") : QStringLiteral(":en"));
-        queued = m_narratorQueue.enqueue(utterance, now) || queued;
-    }
-    if (queued) {
+    if (m_narratorQueue.enqueueLocalized(narration.english, narration.cantonese, language, category, baseKey, now)) {
         speakNext();
     }
 }
