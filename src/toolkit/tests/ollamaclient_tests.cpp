@@ -38,12 +38,14 @@ TEST(OllamaClientTests, RejectsMissingTagMetadata)
     EXPECT_FALSE(client.importCatalogSnapshot(QUrl::fromLocalFile(path)));
 }
 
-TEST(OllamaClientTests, AcceptsTerminalModelAndTagSnapshot)
+TEST(OllamaClientTests, AcceptsBoundedMetadataOnlyAsUntrusted)
 {
     QTemporaryDir directory;
     QString path;
-    ASSERT_TRUE(writeSnapshot(directory, R"({"origin":"https://ollama.com/library","revision":"r","pageCount":1,"models":[{"name":"llama","tags":["llama:1b"]}],"completeness":"model-and-tag-terminal-verified"})", &path));
+    ASSERT_TRUE(writeSnapshot(directory, R"({"schemaVersion":1,"origin":"https://ollama.com/library","revision":"r","pageCount":1,"pages":[{"url":"https://ollama.com/library","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}],"models":[{"name":"llama","tags":["llama:1b"]}]})", &path));
     OllamaClient client;
     EXPECT_TRUE(client.importCatalogSnapshot(QUrl::fromLocalFile(path)));
     EXPECT_EQ(client.catalogSnapshot().value(QStringLiteral("revision")).toString(), QStringLiteral("r"));
+    EXPECT_EQ(client.catalogSnapshot().value(QStringLiteral("completeness")).toString(), QStringLiteral("untrusted-local-import"));
+    EXPECT_FALSE(client.catalogSnapshot().value(QStringLiteral("originVerified")).toBool());
 }

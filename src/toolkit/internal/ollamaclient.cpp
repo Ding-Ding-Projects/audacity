@@ -3,6 +3,7 @@
 */
 
 #include "ollamaclient.h"
+#include "ollamaclientcatalog.h"
 
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -12,10 +13,19 @@
 #include <QHostAddress>
 #include <QSettings>
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
 #include <QDateTime>
 #include <QUuid>
 #include <QSet>
 #include <QRegularExpression>
+
+#ifdef Q_OS_WIN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 
 using namespace au::toolkit;
 
@@ -25,7 +35,10 @@ OllamaClient::OllamaClient(QObject* parent)
     restorePullQueue();
     refreshChatSessions();
     QSettings settings;
-    m_catalogSnapshot = settings.value(QStringLiteral("ollama/catalogSnapshot")).toMap();
+    const QVariantMap stored = settings.value(QStringLiteral("ollama/catalogSnapshot")).toMap();
+    // Saved metadata is not a provenance boundary. Revalidate and reconstruct
+    // it on restart; leave a malformed legacy record on disk for user recovery.
+    if (!stored.isEmpty()) catalog::parse(QJsonDocument::fromVariant(stored).toJson(QJsonDocument::Compact), m_catalogSnapshot);
 }
 
 QString OllamaClient::host() const
@@ -489,60 +502,37 @@ bool OllamaClient::writeChatSessionExport(const QString& id, const QUrl& fileUrl
 
 bool OllamaClient::importCatalogSnapshot(const QUrl& fileUrl)
 {
-    if (!fileUrl.isLocalFile()) {
-        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Only a local verified snapshot file is allowed."));
+    const auto reject = [this](const QString& reason) {
+        emit requestFailed(QStringLiteral("import catalog snapshot"), reason);
         return false;
-    }
-    QFile file(fileUrl.toLocalFile());
-    constexpr qint64 maximumSnapshotBytes = 16LL * 1024 * 1024;
-    if (!file.open(QIODevice::ReadOnly) || file.size() <= 0 || file.size() > maximumSnapshotBytes) {
-        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot must be a readable file of at most 16 MiB."));
-        return false;
-    }
-    const QJsonObject snapshot = QJsonDocument::fromJson(file.readAll()).object();
-    const QString origin = snapshot.value(QStringLiteral("origin")).toString();
-    const QString revision = snapshot.value(QStringLiteral("revision")).toString();
-    const int pageCount = snapshot.value(QStringLiteral("pageCount")).toInt(-1);
-    const QJsonArray models = snapshot.value(QStringLiteral("models")).toArray();
-    const QJsonArray pages = snapshot.value(QStringLiteral("pages")).toArray();
-    if (origin != QStringLiteral("https://ollama.com/library") || revision.isEmpty() || revision.size() > 128 || pageCount < 1 || pageCount > 1000 || models.isEmpty() || models.size() > 10000
-        || pages.size() != pageCount || snapshot.value(QStringLiteral("completeness")).toString() != QStringLiteral("model-and-tag-terminal-verified")) {
-        emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot lacks verified terminal model and tag coverage."));
-        return false;
-    }
-    QVariantList reconstructedModels;
-    QVariantList reconstructedPages;
-    for (const QJsonValue& page : pages) {
-        const QJsonObject receipt = page.toObject();
-        const QString url = receipt.value(QStringLiteral("url")).toString();
-        const QString hash = receipt.value(QStringLiteral("sha256")).toString();
-        if (!url.startsWith(QStringLiteral("https://ollama.com/library")) || hash.size() != 64 || !QRegularExpression(QStringLiteral("^[0-9a-f]{64}$")).match(hash).hasMatch()) return false;
-        reconstructedPages << QVariantMap{{QStringLiteral("url"), url}, {QStringLiteral("sha256"), hash}};
-    }
-    QSet<QString> names;
-    for (const QJsonValue& model : models) {
-        const QJsonObject object = model.toObject();
-        const QString name = object.value(QStringLiteral("name")).toString();
-        const QJsonArray tags = object.value(QStringLiteral("tags")).toArray();
-        if (name.isEmpty() || name.size() > 256 || name.contains(QRegularExpression(QStringLiteral("[\\x00-\\x1f]"))) || names.contains(name)
-            || tags.isEmpty() || tags.size() > 10000) {
-            emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot has a model without verified tag receipts."));
-            return false;
-        }
-        names.insert(name);
-        QVariantList safeTags; QSet<QString> seenTags;
-        for (const QJsonValue& tag : tags) {
-            const QString value = tag.toString();
-            if (value.isEmpty() || value.size() > 256 || value.contains(QRegularExpression(QStringLiteral("[\\x00-\\x1f]"))) || seenTags.contains(value)) return false;
-            seenTags.insert(value);
-            safeTags << value;
-        }
-        reconstructedModels << QVariantMap{{QStringLiteral("name"), name}, {QStringLiteral("tags"), safeTags}};
-    }
-    m_catalogSnapshot = QVariantMap{{QStringLiteral("origin"), origin}, {QStringLiteral("revision"), revision}, {QStringLiteral("pageCount"), pageCount}, {QStringLiteral("pages"), reconstructedPages}, {QStringLiteral("models"), reconstructedModels}, {QStringLiteral("completeness"), QStringLiteral("untrusted-local-import")}};
-    m_catalogSnapshot.insert(QStringLiteral("importedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    };
+    if (!fileUrl.isValid() || !fileUrl.isLocalFile() || !fileUrl.authority().isEmpty()
+        || fileUrl.hasQuery() || fileUrl.hasFragment() || fileUrl.toString().size() > 32768)
+        return reject(QStringLiteral("Select a local catalog file without a network authority, query, or fragment."));
+    const QString path = fileUrl.toLocalFile();
+    for (QChar ch : path) if (ch.unicode() < 0x20 || ch.unicode() == 0x7f)
+        return reject(QStringLiteral("Catalog paths cannot contain control characters."));
+    const QFileInfo info(path);
+    const QString canonical = QDir::fromNativeSeparators(info.canonicalFilePath());
+    if (!info.isAbsolute() || !info.isFile() || info.isSymLink() || canonical.isEmpty() || canonical.startsWith(QStringLiteral("//")))
+        return reject(QStringLiteral("Catalog input must be an existing regular local file, not a redirected or network path."));
+#ifdef Q_OS_WIN
+    const QString root = QDir::toNativeSeparators(canonical.left(3));
+    const UINT drive = GetDriveTypeW(reinterpret_cast<LPCWSTR>(root.utf16()));
+    if (drive != DRIVE_FIXED && drive != DRIVE_REMOVABLE)
+        return reject(QStringLiteral("Catalog input must reside on a local fixed or removable drive."));
+#endif
+    QFile file(canonical);
+    if (!file.open(QIODevice::ReadOnly) || file.size() <= 0 || file.size() > catalog::MaxBytes)
+        return reject(QStringLiteral("Catalog metadata must be a readable file of at most 16 MiB."));
+    const QByteArray bytes = file.read(catalog::MaxBytes + 1);
+    QVariantMap normalized;
+    if (bytes.size() > catalog::MaxBytes || !file.atEnd() || file.error() != QFileDevice::NoError || !catalog::parse(bytes, normalized))
+        return reject(QStringLiteral("Catalog metadata failed its bounded schema, identifier, or receipt-consistency checks."));
+    normalized.insert(QStringLiteral("importedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
     QSettings settings;
-    settings.setValue(QStringLiteral("ollama/catalogSnapshot"), m_catalogSnapshot);
+    settings.setValue(QStringLiteral("ollama/catalogSnapshot"), normalized);
+    m_catalogSnapshot = normalized;
     emit catalogSnapshotChanged();
     return true;
 }

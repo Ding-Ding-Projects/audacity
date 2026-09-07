@@ -65,3 +65,58 @@ partial local response instead of being represented as a successful answer.
   Runtime verification still requires a local Ollama service because the
   client intentionally does not invent installed tags, catalog metadata, or
   capability claims.
+
+## Import hardening checkpoint, incomplete
+
+The current importer work is preserved for continuation. It adds exact parsed
+Ollama catalog URL boundaries, strict scalar types and identifiers, duplicate
+key/receipt/model/tag rejection, a pre-parse depth limit of 12, scalar and aggregate
+limits, bounded local-file reads, allowlisted persistence, and restart validation.
+Local imports remain `untrusted-local-import` with `originVerified=false`.
+Self-consistent hashes and receipt metadata do not establish official origin,
+and no signing is performed. Acquisition-shaped claims retain index/tag-page
+items, transitions, terminal markers, counts, timestamps and a graph digest;
+these are consistency checks on untrusted local claims, not fetched-origin proof.
+
+A committed console test route now exists at `src/toolkit/tests/ollama`:
+
+```powershell
+# Run in an MSVC environment with the Qt 6.10 Core and Network development files.
+cmake -S src/toolkit/tests/ollama -B build/ollama-catalog-hardening -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="<Qt prefix>"
+cmake --build build/ollama-catalog-hardening --parallel 2
+ctest --test-dir build/ollama-catalog-hardening -V
+```
+
+The executable uses QCoreApplication and isolated INI settings. It opens no GUI
+and performs no network requests. The first compile attempt exposed a numeric
+formatting mismatch in test labels; that source issue was corrected. The next
+compile and link succeeded, and direct execution reported **84 cases: 83 passed,
+1 failed**. The failing case is `metadata needs no verified-looking claim and
+always remains untrusted`, at the restart-preservation assertion. On reload,
+normalization currently turns its own `untrusted-local-import` state into a new
+`declaredCompleteness` field, so the restored map differs. Fix that idempotency
+problem first, then rebuild and run the committed route at a pinned commit.
+The full application, GoogleTest target, and acquisition Python suite were not
+run during this checkpoint. The prior temporary probe remains preserved and is
+not current verification evidence.
+
+Executed binary SHA-256:
+`13E5596F55AE9A548148A8D5340879F3C5CF3614D31618B51696860CC657FD9D`.
+Direct-run log `build/ollama-catalog-hardening/iteration1.log` SHA-256:
+`C49741F261EB832DDCA5385984EE5FB7821B075063356366EF0A2813208AE9DC`.
+Compiled client source SHA-256:
+`E7006EFD0113C20BBB1CDD1BE84FD8640783BDAB9DB61CB7177D6D6E998B8A27`.
+Compiled catalog validation header SHA-256:
+`BA78E70F9E38CB103767D55EEFBC7EAE5C815DEDDF39E62560E660C5EFD742DE`.
+Compiled standalone test source SHA-256:
+`5A229F2F86AC439832E66FF6BDED281173CB2A3C6D2E9515E136B7C46E69ACD6`.
+
+The acquisition tool is still unchanged and incomplete. Live bounded reads of
+the official index and one official tag page showed that its generic `hx-get`
+handling mistakes search/filter controls for pagination. It also still needs
+strict URL/path/query validation, redirect refusal before an unintended request,
+explicit request/response/time/aggregate bounds, complete index and tag receipt
+chains with actual byte hashes and observed counts, atomic output publication,
+and committed negative acquisition tests. Keep actual acquisition observations
+separate from what an imported local document merely claims. No new complete
+official catalog acquisition or receipt was produced during this checkpoint.
