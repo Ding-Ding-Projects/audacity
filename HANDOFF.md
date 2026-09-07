@@ -1,5 +1,27 @@
 # Handoff
 
+## Delivery follow-up after the first incremental release
+
+Hosted delivery is available again. Run `34067388818` successfully published
+`v4.0.0-m3.15` at `2026-09-07T00:19:32Z`, from immutable tag target
+`73a820e1ce80c010c99dc328bace46c66ee9e8d3`. All eight release assets were
+downloaded and matched their API byte counts and SHA-256 digests. `Setup.exe`
+is 74,778,112 bytes and reports `NotSigned`; its SHA-256 is
+`c922523c4dbfe28531a669bb2e4f8c037969ee7897464f67678c70e50f848b1e`.
+This proves publication and byte integrity, not installation or UI execution.
+
+Run `34069117762` failed when the Chocolatey ccache feed returned HTTP 503 and
+the old bootstrap subsequently invoked the absent command. The reviewed repair
+`56e802abaaf83fd30c2e0fc471c5d72374c194ca` is integrated into main at
+`7df272fcad1e3a591cef84578a4656ffcc99552c`. It probes compatible installed
+ccache or explicitly selects uncached compilation, clearing stale launchers.
+Twelve focused local fixtures passed. The actual local probe left zero eligible
+untracked files, using the existing ignored `build.tools` location. A hosted
+build verdict for the repaired candidate remains pending.
+
+Reserved tags from unsuccessful runs remain consumed and must not be recycled.
+Neither incremental release is designated as final completion evidence.
+
 ## Post-release converter containment integration
 
 The reviewed containment work through `112e981e96d7def4374ff95e93113001e8a55e61`
@@ -43,8 +65,8 @@ tag reservation utility, whose UTF-8 transport and uncertain-receipt fixtures pa
 
 This incremental release fulfills publication of a real installer. It is not the
 final product-completion milestone: installation/update execution, full audio and
-project regression, built UI matrices, remaining feature integration, a current
-successful hosted delivery, website deployment verification, and cleanup remain
+project regression, built UI matrices, remaining feature integration,
+website deployment verification, and cleanup remain
 unfinished. Do not use this release as evidence that those criteria passed.
 
 ## Verified packaging integration

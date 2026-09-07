@@ -9,6 +9,8 @@ Previous completion ticks below are reopened: source presence and historical cap
 - [x] Verify transactional Squirrel output, coherent older seed selection, and real full/delta packaging with pinned qpdf inclusion at candidate `30cda45b`.
 - [x] Record and validate the project-specific operational procedure, with a matching installed shared-catalog copy.
 - [x] Publish incremental prerelease `v4.0.0-m3.14` from a fresh pinned build and verify all eleven downloaded release assets.
+- [x] Verify hosted incremental release `v4.0.0-m3.15`, its immutable source tag, unsigned setup and all eight downloaded asset hashes.
+- [x] Repair optional compiler-cache bootstrap and verify its local decision fixtures without weakening clean-source provenance.
 - [ ] Verify main migration and its delivery run.
 - [ ] Integrate and verify all feature lanes on one candidate.
 - [ ] Complete every canonical feature on every registered surface.
