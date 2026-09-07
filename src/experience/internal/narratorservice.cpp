@@ -17,14 +17,13 @@ NarratorEngine::NarratorEngine(QObject* parent)
 {
     detectEngine();
     m_process = new QProcess(this);
-    m_process->setReadBufferSize(4096);
+    m_process->setStandardOutputFile(QProcess::nullDevice());
+    m_process->setStandardErrorFile(QProcess::nullDevice());
     m_timeout = new QTimer(this);
     m_timeout->setSingleShot(true);
     connect(m_process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this,
             [this](int, QProcess::ExitStatus) {
                 m_timeout->stop();
-                m_process->readAllStandardOutput();
-                m_process->readAllStandardError();
                 emit speechFinished();
             });
     connect(m_process, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
