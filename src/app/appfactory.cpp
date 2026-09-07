@@ -73,6 +73,7 @@
 #include "stubs/usageinfo/usageinfostubmodule.h"
 #endif
 #include "automation/automationmodule.h"
+#include "converter/convertermodule.h"
 
 #if AU_MODULE_EFFECTS_NYQUIST
 #include "effects/nyquist/nyquisteffectsmodule.h"
@@ -201,6 +202,7 @@ std::shared_ptr<muse::IApplication> AppFactory::newGuiApp(const std::shared_ptr<
     app->addModule(new au::effects::BuiltinEffectsModule());
     app->addModule(new au::effects::BuiltinEffectsCollectionModule());
     app->addModule(new au::automation::AutomationModule());
+    app->addModule(new au::converter::ConverterModule());
 
     return app;
 }
