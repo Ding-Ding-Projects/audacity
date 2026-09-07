@@ -1,5 +1,41 @@
 # Handoff
 
+## Preservation handoff: unfinished work retained
+
+Implementation stopped for account-allowance preservation. The overall task is
+unfinished. No final release designation, complete installation/update proof,
+full UI acceptance, verified filesystem archive or cleanup is claimed.
+
+These owning branches were pushed and their exact remote tips verified:
+
+| Branch | Preserved commit | Next action |
+| --- | --- | --- |
+| `codex/audacity-front-provenance` | `fe5f283fad126c8a4e3be0ea87504388e68c548a` | Reject paired timestamp-plus-digest replacement for the same build identity; add the exact negative regression before integration. |
+| `codex/audacity-experience` | `7657b96084ececcc7f771d12df6cb4c96acadf35` | Evict bilingual narration as logical groups; a 63-entry queue can currently orphan one language. Add that counterexample. |
+| `codex/audacity-ollama` | `e69147f111d3baad3db4f45047bcb6da9be98021` | Fix normalization/restart idempotency, then run the committed native target. Actual result: 83 of 84 cases passed. Repair official acquisition pagination and receipt handling separately. |
+| `codex/audacity-appearance` | `6318ab8c9d6911cb1aec0021f231a6f32a62988c` | Continue stable consumer registration and typography/opacity coverage beyond the two primitives. Rendered behavior is unverified. |
+| `codex/audacity-converter-ui` | `6e99ec6e2e3ae155ce745c14b903e635c9d3a3bf` | Finish logged module configuration, adapter tests, navigation, localization and batch results. Shared cancellation lifetime repair is preserved but unverified. |
+
+Native narration compiled SAPI and enumerated two local voices without speaking.
+Thirty-five orchestration assertions passed using the production engine and a
+silent process-backed test double. Actual SAPI speech/poll/cancel and complete
+product interaction remain unverified. Front provenance passed 139 QtCore
+assertions, five generator cases and four shell cases, but those checks do not
+cover its known paired-edit finding and do not authorize integration.
+
+Run `34069712872` subsequently succeeded and published non-draft incremental
+`v4.0.0-m3.17` at `2026-09-07T01:06:42Z`. Its tag resolves to
+`9ef1afc960be2371edcc7db48f985219c6b4be97`. Only publication metadata and tag
+identity were checked during closeout; its downloads and installation have not
+received the independent verification previously performed for `.14` and `.15`.
+Other existing delivery runs may still be active. Re-read their actual state,
+never restart them solely because a local observation ended.
+
+The operational skill is current in the canonical private catalog at commit
+`575bda125904b576721ba4e1c3840f778ab2ce95`; its shared installed copy matches.
+Managed synchronization for the selected supported targets completed successfully.
+An unrelated unowned catalog destination remains preserved rather than overwritten.
+
 ## Current integration and verification boundaries
 
 The canonical documentation environment now permits `main`, replacing its stale
