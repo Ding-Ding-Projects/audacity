@@ -95,11 +95,12 @@ jobs:
           cmake -DEVENT=${{ github.event_name }} -DBUILD_MODE=stable_build \
                 -DARTIFACT_INFO="Win_x86_64_material" -P ${CI_DIR}/common/ci_configure.cmake
 
-      - name: Install build tools
+      - name: Configure optional compiler cache
         shell: bash
         run: |
-          choco install -y ccache
-          bash ./buildscripts/ci/tools/setup_ccache_config.sh
+          python buildscripts/ci/tools/configure_compiler_cache.py \
+            --workspace "$GITHUB_WORKSPACE" --github-env "$GITHUB_ENV" \
+            --output build.artifacts/compiler-cache.json
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4

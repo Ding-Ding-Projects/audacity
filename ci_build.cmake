@@ -26,6 +26,7 @@ set(CRASH_REPORT_URL "" CACHE STRING "Crash report url")
 
 option(SKIP_RPATH "Skip rpath" OFF)
 option(ENABLE_CRASHPAD_CLIENT "Enable crashpad client" ON)
+include("${CMAKE_CURRENT_LIST_DIR}/buildscripts/ci/tools/compiler_cache_options.cmake")
 
 # CPUS
 cmake_host_system_information(RESULT CPUS QUERY NUMBER_OF_LOGICAL_CORES)
@@ -75,6 +76,9 @@ macro(do_build build_type build_dir)
         -DMUSE_MODULE_DIAGNOSTICS_CRASHPAD_CLIENT=${ENABLE_CRASHPAD_CLIENT}
         -DMUSE_MODULE_DIAGNOSTICS_CRASHREPORT_URL=${CRASH_REPORT_URL}
     )
+
+    audacity_ci_compiler_cache_options(_cache_options)
+    list(APPEND CONFIGURE_ARGS ${_cache_options})
 
     # Allow macos architecture override with env OSX_ARCHITECTURES
     if (DEFINED ENV{OSX_ARCHITECTURES} AND NOT "$ENV{OSX_ARCHITECTURES}" STREQUAL "")
