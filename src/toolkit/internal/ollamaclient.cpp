@@ -14,6 +14,8 @@
 #include <QFile>
 #include <QDateTime>
 #include <QUuid>
+#include <QSet>
+#include <QRegularExpression>
 
 using namespace au::toolkit;
 
@@ -502,19 +504,42 @@ bool OllamaClient::importCatalogSnapshot(const QUrl& fileUrl)
     const QString revision = snapshot.value(QStringLiteral("revision")).toString();
     const int pageCount = snapshot.value(QStringLiteral("pageCount")).toInt(-1);
     const QJsonArray models = snapshot.value(QStringLiteral("models")).toArray();
-    if (origin != QStringLiteral("https://ollama.com/library") || revision.isEmpty() || pageCount < 1 || models.isEmpty()
-        || snapshot.value(QStringLiteral("completeness")).toString() != QStringLiteral("model-and-tag-terminal-verified")) {
+    const QJsonArray pages = snapshot.value(QStringLiteral("pages")).toArray();
+    if (origin != QStringLiteral("https://ollama.com/library") || revision.isEmpty() || revision.size() > 128 || pageCount < 1 || pageCount > 1000 || models.isEmpty() || models.size() > 10000
+        || pages.size() != pageCount || snapshot.value(QStringLiteral("completeness")).toString() != QStringLiteral("model-and-tag-terminal-verified")) {
         emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot lacks verified terminal model and tag coverage."));
         return false;
     }
+    QVariantList reconstructedModels;
+    QVariantList reconstructedPages;
+    for (const QJsonValue& page : pages) {
+        const QJsonObject receipt = page.toObject();
+        const QString url = receipt.value(QStringLiteral("url")).toString();
+        const QString hash = receipt.value(QStringLiteral("sha256")).toString();
+        if (!url.startsWith(QStringLiteral("https://ollama.com/library")) || hash.size() != 64 || !QRegularExpression(QStringLiteral("^[0-9a-f]{64}$")).match(hash).hasMatch()) return false;
+        reconstructedPages << QVariantMap{{QStringLiteral("url"), url}, {QStringLiteral("sha256"), hash}};
+    }
+    QSet<QString> names;
     for (const QJsonValue& model : models) {
-        if (model.toObject().value(QStringLiteral("name")).toString().isEmpty()
-            || model.toObject().value(QStringLiteral("tags")).toArray().isEmpty()) {
+        const QJsonObject object = model.toObject();
+        const QString name = object.value(QStringLiteral("name")).toString();
+        const QJsonArray tags = object.value(QStringLiteral("tags")).toArray();
+        if (name.isEmpty() || name.size() > 256 || name.contains(QRegularExpression(QStringLiteral("[\\x00-\\x1f]"))) || names.contains(name)
+            || tags.isEmpty() || tags.size() > 10000) {
             emit requestFailed(QStringLiteral("import catalog snapshot"), QStringLiteral("Snapshot has a model without verified tag receipts."));
             return false;
         }
+        names.insert(name);
+        QVariantList safeTags; QSet<QString> seenTags;
+        for (const QJsonValue& tag : tags) {
+            const QString value = tag.toString();
+            if (value.isEmpty() || value.size() > 256 || value.contains(QRegularExpression(QStringLiteral("[\\x00-\\x1f]"))) || seenTags.contains(value)) return false;
+            seenTags.insert(value);
+            safeTags << value;
+        }
+        reconstructedModels << QVariantMap{{QStringLiteral("name"), name}, {QStringLiteral("tags"), safeTags}};
     }
-    m_catalogSnapshot = snapshot.toVariantMap();
+    m_catalogSnapshot = QVariantMap{{QStringLiteral("origin"), origin}, {QStringLiteral("revision"), revision}, {QStringLiteral("pageCount"), pageCount}, {QStringLiteral("pages"), reconstructedPages}, {QStringLiteral("models"), reconstructedModels}, {QStringLiteral("completeness"), QStringLiteral("untrusted-local-import")}};
     m_catalogSnapshot.insert(QStringLiteral("importedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
     QSettings settings;
     settings.setValue(QStringLiteral("ollama/catalogSnapshot"), m_catalogSnapshot);
