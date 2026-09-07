@@ -88,3 +88,16 @@ These are executable formatting, generator and source-structure proofs. They do
 not establish rendered visibility, accessibility behavior, layout at supported
 scales, or complete startup behavior in the built graphical application. Those
 runtime interactions and captures remain separate evidence.
+## Pending integrity review
+
+The current generator detects a manifest changed without a matching digest,
+but it does not yet reject a valid timestamp edit paired with a recomputed
+adjacent digest. The first full manifest hash must also be bound to the retained
+generated header or a retained record for the same build identity. That repair
+and its paired timestamp-plus-digest negative test remain incomplete.
+
+The passing generator fixtures do not cover that paired edit. The 139 executable
+formatting assertions and the four shell checks remain valid within their stated
+scope. Do not describe the current record storage as tamper-proof, and do not
+claim the front-provenance integrity review is complete. No rendered UI evidence
+has been produced for this lane.

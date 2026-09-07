@@ -55,7 +55,7 @@ def assert_shell(shell, component):
     assert re.search(r"anchors\.top:\s*parent\.top\b", front)
     assert not re.search(r"\b(?:visible|opacity|active)\s*:", front)
     assert re.search(r"anchors\.top:\s*frontBuildProvenance\.bottom\b", dock)
-    assert re.search(r"function\s+init\(\)\s*\{\s*root\.init\(\)\s*\}", uncomment(shell))
+    assert re.search(r"function\s+init\(\)\s*\{\s*root\.init\(\);?\s*\}", uncomment(shell))
     component = uncomment(component)
     assert "aboutModel.buildVersion()" in component and "aboutModel.appVersion()" not in component
     assert "aboutModel.buildUpdatedAtLocal()" in component
