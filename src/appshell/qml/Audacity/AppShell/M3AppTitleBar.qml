@@ -34,6 +34,7 @@ import Muse.UiComponents
 
 import Audacity.M3
 import Audacity.AppShell
+import Audacity.Personalize
 
 Rectangle {
     id: root
@@ -93,11 +94,12 @@ Rectangle {
             radius: M3.shape.small
             color: M3.color.primaryContainer
 
-            StyledIconLabel {
-                anchors.centerIn: parent
-                iconCode: IconCode.AUDIO
-                color: M3.color.onPrimaryContainer
-                font.pixelSize: 20
+            Image {
+                anchors.fill: parent
+                anchors.margins: 4
+                source: BrandingModel.logo32Path
+                fillMode: Image.PreserveAspectFit
+                cache: false
             }
         }
 

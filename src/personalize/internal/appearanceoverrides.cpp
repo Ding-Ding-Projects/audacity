@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -30,7 +31,7 @@ AppearanceOverrides::AppearanceOverrides(QObject* parent)
 
 QString AppearanceOverrides::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     return dir + "/appearance-overrides.json";
 }

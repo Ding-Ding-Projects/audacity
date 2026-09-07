@@ -17769,6 +17769,11 @@ It 唔會 be 載入咗.</translation>
         <translation>鎖</translation>
     </message>
     <message>
+        <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="28" />
+        <source>Logo</source>
+        <translation>標誌</translation>
+    </message>
+    <message>
         <location filename="../../src/preferences/qml/Audacity/Preferences/PersonalizePreferencesPage.qml" line="29" />
         <source>Authenticator</source>
         <translation>驗證器</translation>
@@ -25153,5 +25158,24 @@ Template for clip name generation on inserting new empty clip</extracomment>
         <source>Timeline</source>
         <translation>時間軸</translation>
     </message>
+</context>
+<context>
+    <name>personalize/branding</name>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="11" /><source>Application logo</source><translation>程式標誌</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="12" /><source>This changes local application presentation, including the Material title bar. It never changes the executable, installer, updater or release identity.</source><translation>呢個會改本機程式門面，包括 Material 標題欄，唔會改執行檔、安裝程式、更新器或者發行身份。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="18" /><source>Choose logo</source><translation>揀標誌</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="19" /><source>Crop to fill the preview</source><translation>裁剪填滿預覽</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="20" /><source>Background colour</source><translation>背景顏色</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="22" /><source>Reset logo</source><translation>重設標誌</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="21" /><source>Choose a local logo before changing crop or background.</source><translation>先揀本機標誌，先可以改裁剪或者背景。</translation></message>
+    <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="33" /><source>Custom logo saved locally</source><translation>自訂標誌已經喺本機儲好</translation></message>
+    <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="33" /><source>Using the shipped logo</source><translation>而家用緊原裝標誌</translation></message>
+    <message><location filename="../../src/personalize/internal/brandingmodel.cpp" line="35" /><source>The selected logo could not be applied</source><translation>揀咗嘅標誌用唔到</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="14" /><source>The selected file could not be read. Choose another local image.</source><translation>揀咗嘅檔案讀唔到。請揀另一張本機圖片。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="15" /><source>This image is too large. Choose a file up to 8 MiB.</source><translation>呢張圖片太大。請揀唔超過 8 MiB 嘅檔案。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="16" /><source>Use a valid background colour, then try again.</source><translation>請用有效嘅背景顏色，再試一次。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="17" /><source>The logo cache could not be updated. Your current logo is unchanged.</source><translation>標誌快取更新唔到。你而家嘅標誌冇變。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="18" /><source>The logo update was cancelled. Try again when ready.</source><translation>標誌更新取消咗。準備好就再試。</translation></message>
+    <message><location filename="../../src/personalize/qml/Audacity/Personalize/LogoCustomizationPanel.qml" line="19" /><source>This image is unsupported or invalid. Choose a PNG, JPEG, WebP, SVG or ICO image.</source><translation>呢張圖片唔支援或者無效。請揀 PNG、JPEG、WebP、SVG 或者 ICO 圖片。</translation></message>
 </context>
 </TS>

@@ -1,21 +1,13 @@
-name: 'Material Audacity: Build and release'
+name: Material Audacity Windows delivery
 
 on:
   push:
-    branches:
-      - master
-    tags:
-      - 'v4.0.0-m3.*'
+    branches: [main]
   workflow_dispatch:
-
-# Releases are never cancelled by a later push: every push gets its own
-# uniquely tagged release, so runs queue behind each other instead.
-concurrency:
-  group: material-audacity-release-${{ github.ref }}
-  cancel-in-progress: false
 
 permissions:
   contents: read
+  actions: read
 
 env:
   CI_DIR: buildscripts/ci
@@ -24,21 +16,58 @@ env:
 
 jobs:
   windows_x64:
-    name: Windows x64
+    name: Windows x64 build and package
     runs-on: windows-2022
+    permissions:
+      contents: write
+      actions: read
     outputs:
       start_time: ${{ steps.start.outputs.utc }}
-      build_version: ${{ steps.configure.outputs.build_version }}
       release_tag: ${{ steps.configure.outputs.release_tag }}
     steps:
-      # This is the very first step of the very first job. Its output is the
-      # authoritative workflow start time used in the release notes.
+      - name: Provision reservation Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Check and bootstrap GitHub CLI before first API use
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          function Test-ReleaseCli {
+            if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { return $false }
+            $apiHelp = gh api --help | Out-String
+            if ($LASTEXITCODE -ne 0) { return $false }
+            $releaseHelp = gh release create --help | Out-String
+            return $LASTEXITCODE -eq 0 -and $apiHelp.Contains('--slurp') -and
+              $apiHelp.Contains('--paginate') -and $releaseHelp.Contains('--verify-tag')
+          }
+          if (-not (Test-ReleaseCli)) {
+            if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+              throw 'GitHub CLI lacks required capabilities, and Chocolatey is unavailable for bootstrap.'
+            }
+            choco upgrade gh -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'GitHub CLI bootstrap failed.' }
+            $ghDirectory = Join-Path $env:ProgramFiles 'GitHub CLI'
+            $env:PATH = "$ghDirectory;$env:PATH"
+            $ghDirectory | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+          if (-not (Test-ReleaseCli)) { throw 'GitHub CLI still lacks pagination, slurp or verify-tag support after bootstrap.' }
+          python -c "import sys; assert sys.version_info >= (3, 12), 'Python 3.12 or newer is required'"
+          if ($LASTEXITCODE -ne 0) { throw 'Reservation Python verification failed.' }
+          gh --version
+
       - name: Record workflow start time
         id: start
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          echo "utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
-          echo "Workflow started at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          STARTED=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs?per_page=100" \
+            --jq '.jobs[] | select(.name == "Windows x64 build and package") | .started_at')
+          test -n "$STARTED"
+          echo "utc=$STARTED" >> "$GITHUB_OUTPUT"
+          echo "First job started: $STARTED"
 
       - name: Clone repository
         uses: actions/checkout@v6
@@ -46,216 +75,120 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Configure workflow
+      - name: Configure delivery
         id: configure
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            BUILD_MODE=stable_build
-            RELEASE_TAG="${GITHUB_REF_NAME}"
-          else
-            BUILD_MODE=devel_build
-            # Every push publishes a release under a unique, monotonic tag
-            # derived from version.cmake and the run number.
-            MAJOR=$(sed -n 's/.*MUSE_APP_VERSION_MAJOR "\([0-9]*\)".*/\1/p' version.cmake)
-            MINOR=$(sed -n 's/.*MUSE_APP_VERSION_MINOR "\([0-9]*\)".*/\1/p' version.cmake)
-            PATCH=$(sed -n 's/.*MUSE_APP_VERSION_PATCH "\([0-9]*\)".*/\1/p' version.cmake)
-            RELEASE_TAG="v${MAJOR}.${MINOR}.${PATCH}-m3.${GITHUB_RUN_NUMBER}"
-          fi
-          echo "Release tag: ${RELEASE_TAG}"
-          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          MAJOR=$(sed -n 's/.*MUSE_APP_VERSION_MAJOR "\([0-9]*\)".*/\1/p' version.cmake)
+          MINOR=$(sed -n 's/.*MUSE_APP_VERSION_MINOR "\([0-9]*\)".*/\1/p' version.cmake)
+          PATCH=$(sed -n 's/.*MUSE_APP_VERSION_PATCH "\([0-9]*\)".*/\1/p' version.cmake)
+          test -n "$MAJOR" -a -n "$MINOR" -a -n "$PATCH"
+          mkdir -p build.artifacts
+          python buildscripts/ci/tools/reserve_release_tag.py reserve \
+            --repo "$GITHUB_REPOSITORY" --sha "$GITHUB_SHA" \
+            --version "${MAJOR}.${MINOR}.${PATCH}" --minimum "$GITHUB_RUN_NUMBER" \
+            --output build.artifacts/release-reservation.json
+          TAG=$(python -c 'import json; print(json.load(open("build.artifacts/release-reservation.json"))["tag"])')
+          echo "release_tag=$TAG" >> "$GITHUB_OUTPUT"
+          cmake -DEVENT=${{ github.event_name }} -DBUILD_MODE=stable_build \
+                -DARTIFACT_INFO="Win_x86_64_material" -P ${CI_DIR}/common/ci_configure.cmake
 
-          cmake -DEVENT=${{ github.event_name }} \
-                -DBUILD_MODE=${BUILD_MODE} \
-                -DARTIFACT_INFO="Win_x86_64_material" \
-                -P ${CI_DIR}/common/ci_configure.cmake
-
-          echo "BUILD_MODE=${BUILD_MODE}" >> "$GITHUB_ENV"
-          echo "build_version=$(cat ./build.artifacts/env/build_version.env)" >> "$GITHUB_OUTPUT"
-
-      - name: Restore ccache files
-        id: restore-ccache
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: ${{ runner.os }}-${{ runner.arch }}-material-ccache-
-          restore-keys: ${{ runner.os }}-${{ runner.arch }}-material-ccache-
-
-      - name: Setup ccache
+      - name: Configure optional compiler cache
         shell: bash
         run: |
-          choco install -y ccache
-          bash ./buildscripts/ci/tools/setup_ccache_config.sh
-
-      - name: Register msvc problem matcher
-        run: echo "::add-matcher::.github/problem_matchers/msvc.json"
+          python buildscripts/ci/tools/configure_compiler_cache.py \
+            --workspace "$GITHUB_WORKSPACE" --github-env "$GITHUB_ENV" \
+            --output build.artifacts/compiler-cache.json
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2022_64'
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
           modules: ${{ env.QT_MODULES }}
           cache: true
 
-      - name: Setup environment
+      - name: Setup build environment
         shell: bash
-        run: |
-          cmake -P ${CI_DIR}/windows/setup.cmake
+        run: cmake -P ${CI_DIR}/windows/setup.cmake
 
-      - name: Build
+      - name: Build application
         shell: bash
         run: |
           source /c/build_tools/environment.sh
           cmake -DCRASH_REPORT_URL="''" -P ${CI_DIR}/windows/ci_build.cmake
 
-      - name: Show ccache stats
-        shell: bash
-        run: ccache -sv
-
-      - name: Download the previous release for delta packages
+      - name: Download previous Squirrel release
         continue-on-error: true
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p previous-release
-          TAG=$(gh release list --limit 20 --json tagName,isDraft \
-                --jq '[.[] | select(.isDraft == false) | .tagName] | map(select(startswith("v4.0.0-m3."))) | .[0] // ""')
-          if [ -z "$TAG" ]; then
-            echo "No previous Material Audacity release found. Only a full package will be produced."
-            exit 0
+          TAG=$(gh release list --limit 100 --json tagName,isDraft \
+            --jq '[.[] | select(.isDraft == false) | .tagName | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+-m3\\.[0-9]+$"))][0] // ""')
+          if [ -n "$TAG" ]; then
+            gh release download "$TAG" --dir previous-release --pattern RELEASES
+            gh release download "$TAG" --dir previous-release --pattern '*.nupkg'
           fi
-          echo "Previous release: $TAG"
-          gh release download "$TAG" --dir previous-release --pattern 'RELEASES' || true
-          gh release download "$TAG" --dir previous-release --pattern '*.nupkg' || true
-          ls -la previous-release || true
 
-      - name: Package with Squirrel.Windows
+      - name: Package unsigned Squirrel.Windows installer
         shell: bash
         run: |
-          cmake -DPACK_TYPE_OVERRIDE=squirrel \
-                -DPACKARCH=x86_64 \
+          cmake -DPACK_TYPE_OVERRIDE=squirrel -DPACKARCH=x86_64 \
                 -DRELEASE_TAG="${{ steps.configure.outputs.release_tag }}" \
                 -DRUN_NUMBER="${GITHUB_RUN_NUMBER}" \
-                -DPREVIOUS_RELEASES_DIR="previous-release" \
-                -DSQUIRREL_OUT_DIR="build.artifacts/squirrel" \
+                -DPREVIOUS_RELEASES_DIR=previous-release \
+                -DSQUIRREL_OUT_DIR=build.artifacts/squirrel \
                 -P ${CI_DIR}/windows/package.cmake
 
-      - name: Verify that nothing is code signed
+      - name: Verify unsigned Squirrel release assets
         shell: pwsh
         run: |
-          $ErrorActionPreference = "Stop"
-          $dir = "build.artifacts/squirrel"
-          $files = @(Get-ChildItem -Path $dir -Filter *.exe -File -Recurse)
-          if ($files.Count -eq 0) {
-            throw "No executables were produced in $dir"
+          $ErrorActionPreference = 'Stop'
+          $dir = 'build.artifacts/squirrel'
+          . ./buildscripts/ci/windows/squirrel_output.ps1
+          $tag = '${{ steps.configure.outputs.release_tag }}'
+          $version = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          $null = Assert-SquirrelOutput $dir $version 'Audacity'
+          foreach ($path in @((Join-Path $dir 'Setup.exe'), (Join-Path $dir 'RELEASES'))) {
+            if (-not (Test-Path -LiteralPath $path)) { throw "Missing required Squirrel asset: $path" }
           }
-          $failed = $false
-          foreach ($file in $files) {
-            $status = (Get-AuthenticodeSignature -LiteralPath $file.FullName).Status
-            Write-Host ("{0}: {1}" -f $file.Name, $status)
-            if ($status -ne "NotSigned") { $failed = $true }
+          $full = @(Get-ChildItem -LiteralPath $dir -Filter '*-full.nupkg' -File)
+          if ($full.Count -ne 1) { throw "Expected exactly one Squirrel full package, found $($full.Count)." }
+          foreach ($exe in Get-ChildItem -LiteralPath $dir -Filter '*.exe' -File -Recurse) {
+            $status = (Get-AuthenticodeSignature -LiteralPath $exe.FullName).Status
+            if ($status -ne 'NotSigned') { throw "$($exe.FullName) has signature status $status." }
           }
-          if ($failed) {
-            throw "Code signing is permanently prohibited, but a signed executable was produced."
-          }
-          Write-Host "All produced executables report NotSigned, as required."
 
-      - name: Upload Windows artifacts
+      - name: Collect safe build outputs
         if: always()
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path delivery-output | Out-Null
+          if (Test-Path build.artifacts) { Copy-Item build.artifacts delivery-output\build.artifacts -Recurse -Force }
+          $metadata = [ordered]@{ runId='${{ github.run_id }}'; commit='${{ github.sha }}'; jobStatus='${{ job.status }}'; runnerOS='${{ runner.os }}'; runnerArch='${{ runner.arch }}' } | ConvertTo-Json
+          Set-Content -LiteralPath delivery-output\metadata.json -Value $metadata -Encoding utf8
+
+      - name: Upload safe build outputs
+        if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: material-audacity-windows-x64
+          name: material-audacity-windows-x64-${{ github.run_id }}
           if-no-files-found: warn
-          path: |
-            build.artifacts/squirrel/**
-
-  linux_x64:
-    name: Linux x64
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Configure workflow
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            BUILD_MODE=stable_build
-          else
-            BUILD_MODE=devel_build
-          fi
-
-          cmake -DEVENT=${{ github.event_name }} \
-                -DBUILD_MODE=${BUILD_MODE} \
-                -DARTIFACT_INFO="Lin_x86_64_material" \
-                -P ${CI_DIR}/common/ci_configure.cmake
-
-          echo "BUILD_MODE=${BUILD_MODE}" >> "$GITHUB_ENV"
-
-      - name: Restore ccache files
-        id: restore-ccache
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: ${{ runner.os }}-${{ runner.arch }}-material-ccache-
-          restore-keys: ${{ runner.os }}-${{ runner.arch }}-material-ccache-
-
-      - name: Setup ccache
-        run: |
-          sudo apt-get update && sudo apt-get install -y ccache
-          bash ./buildscripts/ci/tools/setup_ccache_config.sh
-
-      - name: Register gcc problem matcher
-        run: echo "::add-matcher::.github/problem_matchers/gcc.json"
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'linux'
-          target: 'desktop'
-          arch: 'linux_gcc_64'
-          modules: ${{ env.QT_MODULES }}
-          cache: true
-
-      - name: Setup environment
-        run: bash ${CI_DIR}/linux/setup.sh
-
-      - name: Build
-        run: |
-          source "$HOME/build_tools/environment.sh"
-          cmake -DCRASH_REPORT_URL="''" -P ${CI_DIR}/linux/ci_build.cmake
-
-      - name: Show ccache stats
-        run: ccache -sv
-
-      - name: Package AppImage
-        run: cmake -DPACKARCH=x86_64 -P ${CI_DIR}/linux/package.cmake
-
-      - name: Upload Linux artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: material-audacity-linux-x64
-          if-no-files-found: warn
-          path: |
-            build.artifacts/*.AppImage
+          retention-days: 14
+          path: delivery-output/**
 
   release:
-    name: Publish release
-    needs:
-      - windows_x64
-      - linux_x64
-    # Every push to master and every manual dispatch publishes a real,
-    # uniquely tagged, non-draft release; a tag push reuses its own tag.
-    runs-on: ubuntu-22.04
+    name: Publish Windows release
+    needs: windows_x64
+    runs-on: windows-2022
     permissions:
       contents: write
     steps:
@@ -264,90 +197,97 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Resolve the release tag
-        id: tag
-        shell: bash
-        run: |
-          TAG="${{ needs.windows_x64.outputs.release_tag }}"
-          if [ -z "$TAG" ]; then
-            echo "No release tag was resolved by the Windows job" >&2
-            exit 1
-          fi
-          if [[ "${GITHUB_REF}" != refs/tags/* ]] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists; a release is never recycled" >&2
-            exit 1
-          fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Download build artifacts
+      - name: Download Windows delivery outputs
         uses: actions/download-artifact@v6
         with:
-          path: downloaded-artifacts
+          name: material-audacity-windows-x64-${{ github.run_id }}
+          path: downloaded-output
 
-      - name: Collect release assets
-        id: collect
-        shell: bash
+      - name: Bootstrap required release tools
+        shell: pwsh
         run: |
-          mkdir -p release-assets
-          find downloaded-artifacts -type f \
-               \( -name 'Setup.exe' -o -name '*.nupkg' -o -name 'RELEASES' -o -name '*.AppImage' \) \
-               -exec cp -f {} release-assets/ \;
-          ls -la release-assets
-          if [ -z "$(ls -A release-assets)" ]; then
-            echo "No release assets were collected" >&2
-            exit 1
-          fi
+          $ErrorActionPreference = 'Stop'
+          foreach ($tool in @('python', 'gh')) {
+            if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+              choco install -y $tool
+            }
+            if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+              throw "Required release tool is unavailable after bootstrap: $tool"
+            }
+          }
+          python --version
+          gh --version
 
-      - name: Resolve the dim sum code name and photo
+      - name: Collect exact Squirrel release assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-assets,release-metadata | Out-Null
+          . ./buildscripts/ci/windows/squirrel_output.ps1
+          $tag = '${{ needs.windows_x64.outputs.release_tag }}'
+          $version = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          # Read only the exact package directory, never recursive filename matches
+          # that might also collect a retained previous transaction generation.
+          Copy-SquirrelReleaseAssets -Source 'downloaded-output/build.artifacts/squirrel' `
+            -Destination 'release-assets' -Version $version -PackageId 'Audacity'
+
+      - name: Resolve dim sum photo
+        shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          python3 buildscripts/ci/tools/dim_sum_release.py \
-            --repo "${GITHUB_REPOSITORY}" \
-            --assets-dir release-assets \
-            --output-json dim-sum.json
+          python buildscripts/ci/tools/dim_sum_release.py --repo "$env:GITHUB_REPOSITORY" `
+            --assets-dir release-assets --output-json release-metadata/dim-sum.json
 
-      - name: Generate SHA256SUMS
-        working-directory: release-assets
+      - name: Generate deterministic release metadata
+        shell: pwsh
         run: |
-          rm -f SHA256SUMS
-          sha256sum * > SHA256SUMS
-          cat SHA256SUMS
+          $ErrorActionPreference = 'Stop'
+          python buildscripts/ci/tools/count_lines.py --root . | Set-Content -LiteralPath release-metadata/line-counts.md -Encoding utf8
+          if (-not (Get-Content -Raw release-metadata/line-counts.md).Trim()) { throw 'Line count report is empty.' }
+          $checksumInputs = @(Get-ChildItem release-assets -File | Where-Object { $_.Name -ne 'SHA256SUMS' } | Sort-Object Name)
+          if ($checksumInputs.Count -eq 0) { throw 'No release assets available for checksums.' }
+          $checksumLines = foreach ($asset in $checksumInputs) {
+            '{0}  {1}' -f (Get-FileHash -LiteralPath $asset.FullName -Algorithm SHA256).Hash.ToLower(), $asset.Name
+          }
+          $checksumTemp = 'release-assets/SHA256SUMS.tmp'
+          $checksumLines | Set-Content -LiteralPath $checksumTemp -Encoding ascii
+          Move-Item -LiteralPath $checksumTemp -Destination 'release-assets/SHA256SUMS' -Force
+          $tag = '${{ needs.windows_x64.outputs.release_tag }}'
+          $packageVersion = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          python buildscripts/ci/tools/release_notes.py `
+            --tag $tag --version $packageVersion `
+            --start-time '${{ needs.windows_x64.outputs.start_time }}' `
+            --end-time (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') `
+            --completion-boundary 'Release upload has not started; this draft is replaced after asset upload completes.' `
+            --repo "$env:GITHUB_REPOSITORY" --run-id "$env:GITHUB_RUN_ID" `
+            --commit '${{ github.sha }}' --assets-dir release-assets `
+            --line-count-file release-metadata/line-counts.md `
+            --dim-sum-json release-metadata/dim-sum.json --output release-metadata/RELEASE_NOTES.md
 
-      - name: Generate release notes
-        shell: bash
-        run: |
-          # v4.0.0-m3.7 becomes the SemVer 1 package version 4.0.0-m3007.
-          PKG_VERSION=$(python3 -c "import re,sys; t=sys.argv[1]; m=re.match(r'^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', t); print('{0}-m3{1:03d}'.format(m.group(1), int(m.group(2))) if m else t.lstrip('v'))" "${{ steps.tag.outputs.tag }}")
-          echo "Package version: ${PKG_VERSION}"
-          python3 buildscripts/ci/tools/release_notes.py \
-            --tag "${{ steps.tag.outputs.tag }}" \
-            --version "${PKG_VERSION}" \
-            --start-time "${{ needs.windows_x64.outputs.start_time }}" \
-            --end-time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --run-id "${GITHUB_RUN_ID}" \
-            --commit "${GITHUB_SHA}" \
-            --assets-dir release-assets \
-            --dim-sum-json dim-sum.json \
-            --output RELEASE_NOTES.md
-          cat RELEASE_NOTES.md
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Publish unique non-draft release
+        shell: pwsh
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          target_commitish: ${{ github.sha }}
-          name: Material Audacity ${{ steps.tag.outputs.tag }}
-          body_path: RELEASE_NOTES.md
-          prerelease: true
-          fail_on_unmatched_files: true
-          files: |
-            release-assets/*
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = '${{ needs.windows_x64.outputs.release_tag }}'
+          python buildscripts/ci/tools/reserve_release_tag.py verify `
+            --repo "$env:GITHUB_REPOSITORY" --sha '${{ github.sha }}' --tag $tag
+          if ($LASTEXITCODE -ne 0) { throw 'Reserved release tag no longer matches the exact candidate.' }
+          if (gh release view $tag --repo "$env:GITHUB_REPOSITORY" 2>$null) { throw "Refusing to overwrite existing release $tag" }
+          $uploadAssets = @(Get-ChildItem release-assets -File | Where-Object { $_.Name -notlike 'RELEASE_NOTES*' } | Sort-Object Name | ForEach-Object FullName)
+          gh release create $tag $uploadAssets --repo "$env:GITHUB_REPOSITORY" --verify-tag --target '${{ github.sha }}' `
+            --title "Material Audacity $tag" --notes-file release-metadata/RELEASE_NOTES.md --prerelease
+          if ($LASTEXITCODE -ne 0) { throw "Release upload failed with exit code $LASTEXITCODE" }
+          $completed = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+          $packageVersion = [regex]::Replace($tag, '^v?(\d+\.\d+\.\d+)-m3\.(\d+)$', { param($m) '{0}-m3{1:000}' -f $m.Groups[1].Value, [int]$m.Groups[2].Value })
+          python buildscripts/ci/tools/release_notes.py `
+            --tag $tag --version $packageVersion `
+            --start-time '${{ needs.windows_x64.outputs.start_time }}' --end-time $completed `
+            --completion-boundary 'Release asset upload completed; this timestamp is recorded after gh release create returned success.' `
+            --repo "$env:GITHUB_REPOSITORY" --run-id "$env:GITHUB_RUN_ID" `
+            --commit '${{ github.sha }}' --assets-dir release-assets `
+            --line-count-file release-metadata/line-counts.md `
+            --dim-sum-json release-metadata/dim-sum.json --output release-metadata/RELEASE_NOTES_FINAL.md
+          gh release edit $tag --repo "$env:GITHUB_REPOSITORY" --notes-file release-metadata/RELEASE_NOTES_FINAL.md

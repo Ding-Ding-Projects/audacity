@@ -1,45 +1,79 @@
 name: 'Material Audacity: Documentation site'
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'docs/**'
-      - '.github/workflows/material-audacity-pages.yml'
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Material Audacity Windows delivery']
+    types: [completed]
+    branches: [main]
 
 concurrency:
   group: material-audacity-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     name: Build documentation artifact
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
+    permissions:
+      contents: read
+      pages: write
+    outputs:
+      publish: ${{ steps.revision.outputs.publish }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Ignore a superseded documentation revision
+        id: revision
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          $main = gh api "repos/$env:GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve current main for publication.' }
+          $candidate = git rev-parse HEAD
+          $publish = $candidate.Trim() -eq $main.Trim()
+          "publish=$($publish.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          if (-not $publish) { 'A newer main revision exists; this run will not replace its documentation.' >> $env:GITHUB_STEP_SUMMARY }
+
+      - name: Set up Node.js
+        if: steps.revision.outputs.publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Stage documentation and verified release metadata
+        if: steps.revision.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+          MA_REQUIRE_MATCHING_RELEASE: ${{ github.event_name == 'workflow_run' && '1' || '0' }}
+        run: node docs/site/scripts/stage-site.mjs
 
       - name: Configure Pages
+        if: steps.revision.outputs.publish == 'true'
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
       - name: Upload Pages artifact
+        if: steps.revision.outputs.publish == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs
+          path: build.site
 
   deploy:
+    if: needs.build.outputs.publish == 'true'
     name: Deploy to GitHub Pages
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
     permissions:
       pages: write
       id-token: write

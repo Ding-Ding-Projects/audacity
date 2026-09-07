@@ -54,3 +54,5 @@ if (BUILD_RESULT GREATER 0)
     message(FATAL_ERROR "Failed build")
 endif()
 
+set(QPDF_INSTALL_ROOT "${CMAKE_CURRENT_BINARY_DIR}/build.install")
+include("${CMAKE_CURRENT_LIST_DIR}/../../converter-tools/provision-qpdf.cmake")

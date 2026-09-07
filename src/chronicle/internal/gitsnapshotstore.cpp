@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -547,7 +548,7 @@ QByteArray GitSnapshotStore::packHistory() const
         return QByteArray();
     }
 
-    QTemporaryFile bundleFile;
+    QTemporaryFile bundleFile(au::profile::Paths::temporaryPath() + QStringLiteral("/chronicle-bundle-XXXXXX"));
     if (!bundleFile.open()) {
         return QByteArray();
     }
@@ -574,7 +575,7 @@ bool GitSnapshotStore::unpackHistory(const QByteArray& data)
         return false;
     }
 
-    QTemporaryFile bundleFile;
+    QTemporaryFile bundleFile(au::profile::Paths::temporaryPath() + QStringLiteral("/chronicle-bundle-XXXXXX"));
     if (!bundleFile.open()) {
         return false;
     }

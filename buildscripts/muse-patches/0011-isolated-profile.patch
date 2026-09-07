@@ -1,0 +1,223 @@
+diff --git a/framework/global/CMakeLists.txt b/framework/global/CMakeLists.txt
+index ebd5e9a81..48adbb02c 100644
+--- a/framework/global/CMakeLists.txt
++++ b/framework/global/CMakeLists.txt
+@@ -19,6 +19,13 @@
+ # along with this program. If not, see <https://www.gnu.org/licenses/>.
+ 
+ muse_create_module(muse_global ALIAS muse::global)
++# The application owns this provider; compile its state once in the global module.
++target_sources(muse_global PRIVATE ${CMAKE_SOURCE_DIR}/src/shared/profilepaths.cpp)
++target_include_directories(muse_global PUBLIC ${CMAKE_SOURCE_DIR}/src)
++target_compile_definitions(muse_global PRIVATE AUDACITY_PROFILEPATHS_BUILD)
++if(BUILD_SHARED_LIBS)
++    target_compile_definitions(muse_global PUBLIC AUDACITY_PROFILEPATHS_SHARED)
++endif()
+ 
+ include(thirdparty/kors_logger/logger.cmake)
+ include(thirdparty/kors_profiler/profiler/profiler.cmake)
+diff --git a/framework/global/internal/globalconfiguration.cpp b/framework/global/internal/globalconfiguration.cpp
+index a427b79d7..4a87fbd64 100644
+--- a/framework/global/internal/globalconfiguration.cpp
++++ b/framework/global/internal/globalconfiguration.cpp
+@@ -1,3 +1,4 @@
++#include "shared/profilepaths.h"
+ /*
+  * SPDX-License-Identifier: GPL-3.0-only
+  * MuseScore-CLA-applies
+@@ -131,7 +132,7 @@ io::path_t GlobalConfiguration::fromBundledPath(const io::path_t& path) const
+ 
+ io::path_t GlobalConfiguration::appConfigPath() const
+ {
+-    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
++    return au::profile::Paths::writableLocation(QStandardPaths::ConfigLocation);
+ }
+ 
+ io::path_t GlobalConfiguration::userAppDataPath() const
+@@ -144,12 +145,13 @@ io::path_t GlobalConfiguration::userAppDataPath() const
+ 
+ QString GlobalConfiguration::resolveUserAppDataPath() const
+ {
++    if (au::profile::Paths::active()) return au::profile::Paths::writableLocation(QStandardPaths::AppLocalDataLocation);
+ #ifdef WIN_PORTABLE
+     return QDir::cleanPath(QString("%1/../../../Data/settings").arg(QCoreApplication::applicationDirPath()));
+ #elif defined(Q_OS_WASM)
+     return QString("/files/data");
+ #else
+-    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
++    return au::profile::Paths::writableLocation(QStandardPaths::AppLocalDataLocation);
+ #endif
+ }
+ 
+@@ -160,25 +162,25 @@ io::path_t GlobalConfiguration::userBackupPath() const
+ 
+ io::path_t GlobalConfiguration::userDataPath() const
+ {
+-    static io::path_t p = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/" + QCoreApplication::applicationName();
++    static io::path_t p = au::profile::Paths::writableLocation(QStandardPaths::DocumentsLocation) + "/" + QCoreApplication::applicationName();
+     return p;
+ }
+ 
+ io::path_t GlobalConfiguration::homePath() const
+ {
+-    static io::path_t p = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
++    static io::path_t p = au::profile::Paths::writableLocation(QStandardPaths::HomeLocation);
+     return p;
+ }
+ 
+ io::path_t GlobalConfiguration::downloadsPath() const
+ {
+-    static io::path_t p = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
++    static io::path_t p = au::profile::Paths::writableLocation(QStandardPaths::DownloadLocation);
+     return p;
+ }
+ 
+ io::path_t GlobalConfiguration::genericDataPath() const
+ {
+-    static io::path_t p = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
++    static io::path_t p = au::profile::Paths::writableLocation(QStandardPaths::GenericDataLocation);
+     return p;
+ }
+ 
+diff --git a/framework/global/io/internal/filesystem.cpp b/framework/global/io/internal/filesystem.cpp
+index 5dd1e2aff..a6ed82a96 100644
+--- a/framework/global/io/internal/filesystem.cpp
++++ b/framework/global/io/internal/filesystem.cpp
+@@ -1,3 +1,4 @@
++#include "shared/profilepaths.h"
+ /*
+  * SPDX-License-Identifier: GPL-3.0-only
+  * MuseScore-CLA-applies
+@@ -440,7 +441,7 @@ bool FileSystem::setPermissionsAllowedForAll(const io::path_t& path) const
+ 
+ io::path_t FileSystem::temporaryDirectoryPath() const
+ {
+-    return QDir::tempPath();
++    return au::profile::Paths::temporaryPath();
+ }
+ 
+ io::path_t FileSystem::canonicalFilePath(const io::path_t& filePath) const
+diff --git a/framework/global/settings.cpp b/framework/global/settings.cpp
+index d41000df0..a26a88061 100644
+--- a/framework/global/settings.cpp
++++ b/framework/global/settings.cpp
+@@ -1,3 +1,4 @@
++#include "shared/profilepaths.h"
+ /*
+  * SPDX-License-Identifier: GPL-3.0-only
+  * MuseScore-CLA-applies
+@@ -48,9 +49,12 @@ Settings* Settings::instance()
+ 
+ Settings::Settings()
+ {
++    au::profile::Paths::settingsAccessed();
+ #ifdef WIN_PORTABLE
+-    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, dataPath());
+-    QSettings::setPath(QSettings::IniFormat, QSettings::SystemScope, dataPath());
++    if (!au::profile::Paths::active()) {
++        QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, dataPath());
++        QSettings::setPath(QSettings::IniFormat, QSettings::SystemScope, dataPath());
++    }
+ #endif
+ 
+ #ifndef Q_OS_MAC
+@@ -58,6 +62,7 @@ Settings::Settings()
+ #endif
+ 
+     m_settings = new QSettings();
++    if (au::profile::Paths::active()) m_settings->setFallbacksEnabled(false);
+ }
+ 
+ Settings::~Settings()
+@@ -244,7 +249,7 @@ QString Settings::dataPath() const
+ #ifdef WIN_PORTABLE
+     return QDir::cleanPath(QString("%1/../../../Data/settings").arg(QCoreApplication::applicationDirPath()));
+ #else
+-    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
++    return au::profile::Paths::writableLocation(QStandardPaths::AppLocalDataLocation);
+ #endif
+ }
+ 
+diff --git a/framework/multiwindows/internal/multiprocess/ipc/ipcchannel.cpp b/framework/multiwindows/internal/multiprocess/ipc/ipcchannel.cpp
+index a8936d298..e9674980f 100644
+--- a/framework/multiwindows/internal/multiprocess/ipc/ipcchannel.cpp
++++ b/framework/multiwindows/internal/multiprocess/ipc/ipcchannel.cpp
+@@ -1,3 +1,4 @@
++#include "shared/profilepaths.h"
+ /*
+  * SPDX-License-Identifier: GPL-3.0-only
+  * MuseScore-CLA-applies
+@@ -149,22 +150,22 @@ async::Channel<Msg> IpcChannel::msgReceived() const
+ 
+ void IpcChannel::setupConnection()
+ {
+-    if (!m_selfSocket->connect(SERVER_NAME)) {
+-        IpcLock lock(SERVER_NAME);
++    if (!m_selfSocket->connect(au::profile::Paths::ipcName(SERVER_NAME))) {
++        IpcLock lock(au::profile::Paths::ipcName(SERVER_NAME));
+         lock.lock();
+ 
+         //! NOTE Check again
+-        if (!m_selfSocket->connect(SERVER_NAME)) {
++        if (!m_selfSocket->connect(au::profile::Paths::ipcName(SERVER_NAME))) {
+             //! NOTE If it was not possible to connect to the server, then it no there or was, but it was closed.
+             //! In this case, we will become a server
+             LOGI() << "starting ipc server";
+             m_server = new IpcServer();
+-            m_server->listen(SERVER_NAME);
++            m_server->listen(au::profile::Paths::ipcName(SERVER_NAME));
+         }
+         lock.unlock();
+ 
+         //! NOTE Connect to self server
+-        if (!m_selfSocket->connect(SERVER_NAME)) {
++        if (!m_selfSocket->connect(au::profile::Paths::ipcName(SERVER_NAME))) {
+             LOGE() << "failed to connect to ipc server";
+         }
+     }
+diff --git a/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp b/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp
+index f1d6ba511..ef27a8a05 100644
+--- a/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp
++++ b/framework/multiwindows/internal/multiprocess/multiprocessprovider.cpp
+@@ -1,3 +1,4 @@
++#include "shared/profilepaths.h"
+ /*
+  * SPDX-License-Identifier: GPL-3.0-only
+  * MuseScore-CLA-applies
+@@ -257,7 +258,7 @@ bool MultiProcessProvider::openNewWindow(const QStringList& args)
+     QList<ipc::ID> currentApps = m_ipcChannel->instances();
+ 
+     QString appPath = QCoreApplication::applicationFilePath();
+-    bool ok = QProcess::startDetached(appPath, args);
++    bool ok = QProcess::startDetached(appPath, au::profile::Paths::childArguments(args));
+     if (ok) {
+         LOGI() << "success start: " << appPath << ", args: " << args;
+     } else {
+@@ -386,7 +387,7 @@ muse::ipc::IpcLock* MultiProcessProvider::lock(const std::string& name)
+     if (it != m_locks.end()) {
+         return it->second;
+     }
+-    ipc::IpcLock* l = new ipc::IpcLock(QString::fromStdString(name));
++    ipc::IpcLock* l = new ipc::IpcLock(au::profile::Paths::ipcName(QString::fromStdString(name)));
+     m_locks[name] = l;
+     return l;
+ }
+diff --git a/framework/network/internal/networkmanager.cpp b/framework/network/internal/networkmanager.cpp
+index 804a066ce..c5072d3c9 100644
+--- a/framework/network/internal/networkmanager.cpp
++++ b/framework/network/internal/networkmanager.cpp
+@@ -1,3 +1,4 @@
++#include "shared/profilepaths.h"
+ /*
+  * SPDX-License-Identifier: GPL-3.0-only
+  * MuseScore-CLA-applies
+@@ -125,6 +126,9 @@ RetVal<Progress> NetworkManager::execRequest(RequestType requestType, const QUrl
+                                              OutgoingDeviceVar outgoingData,
+                                              const RequestHeaders& headers)
+ {
++    if (au::profile::Paths::active()) {
++        return RetVal<Progress>::make_ret((int)Ret::Code::NotSupported, "Network requests are unavailable in an isolated verification profile.");
++    }
+     if (std::holds_alternative<QIODevicePtr>(outgoingData)) {
+         if (!openDevice(std::get<QIODevicePtr>(outgoingData), QIODevice::ReadOnly)) {
+             return RetVal<Progress>::make_ret((int)Err::FiledOpenIODeviceRead);

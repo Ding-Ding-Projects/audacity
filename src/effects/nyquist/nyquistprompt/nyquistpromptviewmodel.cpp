@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
  * Audacity: A Digital Audio Editor
  */
@@ -51,7 +52,7 @@ void NyquistPromptViewModel::loadScript()
     };
 
     const io::path_t dir = m_lastFilePath.isEmpty()
-                           ? io::path_t(QDir::homePath().toStdString())
+                           ? io::path_t(au::profile::Paths::writableLocation(QStandardPaths::HomeLocation).toStdString())
                            : io::dirpath(io::path_t(m_lastFilePath.toStdString()));
 
     const io::path_t filePath = interactive()->selectOpeningFileSync(
@@ -104,7 +105,7 @@ void NyquistPromptViewModel::saveScript()
     };
 
     const io::path_t defaultPath = m_lastFilePath.isEmpty()
-                                   ? io::path_t(QDir::homePath().toStdString())
+                                   ? io::path_t(au::profile::Paths::writableLocation(QStandardPaths::HomeLocation).toStdString())
                                    : io::path_t(m_lastFilePath.toStdString());
 
     const io::path_t filePath = interactive()->selectSavingFileSync(

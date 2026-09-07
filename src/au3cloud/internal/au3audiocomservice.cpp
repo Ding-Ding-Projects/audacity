@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -54,6 +55,7 @@ using namespace audacity::cloud::audiocom;
 
 bool Au3AudioComService::enabled() const
 {
+    if (au::profile::Paths::active()) return false;
     return true;
 }
 
@@ -207,6 +209,7 @@ sync::UploadMode toAu3UploadMode(UploadMode mode)
 
 void Au3AudioComService::init()
 {
+    if (au::profile::Paths::active()) return;
     m_downloadManager->downloadCompleted().onReceive(this, [this](const std::string& audioId, const muse::io::path_t& path) {
         m_audioThumbnailFileUpdatedChannel.send(audioId, path);
     });
@@ -238,6 +241,11 @@ void Au3AudioComService::init()
 muse::async::Promise<ProjectList> Au3AudioComService::downloadProjectList(size_t projectsPerBatch, size_t batchNumber,
                                                                           const FetchOptions& options)
 {
+    if (au::profile::Paths::active()) {
+        return muse::async::Promise<ProjectList>([](const auto&, const auto& reject) {
+            return reject(static_cast<int>(muse::Ret::Code::NotSupported), "Cloud access is unavailable in an isolated verification profile.");
+        });
+    }
     if (m_projectsPerBatch != projectsPerBatch) {
         std::lock_guard guard(m_cacheMutex);
         m_projectListCache.clear();
@@ -318,6 +326,11 @@ muse::async::Channel<std::string, muse::io::path_t> Au3AudioComService::audioThu
 muse::async::Promise<AudioList> Au3AudioComService::downloadAudioList(size_t audiosPerBatch, size_t batchNumber,
                                                                       const FetchOptions& options)
 {
+    if (au::profile::Paths::active()) {
+        return muse::async::Promise<AudioList>([](const auto&, const auto& reject) {
+            return reject(static_cast<int>(muse::Ret::Code::NotSupported), "Cloud access is unavailable in an isolated verification profile.");
+        });
+    }
     if (m_audiosPerBatch != audiosPerBatch) {
         auto guard = std::lock_guard(m_cacheMutex);
         m_audioListCache.clear();
@@ -395,6 +408,7 @@ void Au3AudioComService::clearAudioListCache()
 muse::RetVal<muse::ProgressPtr> Au3AudioComService::uploadProject(au::project::IAudacityProjectPtr project, const std::string& name,
                                                                   std::function<bool()> projectSaveCallback, UploadMode uploadMode)
 {
+    if (au::profile::Paths::active()) return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::NotSupported, "Cloud access is unavailable in an isolated verification profile.");
     auto* projectCloudExtension = cloudExtension(project);
     if (!projectCloudExtension) {
         //: Error message of a failed cloud operation
@@ -573,6 +587,7 @@ void Au3AudioComService::resumePendingSnapshotOrStartNew(au::project::IAudacityP
 
 muse::RetVal<muse::ProgressPtr> Au3AudioComService::updateAudioPreview(au::project::IAudacityProjectPtr project)
 {
+    if (au::profile::Paths::active()) return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::NotSupported, "Cloud access is unavailable in an isolated verification profile.");
     if (!project) {
         return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::InternalError, muse::trc("cloud", "Invalid project"));
     }
@@ -746,6 +761,7 @@ muse::RetVal<muse::ProgressPtr> Au3AudioComService::updateAudioPreview(au::proje
 
 muse::RetVal<muse::ProgressPtr> Au3AudioComService::resumeProjectSync(au::project::IAudacityProjectPtr project)
 {
+    if (au::profile::Paths::active()) return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::NotSupported, "Cloud access is unavailable in an isolated verification profile.");
     auto* projectCloudExtension = cloudExtension(project);
     IF_ASSERT_FAILED(projectCloudExtension) {
         return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::InternalError, muse::trc("cloud", "Invalid project"));
@@ -801,6 +817,7 @@ void Au3AudioComService::stopProjectSync()
 
 std::string Au3AudioComService::getCloudProjectPage(const std::string& projectId) const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -812,6 +829,7 @@ std::string Au3AudioComService::getCloudProjectPage(const std::string& projectId
 
 std::string Au3AudioComService::getCloudProjectPage(const muse::io::path_t& projectPath) const
 {
+    if (au::profile::Paths::active()) return {};
     auto dbProjectData = getProjectDataFromDatabase(projectPath);
     if (!dbProjectData || dbProjectData->ProjectId.empty()) {
         return {};
@@ -822,6 +840,7 @@ std::string Au3AudioComService::getCloudProjectPage(const muse::io::path_t& proj
 
 std::string Au3AudioComService::getCloudAudioPage(const std::string& slug) const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -833,6 +852,7 @@ std::string Au3AudioComService::getCloudAudioPage(const std::string& slug) const
 
 std::string Au3AudioComService::getCloudProfilePage() const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -844,6 +864,7 @@ std::string Au3AudioComService::getCloudProfilePage() const
 
 std::string Au3AudioComService::getTourPage() const
 {
+    if (au::profile::Paths::active()) return {};
     auto& oauthService = GetOAuthService();
     const auto& serviceConfig = GetServiceConfig();
 
@@ -853,6 +874,7 @@ std::string Au3AudioComService::getTourPage() const
 
 muse::RetVal<muse::ProgressPtr> Au3AudioComService::downloadAudioFile(const std::string& audioId)
 {
+    if (au::profile::Paths::active()) return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::NotSupported, "Cloud access is unavailable in an isolated verification profile.");
     if (audioId.empty()) {
         return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::UnknownError, muse::trc("cloud", "Invalid audio ID"));
     }
@@ -904,6 +926,7 @@ muse::RetVal<muse::ProgressPtr> Au3AudioComService::downloadAudioFile(const std:
 muse::RetVal<muse::ProgressPtr> Au3AudioComService::openCloudProject(const muse::io::path_t& localPath, const std::string& projectId,
                                                                      const std::string& snapshotId, bool forceOverwrite)
 {
+    if (au::profile::Paths::active()) return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::NotSupported, "Cloud access is unavailable in an isolated verification profile.");
     auto dbProjectData = getProjectDataFromDatabase(localPath);
     std::string cloudProjectId = projectId;
     if (cloudProjectId.empty() && dbProjectData) {
@@ -987,6 +1010,7 @@ muse::RetVal<muse::ProgressPtr> Au3AudioComService::openCloudProject(const muse:
 
 muse::RetVal<muse::ProgressPtr> Au3AudioComService::shareAudio(const std::string& title)
 {
+    if (au::profile::Paths::active()) return muse::RetVal<muse::ProgressPtr>::make_ret(muse::Ret::Code::NotSupported, "Cloud access is unavailable in an isolated verification profile.");
     muse::ProgressPtr progress = std::make_shared<muse::Progress>();
 
     std::thread([weak = weak_from_this(), title, progress]() {
@@ -1085,6 +1109,7 @@ muse::RetVal<muse::ProgressPtr> Au3AudioComService::shareAudio(const std::string
 
 muse::Ret Au3AudioComService::deleteCloudProject(const muse::io::path_t& localPath)
 {
+    if (au::profile::Paths::active()) return muse::make_ret(muse::Ret::Code::NotSupported, std::string("Cloud access is unavailable in an isolated verification profile."));
     auto dbData = sync::CloudProjectsDatabase::Get().GetProjectDataForPath(localPath.toStdString());
     if (!dbData) {
         // Nothing cached for this path, treat as already deleted
@@ -1159,5 +1184,6 @@ muse::ProgressPtr Au3AudioComService::createSyncProgress()
 
 void Au3AudioComService::deinit()
 {
+    if (au::profile::Paths::active()) return;
     audacity::cloud::audiocom::sync::CloudProjectsDatabase::Get().CloseConnection();
 }

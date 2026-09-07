@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file alias="branding/shipped-logo.png">../../images/AudacityLogo.png</file>
         <file>qml/Audacity/Personalize/qmldir</file>
         <file>qml/Audacity/Personalize/PersonalizableItem.qml</file>
         <file>qml/Audacity/Personalize/AppearanceEditorPopover.qml</file>
@@ -8,5 +9,6 @@
         <file>qml/Audacity/Personalize/QrCodeImage.qml</file>
         <file>qml/Audacity/Personalize/SupportTicketsPage.qml</file>
         <file>qml/Audacity/Personalize/AuthenticatorPage.qml</file>
+        <file>qml/Audacity/Personalize/LogoCustomizationPanel.qml</file>
     </qresource>
 </RCC>

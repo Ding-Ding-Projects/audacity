@@ -20,20 +20,29 @@
     reducedMotionOverride: 'auto',
     adhd: { focus: false, lowStimulation: false, timeAwareness: false, oneThing: false, momentum: false },
     docsDock: 'left',
+    narrator: window.MaterialAudacityNarrator.defaults,
   };
 
   function loadSettings() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS.settings) || 'null');
-      return Object.assign({}, DEFAULT_SETTINGS, raw || {}, { adhd: Object.assign({}, DEFAULT_SETTINGS.adhd, (raw && raw.adhd) || {}) });
+      return Object.assign({}, DEFAULT_SETTINGS, raw || {}, { adhd: Object.assign({}, DEFAULT_SETTINGS.adhd, (raw && raw.adhd) || {}), narrator: window.MaterialAudacityNarrator.normalize(raw && raw.narrator) });
     } catch (e) { return Object.assign({}, DEFAULT_SETTINGS); }
   }
   let settings = loadSettings();
+  let settingsPersisted = true;
+  let refreshNarratorSettings = () => {};
+  const narrator = new window.MaterialAudacityNarrator.Narrator(window, () => refreshNarratorSettings());
+  narrator.configure(settings.narrator);
+  window.addEventListener('pagehide', () => narrator.dispose());
+  window.addEventListener('pageshow', event => { if (event.persisted) narrator.resume(); });
   function saveSettings(next, actionLabel) {
     settings = next;
-    try { localStorage.setItem(LS.settings, JSON.stringify(settings)); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(LS.settings, JSON.stringify(settings)); settingsPersisted = true; } catch (e) { settingsPersisted = false; }
     appendHistory(actionLabel || 'Settings changed');
     applyTheme();
+    narrator.configure(settings.narrator);
+    refreshNarratorSettings();
   }
 
   // ---------- History (append-only) ----------
@@ -52,6 +61,10 @@
     notifications.unshift({ at: new Date().toISOString(), message, kind: kind || 'info' });
     renderNotifCentre();
     showSnackbar(message);
+    const english = window.MaterialAudacityPresentation.text(message, Object.assign({}, settings, { language: 'en' }));
+    const parts = window.MaterialAudacityPresentation.parts(message, Object.assign({}, settings, { language: 'yue' }));
+    const cantonese = parts.some(part => part.language === 'yue') ? parts.map(part => part.text).join('') : '';
+    narrator.enqueue(kind || 'info', english, cantonese, kind === 'error');
   }
   function showSnackbar(message) {
     const stack = document.getElementById('snackbar-stack');
@@ -68,7 +81,11 @@
     notifications.slice(0, 50).forEach((n) => {
       const div = document.createElement('div');
       div.className = 'notif-item';
-      div.textContent = new Date(n.at).toLocaleTimeString() + ' · ' + n.message;
+      const timestamp = document.createElement('time');
+      timestamp.dateTime = n.at; timestamp.textContent = new Date(n.at).toLocaleTimeString() + ' · ';
+      timestamp.dataset.vocabularyExclude = '';
+      const message = document.createElement('span'); message.textContent = n.message;
+      div.append(timestamp, message);
       list.appendChild(div);
     });
   }
@@ -91,23 +108,105 @@
     const reduceMotion = settings.reducedMotionOverride === 'reduce' ? true : settings.reducedMotionOverride === 'allow' ? false : null;
     if (reduceMotion === true) root.setAttribute('data-reduced-motion', 'true');
     else root.removeAttribute('data-reduced-motion');
-    root.lang = settings.language === 'yue' ? 'yue' : 'en';
+    // Source-owned records and unmatched fallback copy remain English.
+    // Translated text receives its language on the exact rendered span.
+    root.lang = 'en';
+    applyVocabularyBoundary();
   }
 
   // ---------- Personal vocabulary ----------
+  let vocabularyCacheUnavailable = false;
   function loadVocab() {
-    try { return JSON.parse(localStorage.getItem(LS.vocab) || 'null'); } catch (e) { return null; }
+    try {
+      const raw = localStorage.getItem(LS.vocab);
+      return raw === null ? null : window.PersonalVocabulary.parse(raw);
+    } catch (_) { vocabularyCacheUnavailable = true; return null; }
   }
-  function applyVocabulary(text) {
-    const v = loadVocab();
-    if (!v || !Array.isArray(v.entries)) return text;
-    let out = text;
-    v.entries.forEach((e) => {
-      if (e && typeof e.from === 'string' && e.from) {
-        out = out.split(e.from).join(e.to != null ? e.to : '');
-      }
+  let activeVocabulary = loadVocab();
+  let replaceVocabulary = activeVocabulary ? window.PersonalVocabulary.createReplacer(activeVocabulary) : text => text;
+  let vocabularyLoadSequence = 0;
+  const vocabularyTextState = new WeakMap();
+  const vocabularyAttributeState = new WeakMap();
+  const languagePairState = new WeakMap();
+  const vocabularyExcluded = 'script,style,code,pre,textarea,[contenteditable],#release-line,#assets-list,#docs-content,#changelog-list,.release-channel,.release-notes,.unsigned-note,[data-vocabulary-exclude]';
+  function presentedText(source, control = true) {
+    const parts = window.MaterialAudacityPresentation?.parts(source, Object.assign({}, settings, { control })) || [{ language: 'en', text: source }];
+    let lastLanguage;
+    return parts.map(part => {
+      const replaced = part.data ? part.text : replaceVocabulary(part.text);
+      const separator = lastLanguage && lastLanguage !== part.language ? ' / ' : '';
+      lastLanguage = part.language;
+      return separator + (control && !replaced.trim() ? part.text : replaced);
+    }).join('');
+  }
+  function applyVocabularyBoundary() {
+    function updatePair(wrapper, state) {
+      const parts = window.MaterialAudacityPresentation.parts(state.original, Object.assign({}, settings, { control: state.control }));
+      const next = parts.map(part => {
+        const replaced = part.data ? part.text : replaceVocabulary(part.text);
+        return { language: part.language, data: !!part.data, dataLanguage: part.dataLanguage, text: state.control && !replaced.trim() ? part.text : replaced };
+      });
+      const signature = JSON.stringify(next);
+      if (state.signature === signature) return;
+      state.signature = signature;
+      wrapper.replaceChildren();
+      let group;
+      next.forEach(part => {
+        if (!group || group.lang !== part.language) {
+          group = document.createElement('span'); group.lang = part.language;
+          wrapper.appendChild(group);
+        }
+        const span = document.createElement('span');
+        span.textContent = part.text;
+        if (part.data) { span.dataset.vocabularyExclude = ''; span.lang = part.dataLanguage || 'en'; }
+        group.appendChild(span);
+      });
+    }
+    document.querySelectorAll('[data-language-pair]').forEach(wrapper => {
+      const state = languagePairState.get(wrapper);
+      if (state) updatePair(wrapper, state);
     });
-    return out;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+    for (const node of nodes) {
+      if (!node.parentElement || node.parentElement.closest(vocabularyExcluded + ',[data-language-pair]')) continue;
+      let state = vocabularyTextState.get(node);
+      if (!state || node.nodeValue !== state.applied) state = { original: node.nodeValue };
+      if (window.MaterialAudacityPresentation?.has(state.original) && !node.parentElement.closest('option,title')) {
+        const wrapper = document.createElement('span');
+        wrapper.dataset.languagePair = '';
+        const pair = { original: state.original, control: !!node.parentElement.closest('button,a,label') };
+        languagePairState.set(wrapper, pair); updatePair(wrapper, pair);
+        node.replaceWith(wrapper);
+        continue;
+      }
+      const localized = window.MaterialAudacityPresentation?.text(state.original, Object.assign({}, settings, { control: !!node.parentElement.closest('button,a,label,option') })) || state.original;
+      let next = replaceVocabulary(localized);
+      if (!next.trim() && node.parentElement.closest('button,a,label,option')) next = localized;
+      if (node.parentElement.matches('option,title')) node.parentElement.lang = settings.language === 'yue' && window.MaterialAudacityPresentation?.has(state.original) ? 'yue' : 'en';
+      state.applied = next; vocabularyTextState.set(node, state);
+      if (node.nodeValue !== next) node.nodeValue = next;
+    }
+    document.body.querySelectorAll('[aria-label],[placeholder],[title]').forEach(element => {
+      if (element.closest(vocabularyExcluded)) return;
+      const states = vocabularyAttributeState.get(element) || {};
+      for (const name of ['aria-label', 'placeholder', 'title']) {
+        if (!element.hasAttribute(name)) continue;
+        const value = element.getAttribute(name);
+        const state = !states[name] || value !== states[name].applied ? { original: value } : states[name];
+        state.applied = presentedText(state.original);
+        if (value !== state.applied) element.setAttribute(name, state.applied);
+        states[name] = state;
+      }
+      vocabularyAttributeState.set(element, states);
+    });
+  }
+  function refreshVocabularyBoundary(record) {
+    activeVocabulary = record;
+    replaceVocabulary = record ? window.PersonalVocabulary.createReplacer(record) : text => text;
+    applyVocabularyBoundary();
   }
 
   // ---------- Routing ----------
@@ -133,6 +232,10 @@
     outlet.innerHTML = '';
     const renderer = renderers[route] || renderers.home;
     renderer(outlet);
+    if (pendingSettingFocus && route === 'settings') {
+      const target = document.getElementById('setting-' + pendingSettingFocus);
+      if (target) { target.scrollIntoView({ block: 'center' }); target.focus(); pendingSettingFocus = null; }
+    }
     appendHistory('Viewed ' + route);
   }
 
@@ -179,14 +282,39 @@
       '<div role="tablist" aria-label="About Material Audacity" class="md-tablist" id="home-tabs"></div>' +
       '<div id="home-tabpanels"></div>';
 
-    fetch('data/release.json').then((r) => r.json()).then((rel) => {
-      document.getElementById('release-line').textContent =
-        'Version: ' + rel.tag + ' · Updated: ' + new Date(rel.updatedAt).toDateString() + ' · Commit: ' + rel.commit.slice(0, 10);
-    }).catch(() => { document.getElementById('release-line').textContent = 'Release information is unavailable right now.'; });
+    const provenanceLine = root.querySelector('#release-line');
+    fetch('data/provenance.json').then((r) => {
+      if (!r.ok) throw new Error('Provenance is unavailable');
+      return r.json();
+    }).then((record) => {
+      if (record.schemaVersion !== 1 || record.provenanceKind !== 'source-commit'
+          || !/^[a-f0-9]{40}$/.test(record.commit || '')
+          || record.version !== 'source-' + record.commit.slice(0, 12)
+          || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(record.updatedAt || '')
+          || !Number.isFinite(Date.parse(record.updatedAt))) throw new Error('Invalid provenance');
+      const locale = settings.language === 'yue' ? 'zh-HK' : 'en-CA';
+      const localTime = new Intl.DateTimeFormat(locale, {
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit',
+        minute: '2-digit', second: '2-digit', timeZoneName: 'longOffset', hour12: false,
+      }).format(new Date(record.updatedAt));
+      const parts = window.MaterialAudacityPresentation?.provenanceParts(record.version, localTime, settings.language)
+        || [{ language: 'en', text: 'Documentation version: ' + record.version + ' · Source updated: ' + localTime }];
+      provenanceLine.replaceChildren();
+      let group;
+      parts.forEach(part => {
+        if (!group || group.lang !== part.language) {
+          group = document.createElement('span'); group.lang = part.language; group.style.display = 'block';
+          provenanceLine.appendChild(group);
+        }
+        const span = document.createElement('span'); span.textContent = part.text;
+        if (part.data) span.lang = part.dataLanguage;
+        group.appendChild(span);
+      });
+    }).catch(() => { provenanceLine.textContent = 'Documentation version and source provenance are unavailable.'; });
 
     const tabs = [
       { id: 'about', label: 'About', body: '<p>Material Audacity brings Material 3 dynamic color, shape, motion, and components to the Audacity shell, plus a command palette, a regex builder everywhere search happens, personal vocabulary substitution, and local history.</p>' },
-      { id: 'build', label: 'Build', body: '<p>Windows packages are built with Squirrel.Windows through a public builder that never sees this project\'s name. Code signing is permanently disabled.</p>' },
+      { id: 'build', label: 'Build', body: '<p>Windows x64 packages use Squirrel.Windows. Code signing is permanently disabled. Each release records the build and verification evidence actually collected.</p>' },
       { id: 'features', label: 'Features', body: '<p>See the Features page for the full list: command palette, regex builder, tabs, languages and funny levels, personal vocabulary, local history, changelog, notifications, super confirmation, appearance editors, toy locks and authenticator, Ollama suite manager, ADHD modes, the dim sum surprise, School mode, the narrator, documentation browser bookmarks, no unsolicited nagging, and platform installers.</p>' },
       { id: 'downloads', label: 'Downloads', body: '<p>See the Downloads page for the latest assets and checksums.</p>' },
       { id: 'license', label: 'License', body: '<p>Material Audacity is distributed under the same license as Audacity (GPLv2 or later). See LICENSE.txt in the repository.</p>' },
@@ -197,6 +325,7 @@
       const btn = document.createElement('button');
       btn.className = 'md-tab'; btn.id = 'hometab-' + t.id; btn.setAttribute('role', 'tab');
       btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      btn.tabIndex = i === 0 ? 0 : -1;
       btn.setAttribute('aria-controls', 'homepanel-' + t.id);
       btn.textContent = t.label;
       btn.addEventListener('click', () => selectHomeTab(t.id));
@@ -211,9 +340,23 @@
     function selectHomeTab(id) {
       tabs.forEach((t) => {
         document.getElementById('hometab-' + t.id).setAttribute('aria-selected', String(t.id === id));
+        document.getElementById('hometab-' + t.id).tabIndex = t.id === id ? 0 : -1;
         document.getElementById('homepanel-' + t.id).hidden = t.id !== id;
       });
     }
+    tablist.addEventListener('keydown', (event) => {
+      const index = tabs.findIndex(t => 'hometab-' + t.id === event.target.id);
+      if (index < 0) return;
+      let next;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectHomeTab(tabs[next].id);
+      document.getElementById('hometab-' + tabs[next].id).focus();
+    });
   };
 
   renderers.gallery = function (root) {
@@ -295,21 +438,48 @@
       '<div id="downloads-body">Loading…</div>';
     fetch('data/release.json').then((r) => r.json()).then((rel) => {
       const body = document.getElementById('downloads-body');
-      const unsignedNote = '<div class="md-card"><h3>This installer is unsigned</h3><p>' + rel.unsignedReason + '</p></div>';
-      let assetsHtml;
+      if (!body) return;
+      if (!rel || !/^v\d+\.\d+\.\d+-m3\.\d+$/.test(rel.tag || '')
+          || typeof rel.prerelease !== 'boolean' || !Array.isArray(rel.assets)
+          || rel.assets.length > 32 || typeof rel.notes !== 'string'
+          || typeof rel.unsignedReason !== 'string'
+          || rel.assets.some(a => !a || typeof a.name !== 'string' || a.name.length > 256
+            || typeof a.url !== 'string'
+            || !a.url.startsWith('https://github.com/Ding-Ding-Projects/audacity/releases/download/' + rel.tag + '/'))
+          || new Set(rel.assets.map(a => a.name)).size !== rel.assets.length) {
+        throw new Error('Invalid release metadata');
+      }
       const items = (rel.assets || []).map((a) => ({ text: a.name, asset: a }));
       function list(filtered) {
         const el = document.getElementById('assets-list');
         if (!el) return;
-        if (!filtered.length) { el.innerHTML = '<p>No release assets are published yet. Tag: ' + rel.tag + '.</p>'; return; }
-        el.innerHTML = '<ul>' + filtered.map((it) => {
+        el.replaceChildren();
+        if (!filtered.length) { el.textContent = 'No matching release assets. Tag: ' + rel.tag + '.'; return; }
+        const listElement = document.createElement('ul');
+        filtered.forEach((it) => {
           const a = it.asset;
-          return '<li><a href="' + a.url + '">' + a.name + '</a>' + (a.sha256 ? ' · SHA-256: <code>' + a.sha256 + '</code>' : '') + '</li>';
-        }).join('') + '</ul>';
+          if (typeof a.url !== 'string' || !a.url.startsWith('https://github.com/Ding-Ding-Projects/audacity/releases/download/')) return;
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = a.url;
+          link.textContent = String(a.name);
+          item.appendChild(link);
+          if (/^[a-f0-9]{64}$/.test(a.sha256 || '')) {
+            item.appendChild(document.createTextNode(' · SHA-256: '));
+            const hash = document.createElement('code');
+            hash.textContent = a.sha256;
+            item.appendChild(hash);
+          }
+          listElement.appendChild(item);
+        });
+        el.appendChild(listElement);
       }
-      body.innerHTML = '<p>' + rel.notes + '</p>' + unsignedNote + '<div id="assets-list"></div>';
+      body.innerHTML = '<p class="release-channel"></p><p class="release-notes"></p><div class="md-card"><h3>This installer is unsigned</h3><p class="unsigned-note"></p></div><div id="assets-list"></div>';
+      body.querySelector('.release-channel').textContent = rel.prerelease ? 'Prerelease: ' + rel.tag : 'Release: ' + rel.tag;
+      body.querySelector('.release-notes').textContent = rel.notes || '';
+      body.querySelector('.unsigned-note').textContent = rel.unsignedReason || 'Signature verification is unavailable.';
       wireFilter(document.getElementById('downloads-filter-input'), items, list, 'downloads-filter');
-    }).catch(() => { document.getElementById('downloads-body').textContent = 'Release information is unavailable right now.'; });
+    }).catch(() => { const body = document.getElementById('downloads-body'); if (body) body.textContent = 'Release information is unavailable right now.'; });
   };
 
   renderers.changelog = function (root) {
@@ -493,7 +663,7 @@
       if (!q) return;
       const matching = tabState.open.filter((id) => DOC_PAGES.find((p) => p.id === id).title.toLowerCase().includes(q.toLowerCase()));
       if (!matching.length) { notify('No tabs match "' + q + '"'); return; }
-      if (!confirm('Close ' + matching.length + ' tab(s) containing "' + q + '"?')) return;
+      if (!confirm(presentedText('Close ' + matching.length + ' tab(s) containing "' + q + '"?'))) return;
       tabState.open = tabState.open.filter((id) => !matching.includes(id));
       if (!tabState.open.includes(tabState.active)) tabState.active = tabState.open[0] || null;
       if (!tabState.open.length) { tabState.open = [DOC_PAGES[0].id]; tabState.active = DOC_PAGES[0].id; }
@@ -504,7 +674,7 @@
       if (!q) return;
       const matching = tabState.open.filter((id) => !DOC_PAGES.find((p) => p.id === id).title.toLowerCase().includes(q.toLowerCase()));
       if (!matching.length) { notify('No tabs would be closed'); return; }
-      if (!confirm('Close ' + matching.length + ' tab(s) not containing "' + q + '"?')) return;
+      if (!confirm(presentedText('Close ' + matching.length + ' tab(s) not containing "' + q + '"?'))) return;
       tabState.open = tabState.open.filter((id) => !matching.includes(id));
       if (!tabState.open.includes(tabState.active)) tabState.active = tabState.open[0] || null;
       if (!tabState.open.length) { tabState.open = [DOC_PAGES[0].id]; tabState.active = DOC_PAGES[0].id; }
@@ -545,6 +715,7 @@
     function row(id, label, desc, control) {
       const div = document.createElement('div');
       div.className = 'settings-row'; div.dataset.searchText = (label + ' ' + desc).toLowerCase();
+      div.id = 'setting-' + id; div.tabIndex = -1;
       div.innerHTML = '<div><div>' + label + '</div><div class="desc">' + desc + '</div></div>';
       div.appendChild(control);
       return div;
@@ -603,6 +774,57 @@
     body.appendChild(row('language', 'Language', 'English, playful Hong Kong-style Cantonese, or bilingual.',
       makeSelect([['en', 'English'], ['yue', 'Cantonese (playful)'], ['bilingual', 'Bilingual']], settings.language, (v) => saveSettings(Object.assign({}, settings, { language: v }), 'Changed language to ' + v), 'Language')));
 
+    const narratorHeading = document.createElement('h2'); narratorHeading.textContent = 'Narrator'; body.appendChild(narratorHeading);
+    const narratorChange = (key, value) => saveSettings(Object.assign({}, settings, { narrator: Object.assign({}, settings.narrator, { [key]: value }) }), 'Narrator settings changed');
+    body.appendChild(row('narrator-enabled', 'Enable narrator', 'Speak interface events. Off by default.', makeSwitch(settings.narrator.enabled, v => narratorChange('enabled', v), 'Enable narrator')));
+    body.appendChild(row('narrator-language', 'Narrated language', 'Both speaks English, then Cantonese.', makeSelect([['en', 'English'], ['yue', 'Cantonese'], ['both', 'Both']], settings.narrator.language, v => narratorChange('language', v), 'Narrated language')));
+    const voiceControls = [];
+    for (const [language, key, label] of [['en', 'englishVoice', 'English voice'], ['yue', 'cantoneseVoice', 'Cantonese voice']]) {
+      const select = makeSelect([], '', v => narratorChange(key, v), label);
+      const status = document.createElement('p'); status.id = 'narrator-' + language + '-status'; status.setAttribute('role', 'status');
+      select.setAttribute('aria-describedby', status.id);
+      const container = document.createElement('div'); container.append(select, status);
+      body.appendChild(row('narrator-' + language, label, 'Voice identity is saved locally. Network voices require connectivity.', container));
+      voiceControls.push({ language, key, select, status });
+    }
+    body.appendChild(row('narrator-rate', 'Speech rate', 'Normal delivery is 1. Range: 0.1 to 10.', makeRange(0.1, 10, 0.1, settings.narrator.rate, v => narratorChange('rate', v), 'Speech rate')));
+    body.appendChild(row('narrator-pitch', 'Speech pitch', 'Normal delivery is 1. Range: 0 to 2.', makeRange(0, 2, 0.1, settings.narrator.pitch, v => narratorChange('pitch', v), 'Speech pitch')));
+    body.appendChild(row('narrator-quiet', 'Quiet narration', 'Silence narration while keeping your choices.', makeSwitch(settings.narrator.quiet, v => narratorChange('quiet', v), 'Quiet narration')));
+    body.appendChild(row('narrator-assistive', 'Yield to assistive technology', 'Browsers do not expose screen-reader activity. Enable this option to keep narration silent alongside your screen reader.', makeSwitch(settings.narrator.yieldToAssistiveTechnology, v => narratorChange('yieldToAssistiveTechnology', v), 'Yield to assistive technology')));
+    const narrationState = document.createElement('p'); narrationState.setAttribute('role', 'status'); body.appendChild(narrationState);
+    const preview = document.createElement('button'); preview.type = 'button'; preview.className = 'md-text-button'; preview.textContent = 'Preview narration';
+    preview.addEventListener('click', () => { narrator.enqueue('preview', 'Narrator preview.', '旁白試聽。', true); refreshNarratorSettings(); }); body.appendChild(preview);
+    refreshNarratorSettings = () => {
+      if (!body.isConnected) return;
+      voiceControls.forEach(({ language, key, select, status }) => {
+        const current = narrator.voiceStatus(language);
+        select.replaceChildren();
+        const automatic = document.createElement('option'); automatic.value = ''; automatic.textContent = 'Choose automatically'; select.appendChild(automatic);
+        if (current.missingSelection) {
+          const missing = document.createElement('option'); missing.value = current.requested; missing.textContent = 'Saved voice is not installed'; select.appendChild(missing);
+        }
+        current.choices.forEach(voice => {
+          const option = document.createElement('option'); option.value = voice.voiceURI; option.textContent = voice.name + ' (' + voice.lang + ')';
+          option.dataset.vocabularyExclude = ''; select.appendChild(option);
+        });
+        select.value = settings.narrator[key];
+        const messages = [];
+        if (!current.available) messages.push('Speech synthesis is unavailable in this browser.');
+        else if (!current.effective) messages.push('No voice is available for this language.');
+        else {
+          if (current.missingSelection) messages.push('Saved voice is not installed; an available voice will be used.');
+          messages.push('Effective voice: ' + current.effective.name);
+          if (current.networkBacked) messages.push('This voice uses a network service and is silent offline.');
+          if (current.offline) messages.push('Offline: selected voice cannot speak.');
+        }
+        status.replaceChildren(); messages.forEach(message => { const line = document.createElement('span'); line.textContent = message; line.style.display = 'block'; status.appendChild(line); });
+      });
+      const stateLabels = { off: 'Narration is off.', stopped: 'Narration stopped.', speaking: 'Speaking.', spoken: 'Speech completed.', 'spoken-english-fallback': 'Spoken in English because Cantonese wording is unavailable.', 'queue-full': 'Narration queue is full. Read the notification instead.', offline: 'Offline: selected voice cannot speak.', 'voice-unavailable': 'No voice is available for this language.', 'speech-timeout': 'Speech timed out. Try preview again.', 'speech-unavailable': 'Speech could not play. Check voice availability and try preview.' };
+      narrationState.textContent = settingsPersisted ? stateLabels[narrator.lastResult] || stateLabels['speech-unavailable'] : 'Settings are active for this page but could not be saved. Check browser storage permissions.';
+      preview.disabled = !narrator.available() || !settings.narrator.enabled || settings.narrator.quiet || settings.narrator.yieldToAssistiveTechnology;
+    };
+    refreshNarratorSettings();
+
     const yueSample = document.createElement('p');
     yueSample.lang = 'yue';
     yueSample.textContent = '呢個係花名冊示範文字，用嚟試吓廣東話顯示。';
@@ -643,7 +865,7 @@
     const vocabTitle = document.createElement('h3'); vocabTitle.textContent = 'Personal vocabulary'; body.appendChild(vocabTitle);
     const vocabWrap = document.createElement('div'); vocabWrap.className = 'settings-row'; vocabWrap.dataset.searchText = 'personal vocabulary upload substitution json';
     vocabWrap.innerHTML = '<div style="width:100%">' +
-      '<div class="desc">Upload a JSON file: {"version":1,"entries":[{"from":"...","to":"..."}]}. Bounded to 256 KB and 2000 entries. Applied to visible text only, client-side, never logged.</div>' +
+      '<div class="desc">Choose a version 1 personal vocabulary JSON file. Up to 256 KiB and 4096 string entries. Processing and validated storage stay in this browser; file contents and names are not logged or transmitted.</div>' +
       '<label class="md-field" for="vocab-file"><span>Choose personal vocabulary JSON file</span><input type="file" id="vocab-file" accept="application/json"></label>' +
       '<div id="vocab-status"></div>' +
       '<button type="button" class="md-text-button" id="vocab-clear">Clear</button>' +
@@ -651,30 +873,39 @@
     body.appendChild(vocabWrap);
     const status = vocabWrap.querySelector('#vocab-status');
     function refreshVocabStatus() {
-      const v = loadVocab();
-      status.textContent = v ? ('Loaded: ' + v.entries.length + ' entries.') : 'No file loaded.';
+      status.textContent = vocabularyCacheUnavailable ? 'Saved vocabulary is unavailable. Choose a valid file or clear it.'
+        : activeVocabulary ? 'Personal vocabulary loaded.' : 'No file loaded.';
     }
     refreshVocabStatus();
     vocabWrap.querySelector('#vocab-file').addEventListener('change', (e) => {
       const f = e.target.files[0];
       if (!f) return;
+      e.target.value = '';
+      const sequence = ++vocabularyLoadSequence;
       if (f.size > 256 * 1024) { status.textContent = 'Invalid: file exceeds 256 KB.'; return; }
       const reader = new FileReader();
       reader.onload = () => {
+        if (sequence !== vocabularyLoadSequence) return;
         try {
-          const data = JSON.parse(reader.result);
-          if (!data || !Array.isArray(data.entries) || data.entries.length > 2000) throw new Error('Bad shape or too many entries');
+          const text = new TextDecoder('utf-8', { fatal: true }).decode(reader.result);
+          const data = window.PersonalVocabulary.parse(text);
           localStorage.setItem(LS.vocab, JSON.stringify(data));
-          appendHistory('Loaded personal vocabulary (' + data.entries.length + ' entries)');
-          status.textContent = 'Loaded: ' + data.entries.length + ' entries.';
+          vocabularyCacheUnavailable = false;
+          refreshVocabularyBoundary(data);
+          appendHistory('Updated local display preferences; private data omitted');
+          status.textContent = 'Personal vocabulary loaded.';
           notify('Personal vocabulary loaded');
-        } catch (err) { status.textContent = 'Invalid: ' + err.message; }
+        } catch (_) { status.textContent = 'The file could not be validated or stored. Previous valid vocabulary remains unchanged.'; }
       };
-      reader.readAsText(f);
+      reader.onerror = reader.onabort = () => { if (sequence === vocabularyLoadSequence) status.textContent = 'The file could not be read. Previous vocabulary remains unchanged.'; };
+      reader.readAsArrayBuffer(f);
     });
     vocabWrap.querySelector('#vocab-clear').addEventListener('click', () => {
-      localStorage.removeItem(LS.vocab);
-      appendHistory('Cleared personal vocabulary');
+      vocabularyLoadSequence++;
+      try { localStorage.removeItem(LS.vocab); } catch (_) { status.textContent = 'The saved vocabulary could not be cleared.'; return; }
+      vocabularyCacheUnavailable = false;
+      refreshVocabularyBoundary(null);
+      appendHistory('Reset local display preferences; private data omitted');
       refreshVocabStatus();
       notify('Personal vocabulary cleared');
     });
@@ -684,7 +915,8 @@
     document.getElementById('settings-search-input').addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
       body.querySelectorAll('.settings-row').forEach((r) => {
-        r.style.display = !q || (r.dataset.searchText || '').includes(q) ? '' : 'none';
+        const searchable = (r.dataset.searchText || '') + ' ' + replaceVocabulary(r.dataset.searchText || '');
+        r.style.display = !q || searchable.toLowerCase().includes(q) ? '' : 'none';
       });
     });
 
@@ -698,7 +930,15 @@
       } else if (filterText) {
         filtered = list.filter((h) => h.action.toLowerCase().includes(filterText.toLowerCase()));
       }
-      el.innerHTML = filtered.slice(0, 200).map((h) => '<div class="history-item">' + new Date(h.at).toLocaleString() + ' · ' + h.action + '</div>').join('') || '<p>No history entries.</p>';
+      el.replaceChildren();
+      filtered.slice(0, 200).forEach(h => {
+        const row = document.createElement('div'); row.className = 'history-item';
+        const timestamp = document.createElement('time'); timestamp.dateTime = h.at;
+        timestamp.textContent = new Date(h.at).toLocaleString() + ' · '; timestamp.dataset.vocabularyExclude = '';
+        const action = document.createElement('span'); action.textContent = h.action;
+        row.append(timestamp, action); el.appendChild(row);
+      });
+      if (!filtered.length) { const empty = document.createElement('p'); empty.textContent = 'No history entries.'; el.appendChild(empty); }
     }
     let historyRegex = null;
     document.getElementById('history-search-input').addEventListener('input', (e) => renderHistory(e.target.value, historyRegex));
@@ -875,12 +1115,17 @@
   }
 
   // ---------- Command palette ----------
+  let pendingSettingFocus = null;
   function buildPaletteIndex() {
     const items = [];
     routes.forEach((r) => items.push({ kind: 'Section', label: r.charAt(0).toUpperCase() + r.slice(1), go: () => navigate(r) }));
     DOC_PAGES.forEach((p) => items.push({ kind: 'Doc', label: p.title, go: () => { navigate('docs'); } }));
     const settingLabels = ['Theme', 'Seed color', 'Density', 'Font scale', 'Language', 'English funny level', 'Cantonese funny level', 'Emoji in dialogs', 'Reduced motion override', 'ADHD modes', 'Personal vocabulary'];
     settingLabels.forEach((s) => items.push({ kind: 'Setting', label: s, go: () => navigate('settings') }));
+    [['Enable narrator', 'narrator-enabled'], ['Narrated language', 'narrator-language'], ['English voice', 'narrator-en'], ['Cantonese voice', 'narrator-yue'], ['Speech rate', 'narrator-rate'], ['Speech pitch', 'narrator-pitch'], ['Quiet narration', 'narrator-quiet'], ['Yield to assistive technology', 'narrator-assistive']].forEach(([label, id]) => items.push({ kind: 'Setting', label, go: () => {
+      pendingSettingFocus = id;
+      if (currentRoute() === 'settings') render(); else navigate('settings');
+    } }));
     return items;
   }
   function initPalette() {
@@ -890,35 +1135,62 @@
     const index = buildPaletteIndex();
     let activeIdx = 0;
     let regexState = null;
+    let shownItems = [];
+    let returnFocus = null;
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-controls', results.id);
+    input.setAttribute('aria-expanded', 'false');
     window.RegexBuilder.attach(input, { inventoryId: 'palette-search', onApply(s) { regexState = s; renderResults(); } });
 
     function renderResults() {
       const q = input.value;
       let filtered;
       if (regexState && regexState.pattern) {
-        try { const re = new RegExp(regexState.pattern, regexState.flags || 'i'); filtered = index.filter((it) => re.test(it.label)); } catch (e) { filtered = index; }
+        try { const re = new RegExp(regexState.pattern, regexState.flags || 'i'); filtered = index.filter((it) => { re.lastIndex = 0; return re.test(it.label + ' ' + replaceVocabulary(it.label)); }); } catch (e) { filtered = index; }
       } else {
-        filtered = q ? index.filter((it) => it.label.toLowerCase().includes(q.toLowerCase())) : index;
+        filtered = q ? index.filter((it) => (it.label + ' ' + replaceVocabulary(it.label)).toLowerCase().includes(q.toLowerCase())) : index;
       }
       results.innerHTML = '';
-      filtered.slice(0, 30).forEach((it, i) => {
+      shownItems = filtered.slice(0, 30);
+      activeIdx = Math.max(0, Math.min(activeIdx, shownItems.length - 1));
+      if (shownItems.length) input.setAttribute('aria-activedescendant', 'palette-option-' + activeIdx);
+      else input.removeAttribute('aria-activedescendant');
+      shownItems.forEach((it, i) => {
         const div = document.createElement('div');
+        div.id = 'palette-option-' + i;
         div.className = 'palette-result' + (i === activeIdx ? ' active' : '');
         div.setAttribute('role', 'option');
+        div.setAttribute('aria-selected', String(i === activeIdx));
         div.innerHTML = '<span>' + it.label + '</span><span class="kind">' + it.kind + '</span>';
-        div.addEventListener('click', () => { it.go(); closePalette(); });
+        div.addEventListener('click', () => { closePalette(); it.go(); });
         results.appendChild(div);
       });
     }
     function openPalette() {
+      if (!backdrop.hidden) { input.focus(); return; }
+      returnFocus = document.activeElement;
       backdrop.hidden = false; input.value = ''; activeIdx = 0; renderResults(); input.focus();
+      input.setAttribute('aria-expanded', 'true');
       document.addEventListener('keydown', onKey);
     }
-    function closePalette() { backdrop.hidden = true; document.removeEventListener('keydown', onKey); }
-    function onKey(e) {
-      if (e.key === 'Escape') closePalette();
+    function closePalette() {
+      backdrop.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('keydown', onKey);
+      (returnFocus && returnFocus.isConnected ? returnFocus : document.getElementById('palette-btn')).focus();
     }
-    input.addEventListener('input', renderResults);
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+      else if (e.target === input && ['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
+        e.preventDefault();
+        if (!shownItems.length) return;
+        if (e.key === 'Enter') { const selected = shownItems[activeIdx]; closePalette(); selected.go(); return; }
+        activeIdx = (activeIdx + (e.key === 'ArrowDown' ? 1 : -1) + shownItems.length) % shownItems.length;
+        renderResults();
+        document.getElementById('palette-option-' + activeIdx).scrollIntoView({ block: 'nearest' });
+      }
+    }
+    input.addEventListener('input', () => { activeIdx = 0; renderResults(); });
     document.getElementById('palette-btn').addEventListener('click', openPalette);
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closePalette(); });
     document.addEventListener('keydown', (e) => {
@@ -940,6 +1212,11 @@
     initPalette();
     initNotifCentre();
     render();
-    notify('Welcome to Material Audacity');
+    if (settings.language !== 'en' && !window.MaterialAudacityPresentation?.ready) notify('Translation data is unavailable; original wording is shown.');
+    applyVocabularyBoundary();
+    new MutationObserver(applyVocabularyBoundary).observe(document.body, {
+      childList: true, subtree: true, characterData: true, attributes: true,
+      attributeFilter: ['aria-label', 'placeholder', 'title'],
+    });
   });
 })();

@@ -14,3 +14,4 @@ LockUnlockPopover 1.0 LockUnlockPopover.qml
 QrCodeImage 1.0 QrCodeImage.qml
 SupportTicketsPage 1.0 SupportTicketsPage.qml
 AuthenticatorPage 1.0 AuthenticatorPage.qml
+LogoCustomizationPanel 1.0 LogoCustomizationPanel.qml

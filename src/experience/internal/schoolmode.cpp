@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
  * Audacity: A Digital Audio Editor
  */
@@ -145,7 +146,7 @@ bool SchoolModeStore::verifyCredential(const QString& candidate, const QString& 
 
 QString SchoolModeStore::sharedFilePath()
 {
-    const QString appData = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QString appData = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation);
     // appData is normally "<parent>/<OrgName>/<AppName>" (or similar); walk
     // up one level to the shared parent every one of this user's apps sits
     // under, then into a "shared" subdirectory.

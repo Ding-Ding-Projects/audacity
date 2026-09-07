@@ -1,74 +1,76 @@
 # Narrator
 
-## Behaviour
+## Documentation website
 
-The narrator speaks a short line for selected application events (for example, a
-completed export, an error). It is off by default; a user must explicitly turn it on.
+Settings provides an off-by-default narrator for interface notifications. Enable
+it explicitly, then choose English, Cantonese, or Both. Both speaks English before
+Cantonese, with one utterance active at a time. Preview uses a fixed sample;
+text fields and uploaded file contents are not automatically read aloud.
 
-The narrated language is a user choice: English, Cantonese, or Both. In Both mode, a
-narrated event queues its English line followed by its Cantonese line, strictly serialized,
-so the two never overlap and always speak in that order.
+Each language has its own voice picker. Choices come from the browser speech
+service and refresh when its voice list changes. The default is **Choose
+automatically**. Selection persists by `voiceURI`, not the displayed voice name.
+A missing selected voice stays saved while an available voice provides fallback.
+Status explains the effective voice, missing selection, network requirement, or
+unavailable language. Mandarin is not silently substituted for Cantonese.
 
-Voice pickers for each language are populated at runtime from whichever speech engine is
-active, and default to "Choose automatically". A chosen voice is persisted by its stable
-engine-reported identifier, never by its display name (two installed voices can share a
-display name). Rate and pitch are user-adjustable.
+Rate ranges from 0.1 to 10 and pitch from 0 to 2, both defaulting to 1. These are
+[Web Speech API](https://webaudio.github.io/web-speech-api/#speechsynthesis)
+parameter ranges; actual sound depends on the installed engine. This project does
+not claim that every browser supplies a natural Cantonese voice.
 
-## Speech engine
+Preferences live under `ma.settings.v1.narrator`. They participate in settings
+search and local settings history. Narrator palette entries reveal and focus the
+corresponding row. If storage fails, settings remain active for this page and a
+persistent status states that they were not saved.
 
-The narrator uses Qt's QtTextToSpeech module when the Qt installation carries it. On a
-build where it is absent (as on the toolchain this module was developed against, which has
-no `libQt6TextToSpeech`), it falls back to whichever command line speech backend is found
-on the machine: `speech-dispatcher`'s `spd-say`, or `espeak-ng`. When neither is available,
-the narrator reports honestly that no speech engine was found and stays silent; it never
-pretends to speak.
+### Quiet operation and recovery
 
-The active engine, and which one, is shown in the preferences section
-(`NarratorEngine::engineDescription()`), so a user can tell at a glance whether narration
-will actually be audible.
+Ordinary events debounce for 250 milliseconds, supersede queued events in the same
+category, and have a five-second category cooldown. Important failure events bypass
+those timing limits and move ahead of queued ordinary events; active speech is
+allowed to finish. The queue holds at most 32 events. Each language's message is
+bounded to 2,000 characters. A full important-event queue reports `queue-full`;
+the original visible notification remains available.
 
-## Queue behaviour
+Changing narrator preferences stops old queued speech; unrelated appearance
+changes do not. Quiet narration and Yield to assistive technology silence speech
+without erasing choices. Browsers do not expose a dependable screen-reader-active
+signal, so explicit user-controlled silence is the supported equivalent. The
+website does not claim automatic screen-reader ducking.
 
-A `NarratorQueue` orders every narrated line:
+Network-backed voices are identified through the browser's `localService` field
+and stay silent when it reports offline. An online indication cannot prove service
+reachability; actual speech failures remain visible in status. Missing Cantonese
+copy falls back to English with a disclosed `spoken-english-fallback` result.
+Missing synthesis/voices, platform refusal, and a 30-second speech deadline never
+count as successful speech.
 
-- at most one utterance is ever in flight;
-- a debounce window (400 ms by default) suppresses an identical line arriving twice in
-  quick succession;
-- a per category cooldown (4 seconds by default) suppresses further non-error narration in
-  the same category until it elapses;
-- error narration is never suppressed by either the debounce window or the cooldown;
-- queuing a new utterance carrying the same "supersede key" as one still waiting replaces
-  it in place, so a rapidly updating progress line never stacks duplicate announcements.
+Navigation teardown cancels owned speech and removes voice/connectivity listeners.
+Returning from the browser page cache reattaches listeners without replaying old
+messages. Voice names and dynamic facts remain literal data.
 
-## Interaction with other features
+### Verification boundary
 
-The narrator honours two gates before it actually speaks anything, both checked inside
-`NarratorEngine::speak()` so no call site can forget them:
+`node --test docs/site/scripts/narrator.test.cjs` exercises the actual queue and
+voice-selection module through a controlled speech adapter. Its 17 cases cover
+absent/late voices, stable selection, missing-selection fallback, Cantonese choice,
+serialization, supersession, priority and cooldown exceptions, network-only offline
+voices, quiet/yield cancellation, parameter bounds, restored settings, deadlines,
+page-cache lifecycle, untranslated-event fallback, and unrelated settings changes.
+The priority, missing-translation and unchanged-settings counterexamples first
+failed against the old implementation, then passed after their respective repairs.
 
-- **Quiet mode** is the narrator's own reduced-sound setting, a "Quiet mode" toggle in its
-  preferences section, backed by `IExperienceConfiguration::quietModeEnabled()`. While it is
-  on, the narrator stays completely silent even when otherwise enabled. This is a real
-  persisted setting, not a placeholder: it round-trips through muse settings exactly like
-  every other narrator preference.
-- **Screen reader ducking** uses `QAccessible::isActive()` as the detectable signal, exposed
-  as `NarratorEngine::screenReaderActive()`. Qt sets this to true the moment any assistive
-  technology (a screen reader) queries the application, and it has no separate on/off
-  setting: the narrator simply stays quiet for as long as it reports true, on the reasoning
-  that a screen reader already reading the interface should not be talked over.
+These tests do not prove audible voice quality, actual browser enumeration,
+screen-reader announcements, layout, keyboard interaction, or the full built-page
+matrix. Whole-site event coverage, every failure category's localized tone, and
+scheduled quiet-hours integration remain incomplete.
 
-Both gates apply to every narrated category, error narration included: they are about
-whether any sound happens at all, not about how often it happens, so they are not the same
-kind of limit as the debounce and cooldown windows below (which do exempt error narration).
+## Desktop application
 
-It obeys School mode's suppression of the affected capabilities exactly like every other
-Experience feature that School mode touches.
-
-## Verification
-
-Covered by `NarratorQueueTests` in `src/experience/tests/narratorqueue_tests.cpp`: ordering,
-debounce, per category cooldown with error narration exempt, supersession of a pending item
-by key, and the one utterance at a time guarantee. The quiet mode setting round-trips
-through the same configuration test pattern as the rest of the narrator settings; the queue
-tests do not exercise `QAccessible::isActive()` directly since that is a live platform signal
-rather than pure logic, and is instead verified by reading the built application (the
-Narrator preferences section shows the Quiet mode toggle and its explanatory text).
+Desktop narration is a separate Experience service and queue under
+`src/experience/internal/`. Its engine, voice enumeration, settings and built
+behavior need independent candidate-bound verification. Website adapter tests do
+not establish desktop narration, Qt speech engine availability, or installation
+of a platform voice. Consult the current feature inventory and handoff rather
+than treating a declared engine enum as implemented speech.

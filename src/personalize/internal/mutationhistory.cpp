@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -22,7 +23,7 @@ MutationHistory::MutationHistory(QObject* parent)
 
 QString MutationHistory::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     return dir + "/mutation-history.jsonl";
 }

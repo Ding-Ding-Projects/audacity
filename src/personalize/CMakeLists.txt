@@ -16,6 +16,8 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/internal/appearanceoverrides.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/displaynamesettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/displaynamesettings.h
+    ${CMAKE_CURRENT_LIST_DIR}/internal/brandingmodel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/internal/brandingmodel.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/lockregistry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/lockregistry.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/mutationhistory.cpp
@@ -39,6 +41,7 @@ set(MODULE_LINK
     muse::ui
     muse::global
     Qt::Gui
+    audacity_branding
 )
 
 setup_module()

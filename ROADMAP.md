@@ -1,3 +1,24 @@
+# Current completion pass
+
+Previous completion ticks below are reopened: source presence and historical captures do not prove the final integrated behavior. Items remain visible so earlier work is preserved and can be reverified.
+
+- [x] Build the Windows application through the project entry point at `bbeb45e1`.
+- [x] Produce and inspect a genuine unsigned Squirrel package, with the application/package source distinction recorded in `HANDOFF.md`.
+- [x] Replace permissive completion claims with a candidate-bound verifier and negative regressions.
+- [x] Set the repository About URL to the canonical documentation address.
+- [x] Verify transactional Squirrel output, coherent older seed selection, and real full/delta packaging with pinned qpdf inclusion at candidate `30cda45b`.
+- [x] Record and validate the project-specific operational procedure, with a matching installed shared-catalog copy.
+- [x] Publish incremental prerelease `v4.0.0-m3.14` from a fresh pinned build and verify all eleven downloaded release assets.
+- [x] Verify hosted incremental release `v4.0.0-m3.15`, its immutable source tag, unsigned setup and all eight downloaded asset hashes.
+- [x] Repair optional compiler-cache bootstrap and verify its local decision fixtures without weakening clean-source provenance.
+- [ ] Verify main migration and its delivery run.
+- [ ] Integrate and verify all feature lanes on one candidate.
+- [ ] Complete every canonical feature on every registered surface.
+- [ ] Complete isolated built UI, installer/update and audio/project verification.
+- [ ] Publish and verify the final release, documentation, wiki and operational skill.
+- [ ] Complete preservation-proven cleanup without losing historical work.
+
+---
 # Roadmap
 
 This file tracks the Material Audacity rebuild by phase. It is a checklist:
@@ -6,44 +27,44 @@ unticked items are open work.
 
 ## Phase 1: token engine and first surfaces
 
-- [x] Material 3 token engine, component library, fonts and gallery
-- [x] Material 3 project scene, toolbars, track headers, clips and history panel
-- [x] Material 3 app shell, title bar, home, about and first launch setup
-- [x] Material 3 preferences, effects, project and export dialogs
-- [x] Cantonese (Hong Kong) translation baseline and coverage check
-- [x] Unsigned Squirrel.Windows packaging, replacing WiX
-- [x] Documentation site under docs/site
-- [x] Linux smoke captures under Xvfb
+- [ ] Material 3 token engine, component library, fonts and gallery
+- [ ] Material 3 project scene, toolbars, track headers, clips and history panel
+- [ ] Material 3 app shell, title bar, home, about and first launch setup
+- [ ] Material 3 preferences, effects, project and export dialogs
+- [ ] Cantonese (Hong Kong) translation baseline and coverage check
+- [ ] Unsigned Squirrel.Windows packaging, replacing WiX
+- [ ] Documentation site under docs/site
+- [ ] Linux smoke captures under Xvfb
 
 ## Phase 2, wave one: companion features and legacy chrome removal
 
-- [x] Language mode setting (English, playful Hong Kong Cantonese, bilingual)
-- [x] Independent English and Cantonese funny level sliders
-- [x] Five attention support modes (focus, low stimulation, time awareness,
+- [ ] Language mode setting (English, playful Hong Kong Cantonese, bilingual)
+- [ ] Independent English and Cantonese funny level sliders
+- [ ] Five attention support modes (focus, low stimulation, time awareness,
       one thing at a time, momentum), off by default
-- [x] Scheduled settings rules (local, HTTPS API, Home Assistant sources)
-- [x] Local personal vocabulary JSON upload with replace, clear and reset
-- [x] Corner notification stack and notification centre with search, bulk
+- [ ] Scheduled settings rules (local, HTTPS API, Home Assistant sources)
+- [ ] Local personal vocabulary JSON upload with replace, clear and reset
+- [ ] Corner notification stack and notification centre with search, bulk
       actions and export
-- [x] Super confirmation gate for destructive actions
-- [x] Command palette on Ctrl+Shift+F
-- [x] Regular expression builder workbench, anchored beside search fields
-- [x] Background Squirrel.Windows update checker with a ready to restart banner
-- [x] Per element appearance editor with typography, color, corner radius,
+- [ ] Super confirmation gate for destructive actions
+- [ ] Command palette on Ctrl+Shift+F
+- [ ] Regular expression builder workbench, anchored beside search fields
+- [ ] Background Squirrel.Windows update checker with a ready to restart banner
+- [ ] Per element appearance editor with typography, color, corner radius,
       animated rainbow, and per state overrides
-- [x] Application display name setting
-- [x] Toy locks with six credential policies and a shared PIN keypad
-- [x] Support Tickets joke desk
-- [x] Local offline authenticator with in process QR code and RFC 6238 codes
-- [x] Local model manager for the Ollama HTTP API
-- [x] Universal export service (JSON, JSON Lines, YAML, TOML, XML, CSV, TSV,
+- [ ] Application display name setting
+- [ ] Toy locks with six credential policies and a shared PIN keypad
+- [ ] Support Tickets joke desk
+- [ ] Local offline authenticator with in process QR code and RFC 6238 codes
+- [ ] Local model manager for the Ollama HTTP API
+- [ ] Universal export service (JSON, JSON Lines, YAML, TOML, XML, CSV, TSV,
       Markdown, HTML, SQL, store only ZIP)
-- [x] Reusable bulk selection control
-- [x] External code editor detection and handoff
-- [x] In app documentation browser
-- [x] Replaced the legacy FlatButton with M3Button or M3IconButton across
+- [ ] Reusable bulk selection control
+- [ ] External code editor detection and handoff
+- [ ] In app documentation browser
+- [ ] Replaced the legacy FlatButton with M3Button or M3IconButton across
       most dialogs and panels listed in CHANGELOG.md
-- [x] Material Design 3 colour roles for the muse StyledTableView,
+- [ ] Material Design 3 colour roles for the muse StyledTableView,
       PageIndicator and AccountAvatar
 
 ## Phase 2, wave two: open work
@@ -52,18 +73,18 @@ unticked items are open work.
       opt out)
 - [ ] School mode (universal rename, unlock credential, suppress advanced
       language and customization features)
-- [x] Spoken narrator for app events, off by default, English/Cantonese/Both
-- [x] Completeness inventory guard script that fails when a canonical
+- [ ] Spoken narrator for app events, off by default, English/Cantonese/Both
+- [ ] Completeness inventory guard script that fails when a canonical
       feature row is missing, stale, or unimplemented
       (`buildscripts/checks/completeness_guard.py`, proved red then green)
-- [x] Confirm every appearance override from the per element editor actually
+- [ ] Confirm every appearance override from the per element editor actually
       renders in the live QML tree, not only persists to settings
 - [ ] Remove the remaining legacy FlatButton usages outside the list already
       converted in CHANGELOG.md
 - [ ] A full capture matrix for the surfaces listed as uncaptured in
       README.md (toy lock wizard, authenticator pairing, Support Tickets,
       Ollama manager, export dialog, docs browser, attention support toggles)
-- [x] Cut and verify a release: every push to `master` now publishes
+- [ ] Cut and verify a release: every push to `master` now publishes
       `v4.0.0-m3.<run>`; `v4.0.0-m3.10` and `v4.0.0-m3.11` are verified
       unsigned Squirrel releases with a delta package from m3.11 on
 - [ ] Local history: real captures of the timeline, storage, compare and

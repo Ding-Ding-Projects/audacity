@@ -1,3 +1,4 @@
+#include "shared/profilepaths.h"
 /*
 * Audacity: A Digital Audio Editor
 */
@@ -22,14 +23,14 @@ AuthenticatorStore::AuthenticatorStore()
 
 QString AuthenticatorStore::storePath() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     return dir + "/authenticator.dat";
 }
 
 QByteArray AuthenticatorStore::obscureKey() const
 {
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
+    QString dir = au::profile::Paths::writableLocation(QStandardPaths::AppDataLocation) + "/personalize";
     QDir().mkpath(dir);
     QString keyPath = dir + "/authenticator.key";
 

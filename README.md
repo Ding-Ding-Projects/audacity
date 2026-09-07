@@ -1,6 +1,12 @@
 # Material Audacity
 
-[![Coverage](https://s3.us-east-1.amazonaws.com/extensions.musescore.org/test/code_coverage/au_coverage_badge.svg)](https://github.com/audacity/audacity/actions/workflows/au4_check_unit_tests.yml)
+[![Windows delivery](https://github.com/Ding-Ding-Projects/audacity/actions/workflows/material-audacity-release.yml/badge.svg?branch=main)](https://github.com/Ding-Ding-Projects/audacity/actions/workflows/material-audacity-release.yml)
+
+Verified incremental Windows prerelease: [v4.0.0-m3.14](https://github.com/Ding-Ding-Projects/audacity/releases/tag/v4.0.0-m3.14),
+with a freshly built [unsigned Setup.exe](https://github.com/Ding-Ding-Projects/audacity/releases/download/v4.0.0-m3.14/Setup.exe).
+All eleven published assets were downloaded and hash-verified. Full product and
+runtime acceptance remains in progress; see [HANDOFF.md](HANDOFF.md) for the exact
+verification boundaries.
 
 A Material Design 3 rebuild of the Audacity 4 shell: the same multi track
 audio editor and recorder, with the original editing engine, wrapped in a
@@ -18,9 +24,10 @@ Fresh Windows machine, one command:
 .\build.bat --run
 ```
 
-Documentation site: [docs/site](docs/site/index.html) (published at
-`https://ding-ding-projects.github.io/audacity/` once GitHub Pages is
-enabled by the repository owner, see [HANDOFF.md](HANDOFF.md)).
+Documentation site: [Material Audacity documentation](https://ding-ding-projects.github.io/audacity/).
+GitHub Pages is enabled and the repository homepage points to this address.
+Delivery targets Windows x64 on `main`. The current implementation, verification
+limits, and publication state are recorded in [HANDOFF.md](HANDOFF.md).
 
 Contents: [Screenshots](#screenshots) · [Features](#features) ·
 [No unsolicited interruptions](#no-unsolicited-interruptions) ·
@@ -358,6 +365,15 @@ build-installer.bat /s
 and the packaging tools on their own, so it can also be run standalone.
 `build-installer.bat` produces the Squirrel.Windows installer in
 `dist\squirrel-windows`.
+
+Package the completed build that belongs to the intended source candidate; an
+existing executable is not proof that current source was rebuilt. The current
+build and CI packaging routes provision the pinned qpdf bundle. Squirrel output
+now carries an exact package manifest and checksums, validates any older baseline,
+and preserves a previous verified output through recoverable directory activation.
+See [release packaging](docs/design/RELEASE.md) and [the current handoff](HANDOFF.md)
+for measured evidence and the distinction between packaging tests and a final
+rebuilt application.
 
 The installer is intentionally **not code signed**. Code signing is
 permanently prohibited for this project, so Windows SmartScreen shows a

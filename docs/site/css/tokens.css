@@ -1,8 +1,8 @@
 /* M3 design tokens: color roles (set at runtime by app.js from m3-color.js),
    type scale, shape scale, and motion tokens. */
 :root {
-  --md-font-display: "Fraunces", Georgia, "Noto Serif HK", serif;
-  --md-font-body: "Noto Sans HK", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --md-font-display: "Roboto Flex", "Noto Sans HK", "Segoe UI", system-ui, sans-serif;
+  --md-font-body: "Roboto Flex", "Noto Sans HK", "Segoe UI", system-ui, -apple-system, sans-serif;
 
   /* Type scale (M3) */
   --md-type-display-large: 700 57px/64px var(--md-font-display);
