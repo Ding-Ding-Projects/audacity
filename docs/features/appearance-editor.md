@@ -54,13 +54,12 @@ colour, handle colour, handle radius), `M3Chip` (container colour, radius),
 `M3Tab` (content colour), `M3Tabs` (container colour), `M3Dialog` (container
 colour, radius) and `M3Menu` (container colour, radius, elevation).
 
-Typography (family, size, weight, italic, letter spacing) and opacity
-overrides are stored by the editor but not read by any component yet,
-because a QML `font` grouped property cannot be partially overridden
-property by property without a larger change to how each component builds
-its font. Setting one of those properties in the editor still stores it
-(nothing is lost); it simply is not rendered until a later change wires
-per-axis font resolution through the same store.
+Typography family, size, weight, italic and letter spacing, plus opacity,
+now render through `M3Button` and `M3Chip` when those primitives have a
+non-empty `elementId`. `home.newProject` is the current registered desktop
+button consumer. Other primitives retain their existing colour and shape
+overrides until their owners supply stable identifiers and opt into the same
+per-axis typography bindings.
 
 ## Layered appearance editor
 
