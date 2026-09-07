@@ -118,11 +118,48 @@ the CLI before the workflow timing request or Configure step uses it:
 | Python | `actions/setup-python@v6` supplies Python 3.12; the job confirms `sys.version_info >= (3, 12)` before configuration. |
 | GitHub CLI | The job checks `gh api --paginate --slurp` and `gh release create --verify-tag` support through CLI help. If absent or incompatible, it uses Chocolatey's `gh` package and refreshes the current and subsequent-step PATH, then repeats the capability check. |
 | Chocolatey | Needed only for GitHub CLI repair on the Windows delivery worker. Its absence is reported explicitly and stops the job before any reservation attempt. |
+| Compiler cache | Optional. `configure_compiler_cache.py` reuses an installed ccache with `4.8 <= version < 5` only after version, statistics and statistics-reset probes succeed. Otherwise it selects the supported uncached build. No Chocolatey or other download is attempted for this optional tool. |
 
 These checks no longer infer command availability from the worker image name.
 The offline reservation fixtures do not install tools or prove a hosted worker's
 network bootstrap; the workflow's actual provisioning result remains separate
 evidence.
+
+### Optional compiler-cache bootstrap
+
+The Windows delivery job records its cache decision in
+`build.artifacts/compiler-cache.json` and exports `MUSE_CI_COMPILER_CACHE` plus
+the exact selected `MUSE_CI_CCACHE_PROGRAM` through `GITHUB_ENV`. A compatible
+installed ccache receives a unique configuration file under
+`build.tools/compiler-cache`, with a 1 GB cache limit and the existing
+`pch_defines,time_macros` settings. Existing cache configuration is not replaced.
+The supported installed-version range is deliberately conservative; upstream
+documents MSVC support in its [4.8.2 manual](https://ccache.dev/manual/4.8.2.html).
+
+Missing tools, unsupported versions, unsuccessful probes and probe timeouts
+select `OFF` and state the reason. Later cache commands are not called after a
+failed probe. Because caching only avoids repeated compilation, this fallback
+can make the build slower but does not skip compilation or packaging.
+
+The root `ci_build.cmake` forwards that decision using
+`compiler_cache_options.cmake`. `OFF` explicitly disables
+`MUSE_COMPILE_USE_CCACHE` and clears both compiler launchers and the old cache
+discovery result, so a missing executable or another cache cannot be silently
+selected later. `ON` pins the exact probed executable, and stops if it has
+disappeared. An unset CI decision preserves ordinary local-build defaults.
+If the decision cannot be written to `GITHUB_ENV`, the bootstrap fails rather
+than allowing a build with unknown launcher settings.
+
+Focused offline verification:
+
+```powershell
+python -m unittest discover -s buildscripts/ci/tools -p test_configure_compiler_cache.py -v
+```
+
+These fixtures cover installed/missing/incompatible tools, failed and timed-out
+probes, environment recording, and actual CMake option selection and stale
+launcher clearing. They are local tests only, not workflow steps. They do not
+claim a complete application build or a hosted-run result.
 
 Reservation is **not a build or publisher lock**. It does not serialize final
 publication, stop an older candidate finishing after a newer candidate, or
