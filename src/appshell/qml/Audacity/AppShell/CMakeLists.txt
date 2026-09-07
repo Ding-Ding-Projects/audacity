@@ -6,6 +6,8 @@ qt_add_qml_module(appshell_qml
     SOURCES
         aboutmodel.cpp
         aboutmodel.h
+        buildprovenance.cpp
+        buildprovenance.h
         appmenumodel.cpp
         appmenumodel.h
         DevTools/Settings/settingslistmodel.cpp
@@ -88,6 +90,7 @@ qt_add_qml_module(appshell_qml
         PublishPage/PublishPage.qml
         PublishPage/PublishToolBar.qml
         shared/AccentColorsList.qml
+        shared/FrontBuildProvenance.qml
         shared/ThemeSamplesList.qml
         shared/internal/ThemeSample.qml
         WelcomeDialog.qml
@@ -176,20 +179,19 @@ endif()
 
 set(AU_BUILD_PROVENANCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(AU_BUILD_PROVENANCE_HEADER "${AU_BUILD_PROVENANCE_DIR}/appshellbuildprovenance.h")
+string(RANDOM LENGTH 32 ALPHABET 0123456789abcdef AU_CONFIGURED_BUILD_ID)
 add_custom_target(appshell_build_provenance ALL
     COMMAND "${CMAKE_COMMAND}"
         "-DAU_SOURCE_DIR=${CMAKE_SOURCE_DIR}"
         "-DAU_EXPECTED_SOURCE_REVISION=${AU_CONFIGURED_SOURCE_REVISION}"
         "-DAU_OUTPUT_HEADER=${AU_BUILD_PROVENANCE_HEADER}"
+        "-DAU_BUILD_VERSION=${MUSE_APP_VERSION}"
+        "-DAU_BUILD_VERSION_LABEL=${MUSE_APP_VERSION_LABEL}"
+        "-DAU_BUILD_NUMBER=${MUSE_APP_BUILD_NUMBER}"
+        "-DAU_BUILD_ID=${AU_CONFIGURED_BUILD_ID}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/GenerateBuildProvenance.cmake"
     BYPRODUCTS "${AU_BUILD_PROVENANCE_HEADER}"
     VERBATIM
 )
 add_dependencies(appshell_qml appshell_build_provenance)
 target_include_directories(appshell_qml PRIVATE "${AU_BUILD_PROVENANCE_DIR}")
-
-if (DEFINED MUSE_APP_VERSION)
-    target_compile_definitions(appshell_qml PRIVATE
-        MUSE_APP_VERSION="${MUSE_APP_VERSION}"
-    )
-endif()

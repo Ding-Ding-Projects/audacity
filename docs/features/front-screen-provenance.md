@@ -1,37 +1,90 @@
-# Front-screen version and provenance
+# Front-screen version and build provenance
 
-The Home menu presents the version of the running application and the local
-updated-at value before a user chooses another destination. The provenance
-target generates `AU_BUILD_TIMESTAMP_UTC` while it builds the configured Git
-candidate, then `AboutModel` formats it locally with seconds and the local
-timezone label.
+Every initial page uses the `WindowContent` shell. Its permanently present
+`FrontBuildProvenance` component displays the version and recorded build time
+above the docked page content. The page container reserves the component's
+actual height, and both labels wrap without eliding factual values. The shell
+retains the existing DockWindow instance and delegates its `init()` entry point.
+It does not change application identity or startup routing.
 
-The generator compares the current Git revision with the revision CMake
-configured. A mismatch stops the build and asks for a reconfigure, so an
-incremental build cannot label a newer source tree with stale provenance.
+The explicit startup-mode inventory covers `StartEmpty`, `StartWithNewProject`
+and `Recovery` through `HOME_URI`, plus `StartWithProject`,
+`ContinueLastSession` and `FirstLaunch` through `PROJECT_URI`. Provenance is a
+sibling of that page container, not a Home-only child or a conditional loader.
 
-The candidate must also have no staged, unstaged, or untracked source changes.
-Changed submodule pins are rejected with `--ignore-submodules=dirty`; managed
-overlay content is allowed only when its separately tracked patch recipe is
-already part of the candidate, never by treating arbitrary nested dirt as
-clean provenance.
+## One recorded build manifest
 
-The Home menu never uses launch time or a file timestamp.  If the configured
-timestamp is absent or invalid, it presents **Build provenance unavailable**.
-This is an honest state, rather than a guessed timestamp.
+CMake assigns a build identity when it configures the candidate. Before the QML
+module compiles, `appshell_build_provenance` verifies the configured revision,
+rejects staged, unstaged and eligible untracked source changes, and records a
+JSON manifest under the ignored binary-output `generated/manifests/` directory.
+The record contains:
 
-The full text wraps in both the expanded Home menu and its narrow rail, so the
-version and provenance are not elided.  Accessible names include both values.
+| Field | Source |
+| --- | --- |
+| `schemaVersion` | The supported manifest schema, currently 1. |
+| `version` | The application's configured `MUSE_APP_VERSION`, with no fallback value. |
+| `versionLabel` | The configured application version label; empty is permitted. |
+| `buildNumber` | The configured application build number; empty is permitted. |
+| `buildId` | The identity of this CMake configuration instance. |
+| `sourceRevision` | The exact configured and rechecked Git commit. |
+| `sourceTree` | That commit's recorded tree identity. |
+| `buildStartedAtUtc` | The build producer's UTC time when this record is first created. |
+| `timestampKind` | `build-start`, identifying the recorded event precisely. |
 
-## Verification
+The timestamp is not a commit date, application launch time, filesystem time,
+release publication time or a hand-entered label. The generator deliberately
+does not treat `SOURCE_DATE_EPOCH` as a build-start clock. A repeated build of
+the same configured instance reuses its record without changing its bytes or
+header timestamp. Reconfiguration creates a new build identity and a separate
+record; prior records remain available.
 
-Run the focused source check from the repository root:
+The generator uses an exclusive lock, writes each manifest once, and checks its
+stored SHA-256 before reuse. Missing paired evidence, changed bytes or metadata
+mismatches fail closed without relabelling the prior record. An interrupted
+incomplete record remains for inspection and requires a fresh build directory.
+The generated header embeds the exact file bytes as hexadecimal plus their
+SHA-256, using binary reads so native line endings cannot break the binding.
+
+`AboutModel` delegates version and timestamp formatting to the same Qt Core
+manifest parser. The version includes the recorded optional label and build
+number, for example `4.0.0-beta.14`. Missing, malformed or mismatched manifest
+fields return empty values, and the front shell shows **Version unavailable**
+and **Build provenance unavailable**. It never substitutes another version or
+clock. UTC output converts an explicit source offset before adding its UTC
+label. Local output includes seconds, numeric UTC offset and timezone identity,
+including daylight-saving differences.
+
+The existing candidate guard rejects changed submodule pins with
+`--ignore-submodules=dirty`. It does not itself certify nested working content:
+managed overlay recipes and their separate verification remain required. This
+feature must not be described as proof of arbitrary nested source cleanliness.
+
+## Verification and limits
+
+The focused entry point runs the real CMake generator fixtures, common-shell
+and startup-mode checks, then compiles and executes the actual Qt Core parser
+and formatter. It locates the project MSVC tools and uses the verified Qt prefix
+from the project bootstrap; an alternate already-provisioned prefix can be
+passed explicitly.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File src/appshell/tests/front_screen_provenance_checks.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File src/appshell/tests/front_screen_provenance_checks.ps1
 ```
 
-The check verifies the exact Home-menu contract, its unavailable state, both
-responsive layouts, accessible provenance text, generated candidate-bound
-provenance, and deliberate negative mutations. It removes required boundaries
-in memory and verifies that every mutation turns the check red.
+`-SourceOnly` explicitly omits executable tests and reports that limitation.
+`-QtPrefix <verified-Qt-prefix>` selects the available Qt 6.10.1 toolchain.
+
+Generator fixtures prove build-clock recording, exact embedded bytes, unchanged
+record reuse, separate configuration identities, no output after candidate
+rejection, manifest tampering refusal, and missing-version recording without
+invention. Executable checks cover missing version, revision, tree, build id,
+date and timezone; invalid calendar values; strict whole-string validation;
+manifest hash mismatches; UTC conversion; and winter/summer local formatting.
+Exact source negatives remove visible labels, unavailable states, height
+reservation and startup-mode entries and must be rejected.
+
+These are executable formatting, generator and source-structure proofs. They do
+not establish rendered visibility, accessibility behavior, layout at supported
+scales, or complete startup behavior in the built graphical application. Those
+runtime interactions and captures remain separate evidence.
