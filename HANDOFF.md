@@ -1,5 +1,36 @@
 # Handoff
 
+## Website narrator source increment
+
+The website now has opt-in narration controls, independent runtime voice choices,
+rate/pitch, quiet and explicit assistive-technology yield, preview, persistent
+storage-failure feedback, and exact narrator palette destinations. Its speech
+adapter serializes both languages, handles late/missing/network voices, retains
+missing voice choices, prioritizes important queued events, and discloses English
+fallback when Cantonese copy is unavailable. Three review counterexamples were
+proven failing, then passing after repair. Browser audio, accessibility and layout
+remain unverified; source tests are not full built interaction evidence. See
+`docs/site/docs/narrator.md` for the concrete boundaries and remaining event coverage.
+
+## Documentation language integration in progress
+
+The documentation branch adds an authored Cantonese catalog, independent
+English/Cantonese feedback levels, bilingual language-marked spans, reversible
+language and local-vocabulary rendering, and bounded dynamic message templates.
+Provider-owned release records and documentation articles remain unchanged.
+Dynamic template values are treated as data. Notification and history timestamps
+are separate from their translatable messages; history rows use text assignment
+instead of HTML interpolation.
+
+The focused presentation and personal-vocabulary suites pass 31 tests locally.
+The presentation suite also verifies that the browser catalog exactly matches
+the maintained JSON. Complete browser interaction, screen-reader, viewport,
+theme, and scale evidence is still missing. Documentation article translation,
+full dynamic-copy coverage, and other canonical website features remain open.
+This branch's current language work has not been deployed or accepted as complete.
+
+
+
 ## Delivery follow-up after the first incremental release
 
 Hosted delivery is available again. Run `34067388818` successfully published

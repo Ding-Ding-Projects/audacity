@@ -1,61 +1,17 @@
 # Personal vocabulary
 
-Replace words in the interface with your own. The file you choose stays on this
-computer, and its contents are never written to the log.
-
-## The file
+Settings always provides a local JSON picker, load status, and Clear action. Without a valid file the original interface wording remains unchanged.
 
 ```json
-{
-  "version": 1,
-  "entries": [
-    { "from": "track", "to": "lane" },
-    { "from": "clip", "to": "take" }
-  ]
-}
+{"schemaVersion":1,"entries":{"Home":"Start"}}
 ```
 
-| Rule | Limit |
-| --- | --- |
-| File size | 256 KB |
-| Entries | 2000 |
-| `version` | Must be `1` |
-| `from` | A non-empty string, unique in the file |
-| `to` | A string, may be empty |
+This neutral example is documentation, not a built-in replacement table. Limits are 256 KiB of UTF-8, 4096 entries, 160 Unicode characters per key and 1000 per value. Keys must be nonempty. Unsupported versions, duplicate decoded keys, unexpected fields, nested values, invalid UTF-8, unsafe object keys, and prohibited control characters are rejected before storage or application.
 
-Anything else is refused with a short reason: the file is not valid JSON, the
-top level is not an object, only version 1 is supported, there is no entries
-array, an entry is not an object, an entry lacks a text `from` or `to`, a
-`from` is empty, the same `from` appears more than once, or there are more than
-2000 entries. The reason is shown; the words themselves are not, and are never
-logged.
+Validation, replacement, and the validated cache stay in this browser. The picker does not upload anything. File names, source paths, contents, and entry counts are not included in history or notifications. A replacement that cannot be validated or stored leaves the last valid table active. A corrupt cache restores original wording and reports unavailable saved vocabulary.
 
-## How the substitution works
+Replacement operates on text nodes and accessible labels, never on HTML, styles, links, script source, input values, or DOM identifiers. Longer literal matches win; word boundaries avoid replacing pieces of other words, and replacements do not cascade. Expansion is bounded. Technical code, release provenance and asset records, and document article contents retain original wording. Search also recognizes customized labels without storing them in public metadata.
 
-Substitution is applied by `ExperienceTranslator`, the same extra `QTranslator`
-that bilingual mode uses, so it reaches visible interface text rather than one
-particular widget.
+Clear invalidates pending file reads, removes the local cache and restores original text and accessible labels. If storage refuses the clear, the control reports failure instead of claiming success. This loader never exports or transmits private values or file metadata.
 
-Matches are whole words. A term that begins or ends with a letter, digit or
-underscore is bounded by a look-around on both sides, so `track` matches
-`Add a track` but not `Tracking` and not `backtrack`. A term made of Chinese
-characters has no word boundary to speak of and is matched literally.
-
-Longer terms are applied first, so `audio track` is never cut in half by a
-shorter `audio` entry.
-
-## Where it is stored
-
-The parsed table is written to
-`<user application data>/experience/vocabulary.json` and read again on the next
-start. The original file is not copied and not watched. Choosing another file
-replaces the table; Clear removes it.
-
-## Limits
-
-- Substitution happens where a translation is looked up, so text drawn by the
-  operating system and text already copied into a property are not affected
-  until the next start.
-- In Cantonese mode the substitution is applied to the Cantonese text; in
-  English and bilingual mode it is applied to the English text, and in
-  bilingual mode to the composed line.
+Run focused tests with `node --test docs/site/scripts/personal-vocabulary.test.cjs`. These do not replace real file-picker, reload, replace, clear, accessibility and no-network checks in the built website.

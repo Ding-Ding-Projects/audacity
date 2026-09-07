@@ -41,7 +41,7 @@
     <div class="top-bar">
       <img class="logo" src="assets/logo.svg" alt="Material Audacity logo">
       <div class="site-title">Material Audacity</div>
-      <button type="button" class="md-icon-button" id="notif-btn" aria-haspopup="true" data-tooltip="Notifications">🔔</button>
+      <button type="button" class="md-icon-button" id="notif-btn" aria-label="Notifications" aria-haspopup="true" data-tooltip="Notifications"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5z"/><path d="M10 20h4"/></svg></button>
       <button type="button" class="md-text-button" id="palette-btn" data-tooltip="Ctrl+Shift+F">Search (Ctrl+Shift+F)</button>
     </div>
     <div id="route-outlet"></div>
@@ -49,12 +49,12 @@
 </div>
 
 <nav class="nav-bar" aria-label="Primary">
-  <a class="nav-item" data-route="home" href="#home">⌂</a>
-  <a class="nav-item" data-route="gallery" href="#gallery">🖼</a>
-  <a class="nav-item" data-route="features" href="#features">✦</a>
-  <a class="nav-item" data-route="downloads" href="#downloads">⇩</a>
-  <a class="nav-item" data-route="docs" href="#docs">▤</a>
-  <a class="nav-item" data-route="settings" href="#settings">⚙</a>
+  <a class="nav-item" data-route="home" href="#home" aria-label="Home">⌂</a>
+  <a class="nav-item" data-route="gallery" href="#gallery" aria-label="Gallery">🖼</a>
+  <a class="nav-item" data-route="features" href="#features" aria-label="Features">✦</a>
+  <a class="nav-item" data-route="downloads" href="#downloads" aria-label="Downloads">⇩</a>
+  <a class="nav-item" data-route="docs" href="#docs" aria-label="Documentation">▤</a>
+  <a class="nav-item" data-route="settings" href="#settings" aria-label="Settings">⚙</a>
 </nav>
 
 <div class="palette-backdrop" id="palette-backdrop" hidden>
@@ -76,6 +76,10 @@
 <div class="snackbar-stack" id="snackbar-stack" aria-live="polite"></div>
 
 <script src="js/m3-color.js"></script>
+<script src="locales/yue-HK.js"></script>
+<script src="js/presentation.js"></script>
+<script src="js/personal-vocabulary.js"></script>
+<script src="js/narrator.js"></script>
 <script src="js/markdown.js"></script>
 <script src="js/regex-builder.js"></script>
 <script src="js/search-inventory.js"></script>
