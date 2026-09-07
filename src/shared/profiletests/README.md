@@ -71,3 +71,20 @@ permissions. No broad network enable switch is implemented in this change.
 
 UI execution remains unverified: automatic approval review rejected launching the
 hidden Lowlevel HTTP service. No alternative UI route was attempted.
+
+## Branding integration proof
+
+The explicit `brandingRouteConsumers` inventory binds singleton registration,
+injected GlobalConfiguration storage, model-to-store construction, and the
+`branding-v1` directory to exact source lines. Removed, commented-out, and renamed
+boundaries must fail independently. The overlay's AppLocalDataLocation routing
+is also a separately required boundary.
+
+`profile_branding_tests` compiles the real BrandingModel and BrandingStore with
+the production profile provider using static linkage. QCoreApplication plus CPU
+QImage processing creates no GUI. Separate processes save red and blue logos in
+two profiles, reload all six derivatives, validate contained model previews,
+reset only the first profile, and verify the second profile plus an unrelated
+fixture sentinel remain intact. The test supplies the provider location directly;
+the source inventory binds that location to GlobalConfiguration and the singleton.
+It does not execute the complete QML registration or claim full product/UI proof.

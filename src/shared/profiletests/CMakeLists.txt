@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(AudacityProfileTests LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
-find_package(Qt6 6.10 REQUIRED COMPONENTS Core)
+find_package(Qt6 6.10 REQUIRED COMPONENTS Core Gui)
 # Export/import mechanics test only. The Windows product links muse_global
 # statically (BUILD_SHARED_LIBS=OFF); this DLL target is not product-binary proof.
 add_library(profile_provider SHARED ../profilepaths.cpp)
@@ -37,3 +37,14 @@ set_target_properties(profile_toolkit_tests PROPERTIES AUTOMOC ON)
 target_include_directories(profile_toolkit_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../.. ${PROFILE_TOOLKIT_DIR})
 target_link_libraries(profile_toolkit_tests PRIVATE profile_provider_static Qt6::Core)
 add_test(NAME profile_toolkit_isolation COMMAND profile_toolkit_tests)
+
+# CPU image processing and QObject models only, no QGuiApplication or window.
+set(PROFILE_BRANDING_DIR ${CMAKE_CURRENT_LIST_DIR}/../../branding)
+set(PROFILE_PERSONALIZE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../personalize/internal)
+add_executable(profile_branding_tests branding_tests.cpp
+    ${PROFILE_BRANDING_DIR}/brandingstore.cpp ${PROFILE_BRANDING_DIR}/brandingstore.h
+    ${PROFILE_PERSONALIZE_DIR}/brandingmodel.cpp ${PROFILE_PERSONALIZE_DIR}/brandingmodel.h)
+set_target_properties(profile_branding_tests PROPERTIES AUTOMOC ON)
+target_include_directories(profile_branding_tests PRIVATE ${PROFILE_BRANDING_DIR} ${PROFILE_PERSONALIZE_DIR})
+target_link_libraries(profile_branding_tests PRIVATE profile_provider_static Qt6::Core Qt6::Gui)
+add_test(NAME profile_branding_isolation COMMAND profile_branding_tests)
