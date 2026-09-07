@@ -58,6 +58,27 @@ TEST(NarratorQueueTests, SupersedesAPendingItemWithTheSameKeyInstead)
     EXPECT_EQ(queue.popNext().text, QStringLiteral("Exporting: 50%"));
 }
 
+TEST(NarratorQueueTests, SupersessionWinsOverTheCooldown)
+{
+    NarratorQueue queue(400, 4000);
+    ASSERT_TRUE(queue.enqueue(makeUtterance(QStringLiteral("Exporting: 10%"), NarratorCategory::General,
+                                            QStringLiteral("export-progress")), 0));
+    EXPECT_TRUE(queue.enqueue(makeUtterance(QStringLiteral("Exporting: 50%"), NarratorCategory::General,
+                                            QStringLiteral("export-progress")), 100));
+    EXPECT_EQ(queue.size(), 1);
+    EXPECT_EQ(queue.popNext().text, QStringLiteral("Exporting: 50%"));
+}
+
+TEST(NarratorQueueTests, BoundsThePendingQueueDeterministically)
+{
+    NarratorQueue queue(0, 0);
+    for (int index = 0; index <= NarratorQueue::MAX_PENDING; ++index) {
+        ASSERT_TRUE(queue.enqueue(makeUtterance(QStringLiteral("Item %1").arg(index)), index));
+    }
+    EXPECT_EQ(queue.size(), NarratorQueue::MAX_PENDING);
+    EXPECT_EQ(queue.popNext().text, QStringLiteral("Item 1"));
+}
+
 TEST(NarratorQueueTests, OneAtATimeNeverOverlaps)
 {
     NarratorQueue queue;

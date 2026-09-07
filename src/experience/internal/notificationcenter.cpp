@@ -76,17 +76,27 @@ void NotificationCenter::narrate(const Notification& notification)
         return;
     }
 
-    NarratorUtterance utterance;
-    utterance.text = notification.body.isEmpty() ? notification.title : notification.body;
-    utterance.category = narratorCategory(notification.type);
+    const QString text = notification.body.isEmpty() ? notification.title : notification.body;
+    const NarratorCategory category = narratorCategory(notification.type);
     const int configuredLanguage = configuration()->narratorLanguage();
-    utterance.spokenIn = configuredLanguage >= static_cast<int>(NarratorLanguage::English)
-                         && configuredLanguage <= static_cast<int>(NarratorLanguage::Both)
-                         ? static_cast<NarratorLanguage>(configuredLanguage) : NarratorLanguage::English;
-    utterance.supersedeKey = notification.type == NotificationType::Info ? QStringLiteral("notification-info")
+    const NarratorLanguage language = configuredLanguage >= static_cast<int>(NarratorLanguage::English)
+                                     && configuredLanguage <= static_cast<int>(NarratorLanguage::Both)
+                                     ? static_cast<NarratorLanguage>(configuredLanguage) : NarratorLanguage::English;
+    const QString baseKey = notification.type == NotificationType::Info ? QStringLiteral("notification-info")
                                                                          : QStringLiteral("notification-state");
-
-    if (m_narratorQueue.enqueue(utterance, QDateTime::currentMSecsSinceEpoch())) {
+    const qint64 now = QDateTime::currentMSecsSinceEpoch();
+    bool queued = false;
+    for (const NarratorLanguage spokenIn : language == NarratorLanguage::Both
+                                           ? QVector<NarratorLanguage> { NarratorLanguage::English, NarratorLanguage::Cantonese }
+                                           : QVector<NarratorLanguage> { language }) {
+        NarratorUtterance utterance;
+        utterance.text = text;
+        utterance.category = category;
+        utterance.spokenIn = spokenIn;
+        utterance.supersedeKey = baseKey + (spokenIn == NarratorLanguage::Cantonese ? QStringLiteral(":yue") : QStringLiteral(":en"));
+        queued = m_narratorQueue.enqueue(utterance, now) || queued;
+    }
+    if (queued) {
         speakNext();
     }
 }

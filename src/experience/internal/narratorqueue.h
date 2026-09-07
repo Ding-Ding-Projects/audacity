@@ -50,6 +50,7 @@ struct NarratorUtterance
 class NarratorQueue
 {
 public:
+    static constexpr int MAX_PENDING = 64;
     explicit NarratorQueue(qint64 debounceMs = 400, qint64 cooldownMs = 4000);
 
     //! Attempts to enqueue at the given monotonic time (milliseconds).
@@ -77,6 +78,7 @@ private:
     qint64 m_cooldownMs;
     QVector<PendingItem> m_pending;
     QString m_lastText;
+    NarratorLanguage m_lastLanguage = NarratorLanguage::English;
     qint64 m_lastTextAtMs = -1000000;
     QVector<qint64> m_lastCategoryAtMs { 0, 0, 0, 0 };
 };

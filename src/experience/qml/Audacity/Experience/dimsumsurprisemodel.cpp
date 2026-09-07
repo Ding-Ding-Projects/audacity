@@ -5,8 +5,6 @@
 
 #include <random>
 
-#include <QFile>
-
 using namespace au::experience;
 
 DimSumSurpriseModel::DimSumSurpriseModel(QObject* parent)
@@ -29,13 +27,8 @@ void DimSumSurpriseModel::offerIfDue()
 {
     // School mode suppresses the surprise entirely, as if it were not
     // installed: no draw happens.
-    QFile schoolModeFile(SchoolModeStore::sharedFilePath());
-    QByteArray schoolModeData;
-    if (schoolModeFile.open(QIODevice::ReadOnly)) {
-        schoolModeData = schoolModeFile.readAll();
-    }
-    m_schoolMode = SchoolModeStore::parse(schoolModeData);
-    if (m_schoolMode.ok && m_schoolMode.record.on) {
+    const SchoolModeStore::SharedRecordResult schoolMode = SchoolModeStore::sharedRecord();
+    if ((!schoolMode.available && !schoolMode.hasKnownRecord) || (schoolMode.hasKnownRecord && schoolMode.record.on)) {
         return;
     }
 

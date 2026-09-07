@@ -3,9 +3,12 @@
  */
 #include "narratorservice.h"
 
+#include <algorithm>
+
 #include <QAccessible>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QTimer>
 
 using namespace au::experience;
 
@@ -14,13 +17,22 @@ NarratorEngine::NarratorEngine(QObject* parent)
 {
     detectEngine();
     m_process = new QProcess(this);
+    m_process->setReadBufferSize(4096);
+    m_timeout = new QTimer(this);
+    m_timeout->setSingleShot(true);
     connect(m_process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this,
-            [this](int, QProcess::ExitStatus) { emit speechFinished(); });
+            [this](int, QProcess::ExitStatus) {
+                m_timeout->stop();
+                m_process->readAllStandardOutput();
+                m_process->readAllStandardError();
+                emit speechFinished();
+            });
     connect(m_process, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
         if (m_process->state() == QProcess::NotRunning) {
             emit speechFinished();
         }
     });
+    connect(m_timeout, &QTimer::timeout, this, &NarratorEngine::finishTimedOutProcess);
 }
 
 void NarratorEngine::detectEngine()
@@ -77,11 +89,6 @@ bool NarratorEngine::screenReaderActive()
 void NarratorEngine::speak(const QString& text, NarratorLanguage language, const QString& voiceId, double rate,
                            double pitch, bool quietMode)
 {
-    Q_UNUSED(language);
-    Q_UNUSED(voiceId);
-    Q_UNUSED(rate);
-    Q_UNUSED(pitch);
-
     if (quietMode || screenReaderActive()) {
         // Quiet mode is the narrator's own reduced-sound setting: honour it
         // by staying silent. A screen reader already reading the interface
@@ -90,7 +97,7 @@ void NarratorEngine::speak(const QString& text, NarratorLanguage language, const
         return;
     }
 
-    if (m_engineKind != NarratorEngineKind::ProcessBackend || text.isEmpty()) {
+    if (m_engineKind != NarratorEngineKind::ProcessBackend || text.isEmpty() || language == NarratorLanguage::Both) {
         emit speechFinished();
         return;
     }
@@ -98,12 +105,45 @@ void NarratorEngine::speak(const QString& text, NarratorLanguage language, const
     if (m_process->state() != QProcess::NotRunning) {
         return;
     }
-    m_process->start(m_processBackendCommand, { text });
+    constexpr int MAX_TEXT_CODE_UNITS = 1000;
+    const QString boundedText = text.left(MAX_TEXT_CODE_UNITS);
+    const double boundedRate = std::clamp(rate, -1.0, 1.0);
+    const double boundedPitch = std::clamp(pitch, -1.0, 1.0);
+    QStringList arguments;
+    if (m_processBackendCommand.endsWith(QStringLiteral("spd-say"))) {
+        if (!voiceId.isEmpty()) {
+            arguments << QStringLiteral("-y") << voiceId;
+        }
+        arguments << QStringLiteral("-r") << QString::number(qRound(boundedRate * 100.0));
+    } else {
+        if (!voiceId.isEmpty()) {
+            arguments << QStringLiteral("-v") << voiceId;
+        }
+        arguments << QStringLiteral("-s") << QString::number(qBound(80, qRound(175.0 + boundedRate * 100.0), 450));
+        arguments << QStringLiteral("-p") << QString::number(qBound(0, qRound(50.0 + boundedPitch * 49.0), 99));
+    }
+    arguments << boundedText;
+    m_process->start(m_processBackendCommand, arguments);
+    m_timeout->start(10000);
+}
+
+void NarratorEngine::finishTimedOutProcess()
+{
+    if (!m_process || m_process->state() == QProcess::NotRunning) {
+        return;
+    }
+    m_process->terminate();
+    QTimer::singleShot(250, this, [this]() {
+        if (m_process && m_process->state() != QProcess::NotRunning) {
+            m_process->kill();
+        }
+    });
 }
 
 void NarratorEngine::stop()
 {
     if (m_process && m_process->state() != QProcess::NotRunning) {
+        m_timeout->stop();
         m_process->kill();
     }
 }

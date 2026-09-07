@@ -10,6 +10,7 @@
 #include "narratorqueue.h"
 
 class QProcess;
+class QTimer;
 
 namespace au::experience {
 //! Which speech backend the narrator is actually using on this machine.
@@ -85,9 +86,11 @@ signals:
 
 private:
     void detectEngine();
+    void finishTimedOutProcess();
 
     NarratorEngineKind m_engineKind = NarratorEngineKind::None;
     QString m_processBackendCommand;
     QProcess* m_process = nullptr;
+    QTimer* m_timeout = nullptr;
 };
 }

@@ -13,10 +13,20 @@ NarratorQueue::NarratorQueue(qint64 debounceMs, qint64 cooldownMs)
 
 bool NarratorQueue::enqueue(const NarratorUtterance& utterance, qint64 nowMs)
 {
+    if (!utterance.supersedeKey.isEmpty()) {
+        for (PendingItem& item : m_pending) {
+            if (item.utterance.supersedeKey == utterance.supersedeKey) {
+                item.utterance = utterance;
+                item.queuedAtMs = nowMs;
+                return true;
+            }
+        }
+    }
+
     const bool isError = utterance.category == NarratorCategory::Error;
 
     if (!isError) {
-        if (utterance.text == m_lastText && (nowMs - m_lastTextAtMs) < m_debounceMs) {
+        if (utterance.text == m_lastText && utterance.spokenIn == m_lastLanguage && (nowMs - m_lastTextAtMs) < m_debounceMs) {
             return false;
         }
 
@@ -28,19 +38,13 @@ bool NarratorQueue::enqueue(const NarratorUtterance& utterance, qint64 nowMs)
         }
     }
 
-    if (!utterance.supersedeKey.isEmpty()) {
-        for (PendingItem& item : m_pending) {
-            if (item.utterance.supersedeKey == utterance.supersedeKey) {
-                item.utterance = utterance;
-                item.queuedAtMs = nowMs;
-                return true;
-            }
-        }
+    if (m_pending.size() == MAX_PENDING) {
+        m_pending.removeFirst();
     }
-
     m_pending.push_back({ utterance, nowMs });
 
     m_lastText = utterance.text;
+    m_lastLanguage = utterance.spokenIn;
     m_lastTextAtMs = nowMs;
     const int categoryIndex = static_cast<int>(utterance.category);
     if (categoryIndex >= 0 && categoryIndex < m_lastCategoryAtMs.size()) {
