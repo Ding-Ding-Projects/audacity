@@ -7,7 +7,7 @@
 - [x] Push and verify all six preservation branches with `git ls-remote`.
 - [x] Integrate the completed appearance, converter UI, experience, front provenance, and Ollama lines into `main` with both parent histories retained.
 - [x] Verify an empty unmerged index and no tracked conflict markers after integration.
-- [x] Preserve the later nested Muse UI role edit that appeared after the first sweep, and dew each owning branch.
+- [x] Preserve the later nested Muse UI role edit that appeared after the first sweep, and push each owning branch.
 - [x] Push the integrated `main` and verify the remote ref.
 - [x] Create and read back the required external archive before any cleanup removal.
 - [ ] Remove only redundant task-owned worktrees, branches, and stashes after ancestry and ownership proof; one stale Deen No directory remains because `git worktree remove --force` reported `Filename too long`.
@@ -126,3 +126,16 @@ unticked items are open work.
 - [ ] Verify the external closeout archive before any cleanup removal.
 - [ ] Resolve the Muse submodule permission blocker for preservation commit
       `4a83a1ba4`, or retain it as explicitly unverified local recovery data.
+
+## 2026-09-18 final evidence
+
+- [x] Push and verify the integrated `main` at
+      `18541e7c3f0b1437c0a620b0fb600d24429e95df`.
+- [x] Create and test the external archive before cleanup consideration:
+      `C:\Users\cntow\OneDrive\OakKayBackups\audacity-delivery-build-lane\zips\audacity-delivery-build-lane-20260918T174500Z.7z`
+      with 105,860 files, 7,136,227,751 bytes, and SHA-256
+      `00AC449357F37E1368F9600A5C5CDC7FD6BC3FDD28D1263C08453763FEB0CB46`.
+- [ ] Remove no candidates until ownership and ancestry are proven. Current
+      candidates remain retained because they are active, unfinished,
+      user-owned, load-bearing, ownership-uncertain, or depend on the
+      unverified nested Muse ref.

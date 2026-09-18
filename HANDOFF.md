@@ -2,28 +2,28 @@
 
 ## 2026-09-18 primary-checkout integration and preservation pass
 
-### Mat Day closeout result
+### Cleanup closeout result
 
 The final external archive was created before cleanup at `C:\Users\cntow\OneDrive\OakKayBackups\audacity\zips\audacity-20260918T171722Z.7z`. 7-Zip read-back reported `Everything is Ok`, 4,697,455,666 bytes, 111,994 listed entries, and 1,670 Git administrative entries.
 
-The following task-owned jers and linked checkouts were proven clean and ancestor-proven, then removed locally and from the hui: `codex/audacity-appearance`, `codex/audacity-conversion-core`, `codex/audacity-converter-containment`, `codex/audacity-experience`, `codex/audacity-front-provenance`, `codex/audacity-logo`, `codex/audacity-ollama`, `codex/audacity-packaging-integration`, and `codex/audacity-site-completion`. Their source tips are retained in `main` history and in the verified archive.
+The following task-owned branches and linked checkouts were proven clean and ancestor-proven, then removed locally and from the remote: `codex/audacity-appearance`, `codex/audacity-conversion-core`, `codex/audacity-converter-containment`, `codex/audacity-experience`, `codex/audacity-front-provenance`, `codex/audacity-logo`, `codex/audacity-ollama`, `codex/audacity-packaging-integration`, and `codex/audacity-site-completion`. Their source tips are retained in `main` history and in the verified archive.
 
-The retained jers are `codex/audacity-converter-ui`, `codex/audacity-delivery`, `codex/audacity-profile-isolation`, `codex/audacity-release-build`, `codex/audacity-release-candidate`, and `codex/audacity-tests-f9dc58a`. Each remains dewed and has either unfinished nested Muse recovery content, a newer active preservation commit, or ownership uncertainty. No Lap Sap Tong existed.
+The retained branches are `codex/audacity-converter-ui`, `codex/audacity-delivery`, `codex/audacity-profile-isolation`, `codex/audacity-release-build`, `codex/audacity-release-candidate`, and `codex/audacity-tests-f9dc58a`. Each remains pushed and has either unfinished nested Muse recovery content, a newer active preservation commit, or ownership uncertainty. No stash existed.
 
-The linked checkout metadata for `codex/audacity-experience` was removed, but Deen No left the exact directory `C:\Users\cntow\Documents\GitHub\gerk tong hui\audacity-codex-audacity-experience` with 8,165 files and 1,238 directories after `git worktree remove --force` reported `Filename too long`. It is not registered as a linked checkout or jer, and it remains retained as an explicit filesystem cleanup blocker. No broader recursive removal was attempted.
+The linked checkout metadata for `codex/audacity-experience` was removed, but Windows left the exact directory `C:\Users\cntow\Documents\GitHub\gerk tong hui\audacity-codex-audacity-experience` with 8,165 files and 1,238 directories after `git worktree remove --force` reported `Filename too long`. It is not registered as a linked checkout or branch, and it remains retained as an explicit filesystem cleanup blocker. No broader recursive removal was attempted.
 
 ### Follow-up preservation boundary
 
-After the first preservation sweep, a second nested Muse edit appeared in four linked checkouts as the untracked file `framework/ui/qml/Muse/Ui/M3Roles.qml`. It was preserved in a second exact patch commit on each owning branch and dewed with `git ls-remote` verification:
+After the first preservation sweep, a second nested Muse edit appeared in four linked checkouts as the untracked file `framework/ui/qml/Muse/Ui/M3Roles.qml`. It was preserved in a second exact patch commit on each owning branch and pushed with `git ls-remote` verification:
 
-| Branch | Follow-up preservation commit | Hui verification |
+| Branch | Follow-up preservation commit | Remote verification |
 | --- | --- | --- |
 | `codex/audacity-converter-ui` | `123b3620af7103e6f8e2927e4bf1653924bc8c4f` | matched |
 | `codex/audacity-release-build` | `d4b7c5faf2bb5c0bfd29e333b52937e1e489b21a` | matched |
 | `codex/audacity-tests-f9dc58a` | `3934ad11c945a7ce24f6e7f2120fade4715804a2` | matched |
 | `codex/audacity-profile-isolation` | `93320a5759168f6fee7995bb3c42db960a38ccfb` | matched |
 
-The delivery branch also advanced after the first sweep with `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`, titled `Preserve Muse submodule pointer after recovery boundary`. That newer activity is treated as active and ownership-uncertain, so the delivery branch and its linked checkout are retained. The six preservation-only branches therefore remain outside `main`; their recoverable work is dewed and documented rather than removed.
+The delivery branch also advanced after the first sweep with `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`, titled `Preserve Muse submodule pointer after recovery boundary`. That newer activity is treated as active and ownership-uncertain, so the delivery branch and its linked checkout are retained. The six preservation-only branches therefore remain outside `main`; their recoverable work is pushed and documented rather than removed.
 
 This pass was limited to the primary checkout at `C:\Users\cntow\Documents\GitHub\audacity`. No release build, installer publication, or unrelated release work was run.
 
@@ -353,6 +353,30 @@ Do not close the tracking issue or describe these lanes as fully accepted from c
 - Preserve historical branches with unique commits. No branch, worktree, or stash deletion has occurred. Archive and ancestry requirements still apply before cleanup.
 
 Projects access is unavailable with the present `read:project` permission. This does not block implementation or preservation. Existing historical Linux captures remain historical evidence and do not establish current Windows UI acceptance.
+
+## 2026-09-18 final closeout evidence
+
+- `main` is pushed and verified at `18541e7c3f0b1437c0a620b0fb600d24429e95df`.
+- The delivery branch preservation commit is pushed and verified at
+  `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`.
+- The nested Muse preservation commit `4a83a1ba4` exists locally and is
+  referenced by that delivery branch. Its push was rejected by the Muse remote
+  with HTTP 403, so the nested commit remains unverified outside this machine.
+- The required archive was created outside the checkout at
+  `C:\Users\cntow\OneDrive\OakKayBackups\audacity-delivery-build-lane\zips\audacity-delivery-build-lane-20260918T174500Z.7z`.
+  Read-back verification passed with `7z t` exit `0`; it contains 105,860
+  files and 14,679 folders, is 7,136,227,751 bytes, and has SHA-256
+  `00AC449357F37E1368F9600A5C5CDC7FD6BC3FDD28D1263C08453763FEB0CB46`.
+  The archive includes the complete Git administrative directory and all
+  Git-selected files from 17 worktrees. The manifest records 8,534 absent
+  tracked paths as sparse-checkout omissions retained by Git history.
+- No branch, worktree, or stash was removed in this pass. The remaining
+  candidates are active, unfinished, user-owned, load-bearing, or ownership-
+  uncertain, or depend on the unverified nested Muse ref. They remain
+  preserved and documented rather than being deleted on a name-only guess.
+- The uncommitted 41-file Muse state observed at the start of this pass could
+  not be recovered from reflogs or unreachable Git objects after the failed
+  preservation switch. Only `M3Roles.qml` survived in local commit `4a83a1ba4`.
 
 ## 2026-09-18 delivery-lane closeout
 
