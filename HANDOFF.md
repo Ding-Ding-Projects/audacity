@@ -2,6 +2,19 @@
 
 ## 2026-09-18 primary-checkout integration and preservation pass
 
+### Follow-up preservation boundary
+
+After the first preservation sweep, a second nested Muse edit appeared in four linked checkouts as the untracked file `framework/ui/qml/Muse/Ui/M3Roles.qml`. It was preserved in a second exact patch commit on each owning branch and dewed with `git ls-remote` verification:
+
+| Branch | Follow-up preservation commit | Hui verification |
+| --- | --- | --- |
+| `codex/audacity-converter-ui` | `123b3620af7103e6f8e2927e4bf1653924bc8c4f` | matched |
+| `codex/audacity-release-build` | `d4b7c5faf2bb5c0bfd29e333b52937e1e489b21a` | matched |
+| `codex/audacity-tests-f9dc58a` | `3934ad11c945a7ce24f6e7f2120fade4715804a2` | matched |
+| `codex/audacity-profile-isolation` | `93320a5759168f6fee7995bb3c42db960a38ccfb` | matched |
+
+The delivery branch also advanced after the first sweep with `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`, titled `Preserve Muse submodule pointer after recovery boundary`. That newer activity is treated as active and ownership-uncertain, so the delivery branch and its linked checkout are retained. The six preservation-only branches therefore remain outside `main`; their recoverable work is dewed and documented rather than removed.
+
 This pass was limited to the primary checkout at `C:\Users\cntow\Documents\GitHub\audacity`. No release build, installer publication, or unrelated release work was run.
 
 The primary checkout began clean at `b1d8c4416625a71f2bd2398c7c03736a588a60b5` after fetching `origin` with pruning. Five completed feature lines were integrated into `main` with non-fast-forward merges:
