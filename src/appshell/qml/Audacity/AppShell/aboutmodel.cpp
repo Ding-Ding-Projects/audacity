@@ -6,9 +6,12 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDateTime>
+#include <QRegularExpression>
 #include <QUrl>
 #include <QVariantList>
 
+#include "appshellbuildprovenance.h"
+#include "buildprovenance.h"
 #include "framework/global/translation.h"
 
 using namespace muse;
@@ -277,44 +280,22 @@ QString AboutModel::appVersion() const
 
 QString AboutModel::buildVersion() const
 {
-#ifdef MUSE_APP_VERSION
-    const QString configured = QStringLiteral(MUSE_APP_VERSION);
-    if (!configured.isEmpty()) {
-        return configured;
-    }
-#endif
-    return QString::fromStdString(application()->fullVersion().toString().toStdString());
+    return BuildProvenance::fromManifest(QByteArray::fromHex(AU_BUILD_MANIFEST_HEX), AU_BUILD_MANIFEST_SHA256).version();
 }
 
-static QDateTime buildDateTimeUtc()
+static BuildProvenance recordedBuildProvenance()
 {
-#ifdef AU_BUILD_TIMESTAMP_UTC
-    QDateTime dateTime = QDateTime::fromString(QStringLiteral(AU_BUILD_TIMESTAMP_UTC), Qt::ISODate);
-    dateTime.setTimeSpec(Qt::UTC);
-    return dateTime;
-#else
-    return QDateTime();
-#endif
+    return BuildProvenance::fromManifest(QByteArray::fromHex(AU_BUILD_MANIFEST_HEX), AU_BUILD_MANIFEST_SHA256);
 }
 
 QString AboutModel::buildUpdatedAtUtc() const
 {
-    const QDateTime dateTime = buildDateTimeUtc();
-    if (!dateTime.isValid()) {
-        return QString();
-    }
-
-    return dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss 'UTC'"));
+    return recordedBuildProvenance().updatedAtUtc();
 }
 
 QString AboutModel::buildUpdatedAtLocal() const
 {
-    const QDateTime dateTime = buildDateTimeUtc();
-    if (!dateTime.isValid()) {
-        return QString();
-    }
-
-    return dateTime.toLocalTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss t"));
+    return recordedBuildProvenance().updatedAtLocal();
 }
 
 QString AboutModel::appRevision() const

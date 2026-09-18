@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "commonShell": "WindowContent.qml",
+  "provenanceComponent": "FrontBuildProvenance",
+  "modes": {
+    "StartEmpty": "HOME_URI",
+    "StartWithNewProject": "HOME_URI",
+    "Recovery": "HOME_URI",
+    "StartWithProject": "PROJECT_URI",
+    "ContinueLastSession": "PROJECT_URI",
+    "FirstLaunch": "PROJECT_URI"
+  }
+}

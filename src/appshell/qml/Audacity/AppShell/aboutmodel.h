@@ -32,8 +32,8 @@ public:
 
     Q_INVOKABLE QString appVersion() const;
 
-    //! NOTE Build provenance, fixed when the build was configured. Never the
-    //! time the application was started.
+    //! One recorded build manifest supplies both values. Invalid or absent
+    //! manifest data returns empty strings, never application/clock fallbacks.
     Q_INVOKABLE QString buildVersion() const;
     Q_INVOKABLE QString buildUpdatedAtUtc() const;
     Q_INVOKABLE QString buildUpdatedAtLocal() const;

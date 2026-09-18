@@ -44,25 +44,8 @@ Item {
 
     signal selected(string name)
 
-    // Build provenance for the front screen. Both values are fixed when the
-    // build is configured, so this line never reports the time the
-    // application was started.
-    AboutModel {
-        id: aboutModel
-    }
-
-    readonly property string buildVersionLine: qsTrc("appshell", "Material Audacity %1").arg(aboutModel.buildVersion())
-
-    readonly property string buildUpdatedLine: {
-        var local = aboutModel.buildUpdatedAtLocal()
-        if (local === "") {
-            return qsTrc("appshell", "Build time unavailable")
-        }
-        return qsTrc("appshell", "Updated %1").arg(local)
-    }
-
     readonly property var destinations: {
-        var items = []
+        var items = [];
 
         if (root.cloudEnabled) {
             items.push({
@@ -70,7 +53,7 @@ Item {
                 "title": qsTrc("appshell", "Cloud account"),
                 "text": qsTrc("appshell", "Cloud account"),
                 "icon": IconCode.ACCOUNT
-            })
+            });
         }
 
         items.push({
@@ -78,19 +61,19 @@ Item {
             "title": qsTrc("appshell", "Project"),
             "text": qsTrc("appshell", "Project"),
             "icon": IconCode.NEW_FILE
-        })
+        });
 
-        return items
+        return items;
     }
 
     function indexOfCurrent() {
         for (var i = 0; i < root.destinations.length; ++i) {
             if (root.destinations[i].name === root.currentPageName) {
-                return i
+                return i;
             }
         }
 
-        return 0
+        return 0;
     }
 
     NavigationSection {
@@ -121,6 +104,7 @@ Item {
 
         anchors.fill: parent
         anchors.topMargin: 12
+        anchors.bottomMargin: 12
 
         visible: root.iconsOnly
 
@@ -131,7 +115,7 @@ Item {
         navigationPanel: navPanel
 
         onActivated: function (index) {
-            root.selected(root.destinations[index].name)
+            root.selected(root.destinations[index].name);
         }
     }
 
@@ -164,7 +148,7 @@ Item {
                 navigation.row: destination.index
 
                 onClicked: {
-                    root.selected(destination.modelData.name)
+                    root.selected(destination.modelData.name);
                 }
             }
         }
@@ -173,48 +157,5 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
-
-        // The version and the build time, on the front screen rather than
-        // hidden away in the about dialog.
-        Column {
-            Layout.fillWidth: true
-            Layout.bottomMargin: 12
-
-            spacing: 2
-
-            StyledTextLabel {
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-                elide: Text.ElideRight
-                text: root.buildVersionLine
-                font: M3.typography.labelLarge
-                color: M3.color.onSurface
-            }
-
-            StyledTextLabel {
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.WordWrap
-                text: root.buildUpdatedLine
-                font: M3.typography.bodySmall
-                color: M3.color.onSurfaceVariant
-            }
-        }
-    }
-
-    // Just the version when the rail is collapsed to icons and there is no
-    // room for the full two lines.
-    StyledTextLabel {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.margins: 8
-
-        visible: root.iconsOnly
-        horizontalAlignment: Text.AlignHCenter
-        elide: Text.ElideRight
-        text: aboutModel.buildVersion()
-        font: M3.typography.labelSmall
-        color: M3.color.onSurfaceVariant
     }
 }
