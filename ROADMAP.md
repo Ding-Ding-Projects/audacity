@@ -10,7 +10,7 @@
 - [x] Preserve the later nested Muse UI role edit that appeared after the first sweep, and push each owning branch.
 - [x] Push the integrated `main` and verify the remote ref.
 - [x] Create and read back the required external archive before any cleanup removal.
-- [ ] Remove only redundant task-owned worktrees, branches, and stashes after ancestry and ownership proof; one stale Deen No directory remains because `git worktree remove --force` reported `Filename too long`.
+- [ ] Remove only redundant task-owned worktrees, branches, and stashes after ancestry and ownership proof; one stale Windows directory remains because `git worktree remove --force` reported `Filename too long`.
 - [ ] Keep the six unfinished preservation branches, the active delivery branch, and their recovery patches retained until their owners complete or explicitly retire them.
 
 Previous completion ticks below are reopened: source presence and historical captures do not prove the final integrated behavior. Items remain visible so earlier work is preserved and can be reverified.
@@ -148,8 +148,8 @@ unticked items are open work.
       and a passing 7-Zip integrity test.
 - [x] Remove the nine clean, ancestor-proven, task-owned branches and linked
       checkouts recorded in `HANDOFF.md`.
-- [x] Dew and verify the six retained preservation branches.
-- [ ] Remove the stale Deen No directory left by the long-path failure at
+- [x] Push and verify the six retained preservation branches.
+- [ ] Remove the stale Windows directory left by the long-path failure at
       `C:\Users\cntow\Documents\GitHub\gerk tong hui\audacity-codex-audacity-experience`.
 - [ ] Complete final full-product verification and release work; this pass
       intentionally did not run unrelated release work.
