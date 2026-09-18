@@ -11,6 +11,7 @@
 #include "iexperienceservice.h"
 #include "iexperienceconfiguration.h"
 #include "experiencetranslator.h"
+#include "schoolmode.h"
 
 namespace au::experience {
 class ExperienceService : public IExperienceService, public muse::async::Asyncable
@@ -36,12 +37,15 @@ public:
 
 private:
     void applyLanguageMode();
+    void applySchoolMode();
+    LanguageMode effectiveLanguageMode() const;
     void applyLowStimulation();
     void refreshTranslator();
     void setRestartRequired(bool value);
     void loadStoredVocabulary();
 
     ExperienceTranslator* m_translator = nullptr;
+    SchoolModeService* m_schoolMode = nullptr;
     bool m_translatorInstalled = false;
     bool m_cantoneseAvailable = false;
     bool m_restartRequired = false;

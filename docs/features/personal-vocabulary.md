@@ -7,28 +7,27 @@ computer, and its contents are never written to the log.
 
 ```json
 {
-  "version": 1,
-  "entries": [
-    { "from": "track", "to": "lane" },
-    { "from": "clip", "to": "take" }
-  ]
+  "schemaVersion": 1,
+  "entries": {
+    "track": "lane",
+    "clip": "take"
+  }
 }
 ```
 
 | Rule | Limit |
 | --- | --- |
 | File size | 256 KB |
-| Entries | 2000 |
-| `version` | Must be `1` |
-| `from` | A non-empty string, unique in the file |
-| `to` | A string, may be empty |
+| Entries | 4096 |
+| `schemaVersion` | Must be `1` |
+| Entry key | A non-empty string of at most 160 Unicode code units, excluding unsafe names and control characters |
+| Entry value | A string of at most 1000 Unicode code units, with no unsafe control characters. It may be empty. |
 
-Anything else is refused with a short reason: the file is not valid JSON, the
-top level is not an object, only version 1 is supported, there is no entries
-array, an entry is not an object, an entry lacks a text `from` or `to`, a
-`from` is empty, the same `from` appears more than once, or there are more than
-2000 entries. The reason is shown; the words themselves are not, and are never
-logged.
+Anything else is refused with a short reason. The loader checks strict UTF-8,
+the 256 KB byte limit, bounded JSON depth, duplicate decoded keys, the exact
+two-field root object, and every entry before it changes the active table. The
+reason is shown; the words themselves are not, and are never logged. A rejected
+upload leaves the last valid vocabulary active.
 
 ## How the substitution works
 
@@ -36,20 +35,25 @@ Substitution is applied by `ExperienceTranslator`, the same extra `QTranslator`
 that bilingual mode uses, so it reaches visible interface text rather than one
 particular widget.
 
-Matches are whole words. A term that begins or ends with a letter, digit or
-underscore is bounded by a look-around on both sides, so `track` matches
-`Add a track` but not `Tracking` and not `backtrack`. A term made of Chinese
-characters has no word boundary to speak of and is matched literally.
+Matches are literal and case-sensitive. A term that begins or ends with an
+ASCII letter, digit or underscore is bounded on that side, so `track` matches
+`Add a track` but not `Tracking` and not `backtrack`. Terms beginning or ending
+in Chinese or another non-ASCII script are matched literally, including next to
+ASCII text, because those scripts do not share the interface's ASCII word rule.
 
-Longer terms are applied first, so `audio track` is never cut in half by a
-shorter `audio` entry.
+The matcher reads the original text once. At one position, the longest literal
+match wins, so `audio track` is never cut in half by a shorter `audio` entry.
+Replacement text is never matched again during the same pass: a replacement
+cannot trigger another replacement.
 
 ## Where it is stored
 
 The parsed table is written to
 `<user application data>/experience/vocabulary.json` and read again on the next
-start. The original file is not copied and not watched. Choosing another file
-replaces the table; Clear removes it.
+start. The original file is not copied and not watched. A validated local cache
+from the earlier array format is migrated to this canonical form during startup;
+that legacy shape is never accepted as a newly chosen import. Choosing another
+file replaces the table; Clear removes it.
 
 ## Limits
 

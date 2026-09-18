@@ -205,10 +205,12 @@ void ExperienceSettingsModel::chooseVocabularyFile()
     emit vocabularyChanged();
 
     if (result.ok) {
-        notificationCenter()->push(NotificationType::Success,
+        notificationCenter()->pushLocalized(NotificationType::Success,
                                    muse::qtrc("experience", "Personal vocabulary loaded"),
                                    muse::qtrc("experience", "%n term(s) will be used in the interface.", nullptr,
-                                              result.entryCount));
+                                              result.entryCount),
+                                   { QStringLiteral("%1 terms will be used in the interface.").arg(result.entryCount),
+                                     QStringLiteral("介面會使用 %1 個詞語。").arg(result.entryCount) });
         retranslate();
     }
 }
@@ -223,9 +225,11 @@ void ExperienceSettingsModel::clearVocabulary()
 
 void ExperienceSettingsModel::showExampleNotification()
 {
-    notificationCenter()->push(NotificationType::Info,
+    notificationCenter()->pushLocalized(NotificationType::Info,
                                muse::qtrc("experience", "Example notification"),
-                               muse::qtrc("experience", "This is how a notification reads at your current settings."));
+                               muse::qtrc("experience", "This is how a notification reads at your current settings."),
+                               { QStringLiteral("This is how a notification reads at your current settings."),
+                                 QStringLiteral("通知會按你目前嘅設定顯示成咁。") });
 }
 
 void ExperienceSettingsModel::retranslate()
@@ -318,6 +322,16 @@ bool ExperienceSettingsModel::schoolModeOn() const
     return m_schoolMode && m_schoolMode->isOn();
 }
 
+bool ExperienceSettingsModel::schoolModeAvailable() const
+{
+    return !m_schoolMode || m_schoolMode->isAvailable();
+}
+
+QString ExperienceSettingsModel::schoolModeError() const
+{
+    return m_schoolMode ? m_schoolMode->error() : QString();
+}
+
 QString ExperienceSettingsModel::schoolModeDisplayName() const
 {
     return m_schoolMode ? m_schoolMode->displayName() : QStringLiteral("School mode");
@@ -338,10 +352,8 @@ bool ExperienceSettingsModel::turnSchoolModeOff(const QString& credential)
     return m_schoolMode && m_schoolMode->turnOff(credential);
 }
 
-void ExperienceSettingsModel::renameSchoolMode(const QString& newDisplayName)
+bool ExperienceSettingsModel::renameSchoolMode(const QString& newDisplayName)
 {
-    if (m_schoolMode) {
-        m_schoolMode->rename(newDisplayName);
-    }
+    return m_schoolMode && m_schoolMode->rename(newDisplayName);
 }
 }

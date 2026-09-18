@@ -62,7 +62,6 @@ private:
 
     DimSumDraw m_draw;
     DimSumSurpriseService m_service;
-    SchoolModeStore::ParseResult m_schoolMode;
     DimSumDish m_dish;
     QString m_photoPath;
     bool m_visible = false;

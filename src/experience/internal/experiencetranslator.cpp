@@ -5,6 +5,8 @@
 
 #include <QStringList>
 
+#include <atomic>
+
 namespace au::experience {
 ExperienceTranslator::ExperienceTranslator(QObject* parent)
     : QTranslator(parent)
@@ -40,7 +42,9 @@ LanguageMode ExperienceTranslator::languageMode() const
 
 void ExperienceTranslator::setVocabulary(const PersonalVocabulary::Table& entries)
 {
+    const PersonalVocabulary::MatcherPtr matcher = PersonalVocabulary::compile(entries);
     m_vocabulary = entries;
+    std::atomic_store_explicit(&m_vocabularyMatcher, matcher, std::memory_order_release);
 }
 
 const PersonalVocabulary::Table& ExperienceTranslator::vocabulary() const
@@ -51,7 +55,7 @@ const PersonalVocabulary::Table& ExperienceTranslator::vocabulary() const
 bool ExperienceTranslator::isEmpty() const
 {
     const bool bilingual = m_mode == LanguageMode::Bilingual && !m_cantonese.isEmpty();
-    return !bilingual && m_vocabulary.isEmpty();
+    return !bilingual && !std::atomic_load_explicit(&m_vocabularyMatcher, std::memory_order_acquire);
 }
 
 QString ExperienceTranslator::compose(const QString& english, const QString& cantonese)
@@ -91,9 +95,10 @@ QString ExperienceTranslator::translate(const char* context, const char* sourceT
         }
     }
 
-    if (!m_vocabulary.isEmpty()) {
+    const PersonalVocabulary::MatcherPtr matcher = std::atomic_load_explicit(&m_vocabularyMatcher, std::memory_order_acquire);
+    if (matcher) {
         const QString base = result.isEmpty() ? english : result;
-        const QString substituted = PersonalVocabulary::apply(base, m_vocabulary);
+        const QString substituted = PersonalVocabulary::apply(base, matcher);
         if (substituted != base) {
             result = substituted;
         }

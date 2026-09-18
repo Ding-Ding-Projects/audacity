@@ -1,96 +1,101 @@
-/*
- * Audacity: A Digital Audio Editor
- */
+/* Audacity: A Digital Audio Editor */
 #include "narratorservice.h"
-
+#include <algorithm>
+#include <cmath>
 #include <QAccessible>
-#include <QProcess>
-#include <QStandardPaths>
-
+#include <QTimer>
 using namespace au::experience;
-
 NarratorEngine::NarratorEngine(QObject* parent)
-    : QObject(parent)
+    : NarratorEngine(makeNativeNarratorBackend(), 10000, parent) {}
+NarratorEngine::NarratorEngine(std::unique_ptr<NarratorBackend> backend, int timeoutMs, QObject* parent)
+    : QObject(parent), m_backend(std::move(backend)), m_timeoutMs(qBound(1, timeoutMs, 60000))
 {
-    detectEngine();
+    m_poll = new QTimer(this);
+    m_poll->setInterval(20);
+    m_timeout = new QTimer(this);
+    m_timeout->setSingleShot(true);
 }
-
-void NarratorEngine::detectEngine()
+NarratorEngine::~NarratorEngine()
 {
-    // This build of Qt was checked for QtTextToSpeech and does not carry
-    // it (no libQt6TextToSpeech in the toolchain), so on this machine the
-    // narrator falls back to a command line process backend when one is
-    // present. A build against a Qt that does carry QtTextToSpeech would
-    // report NarratorEngineKind::QtTextToSpeech here instead; the
-    // preference page always says honestly which one is active.
-    const QString spdSay = QStandardPaths::findExecutable(QStringLiteral("spd-say"));
-    const QString espeak = QStandardPaths::findExecutable(QStringLiteral("espeak-ng"));
-
-    if (!spdSay.isEmpty()) {
-        m_engineKind = NarratorEngineKind::ProcessBackend;
-        m_processBackendCommand = spdSay;
-    } else if (!espeak.isEmpty()) {
-        m_engineKind = NarratorEngineKind::ProcessBackend;
-        m_processBackendCommand = espeak;
-    } else {
-        m_engineKind = NarratorEngineKind::None;
-        m_processBackendCommand.clear();
-    }
+    m_poll->stop();
+    m_timeout->stop();
+    if (m_backend) m_backend->cancel();
 }
-
+NarratorEngineKind NarratorEngine::engineKind() const
+{ return m_backend ? m_backend->kind() : NarratorEngineKind::None; }
 QString NarratorEngine::engineDescription() const
 {
-    switch (m_engineKind) {
-    case NarratorEngineKind::QtTextToSpeech:
-        return QStringLiteral("Using the system speech engine.");
-    case NarratorEngineKind::ProcessBackend:
-        return QStringLiteral("Using %1 for speech on this machine.").arg(m_processBackendCommand);
-    case NarratorEngineKind::None:
-    default:
-        return QStringLiteral("No speech engine was found on this machine, so the narrator stays silent.");
-    }
+    if (!m_status.isEmpty()) return m_status;
+    return engineKind() == NarratorEngineKind::WindowsSapi
+        ? tr("Using Windows SAPI. Local English voices: %1; local Cantonese voices: %2. A missing language stays silent.")
+              .arg(voicesFor(NarratorLanguage::English).size()).arg(voicesFor(NarratorLanguage::Cantonese).size())
+        : tr("No supported speech engine is available; narration stays silent.");
 }
-
 QVector<NarratorVoice> NarratorEngine::voicesFor(NarratorLanguage language) const
 {
-    // Without a real engine attached there is nothing to enumerate. A
-    // QtTextToSpeech or process backend build reports its real voice list
-    // here; until then the picker shows "Choose automatically" only, and
-    // the status line says plainly that no voice is installed.
-    Q_UNUSED(language);
-    return {};
-}
-
-bool NarratorEngine::screenReaderActive()
-{
-    return QAccessible::isActive();
-}
-
-void NarratorEngine::speak(const QString& text, NarratorLanguage language, const QString& voiceId, double rate,
-                           double pitch, bool quietMode)
-{
-    Q_UNUSED(language);
-    Q_UNUSED(voiceId);
-    Q_UNUSED(rate);
-    Q_UNUSED(pitch);
-
-    if (quietMode || screenReaderActive()) {
-        // Quiet mode is the narrator's own reduced-sound setting: honour it
-        // by staying silent. A screen reader already reading the interface
-        // gets ducked under rather than talked over.
-        return;
+    QVector<NarratorVoice> result;
+    if (m_backend) for (const auto& voice : m_backend->voices()) {
+        if (voice.language == language) result.push_back(voice);
     }
-
-    if (m_engineKind != NarratorEngineKind::ProcessBackend || text.isEmpty()) {
-        return;
-    }
-
-    QProcess::startDetached(m_processBackendCommand, { text });
+    return result;
 }
-
-void NarratorEngine::stop()
+bool NarratorEngine::screenReaderActive() { return QAccessible::isActive(); }
+void NarratorEngine::finishOnce(quint64 generation, const QString& status, bool cancel)
 {
-    // The process backend is fire-and-forget per utterance; there is
-    // nothing persistent here to stop. A QtTextToSpeech backend would
-    // call its own stop() here.
+    if (!m_active || m_completing || generation != m_generation) return;
+    m_completing = true;
+    m_poll->stop();
+    m_timeout->stop();
+    if (cancel && m_backend) m_backend->cancel();
+    m_status = status;
+    // Deliver asynchronously. Consumers can start the next line without recursion,
+    // and an old completion can never complete a newer generation.
+    QTimer::singleShot(0, this, [this, generation] {
+        if (generation != m_generation) return;
+        m_active = false;
+        m_completing = false;
+        emit speechFinished();
+    });
 }
+void NarratorEngine::speak(const QString& text, NarratorLanguage language, const QString& voiceId,
+                           double rate, double pitch, bool quietMode)
+{
+    if (m_active) return; // The consumer owns the serialized queue.
+    const quint64 generation = ++m_generation;
+    m_active = true;
+    const auto finish = [this, generation](const QString& status) { finishOnce(generation, status, false); };
+    if (quietMode || screenReaderActive()) { finish(tr("Narration is muted for quiet mode or assistive technology.")); return; }
+    if (!m_backend || text.isEmpty() || language == NarratorLanguage::Both) {
+        finish(tr("No supported speech engine or language-specific text is available.")); return;
+    }
+    const auto voices = voicesFor(language);
+    if (voices.isEmpty()) {
+        finish(language == NarratorLanguage::Cantonese ? tr("No local Cantonese voice is installed; this line stays silent.")
+                                                     : tr("No local English voice is installed; this line stays silent.")); return;
+    }
+    QString selected = voices.front().id;
+    bool found = voiceId.isEmpty();
+    for (const auto& voice : voices) if (voice.id == voiceId) { selected = voice.id; found = true; break; }
+    m_status = found ? QString() : tr("The selected voice is unavailable; using an installed voice of the same language.");
+    rate = std::isfinite(rate) ? std::clamp(rate, -1.0, 1.0) : 0.0;
+    pitch = std::isfinite(pitch) ? std::clamp(pitch, -1.0, 1.0) : 0.0;
+    QString boundedText = text.left(1000);
+    if (!boundedText.isEmpty() && boundedText.back().isHighSurrogate()) boundedText.chop(1);
+    if (!m_backend->start(boundedText, selected, rate, pitch)) {
+        finishOnce(generation, tr("The speech engine could not start this line."), true); return;
+    }
+    disconnect(m_poll, nullptr, this, nullptr);
+    disconnect(m_timeout, nullptr, this, nullptr);
+    connect(m_poll, &QTimer::timeout, this, [this, generation] {
+        if (!m_active || generation != m_generation) return;
+        const auto state = m_backend->poll();
+        if (state != NarratorBackend::State::Speaking)
+            finishOnce(generation, state == NarratorBackend::State::Failed ? tr("The speech engine stopped unexpectedly.") : m_status, true);
+    });
+    connect(m_timeout, &QTimer::timeout, this, [this, generation] {
+        finishOnce(generation, tr("Narration timed out and was stopped."), true);
+    });
+    m_poll->start();
+    m_timeout->start(m_timeoutMs);
+}
+void NarratorEngine::stop() { finishOnce(m_generation, tr("Narration was cancelled."), true); }

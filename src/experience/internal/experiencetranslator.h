@@ -5,6 +5,7 @@
 
 #include <QList>
 #include <QTranslator>
+#include <memory>
 
 #include "personalvocabulary.h"
 #include "experiencetypes.h"
@@ -55,5 +56,6 @@ private:
     QList<QTranslator*> m_cantonese;
     LanguageMode m_mode = LanguageMode::English;
     PersonalVocabulary::Table m_vocabulary;
+    PersonalVocabulary::MatcherPtr m_vocabularyMatcher;
 };
 }

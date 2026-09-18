@@ -3,6 +3,9 @@
  */
 #include <gtest/gtest.h>
 
+#include <QFile>
+#include <QTemporaryDir>
+
 #include "internal/schoolmode.h"
 
 using namespace au::experience;
@@ -43,6 +46,29 @@ TEST(SchoolModeStoreTests, RejectsAnEmptyDisplayName)
     EXPECT_FALSE(SchoolModeStore::parse(json).ok);
 }
 
+TEST(SchoolModeStoreTests, RejectsRecordsWithMissingSchemaOrInvalidCredentialFields)
+{
+    EXPECT_FALSE(SchoolModeStore::parse(
+                     R"({"version":1,"on":true,"displayName":"School mode","credentialHashHex":"bad","credentialSaltHex":"bad"})")
+                     .ok);
+}
+
+TEST(SchoolModeStoreTests, MigratesAValidatedVersionZeroRecordWithoutChangingItsCredential)
+{
+    const QString salt = SchoolModeStore::newSaltHex();
+    const QString hash = SchoolModeStore::hashCredential(QStringLiteral("1234"), salt);
+    const QByteArray versionZero = QStringLiteral(
+        R"({"on":true,"displayName":"Focus time","credentialHashHex":"%1","credentialSaltHex":"%2"})")
+                                       .arg(hash, salt).toUtf8();
+
+    const SchoolModeStore::ParseResult result = SchoolModeStore::parse(versionZero);
+    ASSERT_TRUE(result.ok);
+    EXPECT_TRUE(result.migratedFromVersion0);
+    EXPECT_TRUE(SchoolModeStore::verifyCredential(QStringLiteral("1234"), result.record.credentialSaltHex,
+                                                  result.record.credentialHashHex));
+    EXPECT_TRUE(SchoolModeStore::serialize(result.record).contains("\"version\": 1"));
+}
+
 TEST(SchoolModeStoreTests, VerifiesTheRightCredential)
 {
     const QString salt = SchoolModeStore::newSaltHex();
@@ -60,4 +86,112 @@ TEST(SchoolModeStoreTests, RejectsVerificationWhenNoCredentialIsStoredYet)
 TEST(SchoolModeStoreTests, TwoSaltsAreNotTheSame)
 {
     EXPECT_NE(SchoolModeStore::newSaltHex(), SchoolModeStore::newSaltHex());
+}
+
+TEST(SchoolModeServiceTests, StartsOffWhenTheSharedRecordDoesNotExist)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    SchoolModeService service(nullptr, directory.filePath(QStringLiteral("school-mode.json")));
+
+    EXPECT_TRUE(service.isAvailable());
+    EXPECT_FALSE(service.isOn());
+}
+
+TEST(SchoolModeServiceTests, StartsFromAnOnRecordAndKeepsItsCredential)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString path = directory.filePath(QStringLiteral("school-mode.json"));
+
+    SchoolModeRecord record;
+    record.on = true;
+    record.displayName = QStringLiteral("Focus time");
+    record.credentialSaltHex = SchoolModeStore::newSaltHex();
+    record.credentialHashHex = SchoolModeStore::hashCredential(QStringLiteral("1234"), record.credentialSaltHex);
+    QFile file(path);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly));
+    const QByteArray serialized = SchoolModeStore::serialize(record);
+    ASSERT_EQ(file.write(serialized), serialized.size());
+    file.close();
+
+    SchoolModeService service(nullptr, path);
+    EXPECT_TRUE(service.isAvailable());
+    EXPECT_TRUE(service.isOn());
+    EXPECT_EQ(service.displayName(), QStringLiteral("Focus time"));
+    EXPECT_TRUE(service.hasCredential());
+}
+
+TEST(SchoolModeServiceTests, LiveOnOffPreservesTheStoredCredentialAndName)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString path = directory.filePath(QStringLiteral("school-mode.json"));
+    SchoolModeService service(nullptr, path);
+
+    ASSERT_TRUE(service.turnOn(QStringLiteral("1234")));
+    ASSERT_TRUE(service.isOn());
+    service.rename(QStringLiteral("Focus time"));
+    ASSERT_TRUE(service.turnOff(QStringLiteral("1234")));
+
+    const SchoolModeStore::ParseResult stored = SchoolModeStore::readRecordFile(path);
+    ASSERT_TRUE(stored.ok);
+    EXPECT_FALSE(stored.record.on);
+    EXPECT_EQ(stored.record.displayName, QStringLiteral("Focus time"));
+    EXPECT_TRUE(SchoolModeStore::verifyCredential(QStringLiteral("1234"), stored.record.credentialSaltHex,
+                                                  stored.record.credentialHashHex));
+}
+
+TEST(SchoolModeServiceTests, CorruptLiveRecordIsUnavailableAndKeepsTheLastKnownMode)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString path = directory.filePath(QStringLiteral("school-mode.json"));
+    SchoolModeService service(nullptr, path);
+    ASSERT_TRUE(service.turnOn(QStringLiteral("1234")));
+
+    QFile file(path);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    ASSERT_EQ(file.write("{ malformed"), QByteArray("{ malformed").size());
+    file.close();
+    service.reload();
+
+    EXPECT_FALSE(service.isAvailable());
+    EXPECT_TRUE(service.isOn());
+    EXPECT_FALSE(service.error().isEmpty());
+}
+
+TEST(SchoolModeServiceTests, CorruptLiveRecordKeepsTheLastKnownOffMode)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString path = directory.filePath(QStringLiteral("school-mode.json"));
+    SchoolModeService service(nullptr, path);
+    ASSERT_TRUE(service.turnOn(QStringLiteral("1234")));
+    ASSERT_TRUE(service.turnOff(QStringLiteral("1234")));
+
+    QFile file(path);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    ASSERT_EQ(file.write("{ malformed"), QByteArray("{ malformed").size());
+    file.close();
+    service.reload();
+
+    EXPECT_FALSE(service.isAvailable());
+    EXPECT_FALSE(service.isOn());
+}
+
+TEST(SchoolModeServiceTests, PersistenceFailureDoesNotStageAChangedRecord)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const QString parentFile = directory.filePath(QStringLiteral("not-a-directory"));
+    QFile file(parentFile);
+    ASSERT_TRUE(file.open(QIODevice::WriteOnly));
+    file.close();
+
+    SchoolModeService service(nullptr, parentFile + QStringLiteral("/school-mode.json"));
+    EXPECT_FALSE(service.turnOn(QStringLiteral("1234")));
+    EXPECT_FALSE(service.isOn());
+    EXPECT_FALSE(service.isAvailable());
+    EXPECT_FALSE(service.error().isEmpty());
 }

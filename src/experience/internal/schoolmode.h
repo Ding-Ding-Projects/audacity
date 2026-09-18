@@ -28,7 +28,7 @@ struct SchoolModeRecord
     QString credentialHashHex;
     QString credentialSaltHex;
 
-    bool isValid() const { return !displayName.isEmpty(); }
+    bool isValid() const { return !displayName.isEmpty() && displayName.size() <= 80; }
 };
 
 //! Parses and serializes the shared School mode JSON record, and verifies
@@ -40,6 +40,17 @@ public:
     struct ParseResult
     {
         bool ok = false;
+        //! True when a validated pre-version record was accepted as the
+        //! documented version-0 format. The next save serializes version 1.
+        bool migratedFromVersion0 = false;
+        QString error;
+        SchoolModeRecord record;
+    };
+
+    struct SharedRecordResult
+    {
+        bool available = false;
+        bool hasKnownRecord = false;
         QString error;
         SchoolModeRecord record;
     };
@@ -59,6 +70,8 @@ public:
     //! directory, so every app on this machine that honours School mode
     //! reads and writes the same file.
     static QString sharedFilePath();
+    static ParseResult readRecordFile(const QString& path);
+    static SharedRecordResult sharedRecord();
 };
 
 //! Watches the shared file and exposes the live state to the rest of the
@@ -70,9 +83,12 @@ class SchoolModeService : public QObject
     Q_OBJECT
 
 public:
-    explicit SchoolModeService(QObject* parent = nullptr);
+    explicit SchoolModeService(QObject* parent = nullptr, const QString& recordPath = QString());
 
     bool isOn() const { return m_record.on; }
+    bool isAvailable() const { return m_available; }
+    bool hasKnownRecord() const { return m_hasKnownRecord; }
+    QString error() const { return m_error; }
     QString displayName() const { return m_record.displayName; }
     bool hasCredential() const { return !m_record.credentialHashHex.isEmpty(); }
 
@@ -85,16 +101,20 @@ public:
     bool turnOff(const QString& credential);
     //! Renames the mode. The shipped name "School mode" is never shown
     //! again once this has been called with a different name.
-    void rename(const QString& newDisplayName);
+    bool rename(const QString& newDisplayName);
 
 signals:
     void stateChanged();
 
 private:
-    void save();
+    bool save(const SchoolModeRecord& record);
     void onFileChanged();
 
     SchoolModeRecord m_record;
+    QString m_recordPath;
+    bool m_available = true;
+    bool m_hasKnownRecord = false;
+    QString m_error;
     QFileSystemWatcher* m_watcher = nullptr;
 };
 }

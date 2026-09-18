@@ -6,6 +6,31 @@
 #include <QDateTime>
 
 namespace au::experience {
+namespace {
+NarratorCategory narratorCategory(NotificationType type)
+{
+    switch (type) {
+    case NotificationType::Success:
+        return NarratorCategory::Success;
+    case NotificationType::Warning:
+        return NarratorCategory::Warning;
+    case NotificationType::Error:
+        return NarratorCategory::Error;
+    case NotificationType::Info:
+    default:
+        return NarratorCategory::General;
+    }
+}
+}
+
+NotificationCenter::NotificationCenter()
+{
+    QObject::connect(&m_narratorEngine, &NarratorEngine::speechFinished, &m_narratorEngine, [this]() {
+        m_narratorSpeaking = false;
+        speakNext();
+    });
+}
+
 MessageKind NotificationCenter::kindOf(NotificationType type) const
 {
     switch (type) {
@@ -24,6 +49,15 @@ MessageKind NotificationCenter::kindOf(NotificationType type) const
 int NotificationCenter::push(NotificationType type, const QString& title, const QString& body, const QString& actionText,
                              const QString& actionCode)
 {
+    LocalizedNarrationText narration;
+    narration.english = body.isEmpty() ? title : body;
+    return pushLocalized(type, title, body, narration, actionText, actionCode);
+}
+
+int NotificationCenter::pushLocalized(NotificationType type, const QString& title, const QString& body,
+                                      const LocalizedNarrationText& narration, const QString& actionText,
+                                      const QString& actionCode)
+{
     Notification notification;
     notification.id = m_nextId++;
     notification.type = type;
@@ -41,7 +75,45 @@ int NotificationCenter::push(NotificationType type, const QString& title, const 
     }
 
     m_changed.notify();
+    narrate(notification, narration);
     return notification.id;
+}
+
+void NotificationCenter::narrate(const Notification& notification, const LocalizedNarrationText& narration)
+{
+    if (!configuration() || !configuration()->narratorEnabled()) {
+        return;
+    }
+
+    const NarratorCategory category = narratorCategory(notification.type);
+    const int configuredLanguage = configuration()->narratorLanguage();
+    const NarratorLanguage language = configuredLanguage >= static_cast<int>(NarratorLanguage::English)
+                                     && configuredLanguage <= static_cast<int>(NarratorLanguage::Both)
+                                     ? static_cast<NarratorLanguage>(configuredLanguage) : NarratorLanguage::English;
+    const QString baseKey = notification.type == NotificationType::Info ? QStringLiteral("notification-info")
+                                                                         : QStringLiteral("notification-state");
+    const qint64 now = QDateTime::currentMSecsSinceEpoch();
+    if (m_narratorQueue.enqueueLocalized(narration.english, narration.cantonese, language, category, baseKey, now)) {
+        speakNext();
+    }
+}
+
+void NotificationCenter::speakNext()
+{
+    if (m_narratorSpeaking || m_narratorQueue.isEmpty() || !configuration() || !configuration()->narratorEnabled()) {
+        return;
+    }
+
+    const NarratorUtterance utterance = m_narratorQueue.popNext();
+    if (utterance.text.isEmpty()) {
+        return;
+    }
+
+    const QString voiceId = utterance.spokenIn == NarratorLanguage::Cantonese
+                            ? configuration()->narratorCantoneseVoiceId() : configuration()->narratorEnglishVoiceId();
+    m_narratorSpeaking = true;
+    m_narratorEngine.speak(utterance.text, utterance.spokenIn, voiceId, configuration()->narratorRate(),
+                           configuration()->narratorPitch(), configuration()->quietModeEnabled());
 }
 
 void NotificationCenter::dismiss(int id)
