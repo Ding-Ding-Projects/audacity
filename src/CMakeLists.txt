@@ -32,6 +32,7 @@ if (AU_BUILD_CLOUD_AUDIOCOM)
     add_subdirectory(au3cloud)
 endif()
 add_subdirectory(context)
+add_subdirectory(converter)
 add_subdirectory(project)
 add_subdirectory(preferences)
 
