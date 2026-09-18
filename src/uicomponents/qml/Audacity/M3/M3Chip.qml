@@ -82,6 +82,7 @@ FocusScope {
     }
 
     readonly property color containerColor: root.m3Appearance("containerColor", root.defaultContainerColor)
+    readonly property real appearanceOpacity: root.m3Appearance("opacity", 1.0)
 
     readonly property color contentColor: {
         if (!root.enabled) {
@@ -170,6 +171,7 @@ FocusScope {
 
         anchors.centerIn: parent
         spacing: 8
+        opacity: root.appearanceOpacity
 
         StyledIconLabel {
             anchors.verticalCenter: parent.verticalCenter
@@ -182,7 +184,11 @@ FocusScope {
         StyledTextLabel {
             anchors.verticalCenter: parent.verticalCenter
             text: root.text
-            font: M3.typography.labelLarge
+            font.family: root.m3Appearance("fontFamily", M3.typography.labelLarge.family)
+            font.pixelSize: root.m3Appearance("fontSize", M3.typography.labelLarge.pixelSize)
+            font.weight: root.m3Appearance("fontWeight", M3.typography.labelLarge.weight)
+            font.italic: root.m3Appearance("italic", M3.typography.labelLarge.italic)
+            font.letterSpacing: root.m3Appearance("letterSpacing", M3.typography.labelLarge.letterSpacing)
             color: root.contentColor
         }
 
