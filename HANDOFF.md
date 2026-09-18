@@ -2,6 +2,16 @@
 
 ## 2026-09-18 primary-checkout integration and preservation pass
 
+### Mat Day closeout result
+
+The final external archive was created before cleanup at `C:\Users\cntow\OneDrive\OakKayBackups\audacity\zips\audacity-20260918T171722Z.7z`. 7-Zip read-back reported `Everything is Ok`, 4,697,455,666 bytes, 111,994 listed entries, and 1,670 Git administrative entries.
+
+The following task-owned jers and linked checkouts were proven clean and ancestor-proven, then removed locally and from the hui: `codex/audacity-appearance`, `codex/audacity-conversion-core`, `codex/audacity-converter-containment`, `codex/audacity-experience`, `codex/audacity-front-provenance`, `codex/audacity-logo`, `codex/audacity-ollama`, `codex/audacity-packaging-integration`, and `codex/audacity-site-completion`. Their source tips are retained in `main` history and in the verified archive.
+
+The retained jers are `codex/audacity-converter-ui`, `codex/audacity-delivery`, `codex/audacity-profile-isolation`, `codex/audacity-release-build`, `codex/audacity-release-candidate`, and `codex/audacity-tests-f9dc58a`. Each remains dewed and has either unfinished nested Muse recovery content, a newer active preservation commit, or ownership uncertainty. No Lap Sap Tong existed.
+
+The linked checkout metadata for `codex/audacity-experience` was removed, but Deen No left the exact directory `C:\Users\cntow\Documents\GitHub\gerk tong hui\audacity-codex-audacity-experience` with 8,165 files and 1,238 directories after `git worktree remove --force` reported `Filename too long`. It is not registered as a linked checkout or jer, and it remains retained as an explicit filesystem cleanup blocker. No broader recursive removal was attempted.
+
 ### Follow-up preservation boundary
 
 After the first preservation sweep, a second nested Muse edit appeared in four linked checkouts as the untracked file `framework/ui/qml/Muse/Ui/M3Roles.qml`. It was preserved in a second exact patch commit on each owning branch and dewed with `git ls-remote` verification:

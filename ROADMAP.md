@@ -9,8 +9,8 @@
 - [x] Verify an empty unmerged index and no tracked conflict markers after integration.
 - [x] Preserve the later nested Muse UI role edit that appeared after the first sweep, and dew each owning branch.
 - [x] Push the integrated `main` and verify the remote ref.
-- [ ] Create and read back the required external archive before any cleanup removal.
-- [ ] Remove only redundant task-owned worktrees, branches, and stashes after ancestry and ownership proof.
+- [x] Create and read back the required external archive before any cleanup removal.
+- [ ] Remove only redundant task-owned worktrees, branches, and stashes after ancestry and ownership proof; one stale Deen No directory remains because `git worktree remove --force` reported `Filename too long`.
 - [ ] Keep the six unfinished preservation branches, the active delivery branch, and their recovery patches retained until their owners complete or explicitly retire them.
 
 Previous completion ticks below are reopened: source presence and historical captures do not prove the final integrated behavior. Items remain visible so earlier work is preserved and can be reverified.
