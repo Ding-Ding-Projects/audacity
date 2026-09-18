@@ -1,0 +1,2058 @@
+diff --git a/framework/cloud/qml/Muse/Cloud/AccountAvatar.qml b/framework/cloud/qml/Muse/Cloud/AccountAvatar.qml
+index 0dbcc4aff..c207c0b56 100644
+--- a/framework/cloud/qml/Muse/Cloud/AccountAvatar.qml
++++ b/framework/cloud/qml/Muse/Cloud/AccountAvatar.qml
+@@ -42,10 +42,11 @@ Item {
+         id: background
+         anchors.fill: parent
+ 
+-        color: ui.theme.backgroundSecondaryColor
++        //! NOTE Material Design 3 surface container and outline roles
++        color: M3Roles.surfaceContainer
+         radius: root.side / 2
+         border.width: 1
+-        border.color: ui.theme.strokeColor
++        border.color: M3Roles.outlineVariant
+ 
+         visible: Boolean(root.withBackground)
+     }
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockFloatingWindow.qml b/framework/dockwindow/qml/Muse/Dock/DockFloatingWindow.qml
+index a4f1f2013..1f8e4cf35 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockFloatingWindow.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockFloatingWindow.qml
+@@ -51,10 +51,11 @@ Item {
+         id: background
+         anchors.fill: parent
+ 
+-        color: ui.theme.backgroundPrimaryColor
+-        border.color: ui.theme.strokeColor
++        //! NOTE Material Design 3 surface container with a medium shape
++        color: M3Roles.surfaceContainer
++        border.color: M3Roles.outlineVariant
+         border.width: 1
+-        radius: 3
++        radius: M3Roles.cornerMedium
+     }
+ 
+     Item {
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockFrame.qml b/framework/dockwindow/qml/Muse/Dock/DockFrame.qml
+index f3684be51..b64a37a1e 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockFrame.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockFrame.qml
+@@ -42,7 +42,10 @@ Rectangle {
+     readonly property bool hasTabBar: frameModel.titleBarAllowed && (prv.tabsModel.numTabs > 1 || frameModel.isHorizontalPanel)
+ 
+     anchors.fill: parent
+-    color: ui.theme.backgroundPrimaryColor
++
++    //! NOTE Material Design 3 surface with a small shape for the panel container
++    color: M3Roles.surface
++    radius: M3Roles.cornerSmall
+ 
+     onFrameCppChanged: {
+         if (Boolean(frameCpp)) {
+@@ -204,14 +207,17 @@ Rectangle {
+ 
+         color: "transparent"
+ 
+-        border.width: 1
+-        border.color: ui.theme.accentColor
++        //! NOTE Material Design 3 drop indicator
++        radius: M3Roles.cornerSmall
++        border.width: 2
++        border.color: M3Roles.primary
+ 
+         Rectangle {
+             anchors.fill: parent
+ 
+-            color: ui.theme.accentColor
+-            opacity: 0.3
++            radius: parent.radius
++            color: M3Roles.primary
++            opacity: 0.38
+         }
+     }
+ }
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockPanelTab.qml b/framework/dockwindow/qml/Muse/Dock/DockPanelTab.qml
+index 86ef90c2b..6b6c4f227 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockPanelTab.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockPanelTab.qml
+@@ -34,11 +34,12 @@ StyledTabButton {
+ 
+     signal handleContextMenuItemRequested(string itemId)
+ 
+-    readonly property real actualHeight: 34
++    //! NOTE Material Design 3 secondary tab height
++    readonly property real actualHeight: 47
+     height: actualHeight + 1 // For separator
+     width: implicitWidth
+ 
+-    readonly property real textPadding: 10
++    readonly property real textPadding: 16
+     readonly property real buttonPadding: 6
+ 
+     leftPadding: textPadding
+@@ -56,6 +57,7 @@ StyledTabButton {
+ 
+             horizontalAlignment: Qt.AlignLeft
+             font: root.isCurrent ? ui.theme.bodyBoldFont : ui.theme.bodyFont
++            color: root.isCurrent ? M3Roles.onSurface : M3Roles.onSurfaceVariant
+ 
+             text: root.text
+         }
+@@ -82,31 +84,34 @@ StyledTabButton {
+         id: backgroundRect
+         anchors.fill: root
+ 
+-        color: ui.theme.backgroundSecondaryColor
++        color: root.isCurrent ? M3Roles.surface : M3Roles.surfaceContainer
+         opacity: 1
+ 
+-        states: [
+-            State {
+-                name: "HOVERED"
+-                when: root.hovered && !root.isCurrent
+-
+-                PropertyChanges {
+-                    target: backgroundRect
+-                    color: ui.theme.backgroundPrimaryColor
+-                    opacity: ui.theme.buttonOpacityHover
+-                }
+-            },
+-
+-            State {
+-                name: "SELECTED"
+-                when: root.isCurrent
+-
+-                PropertyChanges {
+-                    target: backgroundRect
+-                    color: ui.theme.backgroundPrimaryColor
+-                }
++        //! NOTE Material Design 3 state layer
++        Rectangle {
++            anchors.fill: parent
++
++            color: M3Roles.onSurface
++            opacity: root.pressed ? M3Roles.pressedOpacity
++                                  : (root.hovered ? M3Roles.hoverOpacity : 0.0)
++
++            Behavior on opacity {
++                NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
+             }
+-        ]
++        }
++    }
++
++    //! NOTE Material Design 3 secondary tab indicator
++    Rectangle {
++        anchors.left: root.left
++        anchors.right: root.right
++        anchors.rightMargin: 1
++        anchors.bottom: root.bottom
++
++        height: 2
++
++        visible: root.isCurrent
++        color: M3Roles.primary
+     }
+ 
+     Rectangle {
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockSeparator.qml b/framework/dockwindow/qml/Muse/Dock/DockSeparator.qml
+index f2e476de0..ee3dc10d4 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockSeparator.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockSeparator.qml
+@@ -29,7 +29,8 @@ Rectangle {
+ 
+     anchors.fill: parent
+ 
+-    color: ui.theme.strokeColor
++    //! NOTE Material Design 3 divider
++    color: M3Roles.outlineVariant
+ 
+     readonly property QtObject separatorCpp: parent
+ 
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockTabBar.qml b/framework/dockwindow/qml/Muse/Dock/DockTabBar.qml
+index dab16732c..3be18ea3d 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockTabBar.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockTabBar.qml
+@@ -33,7 +33,8 @@ Rectangle {
+ 
+     clip: true
+ 
+-    color: ui.theme.backgroundSecondaryColor
++    //! NOTE Material Design 3 surface container behind the dock tabs
++    color: M3Roles.surfaceContainer
+ 
+     property QtObject tabBarCpp: null
+ 
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockTitleBar.qml b/framework/dockwindow/qml/Muse/Dock/DockTitleBar.qml
+index 2dfd8ebcc..91f3d1ebf 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockTitleBar.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockTitleBar.qml
+@@ -72,10 +72,13 @@ Item {
+     Component {
+         id: defaultTitleBarComponent
+ 
+-        Item {
++        Rectangle {
+             id: titleBar
+ 
+             anchors.fill: parent
++
++            //! NOTE Material Design 3 surface container for the panel title bar
++            color: M3Roles.surfaceContainer
+             implicitWidth: rowLayout.implicitWidth
+             implicitHeight: rowLayout.implicitHeight + rowLayout.anchors.topMargin + rowLayout.anchors.bottomMargin
+ 
+@@ -92,19 +95,21 @@ Item {
+             RowLayout {
+                 id: rowLayout
+                 anchors.fill: parent
+-                anchors.topMargin: 2
+-                anchors.bottomMargin: 2
+-                anchors.leftMargin: 12
+-                anchors.rightMargin: 12
++                anchors.topMargin: 6
++                anchors.bottomMargin: 6
++                anchors.leftMargin: 16
++                anchors.rightMargin: 8
+ 
+-                spacing: 4
++                spacing: 8
+ 
+                 StyledTextLabel {
+                     id: titleLabel
+                     Layout.fillWidth: true
+ 
+                     text: root.titleBarCpp?.title ?? ""
++                    //! NOTE Material Design 3 title-small type
+                     font: ui.theme.bodyBoldFont
++                    color: M3Roles.onSurface
+                     horizontalAlignment: Qt.AlignLeft
+                 }
+ 
+diff --git a/framework/dockwindow/qml/Muse/Dock/DockingHolder.qml b/framework/dockwindow/qml/Muse/Dock/DockingHolder.qml
+index 793ba907c..e0cbaf4df 100644
+--- a/framework/dockwindow/qml/Muse/Dock/DockingHolder.qml
++++ b/framework/dockwindow/qml/Muse/Dock/DockingHolder.qml
+@@ -26,5 +26,12 @@ import Muse.Ui
+ import Muse.Dock
+ 
+ DockingHolderView {
+-    Item {}
++    //! NOTE Material Design 3 drop indicator for the docking holder
++    Rectangle {
++        anchors.fill: parent
++
++        color: M3Roles.primary
++        opacity: 0.38
++        radius: M3Roles.cornerSmall
++    }
+ }
+diff --git a/framework/interactive/qml/Muse/Interactive/StandardDialog.qml b/framework/interactive/qml/Muse/Interactive/StandardDialog.qml
+index 5b54a82eb..965b81790 100644
+--- a/framework/interactive/qml/Muse/Interactive/StandardDialog.qml
++++ b/framework/interactive/qml/Muse/Interactive/StandardDialog.qml
+@@ -58,7 +58,8 @@ StyledDialogView {
+     contentWidth: mainPanel.implicitWidth
+     contentHeight: content.implicitHeight
+ 
+-    margins: 16
++    //! NOTE Material Design 3 dialog padding
++    margins: 24
+ 
+     onDetailedTextChanged: {
+         if (root.detailedText.length <= 0) {
+@@ -86,7 +87,7 @@ StyledDialogView {
+     Column {
+         id: content
+ 
+-        spacing: 16
++        spacing: 24
+ 
+         StandardDialogPanel {
+             id: mainPanel
+diff --git a/framework/interactive/qml/Muse/Interactive/StandardDialogPanel.qml b/framework/interactive/qml/Muse/Interactive/StandardDialogPanel.qml
+index 829639445..5d7898fcc 100644
+--- a/framework/interactive/qml/Muse/Interactive/StandardDialogPanel.qml
++++ b/framework/interactive/qml/Muse/Interactive/StandardDialogPanel.qml
+@@ -141,16 +141,19 @@ Row {
+         }
+     }
+ 
+-    spacing: 27
++    //! NOTE Material Design 3 dialog spacing
++    spacing: 24
+ 
+     StyledIconLabel {
+         id: icon
+ 
+         anchors.top: parent.top
+-        width: 48
+-        height: 48
++        //! NOTE Material Design 3 dialog hero icon
++        width: 24
++        height: 24
+ 
+-        font.pixelSize: 48
++        font.pixelSize: 24
++        color: (root.type === "ERROR" || root.type === "WARNING") ? M3Roles.error : M3Roles.primary
+         iconCode: root.standardIcon(root.type)
+ 
+         visible: root.withIcon && !isEmpty
+@@ -179,7 +182,9 @@ Row {
+                 id: titleLabel
+                 width: parent.width
+ 
++                //! NOTE Material Design 3 headline-small type for the dialog headline
+                 font: ui.theme.largeBodyBoldFont
++                color: M3Roles.onSurface
+                 horizontalAlignment: Text.AlignLeft
+                 wrapMode: Text.Wrap
+ 
+@@ -190,6 +195,8 @@ Row {
+                 id: textLabel
+                 width: parent.width
+ 
++                //! NOTE Material Design 3 body-medium supporting text
++                color: M3Roles.onSurfaceVariant
+                 horizontalAlignment: Text.AlignLeft
+                 wrapMode: Text.Wrap
+ 
+diff --git a/framework/shortcuts/qml/Muse/Shortcuts/ShortcutsPage.qml b/framework/shortcuts/qml/Muse/Shortcuts/ShortcutsPage.qml
+index 2ccb56905..182921ccc 100644
+--- a/framework/shortcuts/qml/Muse/Shortcuts/ShortcutsPage.qml
++++ b/framework/shortcuts/qml/Muse/Shortcuts/ShortcutsPage.qml
+@@ -37,6 +37,14 @@ Item {
+ 
+     property string shortcutCodeKey: ""
+ 
++    //! NOTE Forwarded from the search field so that the host application can
++    //! open its own regular expression builder
++    signal regexBuilderRequested()
++
++    function setSearchText(text) {
++        topPanel.setSearchText(text)
++    }
++
+     ShortcutsModel {
+         id: shortcutsModel
+         selection: shortcutsView.sourceSelection
+@@ -99,6 +107,10 @@ Item {
+             onClearSelectedShortcutsRequested: {
+                 shortcutsModel.clearSelectedShortcuts()
+             }
++
++            onRegexBuilderRequested: {
++                root.regexBuilderRequested()
++            }
+         }
+ 
+         ShortcutsList {
+diff --git a/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsList.qml b/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsList.qml
+index fb87612cb..5c57fea9d 100644
+--- a/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsList.qml
++++ b/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsList.qml
+@@ -35,6 +35,9 @@ ValueList {
+     iconRoleName: "icon"
+     readOnly: true
+ 
++    //! NOTE A key sequence reads as a Material Design 3 chip
++    valueChips: true
++
+     property var sourceModel: null
+     property string searchText: ""
+ 
+diff --git a/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsTopPanel.qml b/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsTopPanel.qml
+index b788ea1d1..10644109f 100644
+--- a/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsTopPanel.qml
++++ b/framework/shortcuts/qml/Muse/Shortcuts/internal/ShortcutsTopPanel.qml
+@@ -39,6 +39,10 @@ RowLayout {
+     signal startEditCurrentShortcutRequested()
+     signal clearSelectedShortcutsRequested()
+ 
++    //! NOTE Emitted when the regular expression builder is asked for from the
++    //! search field, so that the host application can open its own builder
++    signal regexBuilderRequested()
++
+     property NavigationPanel navigation: NavigationPanel {
+         name: "ShortcutsTopPanel"
+         enabled: root.enabled && root.visible
+@@ -101,4 +105,22 @@ RowLayout {
+         navigation.panel: root.navigation
+         navigation.column: 2
+     }
++
++    FlatButton {
++        id: regexButton
++
++        icon: IconCode.BRACKET_PARENTHESES_SQUARE
++        transparent: true
++
++        toolTipTitle: qsTrc("shortcuts", "Build a regular expression")
++
++        navigation.name: "ShortcutSearchRegexBuilder"
++        navigation.panel: root.navigation
++        navigation.column: 3
++        navigation.accessible.name: qsTrc("shortcuts", "Build a regular expression")
++
++        onClicked: {
++            root.regexBuilderRequested()
++        }
++    }
+ }
+diff --git a/framework/ui/qml/Muse/Ui/CMakeLists.txt b/framework/ui/qml/Muse/Ui/CMakeLists.txt
+index f1046ff9c..9dd3210d5 100644
+--- a/framework/ui/qml/Muse/Ui/CMakeLists.txt
++++ b/framework/ui/qml/Muse/Ui/CMakeLists.txt
+@@ -20,6 +20,8 @@
+ 
+ muse_create_qml_module(muse_ui_qml ALIAS muse::ui_qml FOR muse_ui)
+ 
++set_source_files_properties(M3Roles.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
++
+ qt_add_qml_module(muse_ui_qml
+     URI Muse.Ui
+     VERSION 1.0
+@@ -50,6 +52,7 @@ qt_add_qml_module(muse_ui_qml
+         windowsmodel.h
+ 
+     QML_FILES
++        M3Roles.qml
+         ToolTipProvider.qml
+ 
+     IMPORTS
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/ButtonBox.qml b/framework/uicomponents/qml/Muse/UiComponents/ButtonBox.qml
+index 4f15f98d4..22e4ad97b 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/ButtonBox.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/ButtonBox.qml
+@@ -27,6 +27,13 @@ import QtQuick.Layouts
+ import Muse.Ui
+ import Muse.UiComponents
+ 
++/*
++ * NOTE A button box reads buttonId, buttonRole, isLeftSide, accentButton and
++ * navigation from its children through untyped property access rather than
++ * through a FlatButton cast, so that a host application can put its own button
++ * component in a button box and keep the platform button order, the accept and
++ * reject defaults and the navigation panel.
++ */
+ Container {
+     id: root
+ 
+@@ -71,7 +78,7 @@ Container {
+ 
+     function accentButton() {
+         for (var i = 0; i < root.count; i++) {
+-            var btn = root.itemAt(i) as FlatButton
++            var btn = root.itemAt(i)
+             if (btn.accentButton) {
+                 return btn
+             }
+@@ -82,6 +89,7 @@ Container {
+ 
+     function addButton(text, buttonId, buttonRole, isAccent, isLeftSide) {
+         const button = Qt.createQmlObject("import Muse.UiComponents; FlatButton {}", root) as FlatButton
++        //! NOTE See the note below about untyped button access
+         button.text = text
+         button.accentButton = isAccent
+ 
+@@ -100,7 +108,7 @@ Container {
+ 
+     function restoreAccessibility() {
+         for (var i = 0; i < root.count; i++) {
+-            var btn = root.itemAt(i) as FlatButton
++            var btn = root.itemAt(i)
+             if (!Boolean(btn.navigation)) {
+                 continue
+             }
+@@ -160,7 +168,7 @@ Container {
+                     continue
+                 }
+ 
+-                var btn = root.itemAt(i) as FlatButton
++                var btn = root.itemAt(i)
+                 if (buttonInfo.button !== btn) {
+                     root.moveItem(buttonInfo.index, i)
+                 }
+@@ -192,7 +200,7 @@ Container {
+ 
+         function buttonInfo(buttonType) {
+             for (var i = 0; i < root.count; i++) {
+-                var btn = root.itemAt(i) as FlatButton
++                var btn = root.itemAt(i)
+                 if (!Boolean(btn)) {
+                     continue
+                 }
+@@ -236,7 +244,7 @@ Container {
+             root.addItem(separator)
+ 
+             for (var i = root.count - 2; i >= 0; i--) {
+-                var button = root.itemAt(i) as FlatButton
++                var button = root.itemAt(i)
+                 if (button.buttonId === lastLeftSideButtonType) {
+                     break;
+                 }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/CheckBox.qml b/framework/uicomponents/qml/Muse/UiComponents/CheckBox.qml
+index 41014c8ed..1e1ce4aa9 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/CheckBox.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/CheckBox.qml
+@@ -77,21 +77,40 @@ FocusScope {
+         Rectangle {
+             id: box
+ 
+-            height: 20
+-            width: 20
++            //! NOTE Material Design 3 checkbox: 18 box, 2 corner radius, primary fill when selected
++            height: 18
++            width: 18
+ 
+-            opacity: ui.theme.buttonOpacityNormal
++            opacity: 1.0
+ 
+-            border.width: ui.theme.borderWidth
+-            border.color: ui.theme.strokeColor
+-            color: ui.theme.buttonColor
++            border.width: (root.checked || root.isIndeterminate) ? 0 : 2
++            border.color: M3Roles.onSurfaceVariant
++            color: (root.checked || root.isIndeterminate) ? M3Roles.primary : "transparent"
+ 
+             radius: 2
+ 
+             NavigationFocusBorder { navigationCtrl: navCtrl }
+ 
++            //! NOTE Material Design 3 state layer
++            Rectangle {
++                anchors.centerIn: parent
++                width: 40
++                height: 40
++                radius: 20
++
++                color: root.checked ? M3Roles.primary : M3Roles.onSurface
++                opacity: clickableArea.containsPress ? M3Roles.pressedOpacity
++                                                     : (clickableArea.containsMouse ? M3Roles.hoverOpacity
++                                                                                    : (navCtrl.active ? M3Roles.focusOpacity : 0.0))
++
++                Behavior on opacity {
++                    NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++                }
++            }
++
+             StyledIconLabel {
+                 anchors.fill: parent
++                color: M3Roles.onPrimary
+                 iconCode: root.isIndeterminate ? IconCode.MINUS : IconCode.TICK_RIGHT_ANGLE
+                 visible: root.checked || root.isIndeterminate
+             }
+@@ -129,25 +148,6 @@ FocusScope {
+         }
+     }
+ 
+-    states: [
+-        State {
+-            name: "HOVERED"
+-            when: clickableArea.containsMouse && !clickableArea.pressed
+-
+-            PropertyChanges {
+-                target: box
+-                opacity: ui.theme.buttonOpacityHover
+-            }
+-        },
+-
+-        State {
+-            name: "PRESSED"
+-            when: clickableArea.containsMouse && clickableArea.pressed
+-
+-            PropertyChanges {
+-                target: box
+-                opacity: ui.theme.buttonOpacityHit
+-            }
+-        }
+-    ]
++    //! NOTE Material Design 3 draws the interaction feedback with a state layer,
++    //! so the box itself keeps a constant opacity.
+ }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/FlatButton.qml b/framework/uicomponents/qml/Muse/UiComponents/FlatButton.qml
+index 8b0c932ae..9a90b497c 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/FlatButton.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/FlatButton.qml
+@@ -24,7 +24,7 @@ pragma ComponentBehavior: Bound
+ import QtQuick
+ import QtQuick.Layouts
+ 
+-import Muse.Ui 
++import Muse.Ui
+ import Muse.UiComponents
+ 
+ /** APIDOC
+@@ -70,22 +70,32 @@ FocusScope {
+     property bool toolTipShowLocked: false
+ 
+     property font iconFont: ui.theme.iconsFont
+-    property color iconColor: ui.theme.fontPrimaryColor
++    property color iconColor: root.contentColor
+     property font textFont: ui.theme.bodyFont
+ 
+     property bool transparent: false
+     property bool accentButton: false
+ 
++    //! NOTE Material Design 3 button variants:
++    //! - default: filled tonal button (secondary container)
++    //! - accentButton: filled button (primary)
++    //! - transparent: text button
++    property color contentColor: transparent ? M3Roles.primary
++                                             : accentButton ? M3Roles.onPrimary
++                                                            : M3Roles.onSecondaryContainer
++
+     property color normalColor:
+-        transparent ? "transparent" : accentButton ? accentColor : ui.theme.buttonColor
+-    property color hoverHitColor: accentButton ? accentColor : ui.theme.buttonColor
+-    property color accentColor: ui.theme.accentColor
++        transparent ? "transparent" : accentButton ? accentColor : M3Roles.secondaryContainer
++    property color hoverHitColor: root.contentColor
++    property color accentColor: M3Roles.primary
+ 
+     property bool isNarrow: buttonType === FlatButton.Horizontal
+     property real margins: isNarrow ? 12 : 16
+     property real minWidth: isNarrow ? 24 : 132
+ 
+-    property real backgroundRadius: 3
++    //! NOTE Material Design 3 uses a fully rounded shape and a 40 height for common buttons
++    property real buttonHeight: 40
++    property real backgroundRadius: root.buttonHeight / 2
+ 
+     property bool drawFocusBorderInsideRect: false
+ 
+@@ -140,7 +150,7 @@ FocusScope {
+     objectName: root.text
+ 
+     implicitWidth: contentLoader.itemImplicitWidth + 2 * margins
+-    implicitHeight: Math.max(contentLoader.itemImplicitHeight, ui.theme.defaultButtonSize)
++    implicitHeight: Math.max(contentLoader.itemImplicitHeight, root.buttonHeight)
+ 
+     opacity: root.enabled ? 1.0 : ui.theme.itemOpacityDisabled
+ 
+@@ -180,40 +190,58 @@ FocusScope {
+             id: background
+ 
+             color: root.normalColor
+-            opacity: ui.theme.buttonOpacityNormal
++            opacity: 1.0
+ 
+             radius: root.backgroundRadius
+-            border.width: ui.theme.borderWidth
+-            border.color: ui.theme.strokeColor
++            border.width: root.transparent ? 0 : ui.theme.borderWidth
++            border.color: M3Roles.outlineVariant
+ 
+             NavigationFocusBorder {
+                 navigationCtrl: navCtrl
+                 drawOutsideParent: !root.drawFocusBorderInsideRect
+             }
+ 
+-            states: [
+-                State {
+-                    name: "PRESSED"
+-                    when: mouseArea.pressed
++            //! NOTE Material Design 3 state layer
++            Rectangle {
++                id: stateLayer
+ 
+-                    PropertyChanges {
+-                        target: background
+-                        color: root.hoverHitColor
+-                        opacity: ui.theme.buttonOpacityHit
+-                    }
+-                },
++                anchors.fill: parent
++                radius: background.radius
++
++                color: root.hoverHitColor
++                opacity: 0.0
++
++                states: [
++                    State {
++                        name: "PRESSED"
++                        when: mouseArea.pressed
++
++                        PropertyChanges { target: stateLayer; opacity: M3Roles.pressedOpacity }
++                    },
+ 
+-                State {
+-                    name: "HOVERED"
+-                    when: mouseArea.containsMouse && !mouseArea.pressed
++                    State {
++                        name: "HOVERED"
++                        when: mouseArea.containsMouse && !mouseArea.pressed
+ 
+-                    PropertyChanges {
+-                        target: background
+-                        color: root.hoverHitColor
+-                        opacity: ui.theme.buttonOpacityHover
++                        PropertyChanges { target: stateLayer; opacity: M3Roles.hoverOpacity }
++                    },
++
++                    State {
++                        name: "FOCUSED"
++                        when: navCtrl.active
++
++                        PropertyChanges { target: stateLayer; opacity: M3Roles.focusOpacity }
++                    }
++                ]
++
++                transitions: Transition {
++                    NumberAnimation {
++                        property: "opacity"
++                        duration: M3Roles.duration(M3Roles.durationStandard)
++                        easing.type: Easing.OutCubic
+                     }
+                 }
+-            ]
++            }
+         }
+     }
+ 
+@@ -250,6 +278,7 @@ FocusScope {
+                 Layout.alignment: Qt.AlignHCenter
+                 text: root.text
+                 font: root.textFont
++                color: root.contentColor
+                 textFormat: root.textFormat
+                 wrapMode: Text.Wrap
+                 maximumLineCount: root.maximumLineCount
+@@ -278,6 +307,7 @@ FocusScope {
+                 Layout.alignment: Qt.AlignVCenter
+                 text: root.text
+                 font: root.textFont
++                color: root.contentColor
+                 textFormat: root.textFormat
+                 wrapMode: Text.Wrap
+                 maximumLineCount: root.maximumLineCount
+@@ -293,8 +323,8 @@ FocusScope {
+ 
+             PropertyChanges {
+                 target: root
+-                implicitWidth: ui.theme.defaultButtonSize
+-                implicitHeight: ui.theme.defaultButtonSize
++                implicitWidth: root.buttonHeight
++                implicitHeight: root.buttonHeight
+             }
+         },
+ 
+@@ -306,7 +336,7 @@ FocusScope {
+                 target: root
+                 implicitWidth: Math.max(contentLoader.itemImplicitWidth + 2 * root.margins,
+                                         root.minWidth)
+-                implicitHeight: ui.theme.defaultButtonSize
++                implicitHeight: root.buttonHeight
+             }
+         },
+ 
+@@ -316,7 +346,7 @@ FocusScope {
+ 
+             PropertyChanges {
+                 target: root
+-                implicitHeight: ui.theme.defaultButtonSize
++                implicitHeight: root.buttonHeight
+             }
+         },
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/FlatToggleButton.qml b/framework/uicomponents/qml/Muse/UiComponents/FlatToggleButton.qml
+index 043b0cd5c..c5ef3eada 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/FlatToggleButton.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/FlatToggleButton.qml
+@@ -36,15 +36,20 @@ FocusScope {
+     property string toolTipDescription: ""
+     property string toolTipShortcut: ""
+ 
++    //! NOTE Material Design 3 icon toggle button
+     property bool transparent: false
+-    property color normalColor: transparent ? "transparent" : ui.theme.buttonColor
+-    property color hoverHitColor: ui.theme.buttonColor
+-    property color checkedColor: ui.theme.accentColor
++    property color normalColor: transparent ? "transparent" : M3Roles.secondaryContainer
++    property color hoverHitColor: root.contentColor
++    property color checkedColor: M3Roles.primary
++
++    readonly property color contentColor: root.checked ? M3Roles.onPrimary
++                                                       : (root.transparent ? M3Roles.onSurfaceVariant
++                                                                           : M3Roles.onSecondaryContainer)
+ 
+     signal toggled()
+ 
+-    implicitHeight: 30
+-    implicitWidth: 30
++    implicitHeight: 40
++    implicitWidth: 40
+ 
+     opacity: root.enabled ? 1.0 : ui.theme.itemOpacityDisabled
+ 
+@@ -66,16 +71,32 @@ FocusScope {
+         NavigationFocusBorder { navigationCtrl: navCtrl }
+ 
+         color: root.checked ? root.checkedColor : root.normalColor
+-        opacity: ui.theme.buttonOpacityNormal
++        opacity: 1.0
++
++        border.width: root.transparent ? 0 : ui.theme.borderWidth
++        border.color: M3Roles.outlineVariant
++        radius: width / 2
++
++        //! NOTE Material Design 3 state layer
++        Rectangle {
++            id: stateLayer
++
++            anchors.fill: parent
++            radius: backgroundRect.radius
+ 
+-        border.width: ui.theme.borderWidth
+-        border.color: ui.theme.strokeColor
+-        radius: 2
++            color: root.hoverHitColor
++            opacity: 0.0
++
++            Behavior on opacity {
++                NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++            }
++        }
+     }
+ 
+     StyledIconLabel {
+         id: buttonIcon
+         anchors.fill: parent
++        color: root.contentColor
+     }
+ 
+     MouseArea {
+@@ -113,9 +134,8 @@ FocusScope {
+             when: mouseArea.containsMouse && !mouseArea.pressed
+ 
+             PropertyChanges {
+-                target: backgroundRect
+-                color: root.checked ? root.checkedColor : root.hoverHitColor
+-                opacity: ui.theme.buttonOpacityHover
++                target: stateLayer
++                opacity: M3Roles.hoverOpacity
+             }
+         },
+ 
+@@ -124,9 +144,8 @@ FocusScope {
+             when: mouseArea.pressed
+ 
+             PropertyChanges {
+-                target: backgroundRect
+-                color: root.checked ? root.checkedColor : root.hoverHitColor
+-                opacity: ui.theme.buttonOpacityHit
++                target: stateLayer
++                opacity: M3Roles.pressedOpacity
+             }
+         }
+     ]
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/ListItemBlank.qml b/framework/uicomponents/qml/Muse/UiComponents/ListItemBlank.qml
+index 6e5e1d506..713231ee6 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/ListItemBlank.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/ListItemBlank.qml
+@@ -35,8 +35,9 @@ FocusableControl {
+     background.radius: radius
+ 
+     property color normalColor: "transparent"
+-    property color hoverHitColor: ui.theme.buttonColor
+-    property color selectedColor: ui.theme.accentColor
++    //! NOTE Material Design 3 state layers are drawn with the on-surface role
++    property color hoverHitColor: M3Roles.onSurface
++    property color selectedColor: M3Roles.secondaryContainer
+ 
+     signal clicked(var mouse)
+     signal doubleClicked(var mouse)
+@@ -115,7 +116,7 @@ FocusableControl {
+ 
+             PropertyChanges {
+                 target: root.background
+-                opacity: ui.theme.buttonOpacityHover
++                opacity: M3Roles.hoverOpacity
+                 color: root.hoverHitColor
+             }
+         },
+@@ -126,7 +127,7 @@ FocusableControl {
+ 
+             PropertyChanges {
+                 target: root.background
+-                opacity: ui.theme.buttonOpacityHit
++                opacity: M3Roles.pressedOpacity
+                 color: root.hoverHitColor
+             }
+         },
+@@ -137,8 +138,8 @@ FocusableControl {
+ 
+             PropertyChanges {
+                 target: root.background
+-                opacity: ui.theme.accentOpacityNormal
+-                color: ui.theme.accentColor
++                opacity: 1.0
++                color: root.selectedColor
+             }
+         },
+ 
+@@ -148,8 +149,8 @@ FocusableControl {
+ 
+             PropertyChanges {
+                 target: root.background
+-                opacity: ui.theme.accentOpacityHover
+-                color: ui.theme.accentColor
++                opacity: 1.0
++                color: root.selectedColor
+             }
+         },
+ 
+@@ -159,8 +160,8 @@ FocusableControl {
+ 
+             PropertyChanges {
+                 target: root.background
+-                opacity: ui.theme.accentOpacityHit
+-                color: ui.theme.accentColor
++                opacity: 1.0
++                color: root.selectedColor
+             }
+         }
+     ]
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/PageIndicator.qml b/framework/uicomponents/qml/Muse/UiComponents/PageIndicator.qml
+index 1fbe4b8f9..f20f91af2 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/PageIndicator.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/PageIndicator.qml
+@@ -22,6 +22,8 @@
+ import QtQuick
+ import QtQuick.Controls as Controls
+ 
++import Muse.Ui
++
+ Controls.PageIndicator {
+     id: root
+ 
+@@ -36,8 +38,9 @@ Controls.PageIndicator {
+ 
+         radius: width / 2
+ 
+-        color: ui.theme.fontPrimaryColor
+-        opacity: index === root.currentIndex ? 0.7 : 0.2
++        //! NOTE Material Design 3 primary role, full opacity for the current page
++        color: M3Roles.primary
++        opacity: index === root.currentIndex ? 1.0 : 0.3
+ 
+         Behavior on opacity {
+             OpacityAnimator {
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/PopupPanel.qml b/framework/uicomponents/qml/Muse/UiComponents/PopupPanel.qml
+index 59d948d9f..4e20abfd5 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/PopupPanel.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/PopupPanel.qml
+@@ -38,12 +38,13 @@ Rectangle {
+     signal opened()
+     signal closed()
+ 
+-    color: ui.theme.popupBackgroundColor
++    color: M3Roles.surfaceContainerHigh
+     border.width: 1
+-    border.color: ui.theme.strokeColor
++    border.color: M3Roles.outlineVariant
+ 
+-    topLeftRadius: 20
+-    topRightRadius: 20
++    //! NOTE Material Design 3 extra-large shape at the top of a bottom sheet
++    topLeftRadius: M3Roles.cornerExtraLarge
++    topRightRadius: M3Roles.cornerExtraLarge
+ 
+     clip: true
+ 
+@@ -135,9 +136,9 @@ Rectangle {
+     Rectangle {
+         anchors.fill: parent
+ 
+-        color: Utils.colorWithAlpha(ui.theme.popupBackgroundColor, 0.75)
++        color: Utils.colorWithAlpha(M3Roles.surfaceContainerHigh, 0.75)
+         border.width: 1
+-        border.color: ui.theme.strokeColor
++        border.color: M3Roles.outlineVariant
+ 
+         topLeftRadius: root.topLeftRadius
+         topRightRadius: root.topRightRadius
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/ProgressBar.qml b/framework/uicomponents/qml/Muse/UiComponents/ProgressBar.qml
+index 64fc46ef7..d2af8793b 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/ProgressBar.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/ProgressBar.qml
+@@ -78,13 +78,14 @@ FocusScope {
+ 
+         anchors.fill: parent
+ 
+-        color: ui.theme.backgroundSecondaryColor
++        //! NOTE Material Design 3 linear progress indicator
++        color: M3Roles.secondaryContainer
+ 
+         NavigationFocusBorder { navigationCtrl: navCtrl }
+ 
+-        radius: 3
+-        border.color: ui.theme.strokeColor
+-        border.width: Math.max(ui.theme.borderWidth, 1)
++        radius: height / 2
++        border.color: "transparent"
++        border.width: 0
+ 
+         Item {
+             anchors.fill: parent
+@@ -104,7 +105,7 @@ FocusScope {
+ 
+                 width: parent.width * Math.min(root.value / root.to, 1)
+ 
+-                color: ui.theme.accentColor
++                color: M3Roles.primary
+             }
+         }
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/RoundedRadioButton.qml b/framework/uicomponents/qml/Muse/UiComponents/RoundedRadioButton.qml
+index dac566497..5524c367f 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/RoundedRadioButton.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/RoundedRadioButton.qml
+@@ -111,13 +111,31 @@ RadioDelegate {
+             height: width
+             radius: 10
+ 
+-            property real borderColorOpacity: ui.theme.buttonOpacityNormal
++            property real borderColorOpacity: 1.0
+ 
+             NavigationFocusBorder { navigationCtrl: keynavCtrl }
+ 
+-            color: ui.theme.textFieldColor
+-            border.color: Utils.colorWithAlpha(ui.theme.fontPrimaryColor, borderColorOpacity)
+-            border.width: 1
++            //! NOTE Material Design 3 radio button: 20 outline, 2 stroke, primary when selected
++            color: "transparent"
++            border.color: Utils.colorWithAlpha(root.checked ? M3Roles.primary : M3Roles.onSurfaceVariant, borderColorOpacity)
++            border.width: 2
++
++            //! NOTE Material Design 3 state layer
++            Rectangle {
++                anchors.centerIn: parent
++                width: 40
++                height: 40
++                radius: 20
++
++                color: root.checked ? M3Roles.primary : M3Roles.onSurface
++                opacity: root.pressed ? M3Roles.pressedOpacity
++                                      : (root.hovered ? M3Roles.hoverOpacity
++                                                      : (keynavCtrl.active ? M3Roles.focusOpacity : 0.0))
++
++                Behavior on opacity {
++                    NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++                }
++            }
+         }
+ 
+         Rectangle {
+@@ -127,7 +145,7 @@ RadioDelegate {
+             height: width
+             radius: 5
+ 
+-            color: ui.theme.accentColor
++            color: M3Roles.primary
+             visible: root.checked
+         }
+     }
+@@ -141,7 +159,7 @@ RadioDelegate {
+ 
+             PropertyChanges {
+                 target: backgroundRect
+-                borderColorOpacity: ui.theme.buttonOpacityHit
++                borderColorOpacity: 1.0
+             }
+ 
+             PropertyChanges {
+@@ -156,7 +174,7 @@ RadioDelegate {
+ 
+             PropertyChanges {
+                 target: backgroundRect
+-                borderColorOpacity: ui.theme.buttonOpacityNormal
++                borderColorOpacity: 1.0
+             }
+ 
+             PropertyChanges {
+@@ -171,7 +189,7 @@ RadioDelegate {
+ 
+             PropertyChanges {
+                 target: backgroundRect
+-                borderColorOpacity: ui.theme.buttonOpacityHover
++                borderColorOpacity: 1.0
+             }
+         },
+ 
+@@ -181,7 +199,7 @@ RadioDelegate {
+ 
+             PropertyChanges {
+                 target: backgroundRect
+-                borderColorOpacity: ui.theme.buttonOpacityHover
++                borderColorOpacity: 1.0
+             }
+ 
+             PropertyChanges {
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/SearchField.qml b/framework/uicomponents/qml/Muse/UiComponents/SearchField.qml
+index 5753ce691..5f40f410d 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/SearchField.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/SearchField.qml
+@@ -34,6 +34,10 @@ TextInputField {
+ 
+     width: 220
+ 
++    //! NOTE Material Design 3 search field uses a fully rounded shape
++    backgroundRadius: root.height / 2
++    textSidePadding: 16
++
+     hint: qsTrc("ui", "Search")
+     hintIcon: IconCode.SEARCH
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/SeparatorLine.qml b/framework/uicomponents/qml/Muse/UiComponents/SeparatorLine.qml
+index e3221b925..d7cefc113 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/SeparatorLine.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/SeparatorLine.qml
+@@ -30,7 +30,8 @@ Rectangle {
+     property int orientation: prv.parentIsHorizontal ? Qt.Vertical : Qt.Horizontal
+     property int thickness: 1
+ 
+-    color: ui.theme.strokeColor
++    //! NOTE Material Design 3 dividers use the outline-variant role
++    color: M3Roles.outlineVariant
+ 
+     QtObject {
+         id: prv
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledBusyIndicator.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledBusyIndicator.qml
+index 5d85be3c6..8699b2292 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledBusyIndicator.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledBusyIndicator.qml
+@@ -22,12 +22,15 @@
+ import QtQuick
+ import QtQuick.Controls
+ 
++import Muse.Ui
++
+ BusyIndicator {
+     id: root
+ 
+     padding: 0
+ 
+-    property color backgroundColor: ui.theme.strokeColor
++    //! NOTE Material Design 3 circular progress indicator track and indicator
++    property color backgroundColor: M3Roles.secondaryContainer
+ 
+     contentItem: Rectangle {
+         id: backgroundCircle
+@@ -47,7 +50,7 @@ BusyIndicator {
+ 
+         RotationAnimator {
+             target: foregroundCircle
+-            running: root.visible && root.running
++            running: root.visible && root.running && !M3Roles.reducedMotion
+             from: 0
+             to: 360
+             loops: Animation.Infinite
+@@ -63,7 +66,7 @@ BusyIndicator {
+                 context.arc(width / 2, height / 2,
+                             width / 2 - backgroundCircle.border.width / 2,
+                             Math.PI / -4, Math.PI / 4);
+-                context.strokeStyle = ui.theme.accentColor;
++                context.strokeStyle = M3Roles.primary;
+                 context.lineWidth = backgroundCircle.border.width;
+                 context.stroke();
+             }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledDialogView.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledDialogView.qml
+index ec2851f44..4703b91b0 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledDialogView.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledDialogView.qml
+@@ -41,6 +41,10 @@ DialogView {
+ 
+     property bool closeOnEscape : true
+ 
++    //! NOTE Material Design 3 extra-large shape and level 3 elevation for dialogs
++    property real cornerRadius: M3Roles.cornerExtraLarge
++    property int elevationLevel: 3
++
+     contentWidth: 240
+     contentHeight: contentBody.childrenRect.height
+ 
+@@ -94,16 +98,20 @@ DialogView {
+         StyledRectangularShadow {
+             anchors.fill: contentBackground
+             visible: root.frameless
++
++            offset.y: root.elevationLevel
++            blur: root.elevationLevel * 4
++            color: Qt.rgba(M3Roles.shadow.r, M3Roles.shadow.g, M3Roles.shadow.b, 0.15 + root.elevationLevel * 0.03)
+             radius: contentBackground.radius
+         }
+ 
+         Rectangle {
+             id: contentBackground
+             anchors.fill: parent
+-            color: ui.theme.backgroundPrimaryColor
+-            radius: root.frameless ? 4 : 0
++            color: M3Roles.surfaceContainerHigh
++            radius: root.frameless ? root.cornerRadius : 0
+             border.width: root.frameless ? 1 : 0
+-            border.color: ui.theme.strokeColor
++            border.color: M3Roles.outlineVariant
+         }
+ 
+         Item {
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledDropdown.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledDropdown.qml
+index 7cdc06b56..10ec21bff 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledDropdown.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledDropdown.qml
+@@ -60,7 +60,8 @@ Item {
+ 
+     signal activated(int index, var value)
+ 
+-    height: 30
++    //! NOTE Material Design 3 outlined menu button metrics
++    height: 40
+     width: 126
+ 
+     function indexOfValue(value) {
+@@ -146,13 +147,28 @@ Item {
+         Rectangle {
+             id: backgroundItem
+             anchors.fill: parent
+-            border.width: ui.theme.borderWidth
+-            border.color: ui.theme.strokeColor
+-            color: ui.theme.buttonColor
+-            radius: 3
+-            opacity: 0.7
++            border.width: 1
++            border.color: M3Roles.outline
++            color: "transparent"
++            radius: M3Roles.cornerExtraSmall
++            opacity: 1.0
+ 
+             NavigationFocusBorder { navigationCtrl: navCtrl }
++
++            //! NOTE Material Design 3 state layer
++            Rectangle {
++                id: dropdownStateLayer
++
++                anchors.fill: parent
++                radius: backgroundItem.radius
++
++                color: mainItem.selected ? M3Roles.primary : M3Roles.onSurface
++                opacity: 0.0
++
++                Behavior on opacity {
++                    NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++                }
++            }
+         }
+ 
+         Loader {
+@@ -262,9 +278,8 @@ Item {
+                 when: mouseAreaItem.containsMouse && !mouseAreaItem.pressed
+ 
+                 PropertyChanges {
+-                    target: backgroundItem
+-                    opacity: ui.theme.buttonOpacityHover
+-                    color: mainItem.hoveredColor
++                    target: dropdownStateLayer
++                    opacity: M3Roles.hoverOpacity
+                 }
+             },
+ 
+@@ -273,8 +288,8 @@ Item {
+                 when: mouseAreaItem.pressed
+ 
+                 PropertyChanges {
+-                    target: backgroundItem
+-                    opacity: ui.theme.buttonOpacityHit
++                    target: dropdownStateLayer
++                    opacity: M3Roles.pressedOpacity
+                 }
+             },
+ 
+@@ -283,9 +298,8 @@ Item {
+                 when: mainItem.selected
+ 
+                 PropertyChanges {
+-                    target: backgroundItem
+-                    opacity: ui.theme.accentOpacityHit
+-                    color: ui.theme.accentColor
++                    target: dropdownStateLayer
++                    opacity: M3Roles.pressedOpacity
+                 }
+             }
+         ]
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledPopupView.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledPopupView.qml
+index d0062e627..8f2402715 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledPopupView.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledPopupView.qml
+@@ -43,6 +43,14 @@ PopupView {
+ 
+     property alias useDropShadow: content.useDropShadow
+ 
++    //! NOTE Material Design 3 medium shape for popup containers
++    property alias cornerRadius: content.cornerRadius
++    property alias elevationLevel: content.elevationLevel
++    property alias horizontalMargins: content.horizontalMargins
++    property alias verticalMargins: content.verticalMargins
++    property alias backgroundColor: content.backgroundColor
++    property alias borderColor: content.borderColor
++
+     property bool isPlacementVertical:  (root.placementPolicies === PopupView.Default)
+                                         || (root.placementPolicies & PopupView.PreferAbove)
+                                         || (root.placementPolicies & PopupView.PreferBelow)
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledScrollBar.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledScrollBar.qml
+index cc54e0463..5b45d7242 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledScrollBar.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledScrollBar.qml
+@@ -22,13 +22,16 @@
+ import QtQuick
+ import QtQuick.Controls
+ 
++import Muse.Ui
++
+ ScrollBar {
+     id: root
+ 
+     property alias color: handle.color
+     property alias border: handle.border
+ 
+-    property real thickness: 8
++    //! NOTE Material Design 3 thin scroll bar, expanded while hovered
++    property real thickness: root.hovered ? 8 : 4
+     property real minimumSizeInPixels: 30
+ 
+     readonly property bool isVertical: orientation === Qt.Vertical
+@@ -45,10 +48,18 @@ ScrollBar {
+         implicitHeight: root.thickness
+ 
+         radius: root.thickness / 2
+-        color: ui.theme.fontPrimaryColor
++        color: M3Roles.onSurfaceVariant
+         opacity: 0.0
+         visible: false
+ 
++        Behavior on implicitWidth {
++            NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++        }
++
++        Behavior on implicitHeight {
++            NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++        }
++
+         property bool forcedActive: false
+ 
+         states: [
+@@ -59,7 +70,7 @@ ScrollBar {
+                 PropertyChanges {
+                     target: handle
+                     visible: true
+-                    opacity: root.pressed ? 0.7 : 0.3
++                    opacity: root.pressed ? 0.62 : 0.38
+                 }
+             }
+         ]
+@@ -68,12 +79,12 @@ ScrollBar {
+             from: "active"
+ 
+             SequentialAnimation {
+-                PauseAnimation { duration: 200 }
++                PauseAnimation { duration: M3Roles.duration(200) }
+ 
+                 NumberAnimation {
+                     target: handle
+                     property: "opacity"
+-                    duration: 100
++                    duration: M3Roles.duration(100)
+                     to: 0.0
+                 }
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledSlider.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledSlider.qml
+index 86c5b1db7..62df96499 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledSlider.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledSlider.qml
+@@ -35,6 +35,7 @@ Slider {
+     implicitWidth: vertical ? prv.handleSize : prv.defaultLength
+     implicitHeight: vertical ? prv.defaultLength : prv.handleSize
+ 
++
+     hoverEnabled: root.enabled
+     wheelEnabled: true
+ 
+@@ -43,9 +44,11 @@ Slider {
+     QtObject {
+         id: prv
+ 
++        //! NOTE Material Design 3 slider: 4 track, fully rounded, 20 by 4 handle
+         readonly property int lineSize: 4
+-        readonly property int radius: 4
+-        readonly property int handleSize: 14
++        readonly property int radius: 2
++        readonly property int handleSize: 20
++        readonly property int handleWidth: 4
+         readonly property int defaultLength: 220
+     }
+ 
+@@ -97,7 +100,7 @@ Slider {
+             visible: root.fillBackground
+ 
+             opacity: 1
+-            color: ui.theme.accentColor
++            color: M3Roles.primary
+             radius: prv.radius
+         }
+ 
+@@ -111,8 +114,8 @@ Slider {
+ 
+             x: filledBackground.width
+ 
+-            opacity: 0.5
+-            color: ui.theme.fontPrimaryColor
++            opacity: 1
++            color: M3Roles.secondaryContainer
+             radius: prv.radius
+         }
+     }
+@@ -123,43 +126,29 @@ Slider {
+         x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
+         y: root.topPadding + root.availableHeight / 2 - height / 2
+ 
+-        width: prv.handleSize
+-        height: width
+-        radius: width / 2
++        width: root.vertical ? prv.handleSize : prv.handleWidth
++        height: root.vertical ? prv.handleWidth : prv.handleSize
++        radius: Math.min(width, height) / 2
+ 
+-        color: ui.theme.textFieldColor
++        color: M3Roles.primary
+ 
++        //! NOTE Material Design 3 state layer around the handle
+         Rectangle {
+-            id: handleBorder
+-
+-            anchors.fill: parent
+-
+-            radius: width / 2
+-            opacity: 0.7
+-            color: "transparent"
+-            border.width: 1
+-            border.color: ui.theme.fontPrimaryColor
+-
+-            states: [
+-                State {
+-                    name: "HOVERED"
+-                    when: root.hovered && !root.pressed
+-
+-                    PropertyChanges {
+-                        target: handleBorder
+-                        opacity: 0.5
+-                    }
+-                },
+-                State {
+-                    name: "PRESSED"
+-                    when: root.pressed
+-
+-                    PropertyChanges {
+-                        target: handleBorder
+-                        opacity: 1
+-                    }
+-                }
+-            ]
++            id: handleStateLayer
++
++            anchors.centerIn: parent
++            width: 40
++            height: 40
++            radius: 20
++
++            color: M3Roles.primary
++            opacity: root.pressed ? M3Roles.pressedOpacity
++                                  : (root.hovered ? M3Roles.hoverOpacity
++                                                  : (navCtrl.active ? M3Roles.focusOpacity : 0.0))
++
++            Behavior on opacity {
++                NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++            }
+         }
+     }
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledTabBar.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledTabBar.qml
+index fa08aaa99..d5c7237c1 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledTabBar.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledTabBar.qml
+@@ -28,10 +28,20 @@ import Muse.UiComponents
+ TabBar {
+     id: root
+ 
+-    spacing: 36
++    //! NOTE Material Design 3 secondary tabs
++    spacing: 0
+ 
+-    background: Item {
+-        implicitHeight: 32
++    background: Rectangle {
++        implicitHeight: 48
++        color: M3Roles.surface
++
++        Rectangle {
++            anchors.left: parent.left
++            anchors.right: parent.right
++            anchors.bottom: parent.bottom
++            height: 1
++            color: M3Roles.outlineVariant
++        }
+     }
+ 
+     function focusOnTab(index) {
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledTabButton.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledTabButton.qml
+index 1d9ace121..133e3c4fa 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledTabButton.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledTabButton.qml
+@@ -47,8 +47,9 @@ TabButton {
+            ? (tabBar.width - (tabBar.count - 1) * tabBar.spacing) / tabBar.count
+            : implicitWidth
+ 
+-    leftPadding: 0
+-    rightPadding: 0
++    //! NOTE Material Design 3 secondary tab metrics
++    leftPadding: 16
++    rightPadding: 16
+ 
+     font: isCurrent ? ui.theme.largeBodyBoldFont : ui.theme.largeBodyFont
+ 
+@@ -85,15 +86,30 @@ TabButton {
+         id: textLabel
+         text: root.text
+         font: root.font
+-        opacity: 0.75
++        color: root.isCurrent ? M3Roles.onSurface : M3Roles.onSurfaceVariant
++        opacity: 1.0
+         displayTruncatedTextOnHover: true
+     }
+ 
+     background: Item {
+-        implicitHeight: 32
++        implicitHeight: 48
+ 
+         NavigationFocusBorder { navigationCtrl: navCtrl }
+ 
++        //! NOTE Material Design 3 state layer
++        Rectangle {
++            anchors.fill: parent
++
++            color: M3Roles.onSurface
++            opacity: root.pressed ? M3Roles.pressedOpacity
++                                  : (root.hovered ? M3Roles.hoverOpacity
++                                                  : (navCtrl.active ? M3Roles.focusOpacity : 0.0))
++
++            Behavior on opacity {
++                NumberAnimation { duration: M3Roles.duration(M3Roles.durationStandard); easing.type: Easing.OutCubic }
++            }
++        }
++
+         Rectangle {
+             id: selectedUnderline
+ 
+@@ -101,32 +117,14 @@ TabButton {
+             anchors.right: parent.right
+             anchors.bottom: parent.bottom
+ 
++            //! NOTE Material Design 3 secondary tab indicator
+             height: 2
+ 
+-            visible: isCurrent
+-            color: ui.theme.accentColor
++            visible: root.isCurrent
++            color: M3Roles.primary
+         }
+     }
+ 
+-    states: [
+-        State {
+-            name: "HOVERED"
+-            when: root.hovered && !root.isCurrent
+-
+-            PropertyChanges {
+-                target: contentItem
+-                opacity: 1
+-            }
+-        },
+-
+-        State {
+-            name: "SELECTED"
+-            when: root.isCurrent
+-
+-            PropertyChanges {
+-                target: textLabel
+-                opacity: 1
+-            }
+-        }
+-    ]
++    //! NOTE Material Design 3 draws hover and selection feedback with the
++    //! state layer and the indicator, so no extra opacity states are needed.
+ }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledTableView.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledTableView.qml
+index 019b7410f..8e96fa94f 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledTableView.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledTableView.qml
+@@ -95,9 +95,10 @@ Item {
+         id: background
+         anchors.fill: parent
+ 
+-        color: ui.theme.backgroundPrimaryColor
++        //! NOTE Material Design 3 surface and outline roles
++        color: M3Roles.surface
+         border.width: 1
+-        border.color: ui.theme.strokeColor
++        border.color: M3Roles.outlineVariant
+     }
+ 
+     HorizontalHeaderView {
+@@ -172,8 +173,8 @@ Item {
+         anchors.left: parent.left
+         anchors.right: tableView.left
+ 
+-        color: ui.theme.backgroundSecondaryColor
+-        border.color: ui.theme.strokeColor
++        color: M3Roles.surfaceContainer
++        border.color: M3Roles.outlineVariant
+ 
+         visible: root.showVerticalHeader
+ 
+@@ -183,7 +184,7 @@ Item {
+             width: verticalHeader.width + 1
+             height: 1
+ 
+-            color: ui.theme.strokeColor
++            color: M3Roles.outlineVariant
+         }
+     }
+ 
+@@ -211,7 +212,7 @@ Item {
+             height: tableView.rowHeightProvider(index)
+             width: verticalHeader.width
+ 
+-            color: ui.theme.backgroundSecondaryColor
++            color: M3Roles.surfaceContainer
+             border.width: 0
+ 
+             StyledTextLabel {
+@@ -232,7 +233,7 @@ Item {
+ 
+                 height: 1
+ 
+-                color: ui.theme.strokeColor
++                color: M3Roles.outlineVariant
+             }
+         }
+     }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/StyledToolTip.qml b/framework/uicomponents/qml/Muse/UiComponents/StyledToolTip.qml
+index 710b8e0b1..b333afab6 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/StyledToolTip.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/StyledToolTip.qml
+@@ -32,6 +32,17 @@ StyledPopupView {
+     property alias description: descriptionLabel.text
+     property string shortcut: ""
+ 
++    //! NOTE Material Design 3 distinguishes plain tooltips from rich tooltips
++    readonly property bool isRichToolTip: Boolean(root.description)
++
++    cornerRadius: root.isRichToolTip ? M3Roles.cornerMedium : M3Roles.cornerExtraSmall
++    elevationLevel: root.isRichToolTip ? 2 : 0
++
++    backgroundColor: root.isRichToolTip ? M3Roles.surfaceContainerHigh : M3Roles.inverseSurface
++    borderColor: root.isRichToolTip ? M3Roles.outlineVariant : "transparent"
++
++    readonly property color contentColor: root.isRichToolTip ? M3Roles.onSurface : M3Roles.inverseOnSurface
++
+     contentWidth: Math.min(content.implicitWidth, 300 - margins * 2)
+     contentHeight: content.implicitHeight
+ 
+@@ -39,7 +50,9 @@ StyledPopupView {
+     y: root.parent.height
+ 
+     padding: 8
+-    margins: 8
++    //! NOTE 8 by 4 padding for plain tooltips, 12 for rich tooltips
++    margins: root.isRichToolTip ? 12 : 8
++    verticalMargins: root.isRichToolTip ? 12 : 4
+ 
+     openPolicies: PopupView.NoActivateFocus
+ 
+@@ -62,6 +75,7 @@ StyledPopupView {
+                 Layout.fillWidth: true
+ 
+                 font: ui.theme.bodyBoldFont
++                color: root.contentColor
+                 horizontalAlignment: Text.AlignLeft
+                 wrapMode: Text.WordWrap
+             }
+@@ -70,6 +84,7 @@ StyledPopupView {
+                 id: shortcutLabel
+ 
+                 text: "(" + root.shortcut + ")"
++                color: root.contentColor
+                 horizontalAlignment: Text.AlignRight
+                 opacity: 0.8
+ 
+@@ -81,6 +96,7 @@ StyledPopupView {
+             id: descriptionLabel
+             Layout.fillWidth: true
+ 
++            color: root.contentColor
+             horizontalAlignment: Text.AlignLeft
+             wrapMode: Text.Wrap
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/TextInputField.qml b/framework/uicomponents/qml/Muse/UiComponents/TextInputField.qml
+index ff760552b..3ba8d3982 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/TextInputField.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/TextInputField.qml
+@@ -47,6 +47,8 @@ FocusScope {
+     property alias readOnly: valueInput.readOnly
+ 
+     property real textSidePadding: 12
++    //! NOTE Material Design 3 shape of the field container
++    property real backgroundRadius: M3Roles.cornerExtraSmall
+     property real accessoriesPadding: 4
+ 
+     readonly property alias inputField: valueInput
+@@ -95,7 +97,8 @@ FocusScope {
+         }
+     }
+ 
+-    implicitHeight: 30
++    //! NOTE Material Design 3 outlined text field
++    implicitHeight: 40
+     implicitWidth: parent.width
+ 
+     opacity: root.enabled ? 1.0 : ui.theme.itemOpacityDisabled
+@@ -135,10 +138,10 @@ FocusScope {
+ 
+         NavigationFocusBorder { navigationCtrl: navCtrl }
+ 
+-        color: ui.theme.textFieldColor
+-        border.color: ui.theme.strokeColor
+-        border.width: Math.max(ui.theme.borderWidth, 1)
+-        radius: 3
++        color: "transparent"
++        border.color: M3Roles.outline
++        border.width: 1
++        radius: root.backgroundRadius
+     }
+ 
+     RowLayout {
+@@ -318,13 +321,13 @@ FocusScope {
+         State {
+             name: "HOVERED"
+             when: root.containsMouse && !valueInput.activeFocus
+-            PropertyChanges { target: background; border.color: Utils.colorWithAlpha(ui.theme.accentColor, 0.6) }
++            PropertyChanges { target: background; border.color: M3Roles.onSurface }
+         },
+ 
+         State {
+             name: "FOCUSED"
+             when: valueInput.activeFocus
+-            PropertyChanges { target: background; border.color: ui.theme.accentColor }
++            PropertyChanges { target: background; border.color: M3Roles.primary; border.width: 2 }
+         }
+     ]
+ 
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/ValueList.qml b/framework/uicomponents/qml/Muse/UiComponents/ValueList.qml
+index c477b0986..28877fd8b 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/ValueList.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/ValueList.qml
+@@ -34,6 +34,9 @@ Item {
+     property alias model: sortFilterProxyModel.sourceModel
+ 
+     property bool readOnly: false
++
++    //! NOTE Draws a read only value as a Material Design 3 chip
++    property bool valueChips: false
+     property var isReadOnlyFunction: null
+ 
+     property string keyRoleName: "key"
+@@ -388,6 +391,7 @@ Item {
+ 
+                     isSelected: selectionModel.hasSelection && selectionModel.isSelected(modelIndex)
+                     readOnly: root.readOnly
++                    valueChips: root.valueChips
+                     keyReadOnly: root.isKeyEditable ? root.isReadOnlyFunction(rowLoader.filteredRow) : true
+ 
+                     drawZebra: root.drawZebra
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/internal/PopupContent.qml b/framework/uicomponents/qml/Muse/UiComponents/internal/PopupContent.qml
+index c4a4ab288..8e2652753 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/internal/PopupContent.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/internal/PopupContent.qml
+@@ -40,6 +40,13 @@ FocusScope {
+     property int padding: 0
+     property int margins: 12
+ 
++    //! NOTE Allow asymmetric Material Design 3 padding, for example 8 by 4 for plain tooltips
++    property int horizontalMargins: root.margins
++    property int verticalMargins: root.margins
++
++    property color backgroundColor: M3Roles.surfaceContainerHigh
++    property color borderColor: M3Roles.outlineVariant
++
+     property bool showArrow: false
+     property int arrowX: 0
+     property int arrowY: 0
+@@ -49,6 +56,10 @@ FocusScope {
+     property bool isOpened: false
+     property bool useDropShadow: true
+ 
++    //! NOTE Material Design 3 shape and elevation of the popup container
++    property real cornerRadius: M3Roles.cornerMedium
++    property int elevationLevel: 3
++
+     property bool animationEnabled: false
+ 
+     property bool closeOnEscape: true
+@@ -61,6 +72,21 @@ FocusScope {
+ 
+     focus: true
+ 
++    // The popup window is sized a little larger than contentContainer so the
++    // drop shadow below has room to blur outward. Without a compositing
++    // window manager (as under a headless Xvfb display), that extra margin
++    // is never alpha-blended and paints as solid opaque black instead of a
++    // soft shadow fading to nothing, framing every menu in a thick black
++    // square. Filling the whole window with the same opaque surface colour
++    // first removes that margin's visible edge in both cases: a real
++    // compositor still shows the shadow drawn on top of it, and a
++    // non-compositing one now shows the correct Material surface colour
++    // instead of black.
++    Rectangle {
++        anchors.fill: parent
++        color: root.backgroundColor
++    }
++
+     signal closeRequested()
+ 
+     //! NOTE: must to be inside QQuickItem to define a window by parent
+@@ -87,11 +113,11 @@ FocusScope {
+         id: contentContainer
+         x: root.padding
+         y: root.padding
+-        width: contentBody.width + root.margins * 2
+-        height: contentBody.height + root.margins * 2
++        width: contentBody.width + root.horizontalMargins * 2
++        height: contentBody.height + root.verticalMargins * 2
+ 
+-        implicitWidth: contentBody.implicitWidth + root.margins * 2
+-        implicitHeight: contentBody.implicitHeight + root.margins * 2
++        implicitWidth: contentBody.implicitWidth + root.horizontalMargins * 2
++        implicitHeight: contentBody.implicitHeight + root.verticalMargins * 2
+ 
+         scale: root.animationEnabled ? 0.7 : 1.0
+         opacity: root.animationEnabled ? 0.5 : 1.0
+@@ -101,7 +127,10 @@ FocusScope {
+             anchors.fill: contentBackground
+             visible: root.useDropShadow
+ 
+-            blur: root.padding
++            //! NOTE Material Design 3 elevation levels 1 to 5
++            offset.y: root.elevationLevel
++            blur: Math.max(root.padding, root.elevationLevel * 3)
++            color: Qt.rgba(M3Roles.shadow.r, M3Roles.shadow.g, M3Roles.shadow.b, 0.15 + root.elevationLevel * 0.03)
+             radius: contentBackground.radius
+         }
+ 
+@@ -109,13 +138,13 @@ FocusScope {
+             id: contentBackground
+             anchors.fill: parent
+ 
+-            color: ui.theme.popupBackgroundColor
+-            radius: 4
++            color: root.backgroundColor
++            radius: root.cornerRadius
+ 
+             Item {
+                 id: contentBody
+-                x: root.margins
+-                y: root.margins
++                x: root.horizontalMargins
++                y: root.verticalMargins
+                 width: root.contentWidth
+                 height: root.contentHeight
+ 
+@@ -136,7 +165,7 @@ FocusScope {
+             color: "transparent"
+             radius: contentBackground.radius
+             border.width: 1
+-            border.color: ui.theme.strokeColor
++            border.color: root.borderColor
+         }
+ 
+         Canvas {
+@@ -233,6 +262,11 @@ FocusScope {
+     ]
+ 
+     transitions: Transition {
+-        NumberAnimation { properties: "scale, opacity"; easing.type: Easing.OutQuint; duration: root.animationEnabled ? 300 : 0 }
++        //! NOTE Material Design 3 standard-decelerate easing, disabled when reduced motion is requested
++        NumberAnimation {
++            properties: "scale, opacity"
++            easing.type: Easing.OutCubic
++            duration: root.animationEnabled ? M3Roles.duration(M3Roles.durationStandard) : 0
++        }
+     }
+ }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenu.qml b/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenu.qml
+index 643897d0b..c78a9d888 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenu.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenu.qml
+@@ -151,6 +151,10 @@ MenuView {
+ 
+         objectName: "Menu"
+ 
++        //! NOTE Material Design 3 extra-small shape for menu containers
++        cornerRadius: M3Roles.cornerExtraSmall
++        elevationLevel: 2
++
+         contentWidth: root.contentWidth
+         contentHeight: root.contentHeight
+ 
+@@ -422,8 +426,9 @@ MenuView {
+                     return root.isPlacedAbove ? searchLoader.top : parent.bottom
+                 }
+ 
+-                topMargin: root.viewMargins
+-                bottomMargin: root.viewMargins
++                //! NOTE Material Design 3 menu list vertical padding
++                topMargin: 8
++                bottomMargin: 8
+             }
+ 
+             spacing: 0
+@@ -557,7 +562,7 @@ MenuView {
+                     Rectangle {
+                         width: root.menuMetrics?.itemWidth ?? 0
+                         height: prv.separatorHeight
+-                        color: ui.theme.strokeColor
++                        color: M3Roles.outlineVariant
+                     }
+                 }
+             }
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml b/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml
+index e6d4dd98b..f7095306b 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/internal/StyledMenuItem.qml
+@@ -59,9 +59,10 @@ ListItemBlank {
+ 
+     signal requestParentItemActive()
+ 
+-    implicitHeight: 32
++    //! NOTE Material Design 3 menu item height
++    implicitHeight: 48
+ 
+-    hoverHitColor: ui.theme.accentColor
++    hoverHitColor: M3Roles.onSurface
+     enabled: (Boolean(modelData) && modelData.enabled !== undefined) ? Boolean(modelData.enabled) : true // default true
+ 
+     isSelected: subMenuShowed || (itemPrv.isSelectable && itemPrv.isSelected) || navigation.highlight
+@@ -176,7 +177,7 @@ ListItemBlank {
+         anchors.left: parent.left
+         anchors.leftMargin: 12
+         anchors.right: parent.right
+-        anchors.rightMargin: submenuIndicator.visible ? 6 : 12
++        anchors.rightMargin: 12
+ 
+         spacing: 12
+ 
+@@ -215,19 +216,29 @@ ListItemBlank {
+             text: itemPrv.titleWithMnemonicUnderline
+ 
+             textFormat: Text.RichText
++
++            //! NOTE Material Design 3 label large
++            font.pixelSize: 14
++            font.weight: Font.Medium
+         }
+ 
+         StyledTextLabel {
+             id: shortcutsLabel
+             Layout.alignment: Qt.AlignRight
++            color: M3Roles.onSurfaceVariant
+             text: itemPrv.shortcuts
+             horizontalAlignment: Text.AlignRight
++
++            //! NOTE Material Design 3 label large
++            font.pixelSize: 14
++            font.weight: Font.Medium
+             visible: !itemPrv.hasShortcuts || (root.reserveSpaceForShortcutsOrSubmenuIndicator)
+         }
+ 
+         StyledIconLabel {
+             id: submenuIndicator
+             Layout.alignment: Qt.AlignRight
++            color: M3Roles.onSurfaceVariant
+             width: 16
+             iconCode: root.hasSubMenu ? IconCode.SMALL_ARROW_RIGHT : IconCode.NONE
+             visible: !isEmpty || (root.reserveSpaceForShortcutsOrSubmenuIndicator && !shortcutsLabel.visible)
+diff --git a/framework/uicomponents/qml/Muse/UiComponents/internal/ValueListItem.qml b/framework/uicomponents/qml/Muse/UiComponents/internal/ValueListItem.qml
+index 91eb05600..ab9802855 100644
+--- a/framework/uicomponents/qml/Muse/UiComponents/internal/ValueListItem.qml
++++ b/framework/uicomponents/qml/Muse/UiComponents/internal/ValueListItem.qml
+@@ -40,6 +40,10 @@ ListItemBlank {
+     property string iconColorRoleName: "iconColor"
+ 
+     property bool readOnly: false
++
++    //! NOTE Draws a read only value as a Material Design 3 chip, which suits a
++    //! short token such as a key sequence
++    property bool valueChips: false
+     //! NOTE: is keys column generally editable
+     property bool keysEditable: false
+     //! NOTE:  is this particular key editable
+@@ -540,14 +544,46 @@ ListItemBlank {
+     Component {
+         id: readOnlyComponent
+ 
+-        StyledTextLabel {
++        Item {
++            id: readOnlyItem
++
+             property var val
+             signal changed(var stub)
+ 
+-            property string accessibleName: text
++            readonly property string valueText: readOnlyItem.val !== undefined && readOnlyItem.val !== null ? String(readOnlyItem.val) : ""
++            property string accessibleName: readOnlyItem.valueText
++
++            implicitHeight: 32
++
++            Rectangle {
++                id: chip
++
++                anchors.left: parent.left
++                anchors.verticalCenter: parent.verticalCenter
++
++                visible: root.valueChips && readOnlyItem.valueText !== ""
+ 
+-            text: val
+-            horizontalAlignment: Text.AlignLeft
++                width: Math.min(parent.width, chipLabel.implicitWidth + 24)
++                height: 32
++                radius: 8
++                antialiasing: true
++
++                color: "transparent"
++                border.width: 1
++                border.color: M3Roles.outline
++            }
++
++            StyledTextLabel {
++                id: chipLabel
++
++                anchors.left: parent.left
++                anchors.leftMargin: chip.visible ? 12 : 0
++                anchors.right: parent.right
++                anchors.verticalCenter: parent.verticalCenter
++
++                text: readOnlyItem.valueText
++                horizontalAlignment: Text.AlignLeft
++            }
+         }
+     }
+ }
