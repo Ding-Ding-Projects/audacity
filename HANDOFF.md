@@ -354,9 +354,21 @@ Do not close the tracking issue or describe these lanes as fully accepted from c
 
 Projects access is unavailable with the present `read:project` permission. This does not block implementation or preservation. Existing historical Linux captures remain historical evidence and do not establish current Windows UI acceptance.
 
+## 2026-09-18 verified superseding closeout state
+
+This section supersedes earlier closeout notes that describe a different session boundary. The verified current `main` tip is `36a60c3212f1f993b8eb1ffb869e6dc8612bae1d` before the concurrent closeout commit and `00481ce1bb` is a later dewed hui commit from another session. The local continuation currently preserves both histories.
+
+The archive used before removal is `C:\Users\cntow\OneDrive\OakKayBackups\audacity\zips\audacity-20260918T171722Z.7z`. 7-Zip read-back reported `Everything is Ok`, 4,697,455,666 bytes, 111,994 listed entries, and 1,670 Git administrative entries.
+
+The following task-owned branches and linked checkouts were proven clean and ancestor-proven, then removed locally and from the hui: `codex/audacity-appearance`, `codex/audacity-conversion-core`, `codex/audacity-converter-containment`, `codex/audacity-experience`, `codex/audacity-front-provenance`, `codex/audacity-logo`, `codex/audacity-ollama`, `codex/audacity-packaging-integration`, and `codex/audacity-site-completion`.
+
+The retained branches are `codex/audacity-converter-ui` at `123b3620af7103e6f8e2927e4bf1653924bc8c4f`, `codex/audacity-delivery` at `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`, `codex/audacity-profile-isolation` at `93320a5759168f6fee7995bb3c42db960a38ccfb`, `codex/audacity-release-build` at `d4b7c5faf2bb5c0bfd29e333b52937e1e489b21a`, `codex/audacity-release-candidate` at `6d6519dd1a36c0cc0ebc714bf67b5db8cc69165f`, and `codex/audacity-tests-f9dc58a` at `3934ad11c945a7ce24f6e7f2120fade4715804a2`. Every retained local tip equals its `git ls-remote` hui ref. No stash exists.
+
+The linked checkout metadata for `codex/audacity-experience` was removed, but Deen No left the exact directory `C:\Users\cntow\Documents\GitHub\gerk tong hui\audacity-codex-audacity-experience` with 8,165 files and 1,238 directories after `git worktree remove --force` reported `Filename too long`. It is not registered as a linked checkout or branch and remains an explicit filesystem cleanup blocker. No broader recursive removal was attempted.
+
 ## 2026-09-18 final closeout evidence
 
-- `main` is pushed and verified at `18541e7c3f0b1437c0a620b0fb600d24429e95df`.
+- `main` is pushed and verified at `452c02f6f2ebb8c3aa74f6640484a0c0917d27c4`.
 - The delivery branch preservation commit is pushed and verified at
   `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`.
 - The nested Muse preservation commit `4a83a1ba4` exists locally and is
@@ -377,6 +389,15 @@ Projects access is unavailable with the present `read:project` permission. This 
 - The uncommitted 41-file Muse state observed at the start of this pass could
   not be recovered from reflogs or unreachable Git objects after the failed
   preservation switch. Only `M3Roles.qml` survived in local commit `4a83a1ba4`.
+- A concurrent closeout commit `452c02f6f2` also preserved the exact zero-byte
+  file `recovery/concurrent-closeout-docs-20260918.patch`; it is included in
+  the pushed `main` history and is retained as an audit marker, not treated as
+  content recovery.
+- The nine completed branches and linked checkouts listed in the earlier
+  cleanup section are no longer present in the current local registry or
+  remote branch list. The six branches listed as retained remain registered,
+  pushed, and intentionally untouched because they contain unfinished or
+  ownership-uncertain preservation state.
 
 ## 2026-09-18 delivery-lane closeout
 

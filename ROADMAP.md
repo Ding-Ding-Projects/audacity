@@ -130,7 +130,7 @@ unticked items are open work.
 ## 2026-09-18 final evidence
 
 - [x] Push and verify the integrated `main` at
-      `18541e7c3f0b1437c0a620b0fb600d24429e95df`.
+      `452c02f6f2ebb8c3aa74f6640484a0c0917d27c4`.
 - [x] Create and test the external archive before cleanup consideration:
       `C:\Users\cntow\OneDrive\OakKayBackups\audacity-delivery-build-lane\zips\audacity-delivery-build-lane-20260918T174500Z.7z`
       with 105,860 files, 7,136,227,751 bytes, and SHA-256
@@ -139,3 +139,17 @@ unticked items are open work.
       candidates remain retained because they are active, unfinished,
       user-owned, load-bearing, ownership-uncertain, or depend on the
       unverified nested Muse ref.
+
+## 2026-09-18 verified superseding closeout state
+
+- [x] Verify the final archive at
+      `C:\Users\cntow\OneDrive\OakKayBackups\audacity\zips\audacity-20260918T171722Z.7z`:
+      4,697,455,666 bytes, 111,994 entries, 1,670 Git administrative entries,
+      and a passing 7-Zip integrity test.
+- [x] Remove the nine clean, ancestor-proven, task-owned branches and linked
+      checkouts recorded in `HANDOFF.md`.
+- [x] Dew and verify the six retained preservation branches.
+- [ ] Remove the stale Deen No directory left by the long-path failure at
+      `C:\Users\cntow\Documents\GitHub\gerk tong hui\audacity-codex-audacity-experience`.
+- [ ] Complete final full-product verification and release work; this pass
+      intentionally did not run unrelated release work.
