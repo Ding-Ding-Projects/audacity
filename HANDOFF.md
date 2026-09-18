@@ -1,5 +1,36 @@
 # Handoff
 
+## 2026-09-18 primary-checkout integration and preservation pass
+
+This pass was limited to the primary checkout at `C:\Users\cntow\Documents\GitHub\audacity`. No release build, installer publication, or unrelated release work was run.
+
+The primary checkout began clean at `b1d8c4416625a71f2bd2398c7c03736a588a60b5` after fetching `origin` with pruning. Five completed feature lines were integrated into `main` with non-fast-forward merges:
+
+| Integrated line | Merge commit | Source tip |
+| --- | --- | --- |
+| `codex/audacity-appearance` | `d48435cf91` | `6318ab8c9d6911cb1aec0021f231a6f32a62988c` |
+| `codex/audacity-converter-ui` | `0b45c656ae` | `6e99ec6e2e3ae155ce745c14b903e635c9d3a3bf` |
+| `codex/audacity-experience` | `ba55a7a4b7` | `7657b96084ececcc7f771d12df6cb4c96acadf35` |
+| `codex/audacity-front-provenance` | `20c41e114b` | `fe5f283fad126c8a4e3be0ea87504388e68c548a` |
+| `codex/audacity-ollama` | `59cbe3e712` | `e69147f111d3baad3db4f45047bcb6da9be98021` |
+
+The merge strategy reported no conflicts. `git ls-files -u` is empty and a tracked-text scan found no `<<<<<<<`, `=======`, or `>>>>>>>` conflict markers. Because no conflict occurred, there was no side-selection decision to record. Each merge commit retains both parent histories.
+
+Six linked checkouts contained uncommitted content inside the nested `muse` checkout. Parent Git history cannot represent those bytes as a gitlink without changing the nested repository, so each owning parent branch received an exact binary Git patch at `recovery/muse-uncommitted-20260918.patch`. The nested files were reset only after the patch was committed. The two distinct patch variants contain 2,281 and 2,058 inserted patch lines. The preservation commits were:
+
+| Branch | Preservation commit | Remote verification |
+| --- | --- | --- |
+| `codex/audacity-converter-ui` | `09dc118d942c21b8633986f4e126dbc786f13b71` | `git ls-remote` matched |
+| `codex/audacity-release-build` | `3e3515ca1d514224716f5dc689d635864745511a` | `git ls-remote` matched |
+| `codex/audacity-tests-f9dc58a` | `a7bbe9ccba8421fcdbefb66d42c4c69d27728a79` | `git ls-remote` matched |
+| `codex/audacity-delivery` | `9d41aab7762bc295ebd8613aa89fe3572df67f63` | `git ls-remote` matched |
+| `codex/audacity-profile-isolation` | `5ee317655393a90c711c1f06c8960baa7fb0ef72` | `git ls-remote` matched |
+| `codex/audacity-release-candidate` | `6d6519dd1a36c0cc0ebc714bf67b5db8cc69165f` | `git ls-remote` matched |
+
+Those six preservation-only tips were deliberately not merged into `main`: their nested Muse edits were unfinished, and the recovery patches are retained on their pushed branches. The completed parent work from `codex/audacity-converter-ui` was merged at `6e99ec6e2e3ae155ce745c14b903e635c9d3a3bf`, excluding its later preservation-only commit.
+
+At this point the integrated `main` history is locally ahead of `origin/main` and has not yet been pushed. The next safe steps are to commit this handoff and roadmap refresh, push `main`, verify the remote ref, create and read back the required external archive, then remove only proven redundant task-owned worktrees and branches. Active, user-owned, load-bearing, unfinished, or ownership-uncertain items must remain.
+
 ## Scoped preservation cleanup completed
 
 A fresh explicitly authorized cleanup pass created and read back a dated private
@@ -299,3 +330,27 @@ Do not close the tracking issue or describe these lanes as fully accepted from c
 - Preserve historical branches with unique commits. No branch, worktree, or stash deletion has occurred. Archive and ancestry requirements still apply before cleanup.
 
 Projects access is unavailable with the present `read:project` permission. This does not block implementation or preservation. Existing historical Linux captures remain historical evidence and do not establish current Windows UI acceptance.
+
+## 2026-09-18 delivery-lane closeout
+
+- The main checkout contains five local integration commits not yet pushed to
+  `origin/main`: `d48435cf91`, `0b45c656ae`, `ba55a7a4b7`, `20c41e114b`, and
+  `59cbe3e712`. They integrate the appearance, converter UI, experience,
+  front-provenance, and Ollama lanes. No unrelated release work was started.
+- The delivery branch was preserved and pushed at
+  `fb7c3d3bf0b16f73691916c00bd222ac85ebb43a`. Its only parent change records
+  the surviving Muse submodule preservation commit `4a83a1ba4`.
+- The Muse submodule began with an uncommitted 41-file state plus the new
+  `framework/ui/qml/Muse/Ui/M3Roles.qml`. An attempted preservation switch
+  caused the modified 41-file state to disappear before it was committed.
+  Reflog and `git fsck --full --unreachable --no-reflogs` found no recovery
+  objects. The surviving file is preserved in local Muse commit `4a83a1ba4`,
+- but the Muse remote rejected its push with HTTP 403, so that nested ref is not
+  remotely verified and must not be treated as complete.
+- No root index conflict or unmerged index entry remains in the active
+  checkout. No stash was present at inventory time. Other active or
+  ownership-uncertain lane branches and worktrees are retained until their
+  ownership and ancestry are proven.
+- The external archive for this closeout is required before any cleanup
+  removal. Its path, byte size, entry count, and verification output must be
+  added below before deletion evidence is recorded.

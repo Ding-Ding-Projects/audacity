@@ -1,5 +1,17 @@
 # Current completion pass
 
+## 2026-09-18 integration and preservation status
+
+- [x] Fetch `origin` and inventory the primary checkout, linked checkouts, branches, and stashes.
+- [x] Preserve six linked nested Muse uncommitted states as exact recovery patches on their owning branches.
+- [x] Push and verify all six preservation branches with `git ls-remote`.
+- [x] Integrate the completed appearance, converter UI, experience, front provenance, and Ollama lines into `main` with both parent histories retained.
+- [x] Verify an empty unmerged index and no tracked conflict markers after integration.
+- [ ] Push the integrated `main` and verify the remote ref.
+- [ ] Create and read back the required external archive before any cleanup removal.
+- [ ] Remove only redundant task-owned worktrees, branches, and stashes after ancestry and ownership proof.
+- [ ] Keep the six unfinished preservation branches and their recovery patches retained until their owners complete or explicitly retire them.
+
 Previous completion ticks below are reopened: source presence and historical captures do not prove the final integrated behavior. Items remain visible so earlier work is preserved and can be reverified.
 
 - [x] Build the Windows application through the project entry point at `bbeb45e1`.
@@ -105,3 +117,11 @@ unticked items are open work.
   there is no login lockout for the ladder to unlock.
 - Code signing: permanently prohibited for this project. Every Squirrel.Windows
   installer stays unsigned by policy, not by omission.
+
+## 2026-09-18 closeout evidence
+
+- [ ] Push `main` after verifying the five local integration commits and update
+      the remote ref in `HANDOFF.md`.
+- [ ] Verify the external closeout archive before any cleanup removal.
+- [ ] Resolve the Muse submodule permission blocker for preservation commit
+      `4a83a1ba4`, or retain it as explicitly unverified local recovery data.
